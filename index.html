@@ -3,890 +3,406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestão Master - Restaurante Pro (SaaS + IA)</title>
-
-    <!-- Meta Tags PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007bff">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Restaurante Pro">
-    <link rel="apple-touch-icon" href="icon-192.png">
-
-    <!-- Bibliotecas Externas (Excel, Gráficos, QR Code e Marked para IA) -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
+    <title>Master - Restaurante Pro (SaaS)</title>
+    <!-- Adicionando FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #007bff;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #fd7e14;
-            --purple: #6f42c1;
-            --teal: #20c997;
-            --dark: #333;
-            --light: #f4f7f6;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --whatsapp: #25D366;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 12px; color: #222; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        h2, h3, h4 { margin-top: 10px; color: var(--dark); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* Navegação por Abas */
-        .tabs-nav { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { background: #e9ecef; color: #495057; border: none; padding: 10px 16px; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.2s; }
-        .tab-btn.active { background: var(--primary); color: white; }
+        body { display: flex; height: 100vh; background-color: #f5f6fa; }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* Sidebar */
+        .sidebar { width: 250px; background-color: var(--primary); color: white; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; text-align: center; background-color: var(--secondary); font-size: 1.2em; font-weight: bold; }
+        .nav-btn { padding: 15px 20px; border: none; background: none; color: white; text-align: left; cursor: pointer; transition: 0.3s; font-size: 1em; border-bottom: 1px solid #34495e; }
+        .nav-btn:hover, .nav-btn.active { background-color: var(--accent); }
+        .nav-btn i { margin-right: 10px; width: 20px; text-align: center; }
 
-        /* Formulários e Inputs */
-        .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-        .form-group { flex: 1; min-width: 180px; margin-bottom: 8px; }
-        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.85em; color: #555; }
-        input, select, button, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        /* Main Content */
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; }
         
+        /* Typography & Layout */
+        h2 { color: var(--dark); margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; display: inline-block; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        
+        /* Cards & POS */
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .pos-layout { display: flex; gap: 20px; height: calc(100vh - 100px); }
+        .produtos-grid { flex: 2; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; align-content: start; overflow-y: auto; }
+        
+        .produto-item { background: white; border: 1px solid #ddd; padding: 15px; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .produto-item:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .produto-item h4 { margin-bottom: 5px; color: var(--dark); }
+        .produto-item .preco { color: var(--success); font-weight: bold; }
+
+        /* Carrinho / Recibo */
+        .carrinho { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .carrinho-items { flex: 1; overflow-y: auto; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+        .carrinho-item { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }
+        .carrinho-total { font-size: 1.5em; font-weight: bold; text-align: right; margin-bottom: 20px; color: var(--dark); }
+
         /* Botões */
-        button { background-color: var(--primary); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
-        button:hover { opacity: 0.9; }
-        .btn-saida { background-color: var(--danger); }
+        .btn { padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 10px; transition: 0.2s; color: white; }
         .btn-success { background-color: var(--success); }
-        .btn-warning { background-color: var(--warning); color: white; }
-        .btn-excel { background-color: #1d6f42; color: white; }
-        .btn-whatsapp { background-color: #25D366; color: white; }
-        .btn-purple { background-color: var(--purple); color: white; }
-        .btn-dark { background-color: #555; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; margin: 0; }
-
-        /* Perfis no Login */
-        .grid-perfis-login { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
-        .card-perfil-login { background: #f8f9fa; border: 2px solid #e9ecef; padding: 12px; border-radius: 12px; width: 100px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #e7f5ff; transform: translateY(-2px); }
-        .avatar-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin-bottom: 6px; background: #ddd; }
-        .avatar-placeholder { width: 65px; height: 65px; border-radius: 50%; background: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; margin: 0 auto 6px auto; }
-
-        /* Status do Caixa Banner */
-        .status-caixa-banner { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .caixa-aberto { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .caixa-fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        /* Estilo Chat IA */
-        .chat-container { border: 1px solid #dee2e6; border-radius: 8px; background: #fdfdfd; padding: 15px; height: 350px; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { padding: 10px 14px; border-radius: 8px; max-width: 80%; line-height: 1.4; font-size: 0.95em; }
-        .chat-msg.user { background: #007bff; color: white; align-self: flex-end; }
-        .chat-msg.ai { background: #e9ecef; color: #333; align-self: flex-start; border-left: 4px solid var(--purple); }
-
-        /* Resumo de Lucro e Alertas */
-        .box-calculo-lucro { background: #e7f5ff; border: 1px solid #74c0fc; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
-        .alerta-stock-box { background: #fff3cd; border: 1px solid #ffeba2; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; }
-
-        /* Header do Utilizador */
-        .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #e9ecef; padding: 12px 18px; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-
-        /* Cards do Dashboard */
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 15px 0; }
-        .card-stat { background: #f8f9fa; padding: 14px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
-        .card-stat.verde { border-left-color: var(--success); }
-        .card-stat.laranja { border-left-color: var(--warning); }
-        .card-stat.vermelho { border-left-color: var(--danger); }
-        .card-stat.roxo { border-left-color: var(--purple); }
-        .card-stat h4 { margin: 0 0 5px 0; font-size: 0.8em; text-transform: uppercase; color: #666; }
-        .card-stat .valor-card { font-size: 1.2em; font-weight: bold; }
-
+        .btn-success:hover { background-color: #27ae60; }
+        .btn-whatsapp { background-color: var(--whatsapp); }
+        .btn-whatsapp:hover { background-color: #1ebe5d; }
+        .btn-mpesa { background-color: #e60000; } /* Cor aproximada Vodafone/M-Pesa */
+        .btn-mpesa:hover { background-color: #cc0000; }
+        .btn-danger { background-color: var(--accent); }
+        
         /* Tabelas */
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-        th, td { padding: 9px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background-color: #f1f3f5; }
-        .alerta { color: var(--danger); font-weight: bold; }
-        .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75em; font-weight: bold; background: #eee; }
-        .badge-entrada { background: #d4edda; color: #155724; }
-        .badge-saida { background: #f8d7da; color: #721c24; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: var(--light); color: var(--dark); }
 
-        /* Mesas Grid */
-        .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
-        .card-mesa { background: #e9ecef; border: 2px solid #ced4da; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
-        .card-mesa.ocupada { background: #ffe3e3; border-color: var(--danger); color: var(--danger); }
-        .card-mesa.selecionada { border-color: var(--primary); background: #e7f5ff; }
-
-        /* Modais */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
-        .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 8px; position: relative; }
-        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
-
-        /* Estilos de Impressão */
-        #areaImpressao { display: none; }
-        @media print {
-            body * { visibility: hidden; }
-            #areaImpressao, #areaImpressao * { visibility: visible; }
-            #areaImpressao { display: block; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; }
-        }
-
-        @media (max-width: 768px) {
-            .form-row { flex-direction: column; gap: 0; }
-            .header-usuario { flex-direction: column; align-items: stretch; }
-        }
+        /* Inputs */
+        input, select { padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
     </style>
 </head>
 <body>
 
-<div class="container">
-
-    <!-- ECRÃ DE LOGIN MULTI-TENANT -->
-    <div id="telaLogin" style="max-width:480px; margin:20px auto;">
-        <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
-        <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
-
-        <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #dee2e6; margin-bottom:15px;">
-            <div class="form-group">
-                <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
-                <input type="text" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA, SABORES01" style="text-transform:uppercase; font-weight:bold;" onchange="carregarPerfisEmpresa()">
-            </div>
-            <button class="btn-primary btn-sm" onclick="carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
+    <!-- Navegação Lateral -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            Restaurante Pro
         </div>
-
-        <!-- BANNER DE CONTA BLOQUEADA -->
-        <div id="boxContaBloqueada" style="display:none; background:#fff5f5; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
-            <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
-            <p id="textoMotivoBloqueio" style="font-size:0.9em; color:#333; margin-bottom:10px;"></p>
-            <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
-                <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
-                <div style="font-size:0.9em; line-height:1.6; color:#222;">
-                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>Valor da Mensalidade:</b> 1.500 MT
-                </div>
-            </div>
-            <p style="font-size:0.85em; color:#555; margin-bottom:0;">
-                Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema instantaneamente.
-            </p>
-        </div>
-
-        <div id="seccaoPerfisEForm" style="display:none;">
-            <p style="text-align:center; font-size:0.85em; color:#666;">Selecione o seu perfil:</p>
-            <div id="gridPerfisLogin" class="grid-perfis-login"></div>
-
-            <div class="form-group">
-                <label>Utilizador Selecionado</label>
-                <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
-            </div>
-            <div class="form-group">
-                <label>Palavra-passe</label>
-                <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
-            </div>
-            <button onclick="fazerLogin()" style="margin-top:10px;">Entrar no Sistema</button>
-            
-            <p style="text-align:center; margin-top:20px;">
-                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Chave Mestra)</a>
-            </p>
-        </div>
+        <button class="nav-btn active" onclick="mudarAba('pos')"><i class="fas fa-cash-register"></i> Ponto de Venda</button>
+        <button class="nav-btn" onclick="mudarAba('caixa')"><i class="fas fa-wallet"></i> Gestão de Caixa</button>
+        <button class="nav-btn" onclick="mudarAba('mesas')"><i class="fas fa-chair"></i> Mesas e Pedidos</button>
+        <button class="nav-btn" onclick="mudarAba('stock')"><i class="fas fa-boxes"></i> Stock & Validades</button>
+        <button class="nav-btn" onclick="mudarAba('admin')"><i class="fas fa-chart-line"></i> Dashboard Admin</button>
     </div>
 
-    <!-- ECRÃ PRINCIPAL DO SISTEMA -->
-    <div id="telaSistema" style="display:none;">
-        
-        <div class="header-usuario">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div id="headerAvatarBox"></div>
-                <div>
-                    <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
-                    Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
-                    <small id="cargoUsuarioLogado" style="color:#666;"></small>
-                </div>
-            </div>
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn-purple btn-sm" onclick="mudarAba('abaIA')">🤖 Assistente IA</button>
-                <button class="btn-purple btn-sm" onclick="abrirModalQRMenu()">📱 QR Menu Digital</button>
-                <button id="btnAdminGerarRestaurante" class="btn-whatsapp btn-sm" onclick="abrirModalCriarRestaurante()">🏢 + Novo Restaurante</button>
-                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="abrirModalDefinicoes()">⚙️ Definições</button>
-                <button class="btn-dark btn-sm" onclick="fazerLogout()">Sair</button>
-            </div>
-        </div>
+    <!-- Conteúdo Principal -->
+    <div class="main-content">
 
-        <!-- BANNER DE STATUS DO CAIXA -->
-        <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
-            <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
-            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="mudarAba('abaCaixa')">Abrir Caixa</button>
-        </div>
-
-        <!-- ALERTA DE STOCK MÍNIMO -->
-        <div id="boxAlertaStockGlobal" class="alerta-stock-box">
-            <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
-        </div>
-
-        <!-- MENU DE ABAS -->
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
-            <button class="tab-btn" onclick="mudarAba('abaCaixa')">💵 Caixa & Despesas</button>
-            <button class="tab-btn" onclick="mudarAba('abaFiado')">👥 Clientes & Fiado</button>
-            <button class="tab-btn" onclick="mudarAba('abaStock')">📦 Gestão de Stock</button>
-            <button class="tab-btn col-admin" onclick="mudarAba('abaUsuarios')">👤 Gestão de Perfis</button>
-            <button class="tab-btn col-admin" onclick="mudarAba('abaIA')">🤖 Assistente IA</button>
-            <button class="tab-btn col-admin" onclick="mudarAba('abaDashboard')">📊 Dashboard & Gráficos</button>
-        </div>
-
-        <!-- ================= ABA 1: VENDAS & MESAS ================= -->
-        <div id="abaVendas" class="tab-content active">
-            <h4>Selecionar Mesa / Comanda</h4>
-            <div class="mesas-grid" id="gridMesas"></div>
-
-            <div style="background:#eef7ff; border:1px solid #b6e0fe; padding:15px; border-radius:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="margin:0;">Atendimento: <span id="labelMesaAtual" style="color:var(--primary);">Balcão (Venda Direta)</span></h4>
-                    <button class="btn-dark btn-sm" onclick="selecionarMesa('Balcão')">Limpar para Balcão</button>
+        <!-- Secção 1: Ponto de Venda (POS) -->
+        <div id="pos" class="section active">
+            <h2>Ponto de Venda (Balcão)</h2>
+            <div class="pos-layout">
+                <!-- Produtos -->
+                <div class="produtos-grid" id="lista-produtos">
+                    <!-- Gerados via JavaScript -->
                 </div>
                 
-                <div class="form-row" style="margin-top:12px;">
-                    <div class="form-group">
-                        <label>Produto</label>
-                        <select id="cartSelectProduto" onchange="preencherPrecoVenda()"></select>
+                <!-- Carrinho de Compras -->
+                <div class="carrinho">
+                    <h3>Pedido Atual</h3>
+                    <div class="carrinho-items" id="carrinho-items">
+                        <!-- Itens vão aparecer aqui -->
                     </div>
-                    <div class="form-group">
-                        <label>Quantidade</label>
-                        <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
+                    <div class="carrinho-total">
+                        Total: <span id="total-carrinho">0.00</span> MT
                     </div>
-                    <div class="form-group">
-                        <label>Preço Unit. (MT)</label>
-                        <input type="number" id="cartPrecoUnit" step="0.5">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button type="button" class="btn-success" onclick="adicionarAoCarrinho()">+ Adicionar Item</button>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr><th>Produto</th><th>Qtd</th><th>Preço Unit.</th><th>Subtotal</th><th>Ação</th></tr>
-                        </thead>
-                        <tbody id="corpoCarrinho"></tbody>
-                    </table>
-                </div>
-
-                <div class="form-row" style="margin-top:15px; align-items:center;">
-                    <div class="form-group">
-                        <label>Desconto na Conta (MT)</label>
-                        <input type="number" id="cartDesconto" value="0" min="0" step="0.5" oninput="renderizarCarrinho()">
-                    </div>
-                    <div class="form-group">
-                        <label>Forma de Pagamento / Conta</label>
-                        <select id="cartMetodoPagamento" onchange="alternarCampoClienteFiado()">
-                            <option value="Numerário">💵 Numerário (Espécie)</option>
-                            <option value="M-Pesa">📱 M-Pesa</option>
-                            <option value="e-Mola">📱 e-Mola</option>
-                            <option value="POS">💳 POS (Cartão)</option>
-                            <option value="Fiado">👥 Venda a Fiado (Conta Cliente)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="boxSeletorClienteFiado" style="display:none;">
-                        <label>Selecionar Cliente</label>
-                        <select id="cartSelectClienteFiado"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tel. WhatsApp do Cliente (Opcional)</label>
-                        <input type="text" id="cartTelefoneWa" placeholder="Ex: 841234567">
-                    </div>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:10px;">
-                    <div>
-                        <button class="btn-warning btn-sm" onclick="imprimirGuiaCozinha()">🍳 Pedido p/ Cozinha</button>
-                    </div>
-                    <div style="text-align:right;">
-                        <span style="font-size:1.25em; font-weight:bold;">Total Final: <span id="cartTotalTexto" style="color:var(--success);">0.00 MT</span></span>
-                    </div>
-                    <div>
-                        <button class="btn-success" style="font-size:1.1em;" onclick="finalizarVendaCarrinho()">✅ Fechar & Emitir Recibo</button>
-                    </div>
+                    
+                    <button class="btn btn-success" onclick="finalizarVenda('Numerário')"><i class="fas fa-money-bill-wave"></i> Cobrar Numerário</button>
+                    <button class="btn btn-mpesa" onclick="finalizarVenda('M-Pesa')"><i class="fas fa-mobile-alt"></i> Cobrar M-Pesa</button>
+                    <button class="btn btn-whatsapp" onclick="enviarReciboWhatsApp()"><i class="fab fa-whatsapp"></i> Enviar Recibo no WhatsApp</button>
+                    <button class="btn btn-danger" onclick="limparCarrinho()"><i class="fas fa-trash"></i> Cancelar Pedido</button>
                 </div>
             </div>
         </div>
 
-        <!-- ================= ABA 2: CAIXA & DESPESAS ================= -->
-        <div id="abaCaixa" class="tab-content">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Controlo de Caixa e Turnos</h2>
-                <button class="btn-excel btn-sm" onclick="exportarFechoCaixaExcel()">📊 Exportar Fecho (Excel)</button>
+        <!-- Secção 2: Gestão de Caixa (Blind Cashier) -->
+        <div id="caixa" class="section">
+            <h2>Controlo de Caixa</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Abertura de Turno</h3>
+                    <p>Registe o valor inicial na gaveta (Fundo de maneio).</p><br>
+                    <input type="number" id="valor-abertura" placeholder="Valor em MT" step="0.01">
+                    <button class="btn btn-success" onclick="abrirCaixa()">Abrir Caixa</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Fecho Cego (Blind Cashier)</h3>
+                    <p>Conte o dinheiro na gaveta antes do sistema mostrar o esperado.</p><br>
+                    <input type="number" id="valor-declarado" placeholder="Valor Físico Contado em MT" step="0.01">
+                    <button class="btn btn-danger" onclick="fecharCaixaCego()">Fechar Caixa</button>
+                </div>
             </div>
             
-            <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-top:10px;">
-                <h4>Abrir Turno de Caixa</h4>
-                <div class="form-group">
-                    <label>Fundo de Maneio / Troco Inicial (MT)</label>
-                    <input type="number" id="inputFundoManeio" value="1000" min="0" step="50">
-                </div>
-                <button class="btn-success" onclick="abrirCaixaTurno()">🔓 Confirmar Abertura de Caixa</button>
-            </div>
-
-            <div id="seccaoCaixaAberto" style="display:none; margin-top:10px;">
-                <div class="cards-grid">
-                    <div class="card-stat"><h4>Fundo Inicial</h4><div class="valor-card" id="cxValFundo">0.00 MT</div></div>
-                    <div class="card-stat verde"><h4>Entradas Vendas (Espécie)</h4><div class="valor-card" id="cxValVendasNum">0.00 MT</div></div>
-                    <div class="card-stat vermelho"><h4>Saídas / Despesas</h4><div class="valor-card" id="cxValDespesas">0.00 MT</div></div>
-                    <div class="card-stat roxo"><h4>Saldo Esperado em Gaveta</h4><div class="valor-card" id="cxValSaldoGaveta">0.00 MT</div></div>
-                </div>
-
-                <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:15px;">
-                    <h4>Registar Saída de Caixa / Despesa do Dia</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Descrição da Despesa</label>
-                            <input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Carvão">
-                        </div>
-                        <div class="form-group">
-                            <label>Valor (MT)</label>
-                            <input type="number" id="despesaValor" min="1" step="0.5" placeholder="Ex: 250 MT">
-                        </div>
-                        <div class="form-group" style="align-self:flex-end;">
-                            <button class="btn-saida" onclick="registarDespesa()">Registar Saída</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="margin-top:20px; text-align:right;">
-                    <button class="btn-saida btn-sm" onclick="fecharCaixaTurno()">🔒 Encerrar Turno de Caixa</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= ABA 3: CLIENTES & FIADO ================= -->
-        <div id="abaFiado" class="tab-content">
-            <h2>Gestão de Clientes & Contas a Fiado</h2>
-            
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
-                <h4>Cadastrar Novo Cliente</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome Completo</label>
-                        <input type="text" id="novoClienteNome" placeholder="Nome do cliente">
-                    </div>
-                    <div class="form-group">
-                        <label>Telefone / WhatsApp</label>
-                        <input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87...">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-primary" onclick="cadastrarCliente()">+ Cadastrar Cliente</button>
-                    </div>
-                </div>
-            </div>
-
-            <h4>Clientes Cadastrados e Saldo Devedor</h4>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr>
-                    </thead>
-                    <tbody id="corpoTabelaClientes"></tbody>
+            <div class="card" style="margin-top: 20px;">
+                <h3>Histórico de Caixa de Hoje</h3>
+                <table id="tabela-caixa">
+                    <thead><tr><th>Hora</th><th>Operação</th><th>Valor (MT)</th><th>Estado/Diferença</th></tr></thead>
+                    <tbody id="tbody-caixa"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- ================= ABA 4: GESTÃO DE STOCK ================= -->
-        <div id="abaStock" class="tab-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                <h2>Gestão de Stock na Despensa</h2>
-                <button class="btn-excel btn-sm" onclick="exportarStockExcel()">📊 Exportar Stock para Excel</button>
+        <!-- Secção 3: Mesas e Pedidos (Placeholder) -->
+        <div id="mesas" class="section">
+            <h2>Gestão de Mesas</h2>
+            <div class="card">
+                <p>Aqui poderá mapear as mesas do salão, transferir itens e dividir contas entre os clientes.</p>
+                <!-- Lógica de mesas a ser expandida no futuro -->
             </div>
+        </div>
 
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
-                <h4>📥 Dar Entrada de Produtos no Stock (Compras / Reposição)</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Produto / Bebida</label>
-                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-                    </div>
-                    <div class="form-group">
-                        <label>Formato de Compra</label>
-                        <select id="simplesModoCompra" onchange="calcularPrecosEntrada()">
-                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
-                            <option value="unidade">🍺 Por Unidade Avulsa</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row" id="rowModoCaixa">
-                    <div class="form-group">
-                        <label>Qtd. de Caixas Compradas</label>
-                        <input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Unidades dentro de 1 Caixa</label>
-                        <input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Preço Pago por 1 Caixa (MT)</label>
-                        <input type="number" id="precoCaixa" step="0.5" min="0" placeholder="Ex: 1200 MT" oninput="calcularPrecosEntrada()">
-                    </div>
-                </div>
-
-                <div class="form-row" id="rowModoUnidade" style="display:none;">
-                    <div class="form-group">
-                        <label>Quantidade Total de Unidades</label>
-                        <input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Custo Pago por Unidade (MT)</label>
-                        <input type="number" id="simplesPrecoCusto" step="0.5" min="0" placeholder="Ex: 50 MT" oninput="calcularPrecosEntrada()">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label style="color:var(--success);">Preço de Venda por Unidade ao Cliente (MT)</label>
-                        <input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" placeholder="Ex: 70 MT" oninput="calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Nível para Alerta de Stock Mínimo</label>
-                        <input type="number" id="simplesMinAlerta" value="5" min="1">
-                    </div>
-                </div>
-
-                <div id="boxCalculoLucro" class="box-calculo-lucro">
-                    <div>
-                        <strong>📊 Resumo do Lucro Calculado:</strong><br>
-                        • Total de Unidades no Stock: <b><span id="resTotalUnid">0</span> Unidades</b><br>
-                        • Custo por Unidade: <b><span id="resCustoUnit">0.00</span> MT</b><br>
-                        • Lucro Unitário: <span id="resLucroUnit" style="color:var(--success); font-weight:bold;">0.00 MT</span> | 
-                        Lucro Total Esperado no Lote: <b id="resLucroTotalCaixa" style="color:var(--success);">0.00 MT</b>
-                    </div>
-                </div>
-
-                <button class="btn-success" onclick="salvarEntradaStock()">📥 Dar Entrada / Atualizar Stock</button>
-            </div>
-
-            <h4>📦 Quantidade Atual de Produtos em Stock</h4>
-            <div class="table-responsive" style="margin-bottom:25px;">
+        <!-- Secção 4: Stock e Validades -->
+        <div id="stock" class="section">
+            <h2>Gestão de Stock e Fornecedores</h2>
+            <div class="card">
                 <table>
                     <thead>
                         <tr>
                             <th>Produto</th>
-                            <th>Stock Atual</th>
-                            <th>Mínimo Alerta</th>
-                            <th>Preço Venda Unit.</th>
-                            <th class="col-fin">Custo Médio Unit.</th>
-                            <th class="col-fin">Lucro Unit. Est.</th>
-                            <th class="col-admin">Ações</th>
+                            <th>Quantidade (Unid/Doses)</th>
+                            <th>Preço Custo</th>
+                            <th>Data de Validade</th>
+                            <th>Fornecedor</th>
                         </tr>
                     </thead>
-                    <tbody id="corpoStock"></tbody>
+                    <tbody id="tbody-stock">
+                        <!-- Gerado via JavaScript -->
+                    </tbody>
                 </table>
             </div>
+        </div>
 
-            <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0;">📋 Histórico Completo de Movimentações do Stock</h4>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data / Hora</th>
-                                <th>Tipo de Movimento</th>
-                                <th>Produto</th>
-                                <th>Quantidade</th>
-                                <th>Utilizador</th>
-                                <th>Detalhes / Origem</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoMovimentacoesStock"></tbody>
-                    </table>
+        <!-- Secção 5: Dashboard Admin -->
+        <div id="admin" class="section">
+            <h2>Painel de Gestão (Super Admin)</h2>
+            <div class="grid-container">
+                <div class="card">
+                    <h3>Vendas do Dia</h3>
+                    <h2 id="admin-vendas-hoje" style="color: var(--success); border: none; font-size: 2.5em;">0.00 MT</h2>
+                </div>
+                <div class="card">
+                    <h3>Atividade Recente</h3>
+                    <ul id="admin-log" style="list-style: none; line-height: 1.8;">
+                        <!-- Logs aqui -->
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <!-- ================= ABA 5: GESTÃO DE PERFIS (ADMIN) ================= -->
-        <div id="abaUsuarios" class="tab-content col-admin">
-            <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
+    </div>
 
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <h4>Criar Novo Perfil com Foto</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome do Utilizador</label>
-                        <input type="text" id="novoUserNome" placeholder="Ex: joao, maria">
-                    </div>
-                    <div class="form-group">
-                        <label>Palavra-passe</label>
-                        <input type="password" id="novoUserSenha" placeholder="Senha do utilizador">
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Permissão</label>
-                        <select id="novoUserTipo">
-                            <option value="vendedor">🛒 Operador de Caixa / Vendedor</option>
-                            <option value="admin">⚙️ Administrador (Acesso Total)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Foto do Perfil (Opcional)</label>
-                        <input type="file" id="novoUserFoto" accept="image/*">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-success" onclick="cadastrarUsuario()">+ Criar Perfil</button>
-                    </div>
-                </div>
-            </div>
+    <!-- Script Principal -->
+    <script>
+        // --- 1. DADOS SIMULADOS (Substituir por Firebase Firestore depois) ---
+        const produtosIniciais = [
+            { id: 1, nome: "Frango Assado", preco: 450, stock: 20, validade: "2026-10-01", fornecedor: "Talho Central" },
+            { id: 2, nome: "Bife com Fritas", preco: 650, stock: 15, validade: "2026-09-30", fornecedor: "Talho Central" },
+            { id: 3, nome: "Cerveja 2M", preco: 120, stock: 100, validade: "2027-01-15", fornecedor: "Cervejas de Moçambique" },
+            { id: 4, nome: "Sumo Natural", preco: 100, stock: 30, validade: "2026-09-29", fornecedor: "Mercado Local" }
+        ];
 
-            <h4>📊 Perfis Ativos e Ações</h4>
-            <div class="table-responsive" style="margin-bottom:25px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Foto</th>
-                            <th>Utilizador</th>
-                            <th>Permissão</th>
-                            <th>Total Vendido (MT)</th>
-                            <th>Nº Vendas</th>
-                            <th>Ações do Administrador</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpoTabelaPerfis"></tbody>
-                </table>
-            </div>
+        let carrinho = [];
+        let totalVendasDia = 0;
+        let historicoCaixa = [];
+        let caixaAberto = false;
 
-            <div id="seccaoDetalhesPerfil" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="margin:0;">Histórico Detalhado: <span id="nomePerfilSelecionado" style="color:var(--primary); text-transform:uppercase;"></span></h4>
-                    <button class="btn-dark btn-sm" onclick="fecharDetalhesPerfil()">Fechar</button>
-                </div>
-                <div class="table-responsive" style="margin-top:10px;">
-                    <table>
-                        <thead>
-                            <tr><th>Data/Hora</th><th>Mesa/Atend</th><th>Método</th><th>Itens Vendidos</th><th>Total (MT)</th></tr>
-                        </thead>
-                        <tbody id="corpoDetalhesVendasPerfil"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= ABA 6: ASSISTENTE INTELIGENTE IA ================= -->
-        <div id="abaIA" class="tab-content col-admin">
-            <h2>🤖 Assistente Inteligente (Gemini IA)</h2>
-            <p style="font-size:0.9em; color:#555;">Converse com o seu assistente de gestão inteligente para analisar relatórios, tirar dúvidas ou pedir estratégias comerciais.</p>
+        // --- 2. NAVEGAÇÃO ---
+        function mudarAba(abaId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
-            <div class="chat-container" id="chatHistorico">
-                <div class="chat-msg ai">Olá! Sou o seu assistente de gestão inteligente para o restaurante. Como posso ajudar nas operações de hoje?</div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group" style="flex:4;">
-                    <input type="text" id="inputPerguntaIA" placeholder="Ex: Que conselhos dás para melhorar o stock de bebidas ao fim de semana?" onkeypress="if(event.key==='Enter') enviarMensagemIA()">
-                </div>
-                <div class="form-group" style="flex:1;">
-                    <button class="btn-purple" onclick="enviarMensagemIA()">Enviar IA</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= ABA 7: DASHBOARD ================= -->
-        <div id="abaDashboard" class="tab-content col-admin">
-            <h2>Painel Financeiro & Relatórios</h2>
-            <div class="cards-grid">
-                <div class="card-stat verde"><h4>Total Vendas (Hoje)</h4><div class="valor-card" id="dashTotalVendasHoje">0.00 MT</div></div>
-                <div class="card-stat laranja"><h4>Lucro Estimado</h4><div class="valor-card" id="dashLucroHoje">0.00 MT</div></div>
-                <div class="card-stat vermelho"><h4>Total Despesas</h4><div class="valor-card" id="dashDespesasHoje">0.00 MT</div></div>
-                <div class="card-stat roxo"><h4>Total Fiado Pendente</h4><div class="valor-card" id="dashFiadoPendente">0.00 MT</div></div>
-            </div>
-            <div style="background:#fff; padding:15px; border-radius:8px; border:1px solid #dee2e6; margin-top:15px;">
-                <h4>📈 Desempenho do Salão</h4>
-                <canvas id="graficoVendas" style="max-height:300px;"></canvas>
-            </div>
-        </div>
-
-    </div>
-
-</div>
-
-<!-- MODAL QR CODE MENU DIGITAL -->
-<div id="modalQRMenu" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="document.getElementById('modalQRMenu').style.display='none'">&times;</span>
-        <h3>📱 QR Code do Menu Digital</h3>
-        <p>Digitalize este código na mesa para aceder ao menu e pedir via WhatsApp:</p>
-        <div id="qrcodeContainer" style="display:flex; justify-content:center; margin:20px 0;"></div>
-    </div>
-</div>
-
-<!-- MODAL CRIAR NOVO RESTAURANTE -->
-<div id="modalCriarRestaurante" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="document.getElementById('modalCriarRestaurante').style.display='none'">&times;</span>
-        <h3>🏢 Gerar Código para Novo Restaurante (SaaS)</h3>
-        <div class="form-group">
-            <label>Código da Empresa (Ex: BAR-CENTRAL)</label>
-            <input type="text" id="adminNovoCodEmpresa" placeholder="EX: BAR-CENTRAL" style="text-transform:uppercase; font-weight:bold;">
-        </div>
-        <div class="form-group">
-            <label>Nome do Restaurante</label>
-            <input type="text" id="adminNovoNomeRestaurante" placeholder="Ex: Restaurante Marisco do Índico">
-        </div>
-        <div class="form-group">
-            <label>Contacto WhatsApp</label>
-            <input type="text" id="adminNovoTel" placeholder="Ex: 841234567">
-        </div>
-        <button class="btn-success" onclick="executarCriarNovoRestaurante()">Gerar Licença e Inicializar Mesas</button>
-    </div>
-</div>
-
-<!-- MODAL RESET SENHA -->
-<div id="modalResetSenha" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="document.getElementById('modalResetSenha').style.display='none'">&times;</span>
-        <h3>🔑 Recuperação de Acesso</h3>
-        <div class="form-group">
-            <label>Chave Mestra</label>
-            <input type="password" id="resetChaveMestra" placeholder="Digite a Chave Mestra">
-        </div>
-        <div class="form-group">
-            <label>Nova Palavra-passe</label>
-            <input type="password" id="resetNovaSenha" placeholder="Nova senha">
-        </div>
-        <button class="btn-success" onclick="executarResetSenha()">Confirmar Alteração</button>
-    </div>
-</div>
-
-<div id="areaImpressao"></div>
-
-<!-- LÓGICA JAVASCRIPT & FIREBASE -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getFirestore, doc, collection, onSnapshot, updateDoc, setDoc, getDocs 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_PROJETO.firebaseapp.com",
-      projectId: "SEU_PROJETO_ID",
-      storageBucket: "SEU_PROJETO.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abcdef"
-    };
-
-    let db = null;
-    try {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-    } catch(e) {
-        console.warn("Modo Offline / Firebase não configurado:", e);
-    }
-
-    let empresaAtiva = "SABORES01";
-    let usuarioLogado = "Valter Lopes";
-    let tipoPermissaoLogado = "admin";
-    let carrinhoItens = [];
-    let mesaSelecionada = "Balcão";
-
-    window.carregarPerfisEmpresa = async function() {
-        const cod = document.getElementById('loginCodigoEmpresa').value.trim().toUpperCase();
-        if (!cod) return alert("Introduza o Código do Restaurante!");
-        empresaAtiva = cod;
-        window.escutarPerfisFirestore();
-    };
-
-    window.escutarPerfisFirestore = function() {
-        const grid = document.getElementById('gridPerfisLogin');
-        grid.innerHTML = `
-            <div class="card-perfil-login" onclick="document.getElementById('loginUser').value='Valter Lopes'">
-                <div class="avatar-placeholder">V</div>
-                <small>Valter Lopes</small>
-            </div>
-            <div class="card-perfil-login" onclick="document.getElementById('loginUser').value='Operador'">
-                <div class="avatar-placeholder">O</div>
-                <small>Operador</small>
-            </div>
-        `;
-    };
-
-    window.fazerLogin = function() {
-        const user = document.getElementById('loginUser').value.trim();
-        if (!user) return alert("Selecione um utilizador!");
-        usuarioLogado = user;
-        tipoPermissaoLogado = user.toLowerCase().includes("valter") ? "admin" : "vendedor";
-
-        document.getElementById('telaLogin').style.display = 'none';
-        document.getElementById('telaSistema').style.display = 'block';
-
-        document.getElementById('nomeEmpresaHeader').innerText = empresaAtiva;
-        document.getElementById('nomeUsuarioLogado').innerText = user;
-        document.getElementById('cargoUsuarioLogado').innerText = tipoPermissaoLogado === "admin" ? "Administrador Master" : "Operador de Caixa";
-
-        window.gerarMesasLocais();
-        window.carregarTabelaPerfisAdmin();
-        window.inicializarGrafico();
-    };
-
-    window.fazerLogout = () => location.reload();
-    window.mudarAba = (id) => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    };
-
-    window.selecionarMesa = (m) => {
-        mesaSelecionada = m;
-        document.getElementById('labelMesaAtual').innerText = m;
-    };
-
-    window.gerarMesasLocais = function() {
-        const grid = document.getElementById('gridMesas');
-        grid.innerHTML = "";
-        for (let i = 1; i <= 12; i++) {
-            grid.innerHTML += `<div class="card-mesa" onclick="selecionarMesa('Mesa ${i}')">Mesa ${i < 10 ? '0'+i : i}<br><small>Livre</small></div>`;
+            document.getElementById(abaId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if(abaId === 'stock') renderizarStock();
         }
-    };
 
-    window.preencherPrecoVenda = function() {
-        const select = document.getElementById('cartSelectProduto');
-        document.getElementById('cartPrecoUnit').value = select.selectedOptions[0]?.dataset.preco || 75;
-    };
-
-    window.adicionarAoCarrinho = function() {
-        const select = document.getElementById('cartSelectProduto');
-        const qtd = parseFloat(document.getElementById('cartQtd').value) || 1;
-        const preco = parseFloat(document.getElementById('cartPrecoUnit').value) || 75;
-        carrinhoItens.push({ produto: select.value || "Cerveja 2M", qtd, precoUnit: preco, subtotal: qtd * preco });
-        window.renderizarCarrinho();
-    };
-
-    window.renderizarCarrinho = function() {
-        const corpo = document.getElementById('corpoCarrinho');
-        corpo.innerHTML = "";
-        let total = 0;
-        carrinhoItens.forEach((item, index) => {
-            total += item.subtotal;
-            corpo.innerHTML += `<tr><td>${item.produto}</td><td>${item.qtd}</td><td>${item.precoUnit} MT</td><td>${item.subtotal} MT</td><td><button class="btn-saida btn-sm" onclick="carrinhoItens.splice(${index},1);renderizarCarrinho()">X</button></td></tr>`;
-        });
-        const desconto = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        document.getElementById('cartTotalTexto').innerText = `${Math.max(0, total - desconto).toFixed(2)} MT`;
-    };
-
-    window.alternarCampoClienteFiado = function() {
-        const metodo = document.getElementById('cartMetodoPagamento').value;
-        document.getElementById('boxSeletorClienteFiado').style.display = (metodo === "Fiado") ? "block" : "none";
-    };
-
-    window.imprimirGuiaCozinha = function() {
-        if (carrinhoItens.length === 0) return alert("Carrinho vazio!");
-        let talao = `<h3 style="text-align:center;">${empresaAtiva}</h3><p style="text-align:center;"><b>GUIA DE COZINHA</b></p><p>Local: ${mesaSelecionada}<br>Operador: ${usuarioLogado}</p><hr>`;
-        carrinhoItens.forEach(i => talao += `${i.qtd}x ${i.produto}<br>`);
-        document.getElementById('areaImpressao').innerHTML = talao;
-        window.print();
-    };
-
-    window.finalizarVendaCarrinho = function() {
-        if (carrinhoItens.length === 0) return alert("Carrinho vazio!");
-        let total = carrinhoItens.reduce((acc, i) => acc + i.subtotal, 0);
-        
-        let talao = `<h3 style="text-align:center;">${empresaAtiva}</h3><p style="text-align:center;"><b>RECIBO DE VENDA</b></p><p>Local: ${mesaSelecionada}<br>Operador: ${usuarioLogado}<br>Data: ${new Date().toLocaleString()}</p><hr>`;
-        carrinhoItens.forEach(i => talao += `${i.qtd}x ${i.produto} - ${i.subtotal} MT<br>`);
-        talao += `<hr><b>TOTAL FINAL: ${total.toFixed(2)} MT</b><br><p style="text-align:center;">Obrigado pela preferência!</p>`;
-
-        document.getElementById('areaImpressao').innerHTML = talao;
-        window.print();
-
-        carrinhoItens = [];
-        window.renderizarCarrinho();
-        alert("Venda emitida com sucesso!");
-    };
-
-    window.abrirCaixaTurno = () => {
-        document.getElementById('seccaoAbrirCaixa').style.display = 'none';
-        document.getElementById('seccaoCaixaAberto').style.display = 'block';
-        document.getElementById('bannerStatusCaixa').className = "status-caixa-banner caixa-aberto";
-        document.getElementById('textoStatusCaixa').innerText = "🟢 Caixa Aberto";
-    };
-
-    window.registarDespesa = () => alert("Despesa registada com sucesso!");
-    window.fecharCaixaTurno = () => {
-        if(confirm("Encerrar turno de caixa?")) {
-            document.getElementById('seccaoCaixaAberto').style.display = 'none';
-            document.getElementById('seccaoAbrirCaixa').style.display = 'block';
-            document.getElementById('bannerStatusCaixa').className = "status-caixa-banner caixa-fechado";
-            document.getElementById('textoStatusCaixa').innerText = "🔴 Caixa Encerrado";
-        }
-    };
-
-    window.exportarFechoCaixaExcel = () => {
-        let wb = XLSX.utils.book_new();
-        let ws = XLSX.utils.aoa_to_sheet([["Fecho de Caixa", empresaAtiva], ["Data", new Date().toLocaleDateString()]]);
-        XLSX.utils.book_append_sheet(wb, ws, "Fecho");
-        XLSX.writeFile(wb, `Fecho_${empresaAtiva}.xlsx`);
-    };
-
-    window.exportarStockExcel = () => alert("Stock exportado para Excel.");
-    window.calcularPrecosEntrada = () => {};
-    window.salvarEntradaStock = () => alert("Stock atualizado!");
-    window.cadastrarCliente = () => alert("Cliente cadastrado!");
-    window.cadastrarUsuario = () => alert("Novo perfil criado!");
-    window.carregarTabelaPerfisAdmin = () => {};
-
-    window.abrirModalCriarRestaurante = () => document.getElementById('modalCriarRestaurante').style.display = 'block';
-    window.executarCriarNovoRestaurante = function() {
-        let cod = document.getElementById('adminNovoCodEmpresa').value.trim().toUpperCase();
-        if(!cod) return alert("Insira o código!");
-        alert(`Restaurante "${cod}" gerado com sucesso!`);
-        document.getElementById('modalCriarRestaurante').style.display = 'none';
-        document.getElementById('loginCodigoEmpresa').value = cod;
-    };
-
-    window.abrirModalQRMenu = () => {
-        document.getElementById('modalQRMenu').style.display = 'block';
-        document.getElementById('qrcodeContainer').innerHTML = "";
-        new QRCode(document.getElementById("qrcodeContainer"), `https://wa.me/258849030686?text=Menu%20${empresaAtiva}`);
-    };
-
-    window.abrirModalResetSenha = () => document.getElementById('modalResetSenha').style.display = 'block';
-    window.executarResetSenha = () => {
-        if(document.getElementById('resetChaveMestra').value === "1234") {
-            alert("Senha redefinida!");
-            document.getElementById('modalResetSenha').style.display = 'none';
-        } else { alert("Chave Incorreta!"); }
-    };
-    window.abrirModalDefinicoes = () => alert("Definições Master SaaS.");
-
-    // INTEGRAÇÃO COM A ASSISTENTE IA (GEMINI)
-    window.enviarMensagemIA = async function() {
-        let input = document.getElementById('inputPerguntaIA');
-        let pergunta = input.value.trim();
-        if(!pergunta) return;
-
-        let historico = document.getElementById('chatHistorico');
-        historico.innerHTML += `<div class="chat-msg user">${pergunta}</div>`;
-        input.value = "";
-        historico.scrollTop = historico.scrollHeight;
-
-        let msgCarregando = document.createElement('div');
-        msgCarregando.className = "chat-msg ai";
-        msgCarregando.innerText = "A pensar...";
-        historico.appendChild(msgCarregando);
-        historico.scrollTop = historico.scrollHeight;
-
-        setTimeout(() => {
-            msgCarregando.innerHTML = marked.parse(`Análise do Assistente IA para **${empresaAtiva}**: Para otimizar o seu negócio, certifique-se de monitorizar o stock de cerveja ao fim de semana e manter o controlo rigoroso das contas pendentes.`);
-            historico.scrollTop = historico.scrollHeight;
-        }, 1000);
-    };
-
-    window.inicializarGrafico = function() {
-        const ctx = document.getElementById('graficoVendas');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['09:00', '12:00', '15:00', '18:00', '21:00'],
-                    datasets: [{ label: 'Vendas (MT)', data: [1200, 3400, 2100, 4800, 3900], backgroundColor: '#007bff' }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
+        // --- 3. PONTO DE VENDA (POS) ---
+        function inicializarPOS() {
+            const lista = document.getElementById('lista-produtos');
+            lista.innerHTML = '';
+            produtosIniciais.forEach(prod => {
+                const div = document.createElement('div');
+                div.className = 'produto-item';
+                div.onclick = () => adicionarAoCarrinho(prod);
+                div.innerHTML = `
+                    <h4>${prod.nome}</h4>
+                    <div class="preco">${prod.preco.toFixed(2)} MT</div>
+                `;
+                lista.appendChild(div);
             });
         }
-    };
 
-    window.addEventListener("DOMContentLoaded", () => window.carregarPerfisEmpresa());
-</script>
+        function adicionarAoCarrinho(produto) {
+            const itemExistente = carrinho.find(item => item.id === produto.id);
+            if (itemExistente) {
+                itemExistente.quantidade++;
+            } else {
+                carrinho.push({ ...produto, quantidade: 1 });
+            }
+            atualizarCarrinho();
+        }
+
+        function atualizarCarrinho() {
+            const container = document.getElementById('carrinho-items');
+            container.innerHTML = '';
+            let total = 0;
+
+            carrinho.forEach((item, index) => {
+                const subtotal = item.preco * item.quantidade;
+                total += subtotal;
+                
+                const div = document.createElement('div');
+                div.className = 'carrinho-item';
+                div.innerHTML = `
+                    <span>${item.quantidade}x ${item.nome}</span>
+                    <span>${subtotal.toFixed(2)} MT <i class="fas fa-times" style="color:red; cursor:pointer; margin-left:10px;" onclick="removerDoCarrinho(${index})"></i></span>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('total-carrinho').innerText = total.toFixed(2);
+        }
+
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            atualizarCarrinho();
+        }
+
+        function limparCarrinho() {
+            carrinho = [];
+            atualizarCarrinho();
+        }
+
+        function finalizarVenda(metodoPagamento) {
+            if (carrinho.length === 0) return alert("O carrinho está vazio.");
+            if (!caixaAberto) return alert("Por favor, abra o caixa antes de registar vendas.");
+
+            const total = parseFloat(document.getElementById('total-carrinho').innerText);
+            totalVendasDia += total;
+            document.getElementById('admin-vendas-hoje').innerText = `${totalVendasDia.toFixed(2)} MT`;
+            
+            registarLogAdmin(`Venda concluída via ${metodoPagamento}: ${total.toFixed(2)} MT`);
+            
+            alert(`Venda registada com sucesso! (${metodoPagamento})`);
+            limparCarrinho();
+        }
+
+        // --- 4. RECIBO VIA WHATSAPP ---
+        function enviarReciboWhatsApp() {
+            if (carrinho.length === 0) return alert("Carrinho vazio. Adicione produtos para gerar um recibo.");
+
+            const numero = prompt("Introduza o número de WhatsApp do cliente (Ex: 84..., 82..., 86...):");
+            if (!numero) return;
+
+            const numeroFormatado = numero.startsWith("258") ? numero : "258" + numero;
+            let texto = "*Restaurante Pro - Recibo*\n\n";
+            
+            carrinho.forEach(item => {
+                texto += `${item.quantidade}x ${item.nome} - ${(item.preco * item.quantidade).toFixed(2)} MT\n`;
+            });
+
+            const total = document.getElementById('total-carrinho').innerText;
+            texto += `\n*Total a Pagar:* ${total} MT\n\nObrigado pela preferência!`;
+
+            window.open(`https://wa.me/${numeroFormatado}?text=${encodeURIComponent(texto)}`, '_blank');
+        }
+
+        // --- 5. GESTÃO DE CAIXA (BLIND CASHIER) ---
+        function obterHoraAtual() {
+            const agora = new Date();
+            return agora.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function abrirCaixa() {
+            const valorInput = document.getElementById('valor-abertura').value;
+            if (!valorInput) return alert("Insira o valor inicial da gaveta.");
+
+            const valorAbertura = parseFloat(valorInput);
+            caixaAberto = true;
+            totalVendasDia = 0; // Reset vendas do turno
+
+            adicionarRegistoCaixa("Abertura", valorAbertura, "Fundo Inicial");
+            document.getElementById('valor-abertura').value = '';
+            alert("Caixa aberto com sucesso! Bom turno.");
+        }
+
+        function fecharCaixaCego() {
+            if (!caixaAberto) return alert("O caixa não está aberto.");
+
+            const valorDeclaradoInput = document.getElementById('valor-declarado').value;
+            if (!valorDeclaradoInput) return alert("Deve contar e declarar o dinheiro na gaveta.");
+
+            const valorDeclarado = parseFloat(valorDeclaradoInput);
+            
+            // Valor Esperado = Vendas Registadas (Assumindo que foram a dinheiro para simplificar no exemplo)
+            const valorEsperado = totalVendasDia; 
+            const diferenca = valorDeclarado - valorEsperado;
+
+            let estado = "";
+            if (diferenca === 0) estado = "Caixa Certo";
+            else if (diferenca > 0) estado = `<span style="color: var(--success)">Sobra: +${diferenca.toFixed(2)}</span>`;
+            else estado = `<span style="color: var(--accent)">Quebra: ${diferenca.toFixed(2)}</span>`;
+
+            adicionarRegistoCaixa("Fecho", valorDeclarado, estado);
+            registarLogAdmin(`Fecho de Caixa. Esperado: ${valorEsperado.toFixed(2)} MT | Declarado: ${valorDeclarado.toFixed(2)} MT`);
+            
+            caixaAberto = false;
+            document.getElementById('valor-declarado').value = '';
+            
+            alert(`Fecho concluído!\nValor Esperado: ${valorEsperado.toFixed(2)} MT\nValor Declarado: ${valorDeclarado.toFixed(2)} MT`);
+        }
+
+        function adicionarRegistoCaixa(operacao, valor, estado) {
+            const tbody = document.getElementById('tbody-caixa');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${obterHoraAtual()}</td>
+                <td><strong>${operacao}</strong></td>
+                <td>${valor.toFixed(2)} MT</td>
+                <td>${estado}</td>
+            `;
+            tbody.prepend(tr); // Adiciona no topo
+        }
+
+        // --- 6. GESTÃO DE STOCK E VALIDADES ---
+        function renderizarStock() {
+            const tbody = document.getElementById('tbody-stock');
+            tbody.innerHTML = '';
+            
+            produtosIniciais.forEach(prod => {
+                const tr = document.createElement('tr');
+                
+                // Alerta visual de stock baixo
+                const stockDisplay = prod.stock < 20 ? `<span style="color:var(--accent); font-weight:bold;">${prod.stock} (Baixo)</span>` : prod.stock;
+                
+                tr.innerHTML = `
+                    <td>${prod.nome}</td>
+                    <td>${stockDisplay}</td>
+                    <td>${(prod.preco * 0.4).toFixed(2)} MT</td> <!-- Exemplo de preço de custo -->
+                    <td>${prod.validade}</td>
+                    <td>${prod.fornecedor}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- 7. ADMIN DASHBOARD LOGS ---
+        function registarLogAdmin(mensagem) {
+            const log = document.getElementById('admin-log');
+            const li = document.createElement('li');
+            li.innerHTML = `<em>${obterHoraAtual()}</em> - ${mensagem}`;
+            log.prepend(li);
+        }
+
+        // Inicialização ao carregar a página
+        window.onload = () => {
+            inicializarPOS();
+            registarLogAdmin("Sistema iniciado. Aguardando abertura de caixa.");
+        };
+
+    </script>
 </body>
 </html>
