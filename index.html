@@ -1201,135 +1201,7 @@
 </div>
 
 <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM VERIFICAÇÃO DE LICENÇA -->
-// ---------------- LÓGICA DO CARRINHO, TROCO E FINALIZAÇÃO DE VENDA ----------------
 
-    window.renderizarCarrinho = function() {
-        let tbody = document.getElementById('corpoCarrinho');
-        tbody.innerHTML = '';
-        let itens = mesas[mesaSelecionada] || [];
-        let total = 0;
-
-        itens.forEach((item, idx) => {
-            total += item.subtotal;
-            tbody.innerHTML += `<tr>
-                <td>${item.produto.toUpperCase()}</td>
-                <td>${item.qtd}</td>
-                <td>${item.precoUnit.toFixed(2)} MT</td>
-                <td><b>${item.subtotal.toFixed(2)} MT</b></td>
-                <td><button class="btn-saida btn-sm" onclick="removerItemCarrinho(${idx})">x</button></td>
-            </tr>`;
-        });
-
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let gorjeta = parseFloat(document.getElementById('cartGorjeta').value) || 0;
-        let numPessoas = parseInt(document.getElementById('cartDividir').value) || 1;
-        
-        // Aplica desconto e soma gorjeta
-        let totalFinal = Math.max(0, (total - desc) + gorjeta);
-        document.getElementById('cartTotalTexto').innerText = totalFinal.toFixed(2) + " MT";
-
-        // Lógica de divisão de conta
-        if (numPessoas > 1 && totalFinal > 0) {
-            let valorPorPessoa = totalFinal / numPessoas;
-            document.getElementById('textoDivisaoConta').innerText = `(${valorPorPessoa.toFixed(2)} MT por pessoa)`;
-        } else {
-            document.getElementById('textoDivisaoConta').innerText = "";
-        }
-
-        calcularTroco(); // Atualiza o troco sempre que o carrinho muda
-    };
-
-    window.calcularTroco = function() {
-        let totalTexto = document.getElementById('cartTotalTexto').innerText;
-        let totalFinal = parseFloat(totalTexto.replace(" MT", "")) || 0;
-        let valorRecebido = parseFloat(document.getElementById('cartRecebido').value) || 0;
-
-        let troco = valorRecebido - totalFinal;
-        if (troco < 0 || valorRecebido === 0) troco = 0;
-        
-        document.getElementById('cartTroco').value = troco.toFixed(2) + " MT";
-    };
-
-    // A FUNÇÃO CORTADA AGORA ESTÁ COMPLETA
-    window.finalizarVendaCarrinho = async function() {
-        let itens = mesas[mesaSelecionada] || [];
-        if (itens.length === 0) return alert("⚠️ O carrinho / mesa está vazio!");
-        if (!caixaEstado.aberto) return alert("🔴 Abra o caixa primeiro na aba 'Caixa & Despesas' antes de realizar vendas.");
-
-        let metodo = document.getElementById('cartMetodoPagamento').value;
-        let cliente = document.getElementById('cartSelectClienteFiado') ? document.getElementById('cartSelectClienteFiado').value : null;
-
-        if (metodo === 'Fiado' && !cliente) {
-            return alert("⚠️ Selecione um cliente cadastrado para vender a fiado.");
-        }
-
-        let totalBruto = 0;
-        let custoGeral = 0;
-        itens.forEach(i => {
-            totalBruto += i.subtotal;
-            custoGeral += (i.custoUnit * i.qtd);
-        });
-
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let gorjeta = parseFloat(document.getElementById('cartGorjeta').value) || 0;
-        let totalFinal = Math.max(0, (totalBruto - desc) + gorjeta);
-
-        try {
-            // 1. Atualizar o Stock no Firebase
-            for (let item of itens) {
-                if (stock[item.produto]) {
-                    stock[item.produto].qtd -= item.qtd;
-                    // Prevenção de stock negativo
-                    if(stock[item.produto].qtd < 0) stock[item.produto].qtd = 0; 
-                }
-            }
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-
-            // 2. Registar a Venda no Histórico
-            let novaVenda = {
-                id: Date.now(),
-                tipo: 'venda',
-                mesa: mesaSelecionada,
-                itens: itens,
-                totalBruto: totalBruto,
-                desconto: desc,
-                gorjeta: gorjeta,
-                totalVenda: totalFinal,
-                custoGeral: custoGeral,
-                lucro: totalFinal - custoGeral,
-                metodo: metodo,
-                cliente: cliente || null,
-                usuario: usuarioAtual.nome,
-                timestamp: Date.now(),
-                data: new Date().toLocaleString('pt-MZ')
-            };
-
-            historico.push(novaVenda);
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "historico"), { lista: historico });
-
-            // 3. Imprimir o Recibo (Assumindo que já possui a função de impressão gerada noutra secção)
-            // imprimirRecibo(novaVenda); 
-            
-            // 4. Limpar o formulário e a Mesa
-            mesas[mesaSelecionada] = []; // Esvazia a mesa
-            document.getElementById('cartDesconto').value = 0;
-            document.getElementById('cartGorjeta').value = 0;
-            document.getElementById('cartDividir').value = 1;
-            document.getElementById('cartRecebido').value = '';
-            document.getElementById('cartTroco').value = '0.00 MT';
-            
-            renderizarMesasGrid();
-            renderizarCarrinho();
-            renderizarEstadoCaixa(); // Atualiza o saldo do caixa
-
-            alert("✅ Venda registada com sucesso! Stock atualizado.");
-            
-        } catch (erro) {
-            console.error("Erro ao finalizar venda: ", erro);
-            alert("Erro ao finalizar venda. Verifique a sua ligação.");
-        }
-    };
-          
 <script type="module">
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -2452,6 +2324,135 @@
                 </tr>`;
             }
         });
+// ---------------- LÓGICA DO CARRINHO, TROCO E FINALIZAÇÃO DE VENDA ----------------
+
+    window.renderizarCarrinho = function() {
+        let tbody = document.getElementById('corpoCarrinho');
+        tbody.innerHTML = '';
+        let itens = mesas[mesaSelecionada] || [];
+        let total = 0;
+
+        itens.forEach((item, idx) => {
+            total += item.subtotal;
+            tbody.innerHTML += `<tr>
+                <td>${item.produto.toUpperCase()}</td>
+                <td>${item.qtd}</td>
+                <td>${item.precoUnit.toFixed(2)} MT</td>
+                <td><b>${item.subtotal.toFixed(2)} MT</b></td>
+                <td><button class="btn-saida btn-sm" onclick="removerItemCarrinho(${idx})">x</button></td>
+            </tr>`;
+        });
+
+        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
+        let gorjeta = parseFloat(document.getElementById('cartGorjeta').value) || 0;
+        let numPessoas = parseInt(document.getElementById('cartDividir').value) || 1;
+        
+        // Aplica desconto e soma gorjeta
+        let totalFinal = Math.max(0, (total - desc) + gorjeta);
+        document.getElementById('cartTotalTexto').innerText = totalFinal.toFixed(2) + " MT";
+
+        // Lógica de divisão de conta
+        if (numPessoas > 1 && totalFinal > 0) {
+            let valorPorPessoa = totalFinal / numPessoas;
+            document.getElementById('textoDivisaoConta').innerText = `(${valorPorPessoa.toFixed(2)} MT por pessoa)`;
+        } else {
+            document.getElementById('textoDivisaoConta').innerText = "";
+        }
+
+        calcularTroco(); // Atualiza o troco sempre que o carrinho muda
+    };
+
+    window.calcularTroco = function() {
+        let totalTexto = document.getElementById('cartTotalTexto').innerText;
+        let totalFinal = parseFloat(totalTexto.replace(" MT", "")) || 0;
+        let valorRecebido = parseFloat(document.getElementById('cartRecebido').value) || 0;
+
+        let troco = valorRecebido - totalFinal;
+        if (troco < 0 || valorRecebido === 0) troco = 0;
+        
+        document.getElementById('cartTroco').value = troco.toFixed(2) + " MT";
+    };
+
+    // A FUNÇÃO CORTADA AGORA ESTÁ COMPLETA
+    window.finalizarVendaCarrinho = async function() {
+        let itens = mesas[mesaSelecionada] || [];
+        if (itens.length === 0) return alert("⚠️ O carrinho / mesa está vazio!");
+        if (!caixaEstado.aberto) return alert("🔴 Abra o caixa primeiro na aba 'Caixa & Despesas' antes de realizar vendas.");
+
+        let metodo = document.getElementById('cartMetodoPagamento').value;
+        let cliente = document.getElementById('cartSelectClienteFiado') ? document.getElementById('cartSelectClienteFiado').value : null;
+
+        if (metodo === 'Fiado' && !cliente) {
+            return alert("⚠️ Selecione um cliente cadastrado para vender a fiado.");
+        }
+
+        let totalBruto = 0;
+        let custoGeral = 0;
+        itens.forEach(i => {
+            totalBruto += i.subtotal;
+            custoGeral += (i.custoUnit * i.qtd);
+        });
+
+        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
+        let gorjeta = parseFloat(document.getElementById('cartGorjeta').value) || 0;
+        let totalFinal = Math.max(0, (totalBruto - desc) + gorjeta);
+
+        try {
+            // 1. Atualizar o Stock no Firebase
+            for (let item of itens) {
+                if (stock[item.produto]) {
+                    stock[item.produto].qtd -= item.qtd;
+                    // Prevenção de stock negativo
+                    if(stock[item.produto].qtd < 0) stock[item.produto].qtd = 0; 
+                }
+            }
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+            // 2. Registar a Venda no Histórico
+            let novaVenda = {
+                id: Date.now(),
+                tipo: 'venda',
+                mesa: mesaSelecionada,
+                itens: itens,
+                totalBruto: totalBruto,
+                desconto: desc,
+                gorjeta: gorjeta,
+                totalVenda: totalFinal,
+                custoGeral: custoGeral,
+                lucro: totalFinal - custoGeral,
+                metodo: metodo,
+                cliente: cliente || null,
+                usuario: usuarioAtual.nome,
+                timestamp: Date.now(),
+                data: new Date().toLocaleString('pt-MZ')
+            };
+
+            historico.push(novaVenda);
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "historico"), { lista: historico });
+
+            // 3. Imprimir o Recibo (Assumindo que já possui a função de impressão gerada noutra secção)
+            // imprimirRecibo(novaVenda); 
+            
+            // 4. Limpar o formulário e a Mesa
+            mesas[mesaSelecionada] = []; // Esvazia a mesa
+            document.getElementById('cartDesconto').value = 0;
+            document.getElementById('cartGorjeta').value = 0;
+            document.getElementById('cartDividir').value = 1;
+            document.getElementById('cartRecebido').value = '';
+            document.getElementById('cartTroco').value = '0.00 MT';
+            
+            renderizarMesasGrid();
+            renderizarCarrinho();
+            renderizarEstadoCaixa(); // Atualiza o saldo do caixa
+
+            alert("✅ Venda registada com sucesso! Stock atualizado.");
+            
+        } catch (erro) {
+            console.error("Erro ao finalizar venda: ", erro);
+            alert("Erro ao finalizar venda. Verifique a sua ligação.");
+        }
+    };
+          
 </script>
 
 </body>
