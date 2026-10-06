@@ -987,13 +987,13 @@ const auth = getAuth(app); // Inicializa a autenticação ;
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
- window.fazerLogin = async function() {
-    let uName = document.getElementById('loginUser').value.trim();
+window.fazerLogin = async function() {
+    let uName = document.getElementById('usuario de login').value.trim();
     let uPass = document.getElementById('loginPass').value.trim();
 
-    if(!uName || !uPass) return alert("Por favor, preencha o utilizador e a palavra-passe.");
+    if(!uName || !uPass) return alert("Por favor, preencha o usuário e a palavra-passe.");
 
-    // Gera um email fictício único baseado na empresa e utilizador
+    // Gera um email fictício único baseado na empresa e usuário
     let emailLogin = `${uName.toLowerCase().replace(/\s+/g, '')}@${codigoEmpresa.toLowerCase()}.com`;
 
     try {
@@ -1007,8 +1007,10 @@ const auth = getAuth(app); // Inicializa a autenticação ;
         await window.carregarTodosDadosBanco();
         window.inicializarInterface();
     } catch (error) {
-        console.error("Erro no login:", error);
+        console.error("Erro de login:", error);
         alert("Palavra-passe incorreta ou erro ao autenticar no servidor.");
+    }
+};
     }
 };
 
