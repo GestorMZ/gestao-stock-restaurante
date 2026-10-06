@@ -76,6 +76,7 @@
         /* Resumo de Lucro e Alertas */
         .box-calculo-lucro { background: #e7f5ff; border: 1px solid #74c0fc; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
         .alerta-stock-box { background: #fff3cd; border: 1px solid #ffeba2; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .alerta-caixa-bloqueio { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; display: none; }
 
         /* Header do Utilizador */
         .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #e9ecef; padding: 12px 18px; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
@@ -164,7 +165,6 @@
         <div id="seccaoPerfisEForm" style="display:none;">
             <p style="text-align:center; font-size:0.85em; color:#666;">Selecione o seu perfil:</p>
             
-            <!-- Lista de Perfis Visuais -->
             <div id="gridPerfisLogin" class="grid-perfis-login"></div>
 
             <div class="form-group">
@@ -197,7 +197,7 @@
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
                 <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu Digital</button>
-                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙️ Definições & Chave Mestra</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Chave Mestra</button>
                 <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
             </div>
         </div>
@@ -225,6 +225,10 @@
 
         <!-- ================= ABA 1: VENDAS & MESAS ================= -->
         <div id="abaVendas" class="tab-content active">
+            <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
+                ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
+            </div>
+
             <h4>Selecionar Mesa / Comanda</h4>
             <div class="mesas-grid" id="gridMesas"></div>
 
@@ -281,6 +285,10 @@
                         <select id="cartSelectClienteFiado"></select>
                     </div>
                     <div class="form-group">
+                        <label>NUIT do Cliente (Opcional)</label>
+                        <input type="text" id="cartNuitCliente" placeholder="Ex: 999888777">
+                    </div>
+                    <div class="form-group">
                         <label style="color:var(--primary); font-weight:bold;">Valor Entregue / Dado (MT)</label>
                         <input type="number" id="cartValorEntregue" value="0" min="0" step="0.5" placeholder="Ex: 500" oninput="window.calcularTroco()">
                     </div>
@@ -295,6 +303,7 @@
                         <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido p/ Cozinha</button>
                     </div>
                     <div style="text-align:right;">
+                        <small id="cartSubtotalIvaTexto" style="color:#666; display:block;">Subtotal: 0.00 MT | IVA (16%): 0.00 MT</small>
                         <span style="font-size:1.25em; font-weight:bold;">Total Final: <span id="cartTotalTexto" style="color:var(--success);">0.00 MT</span></span><br>
                         <span style="font-size:1.1em; font-weight:bold; color:var(--purple);">Troco: <span id="cartTrocoTexto">0.00 MT</span></span>
                     </div>
@@ -309,7 +318,6 @@
         <div id="abaCaixa" class="tab-content">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
-            <!-- FORMULÁRIO DE ABERTURA -->
             <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:20px;">
                 <h4>🔓 Abrir Turno de Caixa</h4>
                 <div class="form-group">
@@ -319,7 +327,6 @@
                 <button class="btn-success" onclick="window.abrirCaixaTurno()">Confirmar Abertura de Caixa</button>
             </div>
 
-            <!-- CAIXA ABERTO - REGISTO DE DESPESAS E FECHO CEGO -->
             <div id="seccaoCaixaAberto" style="display:none;">
                 <div class="cards-grid">
                     <div class="card-stat"><h4>Fundo Inicial</h4><div class="valor-card" id="cxValFundo">0.00 MT</div></div>
@@ -345,7 +352,6 @@
                     </div>
                 </div>
 
-                <!-- BOX FECHO CEGO -->
                 <div style="background:#fff3cd; border:2px solid #ffeba2; padding:18px; border-radius:8px; margin-top:20px;">
                     <h4 style="color:#856404; margin-top:0;">🔒 Encerrar Turno (Fecho Cego de Caixa)</h4>
                     <p style="font-size:0.85em; color:#666;">Contar fisicamente as notas e moedas na gaveta e introduzir o valor total em dinheiro abaixo:</p>
@@ -361,7 +367,6 @@
                 </div>
             </div>
 
-            <!-- HISTÓRICO DE TURNOS DE CAIXA -->
             <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos de Caixa</h4>
                 <div class="table-responsive">
@@ -370,9 +375,9 @@
                             <tr>
                                 <th>Abertura</th>
                                 <th>Fecho</th>
-                                <th>Operador</th>
+                                <th>Operador Fecho</th>
                                 <th>Fundo Inicial</th>
-                                <th>Vendas (Dinheiro)</th>
+                                <th>Vendas (Dinheiro Total)</th>
                                 <th>Despesas</th>
                                 <th>Valor Contado</th>
                                 <th>Diferença (Quebra/Sobra)</th>
@@ -546,7 +551,7 @@
                         <label>Tipo de Permissão</label>
                         <select id="novoUserTipo">
                             <option value="vendedor">🛒 Operador de Caixa / Vendedor</option>
-                            <option value="admin">⚙️️ Administrador (Acesso Total)</option>
+                            <option value="admin">⚙️ Administrador (Acesso Total)</option>
                         </select>
                     </div>
                 </div>
@@ -701,14 +706,14 @@
         <h3>⚙️ Definições do Sistema</h3>
         
         <div id="seccaoEmpresaAdmin" style="display:none; background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #b6e0fe;">
-            <h4 style="margin-top:0; color:var(--primary);">🏢 Dados do Restaurante & Chave Mestra</h4>
+            <h4 style="margin-top:0; color:var(--primary);">🏢 Dados do Restaurante, IVA & Chave Mestra</h4>
             <div class="form-group">
                 <label>Nome do Restaurante</label>
                 <input type="text" id="cfgNomeEmpresa" placeholder="Ex: Restaurante Sabores de Maputo">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>NUIT</label>
+                    <label>NUIT da Empresa</label>
                     <input type="text" id="cfgNuit" placeholder="Ex: 123456789">
                 </div>
                 <div class="form-group">
@@ -719,6 +724,19 @@
             <div class="form-group">
                 <label>Endereço / Bairro / Cidade</label>
                 <input type="text" id="cfgEndereco" placeholder="Ex: Av. Eduardo Mondlane, Maputo">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ativar Cálculo de IVA nos Recibos?</label>
+                    <select id="cfgAplicarIva">
+                        <option value="nao">Não (Isento / Não aplicar IVA)</option>
+                        <option value="sim" selected>Sim (Aplicar taxa de IVA nas vendas)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Taxa de IVA (%)</label>
+                    <input type="number" id="cfgTaxaIva" value="16" min="0" max="100" step="1" placeholder="Ex: 16">
+                </div>
             </div>
             <div class="form-group">
                 <label>Slogan / Mensagem no Rodapé do Recibo</label>
@@ -748,17 +766,20 @@
             <p id="reciboEndereco" style="margin:2px 0; font-size:10px;"></p>
             <p id="reciboTelefone" style="margin:2px 0; font-size:10px;"></p>
             <p style="margin:5px 0; font-weight:bold;">--------------------------------</p>
-            <p style="margin:2px 0;">COMPROVATIVO DE VENDA</p>
+            <p style="margin:2px 0;">COMPROVATIVO DE VENDA (VD)</p>
             <p id="reciboData" style="margin:2px 0; font-size:10px;"></p>
         </div>
         <p style="margin:5px 0;">--------------------------------</p>
         <p style="margin:2px 0;"><b>Mesa/Atend:</b> <span id="reciboMesa"></span></p>
         <p style="margin:2px 0;"><b>Atendido por:</b> <span id="reciboVendedor"></span></p>
+        <p style="margin:2px 0;"><b>Cliente NUIT:</b> <span id="reciboNuitClienteDisplay">Consumidor Final</span></p>
         <p style="margin:2px 0;"><b>Pagamento:</b> <span id="reciboMetodo"></span></p>
         <p style="margin:5px 0;">--------------------------------</p>
         <div id="reciboItens"></div>
         <p style="margin:5px 0;">--------------------------------</p>
         <p id="reciboDescontoRow" style="margin:2px 0; text-align:right;">Desconto: <span id="reciboDesconto">0.00</span> MT</p>
+        <p id="reciboSubtotalRow" style="margin:2px 0; text-align:right;">Subtotal Líquido: <span id="reciboSubtotalLiq">0.00</span> MT</p>
+        <p id="reciboIvaRow" style="margin:2px 0; text-align:right;">IVA (<span id="reciboTaxaIvaValor">16</span>%): <span id="reciboValIva">0.00</span> MT</p>
         <h4 style="text-align:right; margin:5px 0; font-size:13px;">TOTAL: <span id="reciboTotal"></span> MT</h4>
         <p style="margin:2px 0; text-align:right;">Valor Entregue: <span id="reciboValorEntregue">0.00</span> MT</p>
         <p style="margin:2px 0; text-align:right; font-weight:bold;">Troco: <span id="reciboTroco">0.00</span> MT</p>
@@ -777,8 +798,7 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-
-<!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM VERIFICAÇÃO DE LICENÇA -->
+<!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -802,13 +822,25 @@
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
-    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234" };
+    
+    // Dados da Empresa (Com Definições Padrão de IVA)
+    let dadosEmpresa = { 
+        nome: "RESTAURANTE", 
+        nuit: "", 
+        endereco: "", 
+        telefone: "", 
+        slogan: "Obrigado pela preferência!", 
+        chaveMestra: "1234",
+        aplicarIva: "sim",
+        taxaIva: 16
+    };
+
     let usuarioAtual = null;
     let mesaSelecionada = "Balcão";
     let chartInstance = null;
     let unsubscribes = [];
 
-    // Ligar e verificar licença da empresa (Definida no escopo global window IMEDIATAMENTE)
+    // Ligar e verificar licença da empresa
     window.carregarPerfisEmpresa = async function() {
         let codeInput = document.getElementById('loginCodigoEmpresa').value.trim().toUpperCase();
         if(!codeInput) return alert("Por favor, introduza o Código do Restaurante!");
@@ -816,7 +848,6 @@
         codigoEmpresa = codeInput;
 
         try {
-            // 1. VERIFICAR LICENÇA CENTRAL NO FIREBASE
             const docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
 
             if (docLicenca.exists()) {
@@ -916,7 +947,7 @@
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), (docSnap) => {
             if (docSnap.exists()) {
-                dadosEmpresa = docSnap.data();
+                dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
                 preencherCamposEmpresaModal();
             }
         }));
@@ -1195,16 +1226,20 @@
         let txt = document.getElementById('textoStatusCaixa');
         let secAbrir = document.getElementById('seccaoAbrirCaixa');
         let secAberto = document.getElementById('seccaoCaixaAberto');
+        let alertaCaixaFechado = document.getElementById('alertaCaixaFechadoVendas');
 
         if(caixaEstado.aberto) {
             banner.className = "status-caixa-banner caixa-aberto";
             txt.innerText = `🟢 Caixa Aberto desde ${caixaEstado.dataAbertura || ''} (${caixaEstado.usuarioAbertura || ''})`;
             secAbrir.style.display = 'none';
             secAberto.style.display = 'block';
+            if(alertaCaixaFechado) alertaCaixaFechado.style.display = 'none';
 
-            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.metodo === 'Numerário' && h.timestamp >= (caixaEstado.timestampAbertura || 0))
+            let tAbertura = caixaEstado.timestampAbertura || 0;
+
+            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.metodo === 'Numerário' && (h.timestamp || 0) >= tAbertura)
                                      .reduce((acc, i) => acc + i.totalVenda, 0);
-            let totalDesp = despesas.filter(d => d.timestamp >= (caixaEstado.timestampAbertura || 0))
+            let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura)
                                     .reduce((acc, i) => acc + i.valor, 0);
 
             let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
@@ -1213,7 +1248,6 @@
             document.getElementById('cxValVendasNum').innerText = vendasNum.toFixed(2) + " MT";
             document.getElementById('cxValDespesas').innerText = totalDesp.toFixed(2) + " MT";
             
-            // O saldo em gaveta só é visível para administradores
             if (usuarioAtual && usuarioAtual.tipo === 'admin') {
                 document.getElementById('cxValSaldoGaveta').innerText = saldoEsperado.toFixed(2) + " MT";
             } else {
@@ -1224,6 +1258,7 @@
             txt.innerText = "🔴 Caixa Encerrado";
             secAbrir.style.display = 'block';
             secAberto.style.display = 'none';
+            if(alertaCaixaFechado) alertaCaixaFechado.style.display = 'block';
         }
     }
 
@@ -1256,12 +1291,17 @@
 
         let timestampFecho = Date.now();
         let dataFecho = new Date().toLocaleString('pt-MZ');
+        let tAbertura = caixaEstado.timestampAbertura || 0;
 
-        // Calcular totais do turno
-        let vendasNum = historico.filter(h => h.tipo === 'venda' && h.metodo === 'Numerário' && h.timestamp >= (caixaEstado.timestampAbertura || 0))
-                                 .reduce((acc, i) => acc + i.totalVenda, 0);
-        let totalDesp = despesas.filter(d => d.timestamp >= (caixaEstado.timestampAbertura || 0))
-                                .reduce((acc, i) => acc + i.valor, 0);
+        let vendasNum = historico.filter(h => {
+            let hTime = h.timestamp || 0;
+            return h.tipo === 'venda' && h.metodo === 'Numerário' && hTime >= tAbertura;
+        }).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+
+        let totalDesp = despesas.filter(d => {
+            let dTime = d.timestamp || 0;
+            return dTime >= tAbertura;
+        }).reduce((acc, i) => acc + (i.valor || 0), 0);
 
         let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
         let diferenca = valContado - saldoEsperado;
@@ -1270,7 +1310,8 @@
             id: Date.now(),
             dataAbertura: caixaEstado.dataAbertura || dataFecho,
             dataFecho: dataFecho,
-            usuario: usuarioAtual.nome,
+            usuarioFecho: usuarioAtual.nome,
+            usuarioAbertura: caixaEstado.usuarioAbertura || 'Desconhecido',
             fundoInicial: caixaEstado.fundo || 0,
             vendasEspécie: vendasNum,
             despesas: totalDesp,
@@ -1282,14 +1323,15 @@
         turnosCaixa.push(registoTurno);
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "turnos_caixa"), { lista: turnosCaixa });
 
-        // Fechar caixa
         caixaEstado = { aberto: false, fundo: 0 };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
 
         document.getElementById('inputFechoValorContado').value = '';
 
         let msgResultado = `🔒 Turno Encerrado com Sucesso!\n\n` +
-            `• Saldo Esperado: ${saldoEsperado.toFixed(2)} MT\n` +
+            `• Total Vendas em Espécie (Todos os Vendedores): ${vendasNum.toFixed(2)} MT\n` +
+            `• Total Despesas: ${totalDesp.toFixed(2)} MT\n` +
+            `• Saldo Esperado na Gaveta: ${saldoEsperado.toFixed(2)} MT\n` +
             `• Valor Contado: ${valContado.toFixed(2)} MT\n` +
             `• Diferença: ${diferenca >= 0 ? '+' : ''}${diferenca.toFixed(2)} MT ${diferenca < 0 ? '⚠️ (Quebra de Caixa)' : diferenca > 0 ? '🟢 (Sobra)' : '✅ (Exato)'}`;
 
@@ -1302,20 +1344,21 @@
         tbody.innerHTML = '';
 
         if(turnosCaixa.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Nenhum turno encerrado registado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Nenum turno encerrado registado.</td></tr>';
             return;
         }
 
         turnosCaixa.slice(-20).reverse().forEach(t => {
             let difClass = t.diferenca < 0 ? 'alerta' : t.diferenca > 0 ? 'color:var(--success); font-weight:bold;' : '';
             let difTexto = t.diferenca === 0 ? '0.00 MT (Correto)' : `${t.diferenca > 0 ? '+' : ''}${t.diferenca.toFixed(2)} MT`;
+            let opTexto = t.usuarioFecho ? t.usuarioFecho : (t.usuario || '-');
 
             tbody.innerHTML += `<tr>
                 <td><small>${t.dataAbertura || '-'}</small></td>
                 <td><small>${t.dataFecho || '-'}</small></td>
-                <td><b style="text-transform:uppercase;">${t.usuario}</b></td>
+                <td><b style="text-transform:uppercase;">${opTexto}</b></td>
                 <td>${(t.fundoInicial || 0).toFixed(2)} MT</td>
-                <td>${(t.vendasEspécie || 0).toFixed(2)} MT</td>
+                <td><b>${(t.vendasEspécie || 0).toFixed(2)} MT</b></td>
                 <td>${(t.despesas || 0).toFixed(2)} MT</td>
                 <td><b>${(t.valorContado || 0).toFixed(2)} MT</b></td>
                 <td style="${difClass}">${difTexto}</td>
@@ -1324,6 +1367,10 @@
     }
 
     window.registarDespesa = async function() {
+        if (!caixaEstado.aberto) {
+            return alert("🔴 O caixa está encerrado! Abra o caixa antes de registar despesas.");
+        }
+
         let desc = document.getElementById('despesaDesc').value.trim();
         let val = parseFloat(document.getElementById('despesaValor').value) || 0;
         if(!desc || val <= 0) return alert("Preencha a descrição e valor.");
@@ -1368,6 +1415,12 @@
     };
 
     window.adicionarAoCarrinho = function() {
+        if (!caixaEstado.aberto) {
+            alert("🔴 Venda Bloqueada: É necessário ABRIR O CAIXA na aba 'Caixa & Turnos' antes de lançar produtos!");
+            window.mudarAba('abaCaixa');
+            return;
+        }
+
         let prod = document.getElementById('cartSelectProduto').value;
         let qtd = parseFloat(document.getElementById('cartQtd').value);
         let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
@@ -1416,7 +1469,18 @@
 
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
         let totalFinal = Math.max(0, total - desc);
+        
+        let taxaIva = dadosEmpresa.aplicarIva === 'sim' ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
+        let subtotalLiq = totalFinal / (1 + (taxaIva / 100));
+        let valorIva = totalFinal - subtotalLiq;
+
         document.getElementById('cartTotalTexto').innerText = totalFinal.toFixed(2) + " MT";
+        
+        if (dadosEmpresa.aplicarIva === 'sim') {
+            document.getElementById('cartSubtotalIvaTexto').innerText = `Base Tributável: ${subtotalLiq.toFixed(2)} MT | IVA (${taxaIva}%): ${valorIva.toFixed(2)} MT`;
+        } else {
+            document.getElementById('cartSubtotalIvaTexto').innerText = `Isento de IVA`;
+        }
 
         window.calcularTroco();
     };
@@ -1428,6 +1492,12 @@
     };
 
     window.finalizarVendaCarrinho = async function() {
+        if (!caixaEstado.aberto) {
+            alert("🔴 Venda Bloqueada: É necessário ABRIR O CAIXA antes de fechar vendas e emitir recibos!");
+            window.mudarAba('abaCaixa');
+            return;
+        }
+
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return alert("O carrinho está vazio.");
 
@@ -1437,11 +1507,15 @@
         let totalVenda = Math.max(0, totalSemDesc - desc);
         let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
 
+        let taxaIva = dadosEmpresa.aplicarIva === 'sim' ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
+        let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
+        let valorIva = totalVenda - subtotalLiq;
+
         let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
         let troco = Math.max(0, valorEntregue - totalVenda);
+        let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
 
         let clienteFiado = null;
-
         if(metodo === 'Fiado') {
             clienteFiado = document.getElementById('cartSelectClienteFiado').value;
             if(!clienteFiado) return alert("Selecione o cliente para registar o fiado.");
@@ -1472,6 +1546,10 @@
             itens,
             desconto: desc,
             totalVenda,
+            subtotalLiq,
+            valorIva,
+            taxaIva,
+            nuitCliente,
             totalCusto,
             valorEntregue,
             troco,
@@ -1503,6 +1581,7 @@
         mesas[mesaSelecionada] = [];
         document.getElementById('cartDesconto').value = 0;
         document.getElementById('cartValorEntregue').value = 0;
+        document.getElementById('cartNuitCliente').value = '';
         document.getElementById('cartTelefoneWa').value = '';
         renderizarMesasGrid();
         window.renderizarCarrinho();
@@ -1535,7 +1614,7 @@
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
         document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
-        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : '';
+        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
         document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : '';
         document.getElementById('reciboSlogan').innerText = dadosEmpresa.slogan || 'Obrigado pela preferência!';
@@ -1543,8 +1622,13 @@
         document.getElementById('reciboMesa').innerText = v.mesa;
         document.getElementById('reciboData').innerText = v.data;
         document.getElementById('reciboVendedor').innerText = v.usuario;
+        document.getElementById('reciboNuitClienteDisplay').innerText = v.nuitCliente || 'Consumidor Final';
         document.getElementById('reciboMetodo').innerText = v.metodo + (v.clienteFiado ? ` (${v.clienteFiado})` : '');
         document.getElementById('reciboDesconto').innerText = (v.desconto || 0).toFixed(2);
+
+        document.getElementById('reciboSubtotalLiq').innerText = (v.subtotalLiq || v.totalVenda).toFixed(2);
+        document.getElementById('reciboTaxaIvaValor').innerText = v.taxaIva || 0;
+        document.getElementById('reciboValIva').innerText = (v.valorIva || 0).toFixed(2);
 
         let divItens = document.getElementById('reciboItens');
         divItens.innerHTML = '';
@@ -1848,7 +1932,9 @@
                 nuit: dadosEmpresa.nuit,
                 endereco: dadosEmpresa.endereco,
                 telefone: dadosEmpresa.telefone,
-                slogan: dadosEmpresa.slogan
+                slogan: dadosEmpresa.slogan,
+                aplicarIva: dadosEmpresa.aplicarIva,
+                taxaIva: dadosEmpresa.taxaIva
             },
             dataBackup: new Date().toLocaleString('pt-MZ')
         };
@@ -1877,6 +1963,9 @@
             "Utilizador": item.usuario,
             "Mesa": item.mesa || "Balcão",
             "Método": item.metodo,
+            "NUIT Cliente": item.nuitCliente || "Consumidor Final",
+            "Subtotal Líquido (MT)": item.subtotalLiq || item.totalVenda,
+            "IVA (MT)": item.valorIva || 0,
             "Total Venda (MT)": item.totalVenda || 0,
             "Custo COGS (MT)": item.totalCusto || 0
         }));
@@ -1913,6 +2002,8 @@
             document.getElementById('cfgEndereco').value = dadosEmpresa.endereco || '';
             document.getElementById('cfgSlogan').value = dadosEmpresa.slogan || '';
             document.getElementById('cfgChaveMestra').value = dadosEmpresa.chaveMestra || '1234';
+            document.getElementById('cfgAplicarIva').value = dadosEmpresa.aplicarIva || 'sim';
+            document.getElementById('cfgTaxaIva').value = dadosEmpresa.taxaIva || 16;
         }
     }
 
@@ -1929,7 +2020,9 @@
             telefone: document.getElementById('cfgTelefone').value.trim(),
             endereco: document.getElementById('cfgEndereco').value.trim(),
             slogan: document.getElementById('cfgSlogan').value.trim(),
-            chaveMestra: document.getElementById('cfgChaveMestra').value.trim() || '1234'
+            chaveMestra: document.getElementById('cfgChaveMestra').value.trim() || '1234',
+            aplicarIva: document.getElementById('cfgAplicarIva').value,
+            taxaIva: parseFloat(document.getElementById('cfgTaxaIva').value) || 16
         };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
         alert("Dados salvos com sucesso!");
