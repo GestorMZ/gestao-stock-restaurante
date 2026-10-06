@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestão Master - Restaurante Pro (SaaS)</title>
 
-    <!-- Meta Tags PWA -->
-    <link rel="manifest" href="manifest.json">
+    <!-- Meta Tags PWA (Desativado até criar o ficheiro manifest.json) -->
+    <!-- <link rel="manifest" href="manifest.json"> -->
     <meta name="theme-color" content="#007bff">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Restaurante Pro">
-    <link rel="apple-touch-icon" href="icon-192.png">
 
     <!-- Bibliotecas Externas (Excel, Gráficos e QR Code) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -137,9 +136,9 @@
         <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #dee2e6; margin-bottom:15px;">
             <div class="form-group">
                 <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
-                <input type="text" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA, SABORES01" style="text-transform:uppercase; font-weight:bold;" onchange="carregarPerfisEmpresa()">
+                <input type="text" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA, SABORES01" style="text-transform:uppercase; font-weight:bold;" onchange="window.carregarPerfisEmpresa()">
             </div>
-            <button class="btn-primary btn-sm" onclick="carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
+            <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
 
         <!-- BANNER DE CONTA BLOQUEADA / DADOS DE PAGAMENTO M-PESA -->
@@ -733,128 +732,4 @@
 
     <div id="conteudoGuiaCozinha" style="display:none;">
         <div style="text-align:center;">
-            <h3 style="margin:0; font-size:16px;">🍳 PEDIDO DE COZINHA</h3>
-            <p style="margin:2px 0; font-size:12px;"><b>MESA / COMANDA: <span id="cozinhaMesa"></span></b></p>
-            <p id="cozinhaData" style="margin:2px 0; font-size:10px;"></p>
-        </div>
-        <p style="margin:5px 0;">==============================</p>
-        <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
-        <p style="margin:5px 0;">==============================</p>
-    </div>
-</div>
-
-<!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM VERIFICAÇÃO DE LICENÇA -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
-        authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
-        projectId: "gestao-restaurante-a74e4",
-        storageBucket: "gestao-restaurante-a74e4.firebasestorage.app",
-        messagingSenderId: "882707684467",
-        appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Registo de Service Worker para PWA
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
-        });
-    }
-
-    // Estado da Aplicação Multi-Tenant
-    let codigoEmpresa = "";
-    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [];
-    let mesas = { "Balcão": [] };
-    for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
-
-    let caixaEstado = { aberto: false, fundo: 0, dataAbertura: null };
-    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234" };
-    let usuarioAtual = null;
-    let mesaSelecionada = "Balcão";
-    let chartInstance = null;
-    let unsubscribes = [];
-
-    // Ligar e verificar licença da empresa
-    window.carregarPerfisEmpresa = async function() {
-        let codeInput = document.getElementById('loginCodigoEmpresa').value.trim().toUpperCase();
-        if(!codeInput) return alert("Por favor, introduza o Código do Restaurante!");
-
-        codigoEmpresa = codeInput;
-
-        try {
-            // 1. VERIFICAR LICENÇA CENTRAL NO FIREBASE
-            const docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
-
-            if (docLicenca.exists()) {
-                let dadosLicenca = docLicenca.data();
-                let hoje = new Date().toISOString().split('T')[0];
-
-                if (dadosLicenca.status === "suspenso") {
-                    document.getElementById('seccaoPerfisEForm').style.display = 'none';
-                    document.getElementById('boxContaBloqueada').style.display = 'block';
-                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'A mensalidade deste restaurante encontra-se em atraso.';
-                    return;
-                }
-
-                if (dadosLicenca.validade && dadosLicenca.validade < hoje) {
-                    document.getElementById('seccaoPerfisEForm').style.display = 'none';
-                    document.getElementById('boxContaBloqueada').style.display = 'block';
-                    document.getElementById('textoMotivoBloqueio').innerText = `A sua subscrição venceu no dia ${dadosLicenca.validade}.`;
-                    return;
-                }
-            } else {
-                // Se for a primeira vez que usa o código, cria a licença de teste por 7 dias
-                let dataTeste = new Date();
-                dataTeste.setDate(dataTeste.getDate() + 7);
-                let validadeTeste = dataTeste.toISOString().split('T')[0];
-
-                await setDoc(doc(db, "licencas", codigoEmpresa), {
-                    status: "ativo",
-                    validade: validadeTeste,
-                    mensagemBloqueio: "Acesso suspenso por falta de pagamento.",
-                    dataCriacao: new Date().toLocaleString('pt-MZ')
-                });
-                alert(`🎉 Novo restaurante detetado! Foi ativado um período de teste gratuito de 7 dias (Válido até ${validadeTeste}).`);
-            }
-
-            // 2. SE A LICENÇA ESTIVER VÁLIDA, ESCONDE BLOQUEIO E CARREGA
-            document.getElementById('boxContaBloqueada').style.display = 'none';
-            desconectarEscutadores();
-            document.getElementById('seccaoPerfisEForm').style.display = 'block';
-
-            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "usuarios"), async (docSnap) => {
-                if (docSnap.exists()) {
-                    usuarios = docSnap.data();
-                } else {
-                    usuarios = { "admin": { senha: "123", tipo: "admin", foto: "" } };
-                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "usuarios"), usuarios);
-                }
-                renderizarPerfisLogin();
-                if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-            });
-
-            unsubscribes.push(unsubUser);
-
-        } catch (erro) {
-            console.error("Erro ao verificar licença:", erro);
-            alert("Erro ao ligar ao servidor de licenças. Verifique a sua ligação à internet.");
-        }
-    };
-
-    function iniciarEscutadoresCompletosEmpresa() {
-        if(!codigoEmpresa) return;
-
-        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "stock"), (docSnap) => {
-            stock = docSnap.exists() ? docSnap.data() : {};
-            if (usuarioAtual) { atualizarDropdownProdutosCart(); renderizarStock(); verificarAlertasStock(); }
-        }));
-
-        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), (docSnap) => {
-            movimentacoesStock = docSnap.exists() ? (docSnap.data().lista || []) : [];
-            if (usuarioAtual) renderizarMovimentacoesStock();
+            <h3 style="margin:0; font
