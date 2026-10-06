@@ -197,7 +197,7 @@
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
                 <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu Digital</button>
-                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙️️ Definições & Chave Mestra</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙️ Definições & Chave Mestra</button>
                 <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
             </div>
         </div>
@@ -216,7 +216,7 @@
         <!-- MENU DE ABAS -->
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
-            <button class="tab-btn" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Despesas</button>
+            <button class="tab-btn" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
             <button class="tab-btn" onclick="window.mudarAba('abaFiado')">👥 Clientes & Fiado</button>
             <button class="tab-btn" onclick="window.mudarAba('abaStock')">📦 Gestão de Stock</button>
             <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios')">👤 Gestão de Perfis</button>
@@ -305,33 +305,35 @@
             </div>
         </div>
 
-        <!-- ================= ABA 2: CAIXA & DESPESAS ================= -->
+        <!-- ================= ABA 2: CAIXA, DESPESAS & FECHO CEGO ================= -->
         <div id="abaCaixa" class="tab-content">
-            <h2>Controlo de Caixa e Turnos</h2>
+            <h2>Controlo de Caixa & Fecho Cego</h2>
             
-            <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe;">
-                <h4>Abrir Turno de Caixa</h4>
+            <!-- FORMULÁRIO DE ABERTURA -->
+            <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:20px;">
+                <h4>🔓 Abrir Turno de Caixa</h4>
                 <div class="form-group">
-                    <label>Fundo de Maneio / Troco Inicial (MT)</label>
-                    <input type="number" id="inputFundoManeio" value="1000" min="0" step="50">
+                    <label>Fundo de Maneio / Troco Inicial na Gaveta (MT)</label>
+                    <input type="number" id="inputFundoManeio" value="1000" min="0" step="50" placeholder="Ex: 1000 MT">
                 </div>
-                <button class="btn-success" onclick="window.abrirCaixaTurno()">🔓 Confirmar Abertura de Caixa</button>
+                <button class="btn-success" onclick="window.abrirCaixaTurno()">Confirmar Abertura de Caixa</button>
             </div>
 
+            <!-- CAIXA ABERTO - REGISTO DE DESPESAS E FECHO CEGO -->
             <div id="seccaoCaixaAberto" style="display:none;">
                 <div class="cards-grid">
                     <div class="card-stat"><h4>Fundo Inicial</h4><div class="valor-card" id="cxValFundo">0.00 MT</div></div>
-                    <div class="card-stat verde"><h4>Entradas Vendas (Espécie)</h4><div class="valor-card" id="cxValVendasNum">0.00 MT</div></div>
-                    <div class="card-stat vermelho"><h4>Saídas / Despesas</h4><div class="valor-card" id="cxValDespesas">0.00 MT</div></div>
-                    <div class="card-stat roxo"><h4>Saldo Esperado em Gaveta</h4><div class="valor-card" id="cxValSaldoGaveta">0.00 MT</div></div>
+                    <div class="card-stat verde"><h4>Entradas em Espécie (Turno)</h4><div class="valor-card" id="cxValVendasNum">0.00 MT</div></div>
+                    <div class="card-stat vermelho"><h4>Saídas / Despesas (Turno)</h4><div class="valor-card" id="cxValDespesas">0.00 MT</div></div>
+                    <div class="card-stat roxo col-admin"><h4>Saldo em Gaveta (Visível apenas ao Admin)</h4><div class="valor-card" id="cxValSaldoGaveta">***</div></div>
                 </div>
 
-                <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:15px;">
-                    <h4>Registar Saída de Caixa / Despesa do Dia</h4>
+                <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #dee2e6;">
+                    <h4>💸 Registar Saída de Caixa / Despesa do Turno</h4>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Descrição da Despesa</label>
-                            <input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Transporte, Carvão">
+                            <input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Carvão, Transporte">
                         </div>
                         <div class="form-group">
                             <label>Valor (MT)</label>
@@ -343,8 +345,41 @@
                     </div>
                 </div>
 
-                <div style="margin-top:20px; text-align:right;">
-                    <button class="btn-saida btn-sm" onclick="window.fecharCaixaTurno()">🔒 Encerrar Turno de Caixa</button>
+                <!-- BOX FECHO CEGO -->
+                <div style="background:#fff3cd; border:2px solid #ffeba2; padding:18px; border-radius:8px; margin-top:20px;">
+                    <h4 style="color:#856404; margin-top:0;">🔒 Encerrar Turno (Fecho Cego de Caixa)</h4>
+                    <p style="font-size:0.85em; color:#666;">Contar fisicamente as notas e moedas na gaveta e introduzir o valor total em dinheiro abaixo:</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label style="font-weight:bold; color:#333;">Valor Total Contado em Gaveta (MT)</label>
+                            <input type="number" id="inputFechoValorContado" step="0.5" min="0" placeholder="Ex: 4500 MT" style="font-size:1.1em; font-weight:bold;">
+                        </div>
+                        <div class="form-group" style="align-self:flex-end;">
+                            <button class="btn-saida" onclick="window.fecharCaixaTurnoCEGO()">🔒 Confirmar Fecho de Turno</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTÓRICO DE TURNOS DE CAIXA -->
+            <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos de Caixa</h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Abertura</th>
+                                <th>Fecho</th>
+                                <th>Operador</th>
+                                <th>Fundo Inicial</th>
+                                <th>Vendas (Dinheiro)</th>
+                                <th>Despesas</th>
+                                <th>Valor Contado</th>
+                                <th>Diferença (Quebra/Sobra)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoHistoricoTurnosCaixa"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -511,7 +546,7 @@
                         <label>Tipo de Permissão</label>
                         <select id="novoUserTipo">
                             <option value="vendedor">🛒 Operador de Caixa / Vendedor</option>
-                            <option value="admin">⚙️ Administrador (Acesso Total)</option>
+                            <option value="admin">⚙️️ Administrador (Acesso Total)</option>
                         </select>
                     </div>
                 </div>
@@ -762,11 +797,11 @@
 
     // Estado da Aplicação Multi-Tenant
     let codigoEmpresa = "";
-    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [];
+    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [];
     let mesas = { "Balcão": [] };
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
-    let caixaEstado = { aberto: false, fundo: 0, dataAbertura: null };
+    let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
     let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234" };
     let usuarioAtual = null;
     let mesaSelecionada = "Balcão";
@@ -802,7 +837,6 @@
                     return;
                 }
             } else {
-                // Se for a primeira vez que usa o código, cria a licença de teste por 7 dias
                 let dataTeste = new Date();
                 dataTeste.setDate(dataTeste.getDate() + 7);
                 let validadeTeste = dataTeste.toISOString().split('T')[0];
@@ -816,7 +850,6 @@
                 alert(`🎉 Novo restaurante detetado! Foi ativado um período de teste gratuito de 7 dias (Válido até ${validadeTeste}).`);
             }
 
-            // 2. SE A LICENÇA ESTIVER VÁLIDA, ESCONDE BLOQUEIO E CARREGA PERFIS
             document.getElementById('boxContaBloqueada').style.display = 'none';
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
@@ -836,7 +869,7 @@
 
         } catch (erro) {
             console.error("Erro ao verificar licença:", erro);
-            alert("Não foi possível carregar os dados. Verifique a ligação à internet ou as regras de acesso no Firebase Firestore.");
+            alert("Não foi possível carregar os dados. Verifique a ligação à internet ou as regras do Firestore.");
         }
     };
 
@@ -869,6 +902,11 @@
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), (docSnap) => {
             caixaEstado = docSnap.exists() ? docSnap.data() : { aberto: false, fundo: 0 };
             if (usuarioAtual) renderizarEstadoCaixa();
+        }));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "turnos_caixa"), (docSnap) => {
+            turnosCaixa = docSnap.exists() ? (docSnap.data().lista || []) : [];
+            if (usuarioAtual) renderizarHistoricoTurnos();
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), (docSnap) => {
@@ -1150,6 +1188,8 @@
         document.getElementById('seccaoDetalhesPerfil').style.display = 'none';
     };
 
+    // ================= LÓGICA DE CAIXA E FECHO CEGO =================
+
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -1158,7 +1198,7 @@
 
         if(caixaEstado.aberto) {
             banner.className = "status-caixa-banner caixa-aberto";
-            txt.innerText = "🟢 Caixa Aberto (Turno em Andamento)";
+            txt.innerText = `🟢 Caixa Aberto desde ${caixaEstado.dataAbertura || ''} (${caixaEstado.usuarioAbertura || ''})`;
             secAbrir.style.display = 'none';
             secAberto.style.display = 'block';
 
@@ -1167,10 +1207,18 @@
             let totalDesp = despesas.filter(d => d.timestamp >= (caixaEstado.timestampAbertura || 0))
                                     .reduce((acc, i) => acc + i.valor, 0);
 
-            document.getElementById('cxValFundo').innerText = caixaEstado.fundo.toFixed(2) + " MT";
+            let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
+
+            document.getElementById('cxValFundo').innerText = (caixaEstado.fundo || 0).toFixed(2) + " MT";
             document.getElementById('cxValVendasNum').innerText = vendasNum.toFixed(2) + " MT";
             document.getElementById('cxValDespesas').innerText = totalDesp.toFixed(2) + " MT";
-            document.getElementById('cxValSaldoGaveta').innerText = (caixaEstado.fundo + vendasNum - totalDesp).toFixed(2) + " MT";
+            
+            // O saldo em gaveta só é visível para administradores
+            if (usuarioAtual && usuarioAtual.tipo === 'admin') {
+                document.getElementById('cxValSaldoGaveta').innerText = saldoEsperado.toFixed(2) + " MT";
+            } else {
+                document.getElementById('cxValSaldoGaveta').innerText = "*** (Oculto)";
+            }
         } else {
             banner.className = "status-caixa-banner caixa-fechado";
             txt.innerText = "🔴 Caixa Encerrado";
@@ -1181,18 +1229,99 @@
 
     window.abrirCaixaTurno = async function() {
         let fundo = parseFloat(document.getElementById('inputFundoManeio').value) || 0;
-        caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), usuario: usuarioAtual.nome };
+        let agoraData = new Date().toLocaleString('pt-MZ');
+
+        caixaEstado = { 
+            aberto: true, 
+            fundo, 
+            timestampAbertura: Date.now(), 
+            dataAbertura: agoraData,
+            usuarioAbertura: usuarioAtual.nome 
+        };
+
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
         alert("Caixa aberto com sucesso!");
     };
 
-    window.fecharCaixaTurno = async function() {
-        if(confirm("Deseja encerrar o turno do caixa e emitir o fecho?")) {
-            caixaEstado = { aberto: false, fundo: 0 };
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
-            alert("Caixa encerrado com sucesso!");
+    window.fecharCaixaTurnoCEGO = async function() {
+        let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
+
+        if(isNaN(valContado) || valContado < 0) {
+            return alert("Por favor, introduza o valor contado na gaveta.");
         }
+
+        if(!confirm("Tem certeza que deseja encerrar o turno com o valor contado de " + valContado.toFixed(2) + " MT?")) {
+            return;
+        }
+
+        let timestampFecho = Date.now();
+        let dataFecho = new Date().toLocaleString('pt-MZ');
+
+        // Calcular totais do turno
+        let vendasNum = historico.filter(h => h.tipo === 'venda' && h.metodo === 'Numerário' && h.timestamp >= (caixaEstado.timestampAbertura || 0))
+                                 .reduce((acc, i) => acc + i.totalVenda, 0);
+        let totalDesp = despesas.filter(d => d.timestamp >= (caixaEstado.timestampAbertura || 0))
+                                .reduce((acc, i) => acc + i.valor, 0);
+
+        let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
+        let diferenca = valContado - saldoEsperado;
+
+        let registoTurno = {
+            id: Date.now(),
+            dataAbertura: caixaEstado.dataAbertura || dataFecho,
+            dataFecho: dataFecho,
+            usuario: usuarioAtual.nome,
+            fundoInicial: caixaEstado.fundo || 0,
+            vendasEspécie: vendasNum,
+            despesas: totalDesp,
+            saldoEsperado: saldoEsperado,
+            valorContado: valContado,
+            diferenca: diferenca
+        };
+
+        turnosCaixa.push(registoTurno);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "turnos_caixa"), { lista: turnosCaixa });
+
+        // Fechar caixa
+        caixaEstado = { aberto: false, fundo: 0 };
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
+
+        document.getElementById('inputFechoValorContado').value = '';
+
+        let msgResultado = `🔒 Turno Encerrado com Sucesso!\n\n` +
+            `• Saldo Esperado: ${saldoEsperado.toFixed(2)} MT\n` +
+            `• Valor Contado: ${valContado.toFixed(2)} MT\n` +
+            `• Diferença: ${diferenca >= 0 ? '+' : ''}${diferenca.toFixed(2)} MT ${diferenca < 0 ? '⚠️ (Quebra de Caixa)' : diferenca > 0 ? '🟢 (Sobra)' : '✅ (Exato)'}`;
+
+        alert(msgResultado);
     };
+
+    function renderizarHistoricoTurnos() {
+        let tbody = document.getElementById('corpoHistoricoTurnosCaixa');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+
+        if(turnosCaixa.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Nenhum turno encerrado registado.</td></tr>';
+            return;
+        }
+
+        turnosCaixa.slice(-20).reverse().forEach(t => {
+            let difClass = t.diferenca < 0 ? 'alerta' : t.diferenca > 0 ? 'color:var(--success); font-weight:bold;' : '';
+            let difTexto = t.diferenca === 0 ? '0.00 MT (Correto)' : `${t.diferenca > 0 ? '+' : ''}${t.diferenca.toFixed(2)} MT`;
+
+            tbody.innerHTML += `<tr>
+                <td><small>${t.dataAbertura || '-'}</small></td>
+                <td><small>${t.dataFecho || '-'}</small></td>
+                <td><b style="text-transform:uppercase;">${t.usuario}</b></td>
+                <td>${(t.fundoInicial || 0).toFixed(2)} MT</td>
+                <td>${(t.vendasEspécie || 0).toFixed(2)} MT</td>
+                <td>${(t.despesas || 0).toFixed(2)} MT</td>
+                <td><b>${(t.valorContado || 0).toFixed(2)} MT</b></td>
+                <td style="${difClass}">${difTexto}</td>
+            </tr>`;
+        });
+    }
 
     window.registarDespesa = async function() {
         let desc = document.getElementById('despesaDesc').value.trim();
@@ -1713,6 +1842,7 @@
             historico,
             clientes,
             despesas,
+            turnosCaixa,
             dadosEmpresa: {
                 nome: dadosEmpresa.nome,
                 nuit: dadosEmpresa.nuit,
