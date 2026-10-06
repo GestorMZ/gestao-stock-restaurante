@@ -799,20 +799,23 @@
     </div>
     <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+ // Importa o Auth do Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
-        authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
-        projectId: "gestao-restaurante-a74e4",
-        storageBucket: "gestao-restaurante-a74e4.firebasestorage.app",
-        messagingSenderId: "882707684467",
-        appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
+    authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
+    projectId: "gestao-restaurante-a74e4",
+    storageBucket: "gestao-restaurante-a74e4.firebasestorage.app",
+    messagingSenderId: "882707684467",
+    appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app); // Inicializa a autenticação ;
 
     // Estado da Aplicação Multi-Tenant
     let codigoEmpresa = "";
@@ -984,9 +987,30 @@
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
-    window.fazerLogin = function() {
-        let u = document.getElementById('loginUser').value.trim().toLowerCase();
-        let p = document.getElementById('loginPass').value;
+ window.fazerLogin = async function() {
+    let uName = document.getElementById('loginUser').value.trim();
+    let uPass = document.getElementById('loginPass').value.trim();
+
+    if(!uName || !uPass) return alert("Por favor, preencha o utilizador e a palavra-passe.");
+
+    // Gera um email fictício único baseado na empresa e utilizador
+    let emailLogin = `${uName.toLowerCase().replace(/\s+/g, '')}@${codigoEmpresa.toLowerCase()}.com`;
+
+    try {
+        // Autentica diretamente no servidor do Firebase
+        let userCredential = await signInWithEmailAndPassword(auth, emailLogin, uPass);
+        usuarioAtual = userCredential.user;
+
+        document.getElementById('telaLogin').style.display = 'none';
+        document.getElementById('telaSistema').style.display = 'block';
+
+        await window.carregarTodosDadosBanco();
+        window.inicializarInterface();
+    } catch (error) {
+        console.error("Erro no login:", error);
+        alert("Palavra-passe incorreta ou erro ao autenticar no servidor.");
+    }
+};
 
         if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
 
