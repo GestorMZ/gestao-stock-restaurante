@@ -988,16 +988,21 @@ const auth = getAuth(app); // Inicializa a autenticação ;
     };
 
 window.loginPerfeito = function(u, evento) {
-    document.getElementById('usuario de login').value = u;
-    document.getElementById('loginPass').focus();
+    let elUser = document.getElementById('usuario de login') || document.getElementById('loginUser');
+    let elPass = document.getElementById('loginPass');
+    if(elUser) elUser.value = u;
+    if(elPass) elPass.focus();
 
     document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
     if (evento && evento.currentTarget) evento.currentTarget.classList.add('ativo');
 };
 
 window.fazerLogin = async function() {
-    let uName = document.getElementById('usuario de login').value.trim();
-    let uPass = document.getElementById('loginPass').value.trim();
+    let elUser = document.getElementById('usuario de login') || document.getElementById('loginUser');
+    let elPass = document.getElementById('loginPass');
+    
+    let uName = elUser ? elUser.value.trim() : '';
+    let uPass = elPass ? elPass.value.trim() : '';
 
     if(!uName || !uPass) return alert("Por favor, preencha o usuário e a palavra-passe.");
 
@@ -1019,7 +1024,8 @@ window.fazerLogin = async function() {
 };
 
 window.carregarPerfisEmpresa = async function() {
-    let cod = document.getElementById('loginCodigoEmpresa') ? document.getElementById('loginCodigoEmpresa').value.trim().toUpperCase() : '';
+    let elCod = document.getElementById('loginCodigoEmpresa') || document.getElementById('loginEmpresa');
+    let cod = elCod ? elCod.value.trim().toUpperCase() : '';
     if(!cod) return alert("Por favor, introduza o Código da Empresa.");
 
     try {
@@ -1050,6 +1056,8 @@ window.carregarPerfisEmpresa = async function() {
         alert("Erro ao ligar ao servidor para carregar perfis.");
     }
 };
+</script>
+
             iniciarEscutadoresCompletosEmpresa();
             configurarPerfil();
             renderizarMesasGrid();
