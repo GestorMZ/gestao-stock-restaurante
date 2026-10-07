@@ -800,7 +800,7 @@
     <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, getDocFromNetwork, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
@@ -822,7 +822,6 @@
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
     
-    // Dados da Empresa (Com Definições Padrão de IVA)
     let dadosEmpresa = { 
         nome: "RESTAURANTE", 
         nuit: "", 
@@ -839,7 +838,7 @@
     let chartInstance = null;
     let unsubscribes = [];
 
-    // Ligar e verificar licença da empresa com busca direta na rede
+    // Ligar e verificar licença da empresa
     window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
         let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
@@ -848,12 +847,7 @@
         codigoEmpresa = codeInput;
 
         try {
-            let docLicenca;
-            try {
-                docLicenca = await getDocFromNetwork(doc(db, "licencas", codigoEmpresa));
-            } catch(e) {
-                docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
-            }
+            let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
 
             if (docLicenca && docLicenca.exists()) {
                 let dadosLicenca = docLicenca.data();
@@ -890,7 +884,7 @@
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
 
-            // Leitura flexível: suporta formato Objeto ou formato Array de utilizadores do Firestore
+            // Leitura flexível: suporta o Array de mapas criado no teu Firestore
             let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), async (docSnap) => {
                 if (docSnap.exists()) {
                     let dadosDoc = docSnap.data();
@@ -2076,7 +2070,6 @@
         }
     };
 </script>
-
 </body>
 </html>
 </div>
