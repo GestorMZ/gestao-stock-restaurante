@@ -799,23 +799,20 @@
     </div>
     <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
 <script type="module">
- // Importa o Auth do Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocFromNetwork, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
-    authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
-    projectId: "gestao-restaurante-a74e4",
-    storageBucket: "gestao-restaurante-a74e4.firebasestorage.app",
-    messagingSenderId: "882707684467",
-    appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
+        authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
+        projectId: "gestao-restaurante-a74e4",
+        storageBucket: "gestao-restaurante-a74e4.firebasestorage.app",
+        messagingSenderId: "882707684467",
+        appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app); // Inicializa a autenticação ;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     // Estado da Aplicação Multi-Tenant
     let codigoEmpresa = "";
@@ -842,17 +839,23 @@ const auth = getAuth(app); // Inicializa a autenticação ;
     let chartInstance = null;
     let unsubscribes = [];
 
-    // Ligar e verificar licença da empresa
+    // Ligar e verificar licença da empresa com busca direta na rede
     window.carregarPerfisEmpresa = async function() {
-        let codeInput = document.getElementById('loginCodigoEmpresa').value.trim().toUpperCase();
+        let elCod = document.getElementById('loginCodigoEmpresa');
+        let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
         if(!codeInput) return alert("Por favor, introduza o Código do Restaurante!");
 
         codigoEmpresa = codeInput;
 
         try {
-            const docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
+            let docLicenca;
+            try {
+                docLicenca = await getDocFromNetwork(doc(db, "licencas", codigoEmpresa));
+            } catch(e) {
+                docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
+            }
 
-            if (docLicenca.exists()) {
+            if (docLicenca && docLicenca.exists()) {
                 let dadosLicenca = docLicenca.data();
                 let hoje = new Date().toISOString().split('T')[0];
 
@@ -887,12 +890,27 @@ const auth = getAuth(app); // Inicializa a autenticação ;
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
 
-            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "usuarios"), async (docSnap) => {
+            // Leitura flexível: suporta formato Objeto ou formato Array de utilizadores do Firestore
+            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), async (docSnap) => {
                 if (docSnap.exists()) {
-                    usuarios = docSnap.data();
+                    let dadosDoc = docSnap.data();
+                    if (Array.isArray(dadosDoc.usuarios)) {
+                        usuarios = {};
+                        dadosDoc.usuarios.forEach(u => {
+                            if (u.nome) {
+                                usuarios[u.nome.toLowerCase()] = {
+                                    senha: u.senha || "123",
+                                    tipo: u.tipo || "admin",
+                                    foto: u.foto || ""
+                                };
+                            }
+                        });
+                    } else if (typeof dadosDoc.usuarios === 'object') {
+                        usuarios = dadosDoc.usuarios;
+                    }
                 } else {
                     usuarios = { "admin": { senha: "123", tipo: "admin", foto: "" } };
-                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "usuarios"), usuarios);
+                    await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: [{ nome: "admin", senha: "123", tipo: "admin" }] }, { merge: true });
                 }
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
@@ -902,7 +920,7 @@ const auth = getAuth(app); // Inicializa a autenticação ;
 
         } catch (erro) {
             console.error("Erro ao verificar licença:", erro);
-            alert("Não foi possível carregar os dados. Verifique a ligação à internet ou as regras do Firestore.");
+            alert("Erro ao ligar ao servidor para carregar perfis. Verifique a sua ligação de internet.");
         }
     };
 
@@ -980,84 +998,40 @@ const auth = getAuth(app); // Inicializa a autenticação ;
     }
 
     window.selecionarPerfilLogin = function(u, evt) {
-        document.getElementById('loginUser').value = u;
-        document.getElementById('loginPass').focus();
+        let elUser = document.getElementById('loginUser');
+        let elPass = document.getElementById('loginPass');
+        if(elUser) elUser.value = u;
+        if(elPass) elPass.focus();
         
         document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
-window.loginPerfeito = function(u, evento) {
-    let elUser = document.getElementById('usuario de login') || document.getElementById('loginUser');
-    let elPass = document.getElementById('loginPass');
-    if(elUser) elUser.value = u;
-    if(elPass) elPass.focus();
+    window.fazerLogin = function() {
+        let elUser = document.getElementById('loginUser');
+        let elPass = document.getElementById('loginPass');
+        let u = elUser ? elUser.value.trim().toLowerCase() : "";
+        let p = elPass ? elPass.value : "";
 
-    document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
-    if (evento && evento.currentTarget) evento.currentTarget.classList.add('ativo');
-};
+        if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
 
-window.fazerLogin = async function() {
-    let elUser = document.getElementById('usuario de login') || document.getElementById('loginUser');
-    let elPass = document.getElementById('loginPass');
-    
-    let uName = elUser ? elUser.value.trim() : '';
-    let uPass = elPass ? elPass.value.trim() : '';
-
-    if(!uName || !uPass) return alert("Por favor, preencha o usuário e a palavra-passe.");
-
-    let emailLogin = `${uName.toLowerCase().replace(/\s+/g, '')}@${codigoEmpresa.toLowerCase()}.com`;
-
-    try {
-        let userCredential = await signInWithEmailAndPassword(auth, emailLogin, uPass);
-        usuarioAtual = userCredential.user;
-
-        document.getElementById('telaLogin').style.display = 'none';
-        document.getElementById('telaSistema').style.display = 'block';
-
-        await window.carregarTodosDadosBanco();
-        window.inicializarInterface();
-    } catch (error) {
-        console.error("Erro de login:", error);
-        alert("Palavra-passe incorreta ou erro ao autenticar no servidor.");
-    }
-};
-
-window.carregarPerfisEmpresa = async function() {
-    let elCod = document.getElementById('loginCodigoEmpresa') || document.getElementById('loginEmpresa');
-    let cod = elCod ? elCod.value.trim().toUpperCase() : '';
-    if(!cod) return alert("Por favor, introduza o Código da Empresa.");
-
-    try {
-        let docRef = doc(db, "empresas", cod);
-        let docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            codigoEmpresa = cod;
-            let dados = docSnap.data();
-            let listaUsuarios = dados.usuarios || [];
+        if (usuarios[u] && usuarios[u].senha === p) {
+            usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
             
-            let container = document.getElementById('containerPerfisLogin');
-            if(container) {
-                container.innerHTML = '';
-                listaUsuarios.forEach(u => {
-                    let card = document.createElement('div');
-                    card.className = 'card-perfil-login';
-                    card.innerText = u.nome;
-                    card.onclick = (e) => window.loginPerfeito(u.nome, e);
-                    container.appendChild(card);
-                });
+            document.getElementById('nomeEmpresaHeader').innerText = codigoEmpresa;
+            document.getElementById('nomeUsuarioLogado').innerText = u;
+            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : 'Operador de Caixa';
+            
+            let headerAvatar = document.getElementById('headerAvatarBox');
+            if(usuarioAtual.foto) {
+                headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
+            } else {
+                headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
             }
-        } else {
-            alert("Empresa não encontrada no Firebase.");
-        }
-    } catch(err) {
-        console.error("Erro ao carregar perfis:", err);
-        alert("Erro ao ligar ao servidor para carregar perfis.");
-    }
-};
-</script>
 
+            document.getElementById('telaLogin').style.display = 'none';
+            document.getElementById('telaSistema').style.display = 'block';
+            
             iniciarEscutadoresCompletosEmpresa();
             configurarPerfil();
             renderizarMesasGrid();
@@ -1394,7 +1368,7 @@ window.carregarPerfisEmpresa = async function() {
         tbody.innerHTML = '';
 
         if(turnosCaixa.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Nenum turno encerrado registado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Nenhum turno encerrado registado.</td></tr>';
             return;
         }
 
@@ -1434,6 +1408,7 @@ window.carregarPerfisEmpresa = async function() {
 
     function renderizarMesasGrid() {
         let grid = document.getElementById('gridMesas');
+        if(!grid) return;
         grid.innerHTML = '';
         for(let m in mesas) {
             let temItens = mesas[m].length > 0;
@@ -1453,6 +1428,7 @@ window.carregarPerfisEmpresa = async function() {
 
     function atualizarDropdownProdutosCart() {
         let sel = document.getElementById('cartSelectProduto');
+        if(!sel) return;
         sel.innerHTML = '<option value="">-- Selecionar Produto --</option>';
         for(let p in stock) {
             sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
@@ -1502,6 +1478,7 @@ window.carregarPerfisEmpresa = async function() {
 
     window.renderizarCarrinho = function() {
         let tbody = document.getElementById('corpoCarrinho');
+        if(!tbody) return;
         tbody.innerHTML = '';
         let itens = mesas[mesaSelecionada] || [];
         let total = 0;
@@ -1921,32 +1898,38 @@ window.carregarPerfisEmpresa = async function() {
 
         let topSorted = Object.entries(topProds).sort((a,b) => b[1] - a[1]).slice(0, 5);
         let divTop = document.getElementById('listaTopProdutos');
-        divTop.innerHTML = '';
-        topSorted.forEach(([p, q], idx) => {
-            divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <span><b>${idx+1}. ${p.toUpperCase()}</b></span>
-                <span class="badge">${q} unidades</span>
-            </div>`;
-        });
+        if(divTop) {
+            divTop.innerHTML = '';
+            topSorted.forEach(([p, q], idx) => {
+                divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span><b>${idx+1}. ${p.toUpperCase()}</b></span>
+                    <span class="badge">${q} unidades</span>
+                </div>`;
+            });
+        }
 
         let tbodyHist = document.getElementById('corpoHistoricoAdmin');
-        tbodyHist.innerHTML = '';
-        histFiltrado.slice(-20).reverse().forEach(h => {
-            let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : '';
-            tbodyHist.innerHTML += `<tr>
-                <td>${h.data}</td>
-                <td><b style="text-transform:uppercase;">${h.usuario}</b></td>
-                <td><small>${resumo}</small></td>
-                <td><span class="badge">${h.metodo}</span></td>
-                <td style="font-weight:bold; color:var(--success);">${h.totalVenda.toFixed(2)} MT</td>
-            </tr>`;
-        });
+        if(tbodyHist) {
+            tbodyHist.innerHTML = '';
+            histFiltrado.slice(-20).reverse().forEach(h => {
+                let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : '';
+                tbodyHist.innerHTML += `<tr>
+                    <td>${h.data}</td>
+                    <td><b style="text-transform:uppercase;">${h.usuario}</b></td>
+                    <td><small>${resumo}</small></td>
+                    <td><span class="badge">${h.metodo}</span></td>
+                    <td style="font-weight:bold; color:var(--success);">${h.totalVenda.toFixed(2)} MT</td>
+                </tr>`;
+            });
+        }
 
         renderizarGraficoCanais(canais);
     };
 
     function renderizarGraficoCanais(canais) {
-        let ctx = document.getElementById('graficoCanaisPay').getContext('2d');
+        let elCanvas = document.getElementById('graficoCanaisPay');
+        if(!elCanvas) return;
+        let ctx = elCanvas.getContext('2d');
         if(chartInstance) chartInstance.destroy();
 
         chartInstance = new Chart(ctx, {
