@@ -987,17 +987,23 @@ const auth = getAuth(app); // Inicializa a autenticação ;
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
+window.loginPerfeito = function(u, evento) {
+    document.getElementById('usuario de login').value = u;
+    document.getElementById('loginPass').focus();
+
+    document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
+    if (evento && evento.currentTarget) evento.currentTarget.classList.add('ativo');
+};
+
 window.fazerLogin = async function() {
     let uName = document.getElementById('usuario de login').value.trim();
     let uPass = document.getElementById('loginPass').value.trim();
 
     if(!uName || !uPass) return alert("Por favor, preencha o usuário e a palavra-passe.");
 
-    // Gera um email fictício único baseado na empresa e usuário
     let emailLogin = `${uName.toLowerCase().replace(/\s+/g, '')}@${codigoEmpresa.toLowerCase()}.com`;
 
     try {
-        // Autentica diretamente no servidor do Firebase
         let userCredential = await signInWithEmailAndPassword(auth, emailLogin, uPass);
         usuarioAtual = userCredential.user;
 
@@ -1010,25 +1016,40 @@ window.fazerLogin = async function() {
         console.error("Erro de login:", error);
         alert("Palavra-passe incorreta ou erro ao autenticar no servidor.");
     }
-        if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
+};
 
-        if (usuarios[u] && usuarios[u].senha === p) {
-            usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
+window.carregarPerfisEmpresa = async function() {
+    let cod = document.getElementById('loginCodigoEmpresa') ? document.getElementById('loginCodigoEmpresa').value.trim().toUpperCase() : '';
+    if(!cod) return alert("Por favor, introduza o Código da Empresa.");
+
+    try {
+        let docRef = doc(db, "empresas", cod);
+        let docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            codigoEmpresa = cod;
+            let dados = docSnap.data();
+            let listaUsuarios = dados.usuarios || [];
             
-            document.getElementById('nomeEmpresaHeader').innerText = codigoEmpresa;
-            document.getElementById('nomeUsuarioLogado').innerText = u;
-            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : 'Operador de Caixa';
-            
-            let headerAvatar = document.getElementById('headerAvatarBox');
-            if(usuarioAtual.foto) {
-                headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
-            } else {
-                headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
+            let container = document.getElementById('containerPerfisLogin');
+            if(container) {
+                container.innerHTML = '';
+                listaUsuarios.forEach(u => {
+                    let card = document.createElement('div');
+                    card.className = 'card-perfil-login';
+                    card.innerText = u.nome;
+                    card.onclick = (e) => window.loginPerfeito(u.nome, e);
+                    container.appendChild(card);
+                });
             }
-
-            document.getElementById('telaLogin').style.display = 'none';
-            document.getElementById('telaSistema').style.display = 'block';
-            
+        } else {
+            alert("Empresa não encontrada no Firebase.");
+        }
+    } catch(err) {
+        console.error("Erro ao carregar perfis:", err);
+        alert("Erro ao ligar ao servidor para carregar perfis.");
+    }
+};
             iniciarEscutadoresCompletosEmpresa();
             configurarPerfil();
             renderizarMesasGrid();
