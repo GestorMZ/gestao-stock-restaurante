@@ -423,12 +423,12 @@
 
         <!-- ================= ABA 4: GESTÃO DE STOCK ================= -->
         <div id="abaStock" class="tab-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <h2>Gestão de Stock na Despensa</h2>
                 <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock para Excel</button>
             </div>
 
-            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Dar Entrada de Produtos no Stock (Compras / Reposição)</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -494,8 +494,15 @@
                 <button class="btn-success" onclick="window.salvarEntradaStock()">📥 Dar Entrada / Atualizar Stock</button>
             </div>
 
-            <h4>📦 Quantidade Atual de Produtos em Stock</h4>
-            <div class="table-responsive" style="margin-bottom:25px;">
+            <!-- TABELA DE STOCK COM FILTRO DE BUSCA E PAGINAÇÃO -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px;">
+                <h4 style="margin:0;">📦 Quantidade Atual de Produtos em Stock</h4>
+                <div style="max-width:250px; width:100%;">
+                    <input type="text" id="filtroBuscarStock" placeholder="🔍 Pesquisar produto..." oninput="window.mudarPaginaStock(1)" style="padding:6px 10px; font-size:0.85em;">
+                </div>
+            </div>
+
+            <div class="table-responsive" style="margin-bottom:10px;">
                 <table>
                     <thead>
                         <tr>
@@ -512,8 +519,27 @@
                 </table>
             </div>
 
+            <!-- CONTROLO DE PAGINAÇÃO DO STOCK -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
+                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualStock">1</span> de <span id="pagTotalStock">1</span></span>
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
+            </div>
+
+            <!-- HISTÓRICO DE MOVIMENTAÇÕES COM FILTRO E LIMPEZA DE ADMIN -->
             <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0;">📋 Histórico Completo de Movimentações do Stock (Entradas e Saídas)</h4>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                    <h4 style="margin:0;">📋 Histórico Completo de Movimentações do Stock</h4>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <select id="filtroTipoMovimentacao" onchange="window.renderizarMovimentacoesStock()" style="width:auto; padding:6px 10px; font-size:0.85em;">
+                            <option value="todos">Todas as Movimentações</option>
+                            <option value="ENTRADA">Apenas Entradas (Compras)</option>
+                            <option value="SAÍDA">Apenas Saídas (Vendas)</option>
+                        </select>
+                        <button class="btn-saida btn-sm col-admin" onclick="window.limparHistoricoMovimentacoesStock()">🗑️ Limpar Histórico</button>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -797,8 +823,7 @@
         <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
         <p style="margin:5px 0;">==============================</p>
     </div>
-</div>
-<!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
+    <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -838,6 +863,10 @@
     let mesaSelecionada = "Balcão";
     let chartInstance = null;
     let unsubscribes = [];
+
+    // Estado da Paginação do Stock
+    let paginaAtualStock = 1;
+    const ITENS_POR_PAGINA_STOCK = 8;
 
     // Ligar e verificar licença da empresa
     window.carregarPerfisEmpresa = async function() {
@@ -885,7 +914,6 @@
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
 
-            // Escutador em tempo real com leitor flexível de perfis
             let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), async (docSnap) => {
                 if (docSnap.exists()) {
                     let dadosDoc = docSnap.data();
@@ -1126,7 +1154,6 @@
         reader.readAsDataURL(file);
     }
 
-    // Criar novo utilizador com salvamento permanente no Firestore
     window.cadastrarUsuario = function() {
         let u = document.getElementById('novoUserNome').value.trim().toLowerCase();
         let p = document.getElementById('novoUserSenha').value;
@@ -1564,7 +1591,6 @@
         window.calcularTroco();
     };
 
-    // Remoção protegida no carrinho por palavra-passe do Administrador
     window.removerItemCarrinho = function(idx) {
         let itens = mesas[mesaSelecionada] || [];
         let item = itens[idx];
@@ -1881,13 +1907,34 @@
         alert("Stock e histórico atualizados!");
     };
 
+    // RENDERIZAÇÃO DO STOCK COM FILTRO DE PESQUISA E PAGINAÇÃO
     function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
         if(!tbody) return;
         tbody.innerHTML = '';
         let isAdmin = usuarioAtual && usuarioAtual.tipo === 'admin';
 
-        for(let p in stock) {
+        let termoBusca = (document.getElementById('filtroBuscarStock')?.value || '').trim().toLowerCase();
+
+        // Converte objeto de stock para array filtrado
+        let produtosFiltrados = Object.keys(stock).filter(p => p.toLowerCase().includes(termoBusca));
+
+        let totalPaginas = Math.ceil(produtosFiltrados.length / ITENS_POR_PAGINA_STOCK) || 1;
+        if(paginaAtualStock > totalPaginas) paginaAtualStock = totalPaginas;
+
+        document.getElementById('pagAtualStock').innerText = paginaAtualStock;
+        document.getElementById('pagTotalStock').innerText = totalPaginas;
+
+        let inicio = (paginaAtualStock - 1) * ITENS_POR_PAGINA_STOCK;
+        let fim = inicio + ITENS_POR_PAGINA_STOCK;
+        let itensPagina = produtosFiltrados.slice(inicio, fim);
+
+        if(itensPagina.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#666;">Nenhum produto encontrado em stock.</td></tr>';
+            return;
+        }
+
+        itensPagina.forEach(p => {
             let item = stock[p];
             let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
             let precoVenda = item.preco_venda || 0;
@@ -1906,20 +1953,42 @@
                 ${colFin}
                 ${colAdmin}
             </tr>`;
-        }
+        });
     }
 
+    // NAVEGAÇÃO DE PAGINAÇÃO NO STOCK
+    window.mudarPaginaStock = function(dir, ehAvancoDireto = false) {
+        if(ehAvancoDireto) {
+            paginaAtualStock++;
+        } else if(dir === 1 && document.getElementById('filtroBuscarStock')) {
+            paginaAtualStock = 1;
+        } else {
+            paginaAtualStock += dir;
+        }
+
+        if(paginaAtualStock < 1) paginaAtualStock = 1;
+        renderizarStock();
+    };
+
+    // RENDERIZAÇÃO DO HISTÓRICO COM FILTRO POR TIPO DE MOVIMENTO
     function renderizarMovimentacoesStock() {
         let tbody = document.getElementById('corpoMovimentacoesStock');
         if(!tbody) return;
         tbody.innerHTML = '';
 
-        if(movimentacoesStock.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Nenhuma movimentação registada.</td></tr>';
+        let filtroTipo = document.getElementById('filtroTipoMovimentacao')?.value || 'todos';
+
+        let listaFiltrada = movimentacoesStock.filter(m => {
+            if(filtroTipo === 'todos') return true;
+            return m.tipo.includes(filtroTipo);
+        });
+
+        if(listaFiltrada.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Nenhuma movimentação encontrada para o filtro selecionado.</td></tr>';
             return;
         }
 
-        movimentacoesStock.slice(-30).reverse().forEach(m => {
+        listaFiltrada.slice(-25).reverse().forEach(m => {
             let isEntrada = m.tipo.includes('ENTRADA');
             tbody.innerHTML += `<tr>
                 <td>${m.data}</td>
@@ -1933,6 +2002,20 @@
             </tr>`;
         });
     }
+
+    // LIMPEZA DO HISTÓRICO DE MOVIMENTAÇÕES (APENAS ADMINISTRADOR)
+    window.limparHistoricoMovimentacoesStock = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') {
+            return alert("Apenas o Administrador pode limpar o histórico de movimentações.");
+        }
+
+        if(confirm("⚠️ ATENÇÃO ADMINISTRADOR:\nTem certeza que deseja apagar todo o histórico de movimentações do stock? Esta ação é irreversível.")) {
+            movimentacoesStock = [];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), { lista: movimentacoesStock });
+            renderizarMovimentacoesStock();
+            alert("Histórico de movimentações limpo com sucesso!");
+        }
+    };
 
     function verificarAlertasStock() {
         let temCritico = false;
@@ -2173,3 +2256,4 @@
 
 </body>
 </html>
+</div>
