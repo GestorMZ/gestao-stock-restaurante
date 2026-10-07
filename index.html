@@ -100,6 +100,7 @@
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75em; font-weight: bold; background: #eee; }
         .badge-entrada { background: #d4edda; color: #155724; }
         .badge-saida { background: #f8d7da; color: #721c24; }
+        .badge-cancelado { background: #6c757d; color: white; text-decoration: line-through; }
 
         /* Mesas Grid */
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
@@ -151,7 +152,7 @@
             <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
                 <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
                 <div style="font-size:0.9em; line-height:1.6; color:#222;">
-                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
+                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)[cite: 1]<br>
                     • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>Valor da Mensalidade:</b> 1.500 MT
                 </div>
@@ -195,9 +196,9 @@
                     <small id="cargoUsuarioLogado" style="color:#666;"></small>
                 </div>
             </div>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu Digital</button>
-                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Chave Mestra</button>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
                 <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
             </div>
         </div>
@@ -526,17 +527,18 @@
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
             </div>
 
-            <!-- HISTÓRICO DE MOVIMENTAÇÕES COM FILTRO E LIMPEZA DE ADMIN -->
+            <!-- HISTÓRICO DE MOVIMENTAÇÕES COM FILTRO, PAGINAÇÃO E ELIMINAÇÃO (5 ITENS POR PÁGINA) -->
             <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
-                    <h4 style="margin:0;">📋 Histórico Completo de Movimentações do Stock</h4>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <select id="filtroTipoMovimentacao" onchange="window.renderizarMovimentacoesStock()" style="width:auto; padding:6px 10px; font-size:0.85em;">
+                    <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <select id="filtroTipoMovimentacao" onchange="window.mudarPaginaMovimentacao(1)" style="width:auto; padding:6px 10px; font-size:0.85em;">
                             <option value="todos">Todas as Movimentações</option>
                             <option value="ENTRADA">Apenas Entradas (Compras)</option>
                             <option value="SAÍDA">Apenas Saídas (Vendas)</option>
+                            <option value="DEVOLUÇÃO">Apenas Devoluções / Cancelamentos</option>
                         </select>
-                        <button class="btn-saida btn-sm col-admin" onclick="window.limparHistoricoMovimentacoesStock()">🗑️ Limpar Histórico</button>
+                        <button class="btn-saida btn-sm col-admin" onclick="window.limparHistoricoMovimentacoesStock()">🗑️ Apagar Tudo</button>
                     </div>
                 </div>
 
@@ -550,10 +552,18 @@
                                 <th>Quantidade</th>
                                 <th>Utilizador</th>
                                 <th>Detalhes / Origem</th>
+                                <th class="col-admin">Ação</th>
                             </tr>
                         </thead>
                         <tbody id="corpoMovimentacoesStock"></tbody>
                     </table>
+                </div>
+
+                <!-- PAGINAÇÃO DE MOVIMENTAÇÕES DE STOCK -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px;">
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
+                    <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(1, true)">Próxima ➡️</button>
                 </div>
             </div>
         </div>
@@ -617,7 +627,7 @@
                 <div class="table-responsive" style="margin-top:10px;">
                     <table>
                         <thead>
-                            <tr><th>Data/Hora</th><th>Mesa/Atend</th><th>Método</th><th>Itens Vendidos</th><th>Total (MT)</th></tr>
+                            <tr><th>Data/Hora</th><th>Mesa/Atend</th><th>Método</th><th>Itens Vendidos</th><th>Total (MT)</th><th>Ação Admin</th></tr>
                         </thead>
                         <tbody id="corpoDetalhesVendasPerfil"></tbody>
                     </table>
@@ -674,10 +684,10 @@
                 </div>
             </div>
 
-            <h4 style="margin-top:20px;">Histórico Geral de Transações</h4>
+            <h4 style="margin-top:20px;">Histórico Geral de Transações & Cancelamentos</h4>
             <div class="table-responsive">
                 <table>
-                    <thead><tr><th>Data/Hora</th><th>User</th><th>Detalhes</th><th>Tipo</th><th>Total</th></tr></thead>
+                    <thead><tr><th>Data/Hora</th><th>User</th><th>Detalhes</th><th>Tipo / Estado</th><th>Total</th><th>Ação Admin</th></tr></thead>
                     <tbody id="corpoHistoricoAdmin"></tbody>
                 </table>
             </div>
@@ -725,12 +735,23 @@
     </div>
 </div>
 
-<!-- MODAL DEFINIÇÕES E EMPRESA -->
+<!-- MODAL DEFINIÇÕES, EMPRESA E IMPRESSORA BLUETOOTH -->
 <div id="modalDefinicoes" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
-        <h3>⚙️ Definições do Sistema</h3>
+        <h3>⚙️ Definições & Conectar Impressora Bluetooth</h3>
         
+        <!-- SECCÃO CONEXÃO BLUETOOTH ESC/POS -->
+        <div style="background:#f8f9fa; border:2px dashed #007bff; padding:15px; border-radius:8px; margin-bottom:15px; text-align:center;">
+            <h4 style="margin-top:0; color:var(--primary);">🖨️ Impressora Térmica Bluetooth (ESC/POS)</h4>
+            <p style="font-size:0.85em; color:#555;">Conecte diretamente a sua impressora portátil de 58mm ou 80mm via Web Bluetooth API.</p>
+            <p id="statusBtPrinter" style="font-weight:bold; color:var(--danger);">Status: Desconectado 🔴</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn-primary btn-sm" onclick="window.conectarImpressoraBluetooth()">🔍 Conectar Impressora Bluetooth</button>
+                <button class="btn-warning btn-sm" onclick="window.testarImpressaoBluetooth()">🧪 Testar Impressão</button>
+            </div>
+        </div>
+
         <div id="seccaoEmpresaAdmin" style="display:none; background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #b6e0fe;">
             <h4 style="margin-top:0; color:var(--primary);">🏢 Dados do Restaurante, IVA & Chave Mestra</h4>
             <div class="form-group">
@@ -783,7 +804,7 @@
     </div>
 </div>
 
-<!-- ÁREA DE IMPRESSÃO (RECIBO FISCAL E PEDIDO DE COZINHA) -->
+<!-- ÁREA DE IMPRESSÃO (RECIBO FISCAL E PEDIDO DE COZINHA - NATIVO) -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
         <div style="text-align:center;">
@@ -823,7 +844,7 @@
         <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
         <p style="margin:5px 0;">==============================</p>
     </div>
-    <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA E LICENÇA -->
+    <!-- LÓGICA JAVASCRIPT & FIREBASE MULTI-TENANT COM IVA, BLUETOOTH E CANCELAMENTO -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -864,9 +885,15 @@
     let chartInstance = null;
     let unsubscribes = [];
 
-    // Estado da Paginação do Stock
+    // Paginação
     let paginaAtualStock = 1;
     const ITENS_POR_PAGINA_STOCK = 8;
+    let paginaAtualMov = 1;
+    const ITENS_POR_PAGINA_MOV = 5;
+
+    // Variáveis do Web Bluetooth
+    let bluetoothDevice = null;
+    let bluetoothCharacteristic = null;
 
     // Ligar e verificar licença da empresa
     window.carregarPerfisEmpresa = async function() {
@@ -1267,7 +1294,7 @@
 
         for(let u in usuarios) {
             let userObj = usuarios[u];
-            let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u);
+            let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
             let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
             let numVendas = vendasUser.length;
 
@@ -1302,18 +1329,24 @@
         let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u);
 
         if(vendasUser.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#666;">Nenhuma venda registada para este perfil.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Nenhuma venda registada para este perfil.</td></tr>';
             return;
         }
 
         vendasUser.forEach(v => {
             let resumoItens = v.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ');
+            let ehCancelado = v.status === 'cancelado';
             tbody.innerHTML += `<tr>
                 <td>${v.data}</td>
                 <td>${v.mesa || 'Balcão'}</td>
                 <td><span class="badge">${v.metodo}</span></td>
                 <td><small>${resumoItens}</small></td>
-                <td style="font-weight:bold; color:var(--success);">${v.totalVenda.toFixed(2)} MT</td>
+                <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
+                    ${v.totalVenda.toFixed(2)} MT ${ehCancelado ? '(CANCELADO)' : ''}
+                </td>
+                <td>
+                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin(${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
+                </td>
             </tr>`;
         });
     };
@@ -1340,7 +1373,7 @@
 
             let tAbertura = caixaEstado.timestampAbertura || 0;
 
-            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.metodo === 'Numerário' && (h.timestamp || 0) >= tAbertura)
+            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && h.metodo === 'Numerário' && (h.timestamp || 0) >= tAbertura)
                                      .reduce((acc, i) => acc + i.totalVenda, 0);
             let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura)
                                     .reduce((acc, i) => acc + i.valor, 0);
@@ -1398,7 +1431,7 @@
 
         let vendasNum = historico.filter(h => {
             let hTime = h.timestamp || 0;
-            return h.tipo === 'venda' && h.metodo === 'Numerário' && hTime >= tAbertura;
+            return h.tipo === 'venda' && h.status !== 'cancelado' && h.metodo === 'Numerário' && hTime >= tAbertura;
         }).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
 
         let totalDesp = despesas.filter(d => {
@@ -1663,6 +1696,7 @@
             if(stock[item.produto].qtd < 0.01) { stock[item.produto].qtd = 0; stock[item.produto].preco_total = 0; }
 
             movimentacoesStock.push({
+                id: Date.now() + Math.random(),
                 data: new Date().toLocaleString('pt-MZ'),
                 tipo: 'SAÍDA (VENDA)',
                 produto: item.produto,
@@ -1678,6 +1712,7 @@
             timestamp: Date.now(),
             usuario: usuarioAtual.nome,
             tipo: 'venda',
+            status: 'concluido',
             mesa: mesaSelecionada,
             itens,
             desconto: desc,
@@ -1706,7 +1741,12 @@
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), { lista: movimentacoesStock });
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "historico"), { lista: historico });
 
-        imprimirTalão(registo);
+        // Tentar Imprimir no Bluetooth se tiver conecção, senão imprime no navegador
+        if (bluetoothCharacteristic) {
+            window.imprimirReciboBluetoothESC(registo);
+        } else {
+            imprimirTalão(registo);
+        }
 
         let telWa = document.getElementById('cartTelefoneWa').value.trim();
         if(telWa) {
@@ -1722,6 +1762,60 @@
         renderizarMesasGrid();
         window.renderizarCarrinho();
         alert("Venda realizada com sucesso!");
+    };
+
+    // CANCELAMENTO / ANULAÇÃO DE VENDA PELO ADMINISTRADOR
+    window.cancelarVendaAdmin = async function(idVenda) {
+        if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
+            return alert("Apenas o Administrador pode cancelar vendas!");
+        }
+
+        let vIdx = historico.findIndex(h => h.id === idVenda);
+        if (vIdx === -1) return alert("Venda não encontrada.");
+
+        let venda = historico[vIdx];
+        if (venda.status === 'cancelado') return alert("Esta venda já se encontra cancelada.");
+
+        if (!confirm(`⚠️ ATENÇÃO ADMINISTRADOR:\nTem certeza que deseja cancelar a venda #${venda.id} no valor de ${venda.totalVenda.toFixed(2)} MT?\n\nOs produtos serão devolvidos automaticamente ao stock.`)) {
+            return;
+        }
+
+        // 1. Devolver itens ao stock
+        venda.itens.forEach(item => {
+            if (!stock[item.produto]) {
+                stock[item.produto] = { qtd: 0, preco_total: 0, preco_venda: item.precoUnit, min_alerta: 5 };
+            }
+            stock[item.produto].qtd += item.qtd;
+            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
+
+            movimentacoesStock.push({
+                id: Date.now() + Math.random(),
+                data: new Date().toLocaleString('pt-MZ'),
+                tipo: 'DEVOLUÇÃO (CANCELAMENTO)',
+                produto: item.produto,
+                qtd: item.qtd,
+                usuario: usuarioAtual.nome,
+                origem: `Cancelamento da Venda #${venda.id}`
+            });
+        });
+
+        // 2. Se a venda foi fiado, abater a dívida do cliente
+        if (venda.metodo === 'Fiado' && venda.clienteFiado) {
+            let cIdx = clientes.findIndex(c => c.nome === venda.clienteFiado);
+            if (cIdx !== -1) {
+                clientes[cIdx].divida = Math.max(0, (clientes[cIdx].divida || 0) - venda.totalVenda);
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+            }
+        }
+
+        // 3. Marcar a venda como cancelada
+        historico[vIdx].status = 'cancelado';
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), { lista: movimentacoesStock });
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "historico"), { lista: historico });
+
+        alert("✅ Venda cancelada com sucesso! O valor foi estornado e os produtos voltaram ao stock.");
     };
 
     window.imprimirGuiaCozinha = function() {
@@ -1779,6 +1873,80 @@
         document.getElementById('reciboTroco').innerText = (v.troco || 0).toFixed(2);
         window.print();
     }
+
+    // ================= FUNCIONALIDADE IMPRESSORA TÉRMICA BLUETOOTH (ESC/POS) =================
+    window.conectarImpressoraBluetooth = async function() {
+        if (!navigator.bluetooth) {
+            return alert("O seu navegador não suporta a Web Bluetooth API. Utilize o Google Chrome no Android ou PC.");
+        }
+
+        try {
+            document.getElementById('statusBtPrinter').innerText = "Procurando dispositivos... 🟡";
+            bluetoothDevice = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2']
+            });
+
+            const server = await bluetoothDevice.gatt.connect();
+            const services = await server.getPrimaryServices();
+            let service = services[0];
+            const characteristics = await service.getCharacteristics();
+            bluetoothCharacteristic = characteristics[0];
+
+            document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
+            alert("✅ Impressora Bluetooth ligada com sucesso!");
+        } catch (erro) {
+            console.error("Erro Bluetooth:", erro);
+            document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
+            alert("Não foi possível conectar à impressora Bluetooth.");
+        }
+    };
+
+    window.testarImpressaoBluetooth = async function() {
+        if (!bluetoothCharacteristic) return alert("Conecte primeiro uma impressora Bluetooth nas Definições.");
+        let encoder = new TextEncoder();
+        let texto = "\x1B\x40" + // reset
+                    "\x1B\x61\x01" + // centralizar
+                    "TESTE DE IMPRESSAO\n" +
+                    "RESTAURANTE PRO SaaS\n" +
+                    "--------------------------------\n\n\n\n";
+        await bluetoothCharacteristic.writeValue(encoder.encode(texto));
+    };
+
+    window.imprimirReciboBluetoothESC = async function(v) {
+        if (!bluetoothCharacteristic) return;
+        try {
+            let encoder = new TextEncoder();
+            let txt = "\x1B\x40" + // Reset
+                      "\x1B\x61\x01" + // Centralizar
+                      `${dadosEmpresa.nome || 'RESTAURANTE'}\n` +
+                      `NUIT: ${dadosEmpresa.nuit || '---'}\n` +
+                      `--------------------------------\n` +
+                      `COMPROVATIVO DE VENDA\n` +
+                      `${v.data}\n` +
+                      "\x1B\x61\x00" + // Alinhar à Esquerda
+                      `Mesa: ${v.mesa}\n` +
+                      `Atendido: ${v.usuario}\n` +
+                      `Pagamento: ${v.metodo}\n` +
+                      `--------------------------------\n`;
+
+            v.itens.forEach(i => {
+                txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`;
+            });
+
+            txt += `--------------------------------\n` +
+                   `TOTAL: ${v.totalVenda.toFixed(2)} MT\n` +
+                   `Entregue: ${v.valorEntregue.toFixed(2)} MT\n` +
+                   `Troco: ${v.troco.toFixed(2)} MT\n` +
+                   "\x1B\x61\x01" + // Centralizar
+                   `\n${dadosEmpresa.slogan || 'Obrigado pela preferencia!'}\n\n\n\n`;
+
+            await bluetoothCharacteristic.writeValue(encoder.encode(txt));
+        } catch (err) {
+            console.error("Erro ao imprimir via Bluetooth:", err);
+            imprimirTalão(v); // Fallback para impressão nativa do browser
+        }
+    };
 
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
@@ -1892,6 +2060,7 @@
         if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
         movimentacoesStock.push({
+            id: Date.now() + Math.random(),
             data: new Date().toLocaleString('pt-MZ'),
             tipo: 'ENTRADA (COMPRA)',
             produto: prod,
@@ -1907,7 +2076,6 @@
         alert("Stock e histórico atualizados!");
     };
 
-    // RENDERIZAÇÃO DO STOCK COM FILTRO DE PESQUISA E PAGINAÇÃO
     function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
         if(!tbody) return;
@@ -1916,7 +2084,6 @@
 
         let termoBusca = (document.getElementById('filtroBuscarStock')?.value || '').trim().toLowerCase();
 
-        // Converte objeto de stock para array filtrado
         let produtosFiltrados = Object.keys(stock).filter(p => p.toLowerCase().includes(termoBusca));
 
         let totalPaginas = Math.ceil(produtosFiltrados.length / ITENS_POR_PAGINA_STOCK) || 1;
@@ -1930,7 +2097,7 @@
         let itensPagina = produtosFiltrados.slice(inicio, fim);
 
         if(itensPagina.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#666;">Nenhum produto encontrado em stock.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#666;">Nenum produto encontrado em stock.</td></tr>';
             return;
         }
 
@@ -1956,7 +2123,6 @@
         });
     }
 
-    // NAVEGAÇÃO DE PAGINAÇÃO NO STOCK
     window.mudarPaginaStock = function(dir, ehAvancoDireto = false) {
         if(ehAvancoDireto) {
             paginaAtualStock++;
@@ -1970,7 +2136,7 @@
         renderizarStock();
     };
 
-    // RENDERIZAÇÃO DO HISTÓRICO COM FILTRO POR TIPO DE MOVIMENTO
+    // RENDERIZAÇÃO E PAGINAÇÃO DO HISTÓRICO DE MOVIMENTAÇÕES (5 ITENS POR PÁGINA)
     function renderizarMovimentacoesStock() {
         let tbody = document.getElementById('corpoMovimentacoesStock');
         if(!tbody) return;
@@ -1983,15 +2149,30 @@
             return m.tipo.includes(filtroTipo);
         });
 
-        if(listaFiltrada.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Nenhuma movimentação encontrada para o filtro selecionado.</td></tr>';
+        let totalPaginas = Math.ceil(listaFiltrada.length / ITENS_POR_PAGINA_MOV) || 1;
+        if(paginaAtualMov > totalPaginas) paginaAtualMov = totalPaginas;
+
+        document.getElementById('pagAtualMov').innerText = paginaAtualMov;
+        document.getElementById('pagTotalMov').innerText = totalPaginas;
+
+        let listaInvertida = listaFiltrada.slice().reverse();
+        let inicio = (paginaAtualMov - 1) * ITENS_POR_PAGINA_MOV;
+        let fim = inicio + ITENS_POR_PAGINA_MOV;
+        let itensPagina = listaInvertida.slice(inicio, fim);
+
+        if(itensPagina.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#666;">Nenhuma movimentação registada.</td></tr>';
             return;
         }
 
-        listaFiltrada.slice(-25).reverse().forEach(m => {
-            let isEntrada = m.tipo.includes('ENTRADA');
+        itensPagina.forEach((m) => {
+            let isEntrada = m.tipo.includes('ENTRADA') || m.tipo.includes('DEVOLUÇÃO');
+            let colAdminAcao = (usuarioAtual && usuarioAtual.tipo === 'admin') 
+                ? `<td><button class="btn-saida btn-sm" onclick="window.apagarMovimentacaoIndividual('${m.id}')">🗑️ Apagar</button></td>`
+                : `<td>-</td>`;
+
             tbody.innerHTML += `<tr>
-                <td>${m.data}</td>
+                <td><small>${m.data}</small></td>
                 <td><span class="badge ${isEntrada ? 'badge-entrada' : 'badge-saida'}">${m.tipo}</span></td>
                 <td><b>${m.produto.toUpperCase()}</b></td>
                 <td style="font-weight:bold; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">
@@ -1999,11 +2180,39 @@
                 </td>
                 <td><b style="text-transform:uppercase;">${m.usuario}</b></td>
                 <td><small>${m.origem || '-'}</small></td>
+                ${colAdminAcao}
             </tr>`;
         });
     }
 
-    // LIMPEZA DO HISTÓRICO DE MOVIMENTAÇÕES (APENAS ADMINISTRADOR)
+    window.mudarPaginaMovimentacao = function(dir, ehAvancoDireto = false) {
+        if(ehAvancoDireto) {
+            paginaAtualMov++;
+        } else if(dir === 1 && document.getElementById('filtroTipoMovimentacao')) {
+            paginaAtualMov = 1;
+        } else {
+            paginaAtualMov += dir;
+        }
+
+        if(paginaAtualMov < 1) paginaAtualMov = 1;
+        renderizarMovimentacoesStock();
+    };
+
+    // ELIMINAÇÃO INDIVIDUAL DE MOVIMENTAÇÃO PELO ADMIN
+    window.apagarMovimentacaoIndividual = async function(idMov) {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') {
+            return alert("Apenas o Administrador pode apagar registos de movimentação.");
+        }
+
+        if(confirm("Confirmar a remoção desta movimentação do histórico?")) {
+            movimentacoesStock = movimentacoesStock.filter(m => String(m.id) !== String(idMov));
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), { lista: movimentacoesStock });
+            renderizarMovimentacoesStock();
+            alert("Registo apagado!");
+        }
+    };
+
+    // LIMPEZA COMPLETA DO HISTÓRICO DE MOVIMENTAÇÕES PELO ADMIN
     window.limparHistoricoMovimentacoesStock = async function() {
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') {
             return alert("Apenas o Administrador pode limpar o histórico de movimentações.");
@@ -2044,7 +2253,7 @@
         let topProds = {};
 
         histFiltrado.forEach(h => {
-            if(h.tipo === 'venda') {
+            if(h.tipo === 'venda' && h.status !== 'cancelado') {
                 totalVendas += h.totalVenda;
                 totalCOGS += h.totalCusto;
                 if(h.metodo) canais[h.metodo] = (canais[h.metodo] || 0) + h.totalVenda;
@@ -2079,12 +2288,22 @@
             tbodyHist.innerHTML = '';
             histFiltrado.slice(-20).reverse().forEach(h => {
                 let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : '';
+                let ehCancelado = h.status === 'cancelado';
+
                 tbodyHist.innerHTML += `<tr>
-                    <td>${h.data}</td>
+                    <td><small>${h.data}</small></td>
                     <td><b style="text-transform:uppercase;">${h.usuario}</b></td>
                     <td><small>${resumo}</small></td>
-                    <td><span class="badge">${h.metodo}</span></td>
-                    <td style="font-weight:bold; color:var(--success);">${h.totalVenda.toFixed(2)} MT</td>
+                    <td>
+                        <span class="badge">${h.metodo}</span>
+                        ${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}
+                    </td>
+                    <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
+                        ${h.totalVenda.toFixed(2)} MT
+                    </td>
+                    <td>
+                        ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin(${h.id})">🚫 Cancelar</button>` : '-'}
+                    </td>
                 </tr>`;
             });
         }
@@ -2159,6 +2378,7 @@
         let dadosExcel = historico.map(item => ({
             "Empresa": codigoEmpresa,
             "Data": item.data,
+            "Estado": item.status || "concluido",
             "Utilizador": item.usuario,
             "Mesa": item.mesa || "Balcão",
             "Método": item.metodo,
