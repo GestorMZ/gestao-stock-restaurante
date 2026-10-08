@@ -1892,7 +1892,7 @@
         }
     };
 
-    window.finalizarVendaCarrinho = async function() {
+ window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
 
         let itens = mesas[mesaSelecionada] || [];
@@ -1903,7 +1903,7 @@
         let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
         let totalVenda = Math.max(0, totalSemDesc - desc);
 
-        // Se for Cortesia / Consumo da Casa, o valor cobrado ao cliente é 0 MT, mas guarda custo COGS
+        // Se for Cortesia / Consumo da Casa, o valor cobrado é 0 MT
         if (metodo === 'Cortesia') {
             totalVenda = 0;
             desc = totalSemDesc;
@@ -1934,7 +1934,7 @@
                 id: Date.now() + Math.random(),
                 data: new Date().toLocaleString('pt-MZ'),
                 timestamp: Date.now(),
-                tipo: método === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)',
+                tipo: metodo === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)', // Corrigido: metodo sem acento
                 produto: item.produto,
                 qtd: item.qtd,
                 usuario: usuarioAtual.nome,
@@ -2000,8 +2000,7 @@
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
         alert("✅ Venda concluída com sucesso!");
-    };
-
+    }; 
     window.cancelarVendaAdmin = async function(idDocVenda, idNumeric) {
         if (!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administradores!");
 
