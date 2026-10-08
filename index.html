@@ -31,8 +31,8 @@
             --light: #f4f7f6;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 12px; color: #222; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 12px; color: #222; transition: background 0.3s, color 0.3s; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: background 0.3s; }
         h2, h3, h4 { margin-top: 10px; color: var(--dark); }
         
         .tabs-nav { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; overflow-x: auto; padding-bottom: 5px; }
@@ -68,6 +68,9 @@
         .card-produto-pos { background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-produto-pos:hover { border-color: var(--primary); background: #e7f5ff; transform: scale(1.02); }
 
+        .cat-btn { background: #e9ecef; color: #333; border: 1px solid #ccc; font-size: 11px; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
+        .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
         .status-caixa-banner { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
         .caixa-aberto { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .caixa-fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
@@ -96,6 +99,7 @@
         .badge-entrada { background: #d4edda; color: #155724; }
         .badge-saida { background: #f8d7da; color: #721c24; }
         .badge-cancelado { background: #6c757d; color: white; text-decoration: line-through; }
+        .badge-cortesia { background: #e83e8c; color: white; }
 
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .card-mesa { background: #e9ecef; border: 2px solid #ced4da; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
@@ -105,6 +109,23 @@
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
         .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 8px; position: relative; }
         .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+
+        /* ESTILOS MODO NOTURNO (DARK MODE) */
+        body.dark-mode { background-color: #121212; color: #e0e0e0; }
+        body.dark-mode .container { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label { color: #e0e0e0; }
+        body.dark-mode input, body.dark-mode select { background: #2a2a2a; color: #fff; border-color: #444; }
+        body.dark-mode th { background-color: #2a2a2a; color: #fff; }
+        body.dark-mode td { border-bottom-color: #333; color: #ddd; }
+        body.dark-mode .card-stat, body.dark-mode .card-perfil-login, body.dark-mode .card-produto-pos { background: #2a2a2a; border-color: #444; color: #fff; }
+        body.dark-mode .header-usuario { background: #2a2a2a; color: #fff; }
+        body.dark-mode .tabs-nav { border-bottom-color: #444; }
+        body.dark-mode .tab-btn { background: #333; color: #ccc; }
+        body.dark-mode .tab-btn.active { background: var(--primary); color: #fff; }
+        body.dark-mode .modal-content { background: #1e1e1e; color: #fff; }
+        body.dark-mode .grid-produtos-pos { background: #2a2a2a; border-color: #444; }
+        body.dark-mode .cat-btn { background: #333; color: #ccc; border-color: #555; }
+        body.dark-mode .cat-btn.active { background: var(--primary); color: #fff; }
 
         #areaImpressao { display: none; }
         @media print {
@@ -122,6 +143,18 @@
 <body>
 
 <div class="container">
+
+    <!-- ECRÃ DE BLOQUEIO / MODO AUSENTE -->
+    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="max-width:350px; text-align:center; background:#fff; padding:25px; border-radius:12px;">
+            <h3 style="margin-top:0;">🔒 Ecrã Bloqueado</h3>
+            <p style="font-size:0.85em; color:#666;">Insira a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
+            <div class="form-group">
+                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
+            </div>
+            <button class="btn-primary" onclick="window.desbloquearEcra()">🔓 Desbloquear Sistema</button>
+        </div>
+    </div>
 
     <!-- ECRÃ DE LOGIN -->
     <div id="telaLogin" style="max-width:480px; margin:20px auto;">
@@ -187,6 +220,8 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
+                <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
                 <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
                 <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
                 <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
@@ -230,8 +265,19 @@
                 </div>
 
                 <div style="margin-top:12px;">
-                    <label style="font-weight:bold; color:var(--primary);">⭐ 8 Produtos Mais Comprados / Frequentes (Clique para Selecionar):</label>
-                    <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <label style="font-weight:bold; color:var(--primary);">⭐ Produtos Frequentes & Categorias:</label>
+                        <!-- FILTROS DE CATEGORIA NO POS -->
+                        <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
+                            <button class="cat-btn active" onclick="window.filtrarCategoriaPOS('todos', event)">Todos</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('bebidas', event)">🍺 Bebidas</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('pratos', event)">🍲 Pratos</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('petiscos', event)">🍟 Petiscos</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('outros', event)">🍷 Outros</button>
+                        </div>
+                    </div>
+
+                    <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px; margin-top:6px;">
                     <div id="gridProdutosVendaPOS" class="grid-produtos-pos"></div>
                 </div>
                 
@@ -275,6 +321,7 @@
                             <option value="e-Mola">📱 e-Mola</option>
                             <option value="POS">💳 POS (Cartão)</option>
                             <option value="Fiado">👥 Venda a Fiado (Conta Cliente)</option>
+                            <option value="Cortesia">🎁 Consumo da Casa / Cortesia (0 MT)</option>
                         </select>
                     </div>
                     <div class="form-group" id="boxSeletorClienteFiado" style="display:none;">
@@ -438,6 +485,15 @@
                         <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
                     </div>
                     <div class="form-group">
+                        <label>Categoria do Produto</label>
+                        <select id="simplesCategoria">
+                            <option value="bebidas">🍺 Bebidas</option>
+                            <option value="pratos">🍲 Pratos / Refeições</option>
+                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+                            <option value="outros">🍷 Outros / Diversos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Formato de Compra</label>
                         <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
                             <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
@@ -506,6 +562,7 @@
                     <thead>
                         <tr>
                             <th>Produto</th>
+                            <th>Categoria</th>
                             <th>Stock Atual</th>
                             <th>Mínimo Alerta</th>
                             <th>Preço Venda Unit.</th>
@@ -632,6 +689,10 @@
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
 
+            <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#ffeba2; color:#856404;">
+                ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
+            </div>
+
             <div class="form-row" style="background:#f1f3f5; padding:10px; border-radius:6px; align-items:center;">
                 <div class="form-group" style="margin:0;">
                     <label>Período de Análise:</label>
@@ -710,11 +771,19 @@
                 </table>
             </div>
 
-            <!-- Adicionado o Sistema de Paginação na Aba de Admin -->
+            <!-- Paginação do Histórico -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(1)">Próxima ➡️</button>
+            </div>
+
+            <h4 style="margin-top:25px; color:var(--purple);">🕵️ Registo de Auditoria & Segurança (Logs de Ações)</h4>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Data/Hora</th><th>Utilizador</th><th>Evento</th><th>Detalhes</th></tr></thead>
+                    <tbody id="corpoTabelaAuditLogs"></tbody>
+                </table>
             </div>
 
             <div style="margin-top:20px;">
@@ -872,7 +941,9 @@
         <p style="margin:5px 0;">==============================</p>
         <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
         <p style="margin:5px 0;">==============================</p>
-        <!-- INÍCIO DO MÓDULO JAVASCRIPT (PARTE 2) -->
+    </div>
+</div>
+<!-- INÍCIO DO MÓDULO JAVASCRIPT (PARTE 2) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -926,7 +997,7 @@
     };
 
     let codigoEmpresa = "";
-    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [];
+    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
     for(let i=1; i<=5; i++) mesas[`Mesa ${i}`] = [];
 
@@ -935,6 +1006,7 @@
 
     let usuarioAtual = null;
     let mesaSelecionada = "Balcão";
+    let categoriaPOSSelecionada = "todos";
     let chartInstance = null;
     let unsubscribes = [];
 
@@ -945,13 +1017,79 @@
     let paginaAtualTurnos = 1;
     const ITENS_POR_PAGINA_TURNOS = 5;
 
-    // Variáveis para a Paginação de 5 Itens do Histórico Admin
     let paginaAtualAdminHist = 1;
     const ITENS_POR_PAGINA_ADMIN_HIST = 5;
     let historicoDashFiltrado = [];
 
     let bluetoothDevice = null;
     let bluetoothCharacteristic = null;
+
+    // --- MODO NOTURNO (DARK MODE) & BLOQUEIO DE ECRÃ ---
+    window.alternarModoNoturno = function() {
+        window.tocarSom('click');
+        document.body.classList.toggle('dark-mode');
+        let ehDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('modoNoturno', ehDark ? 'sim' : 'nao');
+    };
+
+    if(localStorage.getItem('modoNoturno') === 'sim') {
+        document.body.classList.add('dark-mode');
+    }
+
+    window.bloquearEcra = function() {
+        if(!usuarioAtual) return;
+        window.tocarSom('alerta');
+        document.getElementById('lockUserNomeDisplay').innerText = usuarioAtual.nome;
+        document.getElementById('inputSenhaDesbloqueio').value = '';
+        document.getElementById('telaBloqueio').style.display = 'flex';
+        registarAuditLog('Bloqueio de Ecrã', `Ecrã bloqueado por ${usuarioAtual.nome}`);
+    };
+
+    window.desbloquearEcra = function() {
+        let pwd = document.getElementById('inputSenhaDesbloqueio').value;
+        if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
+            window.tocarSom('sucesso');
+            document.getElementById('telaBloqueio').style.display = 'none';
+            registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
+        } else {
+            window.tocarSom('alerta');
+            alert("Palavra-passe incorreta!");
+        }
+    };
+
+    // --- REGISTO DE AUDITORIA & LOGS ---
+    async function registarAuditLog(evento, detalhes) {
+        if(!codigoEmpresa || !usuarioAtual) return;
+        try {
+            await addDoc(collection(db, "empresas", codigoEmpresa, "auditLogs"), {
+                timestamp: Date.now(),
+                data: new Date().toLocaleString('pt-MZ'),
+                usuario: usuarioAtual.nome,
+                evento,
+                detalhes
+            });
+        } catch(e) { console.error("Erro ao guardar audit log:", e); }
+    }
+
+    function renderizarAuditLogs() {
+        let tbody = document.getElementById('corpoTabelaAuditLogs');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+
+        if(auditLogs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666;">Sem registos de auditoria.</td></tr>';
+            return;
+        }
+
+        auditLogs.slice(0, 30).forEach(log => {
+            tbody.innerHTML += `<tr>
+                <td><small>${log.data || '-'}</small></td>
+                <td><b style="text-transform:uppercase;">${log.usuario || '-'}</b></td>
+                <td><span class="badge" style="background:#6f42c1; color:white;">${log.evento || '-'}</span></td>
+                <td><small>${log.detalhes || '-'}</small></td>
+            </tr>`;
+        });
+    }
 
     window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
@@ -1047,6 +1185,12 @@
         unsubscribes.push(onSnapshot(qTurnos, (snapshot) => {
             turnosCaixa = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
             if (usuarioAtual) renderizarHistoricoTurnos();
+        }));
+
+        let qAudit = query(collection(db, "empresas", codigoEmpresa, "auditLogs"), orderBy("timestamp", "desc"), limit(100));
+        unsubscribes.push(onSnapshot(qAudit, (snapshot) => {
+            auditLogs = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
+            if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarAuditLogs();
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), (docSnap) => {
@@ -1177,7 +1321,12 @@
             renderizarEstadoCaixa();
             renderizarClientes();
             window.atualizarDashboard();
-            if(usuarioAtual.tipo === 'admin') renderizarUsuarios();
+            if(usuarioAtual.tipo === 'admin') {
+                renderizarUsuarios();
+                renderizarAuditLogs();
+            }
+
+            registarAuditLog('Login', `Sessão iniciada por ${u}`);
         } else {
             window.tocarSom('alerta');
             alert("Credenciais inválidas!");
@@ -1185,6 +1334,7 @@
     };
 
     window.fazerLogout = function() {
+        if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
         usuarioAtual = null;
         desconectarEscutadores();
         document.getElementById('telaSistema').style.display = 'none';
@@ -1218,6 +1368,7 @@
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
+            registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
             window.fecharModalResetSenha();
         } else {
             alert("Chave Mestra Incorreta!");
@@ -1278,6 +1429,7 @@
             document.getElementById('novoUserNome').value = '';
             document.getElementById('novoUserSenha').value = '';
             document.getElementById('novoUserFoto').value = '';
+            registarAuditLog('Perfil Criado', `Perfil '${u}' (${t}) criado`);
             alert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`);
         });
     };
@@ -1291,6 +1443,7 @@
                 listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
+            registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
             alert(`Perfil '${u.toUpperCase()}' removido.`);
         }
     };
@@ -1304,6 +1457,7 @@
                 listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
+            registarAuditLog('Senha Alterada', `Palavra-passe de '${u}' alterada por Admin`);
             alert(`Palavra-passe alterada!`);
         }
     };
@@ -1393,7 +1547,7 @@
 
     window.fecharDetalhesPerfil = function() { document.getElementById('seccaoDetalhesPerfil').style.display = 'none'; };
 
-    // CORREÇÃO APLICADA: Agrega vendas em espécie (Numerário) de TODOS OS PERFIS (incluindo Admin) do turno atual
+    // Agrega vendas em espécie de TODOS OS PERFIS do turno ativo
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -1410,7 +1564,6 @@
 
             let tAbertura = caixaEstado.timestampAbertura || 0;
             
-            // Soma de todas as vendas em espécie de TODOS OS UTILIZADORES no turno aberto
             let vendasNum = historico.filter(h => 
                 h.tipo === 'venda' && 
                 h.status !== 'cancelado' && 
@@ -1438,6 +1591,7 @@
         let fundo = parseFloat(document.getElementById('inputFundoManeio').value) || 0;
         caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), dataAbertura: new Date().toLocaleString('pt-MZ'), usuarioAbertura: usuarioAtual.nome };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
+        registarAuditLog('Caixa Aberto', `Caixa aberto com fundo inicial de ${fundo} MT`);
         alert("Caixa aberto com sucesso!");
     };
 
@@ -1448,7 +1602,6 @@
         let dataFecho = new Date().toLocaleString('pt-MZ');
         let tAbertura = caixaEstado.timestampAbertura || 0;
 
-        // Vendas totais em espécie no período do turno
         let vendasNum = historico.filter(h => 
             h.tipo === 'venda' && 
             h.status !== 'cancelado' && 
@@ -1479,6 +1632,8 @@
 
         caixaEstado = { aberto: false, fundo: 0 };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
+
+        registarAuditLog('Caixa Encerrado', `Fecho Cego - Contado: ${valContado} MT | Diferenca: ${diferenca} MT`);
 
         document.getElementById('inputFechoValorContado').value = '';
         window.tocarSom('sucesso');
@@ -1536,6 +1691,7 @@
 
         despesas.push({ id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') });
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: despesas });
+        registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
         alert("Despesa registada!");
@@ -1568,6 +1724,15 @@
         for(let p in stock) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
     }
 
+    // FILTRO POR CATEGORIA NO BALCÃO
+    window.filtrarCategoriaPOS = function(cat, evt) {
+        window.tocarSom('click');
+        categoriaPOSSelecionada = cat;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        if(evt && evt.target) evt.target.classList.add('active');
+        window.filtrarEExibirProdutosVenda();
+    };
+
     window.filtrarEExibirProdutosVenda = function() {
         let grid = document.getElementById('gridProdutosVendaPOS');
         let termo = (document.getElementById('cartPesquisaProduto')?.value || '').trim().toLowerCase();
@@ -1582,13 +1747,18 @@
             }
         });
 
-        let prods = Object.keys(stock).filter(p => p.toLowerCase().includes(termo));
+        let prods = Object.keys(stock).filter(p => {
+            let atendeNome = p.toLowerCase().includes(termo);
+            let atendeCat = (categoriaPOSSelecionada === 'todos') || (stock[p].categoria === categoriaPOSSelecionada);
+            return atendeNome && atendeCat;
+        });
+
         prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
 
         let prodsExibicao = termo ? prods : prods.slice(0, 8);
 
         if(prodsExibicao.length === 0) {
-            grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto em stock.</small>';
+            grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto nesta categoria.</small>';
             return;
         }
 
@@ -1677,14 +1847,18 @@
 
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
         let totalFinal = Math.max(0, total - desc);
+        
+        let met = document.getElementById('cartMetodoPagamento').value;
+        if(met === 'Cortesia') totalFinal = 0;
+
         let taxaIva = dadosEmpresa.aplicarIva === 'sim' ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
         let subtotalLiq = totalFinal / (1 + (taxaIva / 100));
         let valorIva = totalFinal - subtotalLiq;
 
         document.getElementById('cartTotalTexto').innerText = totalFinal.toFixed(2) + " MT";
-        document.getElementById('cartSubtotalIvaTexto').innerText = dadosEmpresa.aplicarIva === 'sim' 
+        document.getElementById('cartSubtotalIvaTexto').innerText = (dadosEmpresa.aplicarIva === 'sim' && met !== 'Cortesia') 
             ? `Base: ${subtotalLiq.toFixed(2)} MT | IVA (${taxaIva}%): ${valorIva.toFixed(2)} MT`
-            : `Isento de IVA`;
+            : `Isento de IVA / Cortesia`;
 
         window.calcularTroco();
     };
@@ -1698,6 +1872,7 @@
             mesas[mesaSelecionada].splice(idx, 1);
             renderizarMesasGrid();
             window.renderizarCarrinho();
+            registarAuditLog('Item Removido Carrinho', `Admin removeu ${item.produto} do carrinho`);
             return;
         }
 
@@ -1711,6 +1886,7 @@
             mesas[mesaSelecionada].splice(idx, 1);
             renderizarMesasGrid();
             window.renderizarCarrinho();
+            registarAuditLog('Item Removido Carrinho', `Operador com autorizacao removeu ${item.produto}`);
         } else {
             alert("❌ Senha incorreta!");
         }
@@ -1726,9 +1902,16 @@
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
         let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
         let totalVenda = Math.max(0, totalSemDesc - desc);
+
+        // Se for Cortesia / Consumo da Casa, o valor cobrado ao cliente é 0 MT, mas guarda custo COGS
+        if (metodo === 'Cortesia') {
+            totalVenda = 0;
+            desc = totalSemDesc;
+        }
+
         let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
 
-        let taxaIva = dadosEmpresa.aplicarIva === 'sim' ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
+        let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
         let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
         let valorIva = totalVenda - subtotalLiq;
 
@@ -1751,11 +1934,11 @@
                 id: Date.now() + Math.random(),
                 data: new Date().toLocaleString('pt-MZ'),
                 timestamp: Date.now(),
-                tipo: 'SAÍDA (VENDA)',
+                tipo: método === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)',
                 produto: item.produto,
                 qtd: item.qtd,
                 usuario: usuarioAtual.nome,
-                origem: `Venda ${mesaSelecionada} (${metodo})`
+                origem: `${metodo === 'Cortesia' ? 'Cortesia' : 'Venda'} ${mesaSelecionada}`
             });
         }
 
@@ -1791,6 +1974,8 @@
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+        registarAuditLog('Venda Concluída', `Venda #${registoVenda.id} (${metodo}) - Total: ${totalVenda} MT`);
 
         window.tocarSom('sucesso');
 
@@ -1829,7 +2014,7 @@
         if (!confirm(`ADMINISTRADOR: Cancelar venda #${venda.id} de ${venda.totalVenda.toFixed(2)} MT?`)) return;
 
         for (let item of venda.itens) {
-            if (!stock[item.produto]) stock[item.produto] = { qtd: 0, preco_total: 0, preco_venda: item.precoUnit, min_alerta: 5 };
+            if (!stock[item.produto]) stock[item.produto] = { qtd: 0, preco_total: 0, preco_venda: item.precoUnit, min_alerta: 5, categoria: 'outros' };
             stock[item.produto].qtd += item.qtd;
             stock[item.produto].preco_total += (item.qtd * item.custoUnit);
 
@@ -1849,6 +2034,8 @@
             await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", venda.idDoc), { status: 'cancelado' }, { merge: true });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+        registarAuditLog('Venda Cancelada', `Venda #${venda.id} cancelada por Admin`);
 
         filtrarEExibirProdutosVenda();
         alert("✅ Venda cancelada e produtos repostos ao stock!");
@@ -1990,6 +2177,7 @@
         if(val > 0) {
             c.divida = Math.max(0, c.divida - val);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+            registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
             alert("Pagamento registado!");
         }
     };
@@ -2004,6 +2192,7 @@
     window.alternarCampoClienteFiado = function() {
         let met = document.getElementById('cartMetodoPagamento').value;
         document.getElementById('boxSeletorClienteFiado').style.display = (met === 'Fiado') ? 'block' : 'none';
+        window.renderizarCarrinho();
     };
 
     window.calcularPrecosEntrada = function() {
@@ -2042,6 +2231,7 @@
         let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
         if(!prod) return alert("Digite o nome do produto.");
 
+        let cat = document.getElementById('simplesCategoria').value || 'outros';
         let modoCompra = document.getElementById('simplesModoCompra').value;
         let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
         let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
@@ -2060,11 +2250,12 @@
             totalCusto = totalUnidades * custoUnit;
         }
 
-        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta };
+        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat };
 
         stock[prod].qtd += totalUnidades;
         stock[prod].preco_total += totalCusto;
         stock[prod].min_alerta = minAlerta;
+        stock[prod].categoria = cat;
         if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -2079,6 +2270,8 @@
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}'`);
 
         document.getElementById('simplesProduto').value = '';
         filtrarEExibirProdutosVenda();
@@ -2105,7 +2298,7 @@
         let itensPagina = produtosFiltrados.slice(inicio, fim);
 
         if(itensPagina.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#666;">Nenhum produto em stock.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Nenhum produto em stock.</td></tr>';
             return;
         }
 
@@ -2122,6 +2315,7 @@
 
             tbody.innerHTML += `<tr>
                 <td><b>${p.toUpperCase()}</b></td>
+                <td><span class="badge" style="background:#e9ecef; color:#333;">${(item.categoria||'outros').toUpperCase()}</span></td>
                 <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
                 <td>${item.min_alerta || 5}</td>
                 <td><b>${precoVenda.toFixed(2)} MT</b></td>
@@ -2200,6 +2394,7 @@
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
         if(confirm("Confirmar a remoção do registo?")) {
             await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
+            registarAuditLog('Movimentação Apagada', `Removido registo de movimentação #${idDocMov}`);
             alert("Registo removido!");
         }
     };
@@ -2217,12 +2412,13 @@
         if(confirm(`Apagar o produto ${p.toUpperCase()} do stock?`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            registarAuditLog('Produto Removido', `Produto '${p}' apagado do stock`);
             filtrarEExibirProdutosVenda();
             renderizarStock();
         }
     };
 
-    // FUNÇÕES DE PAGINAÇÃO DO HISTÓRICO ADMIN (5 ITENS POR PÁGINA)
+    // PAGINAÇÃO DO HISTÓRICO ADMIN (5 ITENS POR PÁGINA)
     window.mudarPaginaAdminHist = function(dir) {
         window.tocarSom('click');
         paginaAtualAdminHist += dir;
@@ -2257,9 +2453,12 @@
         itensPagina.forEach(h => {
             let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : (h.detalhes || '-');
             let ehCancelado = h.status === 'cancelado';
+            let ehCortesia = h.metodo === 'Cortesia';
 
             if(h.metodo === 'Numerário') {
                 resumo += " <b style='color:var(--success);'>[💵 Espécie]</b>";
+            } else if(ehCortesia) {
+                resumo += " <b style='color:#e83e8c;'>[🎁 Cortesia]</b>";
             }
 
             tbodyHist.innerHTML += `<tr>
@@ -2267,7 +2466,7 @@
                 <td><b style="text-transform:uppercase;">${h.usuario || '-'}</b></td>
                 <td><small>${resumo}</small></td>
                 <td>
-                    <span class="badge">${h.metodo || 'Venda'}</span>
+                    <span class="badge ${ehCortesia ? 'badge-cortesia' : ''}">${h.metodo || 'Venda'}</span>
                     ${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}
                 </td>
                 <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
@@ -2300,8 +2499,22 @@
         });
 
         let totalVendas = 0, totalCOGS = 0;
-        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0 };
+        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia': 0 };
         let topProds = {};
+
+        // Verificação de Cancelamentos em Excesso no Turno Ativo
+        let tAbertura = caixaEstado.timestampAbertura || 0;
+        let cancelamentosNoTurno = historico.filter(h => h.status === 'cancelado' && (h.timestamp || 0) >= tAbertura).length;
+        
+        let boxAlertaCanc = document.getElementById('boxAlertaCancelamentosMuitos');
+        if(boxAlertaCanc) {
+            if(caixaEstado.aberto && cancelamentosNoTurno >= 3) {
+                boxAlertaCanc.style.display = 'block';
+                document.getElementById('numCancelamentosDetetados').innerText = cancelamentosNoTurno;
+            } else {
+                boxAlertaCanc.style.display = 'none';
+            }
+        }
 
         historicoDashFiltrado.forEach(h => {
             if(h.tipo === 'venda' && h.status !== 'cancelado') {
@@ -2354,9 +2567,9 @@
         chartInstance = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: Object.keys(canais),
+                labels: ['M-Pesa', 'e-Mola', 'POS', 'Numerário', 'Fiado'],
                 datasets: [{
-                    data: Object.values(canais),
+                    data: [canais['M-Pesa']||0, canais['e-Mola']||0, canais['POS']||0, canais['Numerário']||0, canais['Fiado']||0],
                     backgroundColor: ['#6f42c1', '#fd7e14', '#007bff', '#28a745', '#dc3545']
                 }]
             },
@@ -2377,6 +2590,7 @@
             clientes,
             despesas,
             turnosCaixa,
+            auditLogs,
             dadosEmpresa: {
                 nome: dadosEmpresa.nome, nuit: dadosEmpresa.nuit, endereco: dadosEmpresa.endereco, telefone: dadosEmpresa.telefone, slogan: dadosEmpresa.slogan
             },
@@ -2415,6 +2629,7 @@
             dadosStock.push({
                 "Empresa": codigoEmpresa,
                 "Produto": p.toUpperCase(),
+                "Categoria": (item.categoria||'outros').toUpperCase(),
                 "Stock": item.qtd,
                 "Custo Unit. (MT)": custoMedio.toFixed(2),
                 "Preço Venda (MT)": (item.preco_venda||0).toFixed(2)
@@ -2466,6 +2681,7 @@
             taxaIva: parseFloat(document.getElementById('cfgTaxaIva').value) || 16
         };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
+        registarAuditLog('Empresa Atualizada', 'Dados da empresa e Chave Mestra alterados');
         alert("Dados salvos com sucesso!");
     };
 
@@ -2479,11 +2695,10 @@
             listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
+        registarAuditLog('Senha Pessoal Alterada', `Palavra-passe pessoal alterada por ${usuarioAtual.nome}`);
         alert("Palavra-passe alterada!");
     };
 </script>
 
 </body>
 </html>
-    </div>
-</div>
