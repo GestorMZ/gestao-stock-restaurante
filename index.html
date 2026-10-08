@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-title" content="Restaurante Pro">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <!-- Bibliotecas Externas (Excel, Gráficos e QR Code) -->
+    <!-- Bibliotecas Externas -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -35,7 +35,6 @@
         .container { max-width: 1100px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         h2, h3, h4 { margin-top: 10px; color: var(--dark); }
         
-        /* Navegação por Abas */
         .tabs-nav { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; overflow-x: auto; padding-bottom: 5px; }
         .tab-btn { background: #e9ecef; color: #495057; border: none; padding: 10px 16px; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.2s; }
         .tab-btn.active { background: var(--primary); color: white; }
@@ -43,25 +42,21 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Formulários e Inputs */
         .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
         .form-group { flex: 1; min-width: 180px; margin-bottom: 8px; }
         label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.85em; color: #555; }
         input, select, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         
-        /* Botões */
         button { background-color: var(--primary); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
         button:hover { opacity: 0.9; }
         .btn-saida { background-color: var(--danger); }
         .btn-success { background-color: var(--success); }
         .btn-warning { background-color: var(--warning); color: white; }
         .btn-excel { background-color: #1d6f42; color: white; }
-        .btn-whatsapp { background-color: #25D366; color: white; }
         .btn-purple { background-color: var(--purple); color: white; }
         .btn-dark { background-color: #555; }
         .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; margin: 0; }
 
-        /* Perfis de Utilizadores */
         .grid-perfis-login { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; justify-content: center; margin-bottom: 20px; }
         .card-perfil-login { background: #f8f9fa; border: 2px solid #e9ecef; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #e7f5ff; transform: translateY(-2px); }
@@ -69,24 +64,20 @@
         .avatar-placeholder { width: 55px; height: 55px; border-radius: 50%; background: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; margin: 0 auto 6px auto; }
         .btn-mais-perfis { background: #fff4e6; color: #d9480f; border: 2px solid #ffd8a8; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* Grid de 8 Produtos Mais Frequentes */
         .grid-produtos-pos { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; max-height: 220px; overflow-y: auto; margin-bottom: 12px; padding: 6px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
         .card-produto-pos { background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-produto-pos:hover { border-color: var(--primary); background: #e7f5ff; transform: scale(1.02); }
 
-        /* Status do Caixa Banner */
         .status-caixa-banner { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
         .caixa-aberto { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .caixa-fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-        /* Resumos e Alertas */
         .box-calculo-lucro { background: #e7f5ff; border: 1px solid #74c0fc; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
         .alerta-stock-box { background: #fff3cd; border: 1px solid #ffeba2; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; }
         .alerta-caixa-bloqueio { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; display: none; }
 
         .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #e9ecef; padding: 12px 18px; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
 
-        /* Cards do Dashboard */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 15px 0; }
         .card-stat { background: #f8f9fa; padding: 14px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
         .card-stat.verde { border-left-color: var(--success); }
@@ -96,7 +87,6 @@
         .card-stat h4 { margin: 0 0 5px 0; font-size: 0.8em; text-transform: uppercase; color: #666; }
         .card-stat .valor-card { font-size: 1.2em; font-weight: bold; }
 
-        /* Tabelas */
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
         th, td { padding: 9px; text-align: left; border-bottom: 1px solid #eee; }
@@ -107,13 +97,11 @@
         .badge-saida { background: #f8d7da; color: #721c24; }
         .badge-cancelado { background: #6c757d; color: white; text-decoration: line-through; }
 
-        /* Mesas Grid (5 Mesas) */
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .card-mesa { background: #e9ecef; border: 2px solid #ced4da; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
         .card-mesa.ocupada { background: #ffe3e3; border-color: var(--danger); color: var(--danger); }
         .card-mesa.selecionada { border-color: var(--primary); background: #e7f5ff; }
 
-        /* Modais */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
         .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 8px; position: relative; }
         .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
@@ -135,7 +123,7 @@
 
 <div class="container">
 
-    <!-- ECRÃ DE LOGIN MULTI-TENANT -->
+    <!-- ECRÃ DE LOGIN -->
     <div id="telaLogin" style="max-width:480px; margin:20px auto;">
         <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
         <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
@@ -168,7 +156,6 @@
 
         <div id="seccaoPerfisEForm" style="display:none;">
             <p style="text-align:center; font-size:0.85em; color:#666;">Selecione o seu perfil:</p>
-            
             <div id="gridPerfisLogin" class="grid-perfis-login"></div>
 
             <div class="form-group">
@@ -187,7 +174,7 @@
         </div>
     </div>
 
-    <!-- ECRÃ PRINCIPAL DO SISTEMA -->
+    <!-- ECRÃ PRINCIPAL -->
     <div id="telaSistema" style="display:none;">
         
         <div class="header-usuario">
@@ -242,7 +229,6 @@
                     <button class="btn-dark btn-sm" onclick="window.selecionarMesa('Balcão')">Limpar para Balcão</button>
                 </div>
 
-                <!-- GRID DOS 8 PRODUTOS MAIS FREQUENTES -->
                 <div style="margin-top:12px;">
                     <label style="font-weight:bold; color:var(--primary);">⭐ 8 Produtos Mais Comprados / Frequentes (Clique para Selecionar):</label>
                     <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px;">
@@ -325,7 +311,7 @@
             </div>
         </div>
 
-        <!-- ABA 2: CAIXA, DESPESAS & TURNOS (PAGINAÇÃO DE 5 EM 5) -->
+        <!-- ABA 2: CAIXA, DESPESAS & TURNOS -->
         <div id="abaCaixa" class="tab-content">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
@@ -377,7 +363,6 @@
                 </div>
             </div>
 
-            <!-- HISTÓRICO DE TURNOS - LIMITADO A 5 POR PÁGINA -->
             <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos (5 por página)</h4>
                 <div class="table-responsive">
@@ -539,7 +524,6 @@
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
             </div>
 
-            <!-- HISTÓRICO DE MOVIMENTAÇÕES DE STOCK (5 POR PÁGINA) -->
             <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
                     <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
@@ -644,7 +628,7 @@
             </div>
         </div>
 
-        <!-- ABA 6: DASHBOARD & CARTEIRAS DIGITAIS (ADMIN) -->
+        <!-- ABA 6: DASHBOARD & CARTEIRAS DIGITAIS -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
 
@@ -663,7 +647,6 @@
                 </div>
             </div>
 
-            <!-- CARDS DE SALDOS DAS CARTEIRAS DIGITAIS DA EMPRESA -->
             <h4 style="margin-top:15px; color:var(--primary);">📲 Saldos Acumulados por Carteiras Digitais e Caixas</h4>
             <div class="cards-grid">
                 <div class="card-stat roxo">
@@ -776,7 +759,7 @@
     </div>
 </div>
 
-<!-- MODAL DEFINIÇÕES & BLUETOOTH -->
+<!-- MODAL DEFINIÇÕES -->
 <div id="modalDefinicoes" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
@@ -843,7 +826,7 @@
     </div>
 </div>
 
-<!-- ÁREA DE IMPRESSÃO FISCAL / COZINHA -->
+<!-- ÁREA DE IMPRESSÃO -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
         <div style="text-align:center;">
@@ -885,14 +868,12 @@
     </div>
 </div>
 
-<!-- MÓDULO JAVASCRIPT & FIREBASE MULTI-TENANT COM AUTENTICAÇÃO -->
+<!-- INÍCIO DO MÓDULO JAVASCRIPT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    
-    // IMPORT DO FIREBASE AUTH PARA SEGURANÇA
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -908,22 +889,10 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ATIVAÇÃO DA SESSÃO ANÓNIMA DE SEGURANÇA DO FIREBASE
-    signInAnonymously(auth)
-      .then((userCredential) => {
-        console.log("🔒 Autenticação de Segurança Firebase ativa! UID:", userCredential.user.uid);
-      })
-      .catch((error) => {
-        console.error("⚠️ Erro na autenticação de segurança:", error.message);
-      });
+    signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
 
-    // 1. RESILIÊNCIA OFFLINE (INDEXEDDB)
-    enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code == 'failed-precondition') console.warn('Offline: Múltiplas abas abertas.');
-        else if (err.code == 'unimplemented') console.warn('Navegador sem suporte a IndexedDB.');
-    });
+    enableIndexedDbPersistence(db).catch(() => {});
 
-    // 2. SINTETIZADOR DE SONS (EFEITOS DE UX)
     window.tocarSom = function(tipo) {
         try {
             let ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -937,44 +906,34 @@
                 osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
                 gain.gain.setValueAtTime(0.2, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.25);
+                osc.start(); osc.stop(ctx.currentTime + 0.25);
             } else if (tipo === 'click') {
                 osc.frequency.setValueAtTime(440, ctx.currentTime);
                 gain.gain.setValueAtTime(0.08, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.04);
+                osc.start(); osc.stop(ctx.currentTime + 0.04);
             } else if (tipo === 'alerta') {
                 osc.frequency.setValueAtTime(220, ctx.currentTime);
                 gain.gain.setValueAtTime(0.25, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
+                osc.start(); osc.stop(ctx.currentTime + 0.3);
             }
         } catch(e) {}
     };
 
-    // ESTADO GLOBAL DA APLICAÇÃO
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [];
-    
-    // REDUZIDO PARA EXATAMENTE 5 MESAS (+ BALCÃO)
     let mesas = { "Balcão": [] };
     for(let i=1; i<=5; i++) mesas[`Mesa ${i}`] = [];
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
-    
-    let dadosEmpresa = { 
-        nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16
-    };
+    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16 };
 
     let usuarioAtual = null;
     let mesaSelecionada = "Balcão";
     let chartInstance = null;
     let unsubscribes = [];
 
-    // PAGINAÇÕES
     let paginaAtualStock = 1;
     const ITENS_POR_PAGINA_STOCK = 8;
     let paginaAtualMov = 1;
@@ -985,7 +944,6 @@
     let bluetoothDevice = null;
     let bluetoothCharacteristic = null;
 
-    // VALIDAR LICENÇA E PERFIS DA EMPRESA
     window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
         let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
@@ -1046,11 +1004,9 @@
         }
     };
 
-    // ESCUTADORES FIRESTORE USANDO SUBCOLEÇÕES ESCALÁVEIS
     function iniciarEscutadoresCompletosEmpresa() {
         if(!codigoEmpresa) return;
 
-        // Stock
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "stock"), (docSnap) => {
             stock = docSnap.exists() ? docSnap.data() : {};
             if (usuarioAtual) { 
@@ -1061,7 +1017,6 @@
             }
         }));
 
-        // SUBCOLEÇÃO: Vendas
         let qVendas = query(collection(db, "empresas", codigoEmpresa, "vendas"), orderBy("timestamp", "desc"), limit(500));
         unsubscribes.push(onSnapshot(qVendas, (snapshot) => {
             historico = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
@@ -1073,39 +1028,33 @@
             }
         }));
 
-        // SUBCOLEÇÃO: Movimentações
         let qMov = query(collection(db, "empresas", codigoEmpresa, "movimentacoes"), orderBy("timestamp", "desc"), limit(200));
         unsubscribes.push(onSnapshot(qMov, (snapshot) => {
             movimentacoesStock = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
             if (usuarioAtual) renderizarMovimentacoesStock();
         }));
 
-        // SUBCOLEÇÃO: Turnos
         let qTurnos = query(collection(db, "empresas", codigoEmpresa, "turnos"), orderBy("id", "desc"), limit(100));
         unsubscribes.push(onSnapshot(qTurnos, (snapshot) => {
             turnosCaixa = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
             if (usuarioAtual) renderizarHistoricoTurnos();
         }));
 
-        // Clientes
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), (docSnap) => {
             clientes = docSnap.exists() ? (docSnap.data().lista || []) : [];
             if (usuarioAtual) { renderizarClientes(); atualizarDropdownClientesFiado(); }
         }));
 
-        // Caixa Estado
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), (docSnap) => {
             caixaEstado = docSnap.exists() ? docSnap.data() : { aberto: false, fundo: 0 };
             if (usuarioAtual) renderizarEstadoCaixa();
         }));
 
-        // Despesas
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), (docSnap) => {
             despesas = docSnap.exists() ? (docSnap.data().lista || []) : [];
             if (usuarioAtual) renderizarEstadoCaixa();
         }));
 
-        // Dados Empresa
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), (docSnap) => {
             if (docSnap.exists()) {
                 dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
@@ -1191,7 +1140,7 @@
 
         if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
 
-        if (usuarios[u] && usuarios[u].senha === p) {
+        if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
             window.tocarSom('sucesso');
             usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
             
@@ -1281,9 +1230,7 @@
         if (event && event.target) event.target.classList.add('active');
         document.getElementById(abaId).classList.add('active');
         if(abaId === 'abaDashboard') window.atualizarDashboard();
-        if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-        // GESTÃO DE PERFIS COM FOTO
-    function processarFotoAvatar(file, callback) {
+        function processarFotoAvatar(file, callback) {
         if (!file) return callback("");
         let reader = new FileReader();
         reader.onload = function(e) {
@@ -1434,7 +1381,6 @@
 
     window.fecharDetalhesPerfil = function() { document.getElementById('seccaoDetalhesPerfil').style.display = 'none'; };
 
-    // CAIXA, DESPESAS E TURNOS (PAGINAÇÃO DE 5 EM 5)
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -1567,7 +1513,6 @@
         alert("Despesa registada!");
     };
 
-    // MESAS E ATENDIMENTO POS
     function renderizarMesasGrid() {
         let grid = document.getElementById('gridMesas');
         if(!grid) return;
@@ -1595,7 +1540,6 @@
         for(let p in stock) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
     }
 
-    // EXIBE OS 8 PRODUTOS MAIS FREQUENTES NO POS
     window.filtrarEExibirProdutosVenda = function() {
         let grid = document.getElementById('gridProdutosVendaPOS');
         let termo = (document.getElementById('cartPesquisaProduto')?.value || '').trim().toLowerCase();
@@ -1732,7 +1676,7 @@
         let senhaAdmin = prompt(`🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para remover ${item.produto.toUpperCase()}:`);
         let autorizacao = false;
         for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && usuarios[u].senha === senhaAdmin?.trim()) { autorizacao = true; break; }
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
         }
 
         if (autorizacao) {
@@ -1933,7 +1877,6 @@
         window.print();
     }
 
-    // IMPRESSORA BLUETOOTH ESC/POS
     window.conectarImpressoraBluetooth = async function() {
         if (!navigator.bluetooth) return alert("Navegador não suporta Bluetooth API.");
         try {
@@ -1985,7 +1928,6 @@
         } catch (err) { imprimirTalão(v); }
     };
 
-    // CLIENTES & FIADO
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
@@ -2036,7 +1978,6 @@
         document.getElementById('boxSeletorClienteFiado').style.display = (met === 'Fiado') ? 'block' : 'none';
     };
 
-    // STOCK E COMPRAS
     window.calcularPrecosEntrada = function() {
         let modoCompra = document.getElementById('simplesModoCompra').value;
         let totalUnidades = 0, custoUnitario = 0;
@@ -2171,7 +2112,6 @@
         renderizarStock();
     };
 
-    // MOVIMENTAÇÕES DE STOCK (5 POR PÁGINA)
     function renderizarMovimentacoesStock() {
         let tbody = document.getElementById('corpoMovimentacoesStock');
         if(!tbody) return;
@@ -2254,7 +2194,6 @@
         }
     };
 
-    // DASHBOARD ADMIN - PAINEL FINANCEIRO E CARTEIRAS DIGITAIS
     window.atualizarDashboard = function() {
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return;
 
@@ -2285,14 +2224,12 @@
 
         let totalDesp = despesas.reduce((acc, i) => acc + i.valor, 0);
 
-        // SALDOS POR CARTEIRA DIGITAL
         document.getElementById('dashValMpesa').innerText = (canais['M-Pesa'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValEmola').innerText = (canais['e-Mola'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValPOS').innerText = (canais['POS'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValNumerario').innerText = (canais['Numerário'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValFiado').innerText = (canais['Fiado'] || 0).toFixed(2) + " MT";
 
-        // TOTAIS GERAIS
         document.getElementById('dashTotalVendas').innerText = totalVendas.toFixed(2) + " MT";
         document.getElementById('dashCustoVendas').innerText = totalCOGS.toFixed(2) + " MT";
         document.getElementById('dashDespesasGerais').innerText = totalDesp.toFixed(2) + " MT";
@@ -2357,7 +2294,6 @@
         });
     }
 
-    // BACKUP E EXPORTAÇÃO EXCEL
     window.fazerBackup = function() {
         let usuariosSemSenhas = {};
         for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
@@ -2478,5 +2414,6 @@
 </script>
 
 </body>
-</html>
+</html>if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
     };
+    
