@@ -160,7 +160,7 @@
 
             <div class="form-group">
                 <label>Utilizador Selecionado</label>
-                <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
+                <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite" readonly>
             </div>
             <div class="form-group">
                 <label>Palavra-passe</label>
@@ -566,11 +566,15 @@
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
 
             <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <h4>Criar Novo Perfil com Foto</h4>
+                <h4>Criar Novo Perfil com E-mail e Senha Segura</h4>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Nome do Utilizador</label>
                         <input type="text" id="novoUserNome" placeholder="Ex: joao, maria">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail (Firebase Auth)</label>
+                        <input type="email" id="novoUserEmail" placeholder="joao@sabores01.local">
                     </div>
                     <div class="form-group">
                         <label>Palavra-passe</label>
@@ -602,6 +606,7 @@
                         <tr>
                             <th>Foto</th>
                             <th>Utilizador</th>
+                            <th>E-mail</th>
                             <th>Permissão</th>
                             <th>Total Vendido (MT)</th>
                             <th>Nº Vendas</th>
@@ -867,14 +872,12 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-
-<!-- INÍCIO DO MÓDULO JAVASCRIPT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
@@ -888,8 +891,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-    signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
 
     enableIndexedDbPersistence(db).catch(() => {});
 
@@ -985,12 +986,28 @@
                     usuarios = {};
                     if (Array.isArray(dadosDoc.usuarios)) {
                         dadosDoc.usuarios.forEach(u => {
-                            if (u.nome) usuarios[u.nome.toLowerCase()] = { senha: u.senha || "123", tipo: u.tipo || "vendedor", foto: u.foto || "" };
+                            if (u.nome) {
+                                usuarios[u.nome.toLowerCase()] = { 
+                                    email: u.email || `${u.nome.toLowerCase()}@${codigoEmpresa.toLowerCase()}.local`,
+                                    senha: u.senha || "123", 
+                                    tipo: u.tipo || "vendedor", 
+                                    foto: u.foto || "" 
+                                };
+                            }
                         });
                     }
                 } else {
-                    usuarios = { "admin": { senha: "123", tipo: "admin", foto: "" } };
-                    await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "" }] }, { merge: true });
+                    usuarios = { 
+                        "admin": { 
+                            email: `admin@${codigoEmpresa.toLowerCase()}.local`, 
+                            senha: "123", 
+                            tipo: "admin", 
+                            foto: "" 
+                        } 
+                    };
+                    await setDoc(doc(db, "empresas", codigoEmpresa), { 
+                        usuarios: [{ nome: "admin", email: `admin@${codigoEmpresa.toLowerCase()}.local`, senha: "123", tipo: "admin", foto: "" }] 
+                    }, { merge: true });
                 }
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
@@ -1110,7 +1127,7 @@
                 : `<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:30px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
 
             modalLista.innerHTML += `
-                <button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border:1px solid #ddd; color:#333; padding:10px; text-align:left;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
+                <button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border:1px solid #ddd; color:#333; padding:10px; text-align:left; width:100%; border-radius:6px; cursor:pointer;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
                     ${avatarHtml}
                     <strong style="text-transform:uppercase;">${u}</strong> (${uObj.tipo})
                 </button>
@@ -1132,21 +1149,28 @@
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
-    window.fazerLogin = function() {
+    window.fazerLogin = async function() {
         let elUser = document.getElementById('loginUser');
         let elPass = document.getElementById('loginPass');
         let u = elUser ? elUser.value.trim().toLowerCase() : "";
         let p = elPass ? elPass.value : "";
 
         if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
+        if(!u || !usuarios[u]) return alert("Selecione um perfil válido.");
 
-        if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
+        let userObj = usuarios[u];
+        let emailAuth = userObj.email || `${u}@${codigoEmpresa.toLowerCase()}.local`;
+
+        try {
+            // Autenticação segura real no Firebase Authentication
+            await signInWithEmailAndPassword(auth, emailAuth, p);
+
             window.tocarSom('sucesso');
-            usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
+            usuarioAtual = { nome: u, tipo: userObj.tipo, foto: userObj.foto || "" };
             
             document.getElementById('nomeEmpresaHeader').innerText = codigoEmpresa;
             document.getElementById('nomeUsuarioLogado').innerText = u;
-            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : 'Operador de Caixa';
+            document.getElementById('cargoUsuarioLogado').innerText = userObj.tipo === 'admin' ? 'Administrador' : 'Operador de Caixa';
             
             let headerAvatar = document.getElementById('headerAvatarBox');
             if(usuarioAtual.foto) {
@@ -1169,9 +1193,11 @@
             renderizarClientes();
             window.atualizarDashboard();
             if(usuarioAtual.tipo === 'admin') renderizarUsuarios();
-        } else {
+
+        } catch (error) {
             window.tocarSom('alerta');
-            alert("Credenciais inválidas!");
+            console.error("Erro no login Firebase:", error.code);
+            alert("Palavra-passe incorreta ou credenciais não autorizadas!");
         }
     };
 
@@ -1205,10 +1231,16 @@
             usuarios[u].senha = novaP;
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
-                listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    email: usuarios[nomeKey].email, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "" 
+                });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
+            alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso! Atualize também no Firebase Authentication se necessário.`);
             window.fecharModalResetSenha();
         } else {
             alert("Chave Mestra Incorreta!");
@@ -1222,18 +1254,18 @@
         document.getElementById('seccaoEmpresaAdmin').style.display = isAdmin ? 'block' : 'none';
     }
 
-window.mudarAba = function(abaId) {
-    window.tocarSom('click');
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    window.mudarAba = function(abaId) {
+        window.tocarSom('click');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    if (event && event.target) event.target.classList.add('active');
-    document.getElementById(abaId).classList.add('active');
-    if(abaId === 'abaDashboard') window.atualizarDashboard();
-    if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-};
+        if (event && event.target) event.target.classList.add('active');
+        document.getElementById(abaId).classList.add('active');
+        if(abaId === 'abaDashboard') window.atualizarDashboard();
+        if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+    };
 
-function processarFotoAvatar(file, callback) {
+    function processarFotoAvatar(file, callback) {
         if (!file) return callback("");
         let reader = new FileReader();
         reader.onload = function(e) {
@@ -1249,26 +1281,35 @@ function processarFotoAvatar(file, callback) {
         };
         reader.readAsDataURL(file);
     }
+
     window.cadastrarUsuario = function() {
         let u = document.getElementById('novoUserNome').value.trim().toLowerCase();
+        let emailInput = document.getElementById('novoUserEmail').value.trim();
         let p = document.getElementById('novoUserSenha').value;
         let t = document.getElementById('novoUserTipo').value;
         let fileInput = document.getElementById('novoUserFoto').files[0];
 
-        if(!u || !p) return alert("Preencha utilizador e palavra-passe!");
+        if(!u || !p || !emailInput) return alert("Preencha nome, e-mail e palavra-passe!");
         if(usuarios[u]) return alert("Utilizador já existe!");
 
         processarFotoAvatar(fileInput, async function(fotoBase64) {
-            usuarios[u] = { senha: p, tipo: t, foto: fotoBase64 };
+            usuarios[u] = { email: emailInput, senha: p, tipo: t, foto: fotoBase64 };
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
-                listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    email: usuarios[nomeKey].email, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "" 
+                });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             document.getElementById('novoUserNome').value = '';
+            document.getElementById('novoUserEmail').value = '';
             document.getElementById('novoUserSenha').value = '';
             document.getElementById('novoUserFoto').value = '';
-            alert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`);
+            alert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso! (Certifique-se de criar também este e-mail/senha no painel Firebase Authentication).`);
         });
     };
 
@@ -1278,7 +1319,13 @@ function processarFotoAvatar(file, callback) {
             delete usuarios[u];
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
-                listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    email: usuarios[nomeKey].email, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "" 
+                });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             alert(`Perfil '${u.toUpperCase()}' removido.`);
@@ -1291,10 +1338,16 @@ function processarFotoAvatar(file, callback) {
             usuarios[u].senha = novaS.trim();
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
-                listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    email: usuarios[nomeKey].email, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "" 
+                });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            alert(`Palavra-passe alterada!`);
+            alert(`Palavra-passe atualizada!`);
         }
     };
 
@@ -1308,7 +1361,13 @@ function processarFotoAvatar(file, callback) {
                     usuarios[u].foto = fotoBase64;
                     let listaArrayFirestore = [];
                     for (let nomeKey in usuarios) {
-                        listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+                        listaArrayFirestore.push({ 
+                            nome: nomeKey, 
+                            email: usuarios[nomeKey].email, 
+                            senha: usuarios[nomeKey].senha, 
+                            tipo: usuarios[nomeKey].tipo, 
+                            foto: usuarios[nomeKey].foto || "" 
+                        });
                     }
                     await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
                     alert(`Foto atualizada!`);
@@ -1336,6 +1395,7 @@ function processarFotoAvatar(file, callback) {
             tbody.innerHTML += `<tr>
                 <td>${fotoTd}</td>
                 <td><b style="text-transform:uppercase;">${u}</b></td>
+                <td><small>${userObj.email || '-'}</small></td>
                 <td><span class="badge" style="background:${userObj.tipo==='admin'?'var(--primary)':'#6c757d'}; color:white;">${userObj.tipo==='admin'?'Administrador':'Operador'}</span></td>
                 <td style="color:var(--success); font-weight:bold;">${totalVendido.toFixed(2)} MT</td>
                 <td><b>${numVendas}</b> vendas</td>
@@ -1798,7 +1858,7 @@ function processarFotoAvatar(file, callback) {
         if (vIdx === -1) return alert("Venda não encontrada.");
 
         let venda = historico[vIdx];
-        if (venda.status === 'cancelado') return alert("Esta venda já está cancelada.");
+        if (venda.status === 'cancelado') return alert(" Esta venda já está cancelada.");
 
         if (!confirm(`ADMINISTRADOR: Cancelar venda #${venda.id} de ${venda.totalVenda.toFixed(2)} MT?`)) return;
 
@@ -2298,7 +2358,7 @@ function processarFotoAvatar(file, callback) {
 
     window.fazerBackup = function() {
         let usuariosSemSenhas = {};
-        for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
+        for(let u in usuarios) usuariosSemSenhas[u] = { email: usuarios[u].email, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
 
         let backupData = {
             codigoEmpresa,
@@ -2408,7 +2468,13 @@ function processarFotoAvatar(file, callback) {
 
         let listaArrayFirestore = [];
         for (let nomeKey in usuarios) {
-            listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+            listaArrayFirestore.push({ 
+                nome: nomeKey, 
+                email: usuarios[nomeKey].email, 
+                senha: usuarios[nomeKey].senha, 
+                tipo: usuarios[nomeKey].tipo, 
+                foto: usuarios[nomeKey].foto || "" 
+            });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
         alert("Palavra-passe alterada!");
@@ -2417,5 +2483,3 @@ function processarFotoAvatar(file, callback) {
 
 </body>
 </html>
-
-    
