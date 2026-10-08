@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.gestormz.twa",
+        "sha256_cert_fingerprints": ["8F:16:0B:0B:07:CC:72:B6:78:EB:D2:15:12:F1:35:70:99:FA:73:F3:B2:EF:E0:D0:FC:2E:AB:6D:65:92:50:1E"]
+      }
+    }]
