@@ -1,3 +1,874 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Master - Restaurante Pro (SaaS)</title>
+
+    <!-- Meta Tags PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Restaurante Pro">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Bibliotecas Externas (Excel, Gráficos e QR Code) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --purple: #6f42c1;
+            --teal: #20c997;
+            --dark: #333;
+            --light: #f4f7f6;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light); margin: 0; padding: 12px; color: #222; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h2, h3, h4 { margin-top: 10px; color: var(--dark); }
+        
+        /* Navegação por Abas */
+        .tabs-nav { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #dee2e6; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { background: #e9ecef; color: #495057; border: none; padding: 10px 16px; border-radius: 6px 6px 0 0; font-weight: bold; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Formulários e Inputs */
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 180px; margin-bottom: 8px; }
+        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.85em; color: #555; }
+        input, select, button { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        /* Botões */
+        button { background-color: var(--primary); color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
+        button:hover { opacity: 0.9; }
+        .btn-saida { background-color: var(--danger); }
+        .btn-success { background-color: var(--success); }
+        .btn-warning { background-color: var(--warning); color: white; }
+        .btn-excel { background-color: #1d6f42; color: white; }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-purple { background-color: var(--purple); color: white; }
+        .btn-dark { background-color: #555; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; margin: 0; }
+
+        /* Perfis de Utilizadores (Limite de 3 + Modal) */
+        .grid-perfis-login { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .card-perfil-login { background: #f8f9fa; border: 2px solid #e9ecef; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #e7f5ff; transform: translateY(-2px); }
+        .avatar-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); margin-bottom: 6px; background: #ddd; }
+        .avatar-placeholder { width: 55px; height: 55px; border-radius: 50%; background: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; margin: 0 auto 6px auto; }
+        .btn-mais-perfis { background: #fff4e6; color: #d9480f; border: 2px solid #ffd8a8; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        /* Grid de Produtos no Balcão POS */
+        .grid-produtos-pos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 220px; overflow-y: auto; margin-bottom: 12px; padding: 4px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
+        .card-produto-pos { background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .card-produto-pos:hover { border-color: var(--primary); background: #e7f5ff; transform: scale(1.02); }
+
+        /* Status do Caixa Banner */
+        .status-caixa-banner { padding: 12px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .caixa-aberto { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .caixa-fechado { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Resumo de Lucro e Alertas */
+        .box-calculo-lucro { background: #e7f5ff; border: 1px solid #74c0fc; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .alerta-stock-box { background: #fff3cd; border: 1px solid #ffeba2; color: #856404; padding: 10px; border-radius: 6px; margin-bottom: 15px; display: none; }
+        .alerta-caixa-bloqueio { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-weight: bold; display: none; }
+
+        /* Header do Utilizador */
+        .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #e9ecef; padding: 12px 18px; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+
+        /* Cards do Dashboard */
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 15px 0; }
+        .card-stat { background: #f8f9fa; padding: 14px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+        .card-stat.verde { border-left-color: var(--success); }
+        .card-stat.laranja { border-left-color: var(--warning); }
+        .card-stat.vermelho { border-left-color: var(--danger); }
+        .card-stat.roxo { border-left-color: var(--purple); }
+        .card-stat h4 { margin: 0 0 5px 0; font-size: 0.8em; text-transform: uppercase; color: #666; }
+        .card-stat .valor-card { font-size: 1.2em; font-weight: bold; }
+
+        /* Tabelas */
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th, td { padding: 9px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f1f3f5; }
+        .alerta { color: var(--danger); font-weight: bold; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75em; font-weight: bold; background: #eee; }
+        .badge-entrada { background: #d4edda; color: #155724; }
+        .badge-saida { background: #f8d7da; color: #721c24; }
+        .badge-cancelado { background: #6c757d; color: white; text-decoration: line-through; }
+
+        /* Mesas Grid */
+        .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .card-mesa { background: #e9ecef; border: 2px solid #ced4da; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
+        .card-mesa.ocupada { background: #ffe3e3; border-color: var(--danger); color: var(--danger); }
+        .card-mesa.selecionada { border-color: var(--primary); background: #e7f5ff; }
+
+        /* Modais */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
+        .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 8px; position: relative; }
+        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
+
+        /* Estilos de Impressão */
+        #areaImpressao { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #areaImpressao, #areaImpressao * { visibility: visible; }
+            #areaImpressao { display: block; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; }
+        }
+
+        @media (max-width: 768px) {
+            .form-row { flex-direction: column; gap: 0; }
+            .header-usuario { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ECRÃ DE LOGIN MULTI-TENANT COM VERIFICAÇÃO DE LICENÇA -->
+    <div id="telaLogin" style="max-width:480px; margin:20px auto;">
+        <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
+        <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
+
+        <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #dee2e6; margin-bottom:15px;">
+            <div class="form-group">
+                <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
+                <input type="text" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA, SABORES01" style="text-transform:uppercase; font-weight:bold;" onchange="window.carregarPerfisEmpresa()">
+            </div>
+            <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
+        </div>
+
+        <!-- BANNER DE CONTA BLOQUEADA / DADOS DE PAGAMENTO M-PESA -->
+        <div id="boxContaBloqueada" style="display:none; background:#fff5f5; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
+            <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
+            <p id="textoMotivoBloqueio" style="font-size:0.9em; color:#333; margin-bottom:10px;"></p>
+            
+            <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
+                <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
+                <div style="font-size:0.9em; line-height:1.6; color:#222;">
+                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
+                    • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
+                    • <b>Valor da Mensalidade:</b> 1.500 MT
+                </div>
+            </div>
+            
+            <p style="font-size:0.85em; color:#555; margin-bottom:0;">
+                Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema instantaneamente.
+            </p>
+        </div>
+
+        <div id="seccaoPerfisEForm" style="display:none;">
+            <p style="text-align:center; font-size:0.85em; color:#666;">Selecione o seu perfil:</p>
+            
+            <div id="gridPerfisLogin" class="grid-perfis-login"></div>
+
+            <div class="form-group">
+                <label>Utilizador Selecionado</label>
+                <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
+            </div>
+            <div class="form-group">
+                <label>Palavra-passe</label>
+                <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
+            </div>
+            <button onclick="window.fazerLogin()" style="margin-top:10px;">Entrar no Sistema</button>
+            
+            <p style="text-align:center; margin-top:20px;">
+                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas com Chave Mestra)</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ECRÃ PRINCIPAL DO SISTEMA -->
+    <div id="telaSistema" style="display:none;">
+        
+        <div class="header-usuario">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div id="headerAvatarBox"></div>
+                <div>
+                    <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
+                    Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
+                    <small id="cargoUsuarioLogado" style="color:#666;"></small>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
+                <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+            </div>
+        </div>
+
+        <!-- BANNER DE STATUS DO CAIXA -->
+        <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
+            <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
+            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa')">Abrir Caixa</button>
+        </div>
+
+        <!-- ALERTA DE STOCK MÍNIMO -->
+        <div id="boxAlertaStockGlobal" class="alerta-stock-box">
+            <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
+        </div>
+
+        <!-- MENU DE ABAS -->
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
+            <button class="tab-btn" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
+            <button class="tab-btn" onclick="window.mudarAba('abaFiado')">👥 Clientes & Fiado</button>
+            <button class="tab-btn" onclick="window.mudarAba('abaStock')">📦 Gestão de Stock</button>
+            <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios')">👤 Gestão de Perfis</button>
+            <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Gráficos</button>
+        </div>
+
+        <!-- ================= ABA 1: VENDAS & MESAS ================= -->
+        <div id="abaVendas" class="tab-content active">
+            <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
+                ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
+            </div>
+
+            <h4>Selecionar Mesa / Comanda</h4>
+            <div class="mesas-grid" id="gridMesas"></div>
+
+            <div style="background:#eef7ff; border:1px solid #b6e0fe; padding:15px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="margin:0;">Atendimento: <span id="labelMesaAtual" style="color:var(--primary);">Balcão (Venda Direta)</span></h4>
+                    <button class="btn-dark btn-sm" onclick="window.selecionarMesa('Balcão')">Limpar para Balcão</button>
+                </div>
+
+                <!-- PESQUISA RÁPIDA E GRID VISUAL DE PRODUTOS PARA ADICIONAR RÁPIDO -->
+                <div style="margin-top:12px;">
+                    <label>🔍 Pesquisa Rápida e Seleção de Produto:</label>
+                    <input type="text" id="cartPesquisaProduto" placeholder="Digite o nome do produto para filtrar..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px;">
+                    <div id="gridProdutosVendaPOS" class="grid-produtos-pos"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ou Selecione na Lista</label>
+                        <select id="cartSelectProduto" onchange="window.preencherPrecoVenda()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantidade</label>
+                        <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço Unit. (MT)</label>
+                        <input type="number" id="cartPrecoUnit" step="0.5">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button type="button" class="btn-success" onclick="window.adicionarAoCarrinho()">+ Adicionar Item</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>Produto</th><th>Qtd</th><th>Preço Unit.</th><th>Subtotal</th><th>Ação</th></tr>
+                        </thead>
+                        <tbody id="corpoCarrinho"></tbody>
+                    </table>
+                </div>
+
+                <div class="form-row" style="margin-top:15px; align-items:center;">
+                    <div class="form-group">
+                        <label>Desconto na Conta (MT)</label>
+                        <input type="number" id="cartDesconto" value="0" min="0" step="0.5" oninput="window.renderizarCarrinho()">
+                    </div>
+                    <div class="form-group">
+                        <label>Forma de Pagamento / Conta</label>
+                        <select id="cartMetodoPagamento" onchange="window.alternarCampoClienteFiado()">
+                            <option value="Numerário">💵 Numerário (Espécie)</option>
+                            <option value="M-Pesa">📱 M-Pesa</option>
+                            <option value="e-Mola">📱 e-Mola</option>
+                            <option value="POS">💳 POS (Cartão)</option>
+                            <option value="Fiado">👥 Venda a Fiado (Conta Cliente)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="boxSeletorClienteFiado" style="display:none;">
+                        <label>Selecionar Cliente</label>
+                        <select id="cartSelectClienteFiado"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>NUIT do Cliente (Opcional)</label>
+                        <input type="text" id="cartNuitCliente" placeholder="Ex: 999888777">
+                    </div>
+                    <div class="form-group">
+                        <label style="color:var(--primary); font-weight:bold;">Valor Entregue / Dado (MT)</label>
+                        <input type="number" id="cartValorEntregue" value="0" min="0" step="0.5" placeholder="Ex: 500" oninput="window.calcularTroco()">
+                    </div>
+                    <div class="form-group">
+                        <label>Tel. WhatsApp do Cliente (Opcional)</label>
+                        <input type="text" id="cartTelefoneWa" placeholder="Ex: 841234567">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido p/ Cozinha</button>
+                    </div>
+                    <div style="text-align:right;">
+                        <small id="cartSubtotalIvaTexto" style="color:#666; display:block;">Subtotal: 0.00 MT | IVA (16%): 0.00 MT</small>
+                        <span style="font-size:1.25em; font-weight:bold;">Total Final: <span id="cartTotalTexto" style="color:var(--success);">0.00 MT</span></span><br>
+                        <span style="font-size:1.1em; font-weight:bold; color:var(--purple);">Troco: <span id="cartTrocoTexto">0.00 MT</span></span>
+                    </div>
+                    <div>
+                        <button class="btn-success" style="font-size:1.1em;" onclick="window.finalizarVendaCarrinho()">✅ Fechar & Emitir Recibo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ABA 2: CAIXA, DESPESAS & FECHO CEGO ================= -->
+        <div id="abaCaixa" class="tab-content">
+            <h2>Controlo de Caixa & Fecho Cego</h2>
+            
+            <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:20px;">
+                <h4>🔓 Abrir Turno de Caixa</h4>
+                <div class="form-group">
+                    <label>Fundo de Maneio / Troco Inicial na Gaveta (MT)</label>
+                    <input type="number" id="inputFundoManeio" value="1000" min="0" step="50" placeholder="Ex: 1000 MT">
+                </div>
+                <button class="btn-success" onclick="window.abrirCaixaTurno()">Confirmar Abertura de Caixa</button>
+            </div>
+
+            <div id="seccaoCaixaAberto" style="display:none;">
+                <div class="cards-grid">
+                    <div class="card-stat"><h4>Fundo Inicial</h4><div class="valor-card" id="cxValFundo">0.00 MT</div></div>
+                    <div class="card-stat verde"><h4>Entradas em Espécie (Turno)</h4><div class="valor-card" id="cxValVendasNum">0.00 MT</div></div>
+                    <div class="card-stat vermelho"><h4>Saídas / Despesas (Turno)</h4><div class="valor-card" id="cxValDespesas">0.00 MT</div></div>
+                    <div class="card-stat roxo col-admin"><h4>Saldo em Gaveta (Visível apenas ao Admin)</h4><div class="valor-card" id="cxValSaldoGaveta">***</div></div>
+                </div>
+
+                <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #dee2e6;">
+                    <h4>💸 Registar Saída de Caixa / Despesa do Turno</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Descrição da Despesa</label>
+                            <input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Carvão, Transporte">
+                        </div>
+                        <div class="form-group">
+                            <label>Valor (MT)</label>
+                            <input type="number" id="despesaValor" min="1" step="0.5" placeholder="Ex: 250 MT">
+                        </div>
+                        <div class="form-group" style="align-self:flex-end;">
+                            <button class="btn-saida" onclick="window.registarDespesa()">Registar Saída</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#fff3cd; border:2px solid #ffeba2; padding:18px; border-radius:8px; margin-top:20px;">
+                    <h4 style="color:#856404; margin-top:0;">🔒 Encerrar Turno (Fecho Cego de Caixa)</h4>
+                    <p style="font-size:0.85em; color:#666;">Contar fisicamente as notas e moedas na gaveta e introduzir o valor total em dinheiro abaixo:</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label style="font-weight:bold; color:#333;">Valor Total Contado em Gaveta (MT)</label>
+                            <input type="number" id="inputFechoValorContado" step="0.5" min="0" placeholder="Ex: 4500 MT" style="font-size:1.1em; font-weight:bold;">
+                        </div>
+                        <div class="form-group" style="align-self:flex-end;">
+                            <button class="btn-saida" onclick="window.fecharCaixaTurnoCEGO()">🔒 Confirmar Fecho de Turno</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos de Caixa</h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Abertura</th>
+                                <th>Fecho</th>
+                                <th>Operador Fecho</th>
+                                <th>Fundo Inicial</th>
+                                <th>Vendas (Dinheiro Total)</th>
+                                <th>Despesas</th>
+                                <th>Valor Contado</th>
+                                <th>Diferença (Quebra/Sobra)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoHistoricoTurnosCaixa"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ABA 3: CLIENTES & FIADO ================= -->
+        <div id="abaFiado" class="tab-content">
+            <h2>Gestão de Clientes & Contas a Fiado</h2>
+            
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <h4>Cadastrar Novo Cliente</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" id="novoClienteNome" placeholder="Nome do cliente">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone / WhatsApp</label>
+                        <input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87...">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button class="btn-primary" onclick="window.cadastrarCliente()">+ Cadastrar Cliente</button>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Clientes Cadastrados e Saldo Devedor</h4>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="corpoTabelaClientes"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= ABA 4: GESTÃO DE STOCK ================= -->
+        <div id="abaStock" class="tab-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h2>Gestão de Stock na Despensa</h2>
+                <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock para Excel</button>
+            </div>
+
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
+                <h4>📥 Dar Entrada de Produtos no Stock (Compras / Reposição)</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Produto / Bebida</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
+                    </div>
+                    <div class="form-group">
+                        <label>Formato de Compra</label>
+                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row" id="rowModoCaixa">
+                    <div class="form-group">
+                        <label>Qtd. de Caixas Compradas</label>
+                        <input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Unidades dentro de 1 Caixa</label>
+                        <input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço Pago por 1 Caixa (MT)</label>
+                        <input type="number" id="precoCaixa" step="0.5" min="0" placeholder="Ex: 1200 MT" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                </div>
+
+                <div class="form-row" id="rowModoUnidade" style="display:none;">
+                    <div class="form-group">
+                        <label>Quantidade Total de Unidades</label>
+                        <input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Custo Pago por Unidade (MT)</label>
+                        <input type="number" id="simplesPrecoCusto" step="0.5" min="0" placeholder="Ex: 50 MT" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label style="color:var(--success);">Preço de Venda por Unidade ao Cliente (MT)</label>
+                        <input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" placeholder="Ex: 70 MT" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Nível para Alerta de Stock Mínimo</label>
+                        <input type="number" id="simplesMinAlerta" value="5" min="1">
+                    </div>
+                </div>
+
+                <div id="boxCalculoLucro" class="box-calculo-lucro">
+                    <div>
+                        <strong>📊 Resumo do Lucro Calculado:</strong><br>
+                        • Total de Unidades no Stock: <b><span id="resTotalUnid">0</span> Unidades</b><br>
+                        • Custo por Unidade: <b><span id="resCustoUnit">0.00</span> MT</b><br>
+                        • Lucro Unitário: <span id="resLucroUnit" style="color:var(--success); font-weight:bold;">0.00 MT</span> | 
+                        Lucro Total Esperado no Lote: <b id="resLucroTotalCaixa" style="color:var(--success);">0.00 MT</b>
+                    </div>
+                </div>
+
+                <button class="btn-success" onclick="window.salvarEntradaStock()">📥 Dar Entrada / Atualizar Stock</button>
+            </div>
+
+            <!-- TABELA DE STOCK COM FILTRO DE BUSCA E PAGINAÇÃO -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px;">
+                <h4 style="margin:0;">📦 Quantidade Atual de Produtos em Stock</h4>
+                <div style="max-width:250px; width:100%;">
+                    <input type="text" id="filtroBuscarStock" placeholder="🔍 Pesquisar produto..." oninput="window.mudarPaginaStock(1)" style="padding:6px 10px; font-size:0.85em;">
+                </div>
+            </div>
+
+            <div class="table-responsive" style="margin-bottom:10px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Stock Atual</th>
+                            <th>Mínimo Alerta</th>
+                            <th>Preço Venda Unit.</th>
+                            <th class="col-fin">Custo Médio Unit.</th>
+                            <th class="col-fin">Lucro Unit. Est.</th>
+                            <th class="col-admin">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoStock"></tbody>
+                </table>
+            </div>
+
+            <!-- CONTROLO DE PAGINAÇÃO DO STOCK -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
+                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualStock">1</span> de <span id="pagTotalStock">1</span></span>
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
+            </div>
+
+            <!-- HISTÓRICO DE MOVIMENTAÇÕES COM FILTRO, PAGINAÇÃO E ELIMINAÇÃO (5 ITENS POR PÁGINA) -->
+            <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                    <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <select id="filtroTipoMovimentacao" onchange="window.mudarPaginaMovimentacao(1)" style="width:auto; padding:6px 10px; font-size:0.85em;">
+                            <option value="todos">Todas as Movimentações</option>
+                            <option value="ENTRADA">Apenas Entradas (Compras)</option>
+                            <option value="SAÍDA">Apenas Saídas (Vendas)</option>
+                            <option value="DEVOLUÇÃO">Apenas Devoluções / Cancelamentos</option>
+                        </select>
+                        <button class="btn-saida btn-sm col-admin" onclick="window.limparHistoricoMovimentacoesStock()">🗑️ Apagar Tudo</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data / Hora</th>
+                                <th>Tipo de Movimento</th>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Utilizador</th>
+                                <th>Detalhes / Origem</th>
+                                <th class="col-admin">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoMovimentacoesStock"></tbody>
+                    </table>
+                </div>
+
+                <!-- PAGINAÇÃO DE MOVIMENTAÇÕES DE STOCK (5 POR PÁGINA) -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px;">
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
+                    <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(1, true)">Próxima ➡️</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ABA 5: GESTÃO DE PERFIS COM FOTO (ADMIN) ================= -->
+        <div id="abaUsuarios" class="tab-content col-admin">
+            <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
+
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:20px;">
+                <h4>Criar Novo Perfil com Foto</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome do Utilizador</label>
+                        <input type="text" id="novoUserNome" placeholder="Ex: joao, maria">
+                    </div>
+                    <div class="form-group">
+                        <label>Palavra-passe</label>
+                        <input type="password" id="novoUserSenha" placeholder="Senha do utilizador">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Permissão</label>
+                        <select id="novoUserTipo">
+                            <option value="vendedor">🛒 Operador de Caixa / Vendedor</option>
+                            <option value="admin">⚙️ Administrador (Acesso Total)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Foto do Perfil (Opcional)</label>
+                        <input type="file" id="novoUserFoto" accept="image/*">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button>
+                    </div>
+                </div>
+            </div>
+
+            <h4>📊 Perfis Ativos e Ações</h4>
+            <div class="table-responsive" style="margin-bottom:25px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Utilizador</th>
+                            <th>Permissão</th>
+                            <th>Total Vendido (MT)</th>
+                            <th>Nº Vendas</th>
+                            <th>Ações do Administrador</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaPerfis"></tbody>
+                </table>
+            </div>
+
+            <div id="seccaoDetalhesPerfil" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h4 style="margin:0;">Histórico Detalhado: <span id="nomePerfilSelecionado" style="color:var(--primary); text-transform:uppercase;"></span></h4>
+                    <button class="btn-dark btn-sm" onclick="window.fecharDetalhesPerfil()">Fechar</button>
+                </div>
+                <div class="table-responsive" style="margin-top:10px;">
+                    <table>
+                        <thead>
+                            <tr><th>Data/Hora</th><th>Mesa/Atend</th><th>Método</th><th>Itens Vendidos</th><th>Total (MT)</th><th>Ação Admin</th></tr>
+                        </thead>
+                        <tbody id="corpoDetalhesVendasPerfil"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= ABA 6: DASHBOARD & RELATÓRIOS (ADMIN) ================= -->
+        <div id="abaDashboard" class="tab-content col-admin">
+            <h2>Painel Financeiro & Desempenho</h2>
+
+            <div class="form-row" style="background:#f1f3f5; padding:10px; border-radius:6px; align-items:center;">
+                <div class="form-group" style="margin:0;">
+                    <label>Período de Análise:</label>
+                    <select id="filtroDataTipo" onchange="window.atualizarDashboard()">
+                        <option value="hoje">Hoje</option>
+                        <option value="ontem">Ontem</option>
+                        <option value="mes">Este Mês</option>
+                        <option value="todos">Todo o Histórico</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0; text-align:right; align-self:flex-end;">
+                    <button class="btn-excel btn-sm" onclick="window.exportarVendasExcel()">📊 Exportar Vendas para Excel</button>
+                </div>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card-stat verde">
+                    <h4>Vendas Totais</h4>
+                    <div class="valor-card" id="dashTotalVendas">0.00 MT</div>
+                </div>
+                <div class="card-stat laranja">
+                    <h4>Custo Produtos (COGS)</h4>
+                    <div class="valor-card" id="dashCustoVendas">0.00 MT</div>
+                </div>
+                <div class="card-stat vermelho">
+                    <h4>Despesas Gerais</h4>
+                    <div class="valor-card" id="dashDespesasGerais">0.00 MT</div>
+                </div>
+                <div class="card-stat roxo">
+                    <h4>Lucro Líquido Real</h4>
+                    <div class="valor-card" id="dashLucroReal">0.00 MT</div>
+                </div>
+            </div>
+
+            <div class="form-row" style="margin-top:20px;">
+                <div style="flex:1; min-width:280px; background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    <h4 style="text-align:center;">Vendas por Canal de Pagamento</h4>
+                    <canvas id="graficoCanaisPay" style="max-height:220px;"></canvas>
+                </div>
+                <div style="flex:1; min-width:280px; background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px;">
+                    <h4>🏆 Top 5 Produtos Mais Vendidos</h4>
+                    <div id="listaTopProdutos"></div>
+                </div>
+            </div>
+
+            <h4 style="margin-top:20px;">Histórico Geral de Transações & Cancelamentos</h4>
+            <div class="table-responsive">
+                <table>
+                    <thead><tr><th>Data/Hora</th><th>User</th><th>Detalhes</th><th>Tipo / Estado</th><th>Total</th><th>Ação Admin</th></tr></thead>
+                    <tbody id="corpoHistoricoAdmin"></tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:20px;">
+                <button class="btn-dark btn-sm" onclick="window.fazerBackup()">💾 Baixar Backup Geral Seguro (Sem Palavras-Passe)</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL SELEÇÃO DE PERFIS ADICIONAIS (+ VER MAIS) -->
+<div id="modalMaisPerfis" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+        <span class="close-modal" onclick="window.fecharModalMaisPerfis()">&times;</span>
+        <h3>👤 Selecionar Perfil de Operador</h3>
+        <p style="font-size:0.85em; color:#666;">Clica sobre o perfil para selecionar:</p>
+        <div id="listaTodosPerfisModal" style="display:flex; flex-direction:column; gap:8px; margin:15px 0;"></div>
+        <button class="btn-dark btn-sm" onclick="window.fecharModalMaisPerfis()">Fechar</button>
+    </div>
+</div>
+
+<!-- MODAL REDEFINIR PALAVRA-PASSE SEGURA -->
+<div id="modalResetSenha" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="window.fecharModalResetSenha()">&times;</span>
+        <h3>🔑 Redefinir Senha com Chave Mestra</h3>
+        <p style="font-size: 0.85em; color: #555;">Por motivos de segurança, apenas a <b>Chave Mestra do Administrador</b> pode autorizar a redefinição de palavra-passe.</p>
+        
+        <div class="form-group">
+            <label>Nome do Utilizador</label>
+            <input type="text" id="resetUsuarioNome" placeholder="Ex: joao, maria, admin">
+        </div>
+        <div class="form-group">
+            <label>Chave Mestra do Administrador</label>
+            <input type="password" id="resetChaveMestraInput" placeholder="Insira a Chave Mestra">
+        </div>
+        <div class="form-group">
+            <label>Nova Palavra-Passe</label>
+            <input type="password" id="resetNovaSenha" placeholder="Digite a nova palavra-passe">
+        </div>
+        <button class="btn-success" onclick="window.solicitarRedefinicaoSenhaChaveMestra()">🔐 Autorizar e Guardar Nova Senha</button>
+        <button class="btn-dark btn-sm" style="margin-top:8px;" onclick="window.fecharModalResetSenha()">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL QR CODE MENU DIGITAL -->
+<div id="modalQRMenu" class="modal">
+    <div class="modal-content" style="text-align:center;">
+        <span class="close-modal" onclick="window.fecharModalQRMenu()">&times;</span>
+        <h3>📱 Menu Digital / Cardápio QR</h3>
+        <p>Apresente este QR Code aos clientes para lerem o cardápio no telemóvel.</p>
+        <div id="qrcodeArea" style="display:flex; justify-content:center; margin:20px 0;"></div>
+        <p style="font-size:0.85em; color:#666;">Link: <span id="textLinkMenu"></span></p>
+    </div>
+</div>
+
+<!-- MODAL DEFINIÇÕES, EMPRESA E IMPRESSORA BLUETOOTH -->
+<div id="modalDefinicoes" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
+        <h3>⚙️ Definições & Conectar Impressora Bluetooth</h3>
+        
+        <!-- SECCÃO CONEXÃO BLUETOOTH ESC/POS -->
+        <div style="background:#f8f9fa; border:2px dashed #007bff; padding:15px; border-radius:8px; margin-bottom:15px; text-align:center;">
+            <h4 style="margin-top:0; color:var(--primary);">🖨️ Impressora Térmica Bluetooth (ESC/POS)</h4>
+            <p style="font-size:0.85em; color:#555;">Conecte diretamente a sua impressora portátil de 58mm ou 80mm via Web Bluetooth API.</p>
+            <p id="statusBtPrinter" style="font-weight:bold; color:var(--danger);">Status: Desconectado 🔴</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn-primary btn-sm" onclick="window.conectarImpressoraBluetooth()">🔍 Conectar Impressora Bluetooth</button>
+                <button class="btn-warning btn-sm" onclick="window.testarImpressaoBluetooth()">🧪 Testar Impressão</button>
+            </div>
+        </div>
+
+        <div id="seccaoEmpresaAdmin" style="display:none; background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #b6e0fe;">
+            <h4 style="margin-top:0; color:var(--primary);">🏢 Dados do Restaurante, IVA & Chave Mestra</h4>
+            <div class="form-group">
+                <label>Nome do Restaurante</label>
+                <input type="text" id="cfgNomeEmpresa" placeholder="Ex: Restaurante Sabores de Maputo">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>NUIT da Empresa</label>
+                    <input type="text" id="cfgNuit" placeholder="Ex: 123456789">
+                </div>
+                <div class="form-group">
+                    <label>Telefone / Contacto</label>
+                    <input type="text" id="cfgTelefone" placeholder="Ex: +258 84 000 0000">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Endereço / Bairro / Cidade</label>
+                <input type="text" id="cfgEndereco" placeholder="Ex: Av. Eduardo Mondlane, Maputo">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ativar Cálculo de IVA nos Recibos?</label>
+                    <select id="cfgAplicarIva">
+                        <option value="nao">Não (Isento / Não aplicar IVA)</option>
+                        <option value="sim" selected>Sim (Aplicar taxa de IVA nas vendas)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Taxa de IVA (%)</label>
+                    <input type="number" id="cfgTaxaIva" value="16" min="0" max="100" step="1" placeholder="Ex: 16">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Slogan / Mensagem no Rodapé do Recibo</label>
+                <input type="text" id="cfgSlogan" placeholder="Ex: Obrigado pela preferência! Volte sempre.">
+            </div>
+            <div class="form-group">
+                <label style="color:var(--danger); font-weight:bold;">🔑 Chave Mestra Secreta de Recuperação (Apenas Administrador)</label>
+                <input type="text" id="cfgChaveMestra" placeholder="Ex: REST-8921-KEY">
+            </div>
+            <button class="btn-primary btn-sm" onclick="window.guardarDadosEmpresa()">💾 Guardar Dados da Empresa</button>
+        </div>
+
+        <div style="background:#f8f9fa; padding:12px; border-radius:6px; margin-bottom:15px;">
+            <h4 style="margin-top:0;">Alterar Minha Palavra-Passe</h4>
+            <input type="password" id="inputNovaSenha" placeholder="Nova palavra-passe" style="margin-bottom:8px;">
+            <button class="btn-success btn-sm" onclick="window.mudarMinhaSenha()">Guardar Nova Senha</button>
+        </div>
+    </div>
+</div>
+
+<!-- ÁREA DE IMPRESSÃO (RECIBO FISCAL E PEDIDO DE COZINHA) -->
+<div id="areaImpressao">
+    <div id="conteudoReciboFiscal">
+        <div style="text-align:center;">
+            <h3 id="reciboNomeEmpresa" style="margin:0; font-size:14px; text-transform:uppercase;">RESTAURANTE</h3>
+            <p id="reciboNuit" style="margin:2px 0;">NUIT: ---</p>
+            <p id="reciboEndereco" style="margin:2px 0; font-size:10px;"></p>
+            <p id="reciboTelefone" style="margin:2px 0; font-size:10px;"></p>
+            <p style="margin:5px 0; font-weight:bold;">--------------------------------</p>
+            <p style="margin:2px 0;">COMPROVATIVO DE VENDA (VD)</p>
+            <p id="reciboData" style="margin:2px 0; font-size:10px;"></p>
+        </div>
+        <p style="margin:5px 0;">--------------------------------</p>
+        <p style="margin:2px 0;"><b>Mesa/Atend:</b> <span id="reciboMesa"></span></p>
+        <p style="margin:2px 0;"><b>Atendido por:</b> <span id="reciboVendedor"></span></p>
+        <p style="margin:2px 0;"><b>Cliente NUIT:</b> <span id="reciboNuitClienteDisplay">Consumidor Final</span></p>
+        <p style="margin:2px 0;"><b>Pagamento:</b> <span id="reciboMetodo"></span></p>
+        <p style="margin:5px 0;">--------------------------------</p>
+        <div id="reciboItens"></div>
+        <p style="margin:5px 0;">--------------------------------</p>
+        <p id="reciboDescontoRow" style="margin:2px 0; text-align:right;">Desconto: <span id="reciboDesconto">0.00</span> MT</p>
+        <p id="reciboSubtotalRow" style="margin:2px 0; text-align:right;">Subtotal Líquido: <span id="reciboSubtotalLiq">0.00</span> MT</p>
+        <p id="reciboIvaRow" style="margin:2px 0; text-align:right;">IVA (<span id="reciboTaxaIvaValor">16</span>%): <span id="reciboValIva">0.00</span> MT</p>
+        <h4 style="text-align:right; margin:5px 0; font-size:13px;">TOTAL: <span id="reciboTotal"></span> MT</h4>
+        <p style="margin:2px 0; text-align:right;">Valor Entregue: <span id="reciboValorEntregue">0.00</span> MT</p>
+        <p style="margin:2px 0; text-align:right; font-weight:bold;">Troco: <span id="reciboTroco">0.00</span> MT</p>
+        <p style="margin:5px 0;">--------------------------------</p>
+        <p id="reciboSlogan" style="text-align:center; font-size:10px; margin-top:10px;">Obrigado pela preferência!</p>
+    </div>
+
+    <div id="conteudoGuiaCozinha" style="display:none;">
+        <div style="text-align:center;">
+            <h3 style="margin:0; font-size:16px;">🍳 PEDIDO DE COZINHA</h3>
+            <p style="margin:2px 0; font-size:12px;"><b>MESA / COMANDA: <span id="cozinhaMesa"></span></b></p>
+            <p id="cozinhaData" style="margin:2px 0; font-size:10px;"></p>
+        </div>
+        <p style="margin:5px 0;">==============================</p>
+        <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
+        <p style="margin:5px 0;">==============================</p>
+    </div>
+</div>
 <!-- MÓDULO JAVASCRIPT & FIREBASE MULTI-TENANT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
