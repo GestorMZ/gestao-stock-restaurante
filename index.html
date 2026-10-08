@@ -950,7 +950,7 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-<!-- INÍCIO DO MÓDULO JAVASCRIPT (PARTE 2) -->
+<!-- INÍCIO DO MÓDULO JAVASCRIPT (PARTE 2 CORRIGIDA) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1042,8 +1042,8 @@
         if (usuarioAtual && document.getElementById('telaBloqueio').style.display === 'none') {
             timerInatividade = setTimeout(() => {
                 window.bloquearEcra();
-                registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente após 1 min sem ação`);
-            }, 60000); // 60 segundos
+                registarAuditLog('Bloqueio por Inatividade', 'Sistema bloqueado automaticamente após 1 min sem ação');
+            }, 60000);
         }
     }
 
@@ -1077,7 +1077,7 @@
         if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
             window.tocarSom('sucesso');
             document.getElementById('telaBloqueio').style.display = 'none';
-            registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
+            registarAuditLog('Desbloqueio de Ecrã', 'Ecrã desbloqueado por ' + usuarioAtual.nome);
             resetarTimerInatividade();
         } else {
             window.tocarSom('alerta');
@@ -1129,12 +1129,12 @@
         let itensPagina = auditLogs.slice(inicio, fim);
 
         itensPagina.forEach(log => {
-            tbody.innerHTML += `<tr>
-                <td><small>${log.data || '-'}</small></td>
-                <td><b style="text-transform:uppercase;">${log.usuario || '-'}</b></td>
-                <td><span class="badge" style="background:#6f42c1; color:white;">${log.evento || '-'}</span></td>
-                <td><small>${log.detalhes || '-'}</small></td>
-            </tr>`;
+            tbody.innerHTML += '<tr>' +
+                '<td><small>' + (log.data || '-') + '</small></td>' +
+                '<td><b style="text-transform:uppercase;">' + (log.usuario || '-') + '</b></td>' +
+                '<td><span class="badge" style="background:#6f42c1; color:white;">' + (log.evento || '-') + '</span></td>' +
+                '<td><small>' + (log.detalhes || '-') + '</small></td>' +
+            '</tr>';
         });
     }
 
@@ -1166,7 +1166,7 @@
                 await setDoc(doc(db, "licencas", codigoEmpresa), {
                     status: "ativo", validade: validadeTeste, mensagemBloqueio: "Acesso suspenso por falta de pagamento.", dataCriacao: new Date().toLocaleString('pt-MZ')
                 });
-                alert(`🎉 Novo restaurante! Período de teste gratuito ativado até ${validadeTeste}.`);
+                alert("🎉 Novo restaurante! Período de teste gratuito ativado até " + validadeTeste + ".");
             }
 
             document.getElementById('boxContaBloqueada').style.display = 'none';
@@ -1279,13 +1279,13 @@
         visiveis.forEach(u => {
             let uObj = usuarios[u];
             let avatarHtml = uObj.foto 
-                ? `<img src="${uObj.foto}" class="avatar-img" alt="${u}">` 
-                : `<div class="avatar-placeholder">${u.charAt(0).toUpperCase()}</div>`;
+                ? '<img src="' + uObj.foto + '" class="avatar-img" alt="' + u + '">' 
+                : '<div class="avatar-placeholder">' + u.charAt(0).toUpperCase() + '</div>';
 
             let card = document.createElement('div');
             card.className = 'card-perfil-login';
             card.onclick = (e) => window.selecionarPerfilLogin(u, e);
-            card.innerHTML = `${avatarHtml}<div style="font-weight:bold; font-size:0.85em; text-transform:uppercase; overflow:hidden; text-overflow:ellipsis;">${u}</div>`;
+            card.innerHTML = avatarHtml + '<div style="font-weight:bold; font-size:0.85em; text-transform:uppercase; overflow:hidden; text-overflow:ellipsis;">' + u + '</div>';
             container.appendChild(card);
         });
 
@@ -1293,7 +1293,7 @@
             let btnMais = document.createElement('div');
             btnMais.className = 'btn-mais-perfis';
             btnMais.onclick = () => window.abrirModalMaisPerfis();
-            btnMais.innerHTML = `<span style="font-size:20px;">👤+</span><span style="font-size:0.8em;">Mais (${chavesPerfis.length - 3})</span>`;
+            btnMais.innerHTML = '<span style="font-size:20px;">👤+</span><span style="font-size:0.8em;">Mais (' + (chavesPerfis.length - 3) + ')</span>';
             container.appendChild(btnMais);
         }
     }
@@ -1306,15 +1306,14 @@
         for (let u in usuarios) {
             let uObj = usuarios[u];
             let avatarHtml = uObj.foto 
-                ? `<img src="${uObj.foto}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">` 
-                : `<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:30px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
+                ? '<img src="' + uObj.foto + '" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">' 
+                : '<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:30px; font-weight:bold;">' + u.charAt(0).toUpperCase() + '</span>';
 
-            modalLista.innerHTML += `
-                <button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border:1px solid #ddd; color:#333; padding:10px; text-align:left;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
-                    ${avatarHtml}
-                    <strong style="text-transform:uppercase;">${u}</strong> (${uObj.tipo})
-                </button>
-            `;
+            modalLista.innerHTML += 
+                '<button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border:1px solid #ddd; color:#333; padding:10px; text-align:left;" onclick="window.selecionarPerfilLogin(\'' + u + '\'); window.fecharModalMaisPerfis();">' +
+                    avatarHtml +
+                    '<strong style="text-transform:uppercase;">' + u + '</strong> (' + uObj.tipo + ')' +
+                '</button>';
         }
         document.getElementById('modalMaisPerfis').style.display = 'block';
     };
@@ -1350,9 +1349,9 @@
             
             let headerAvatar = document.getElementById('headerAvatarBox');
             if(usuarioAtual.foto) {
-                headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
+                headerAvatar.innerHTML = '<img src="' + usuarioAtual.foto + '" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">';
             } else {
-                headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
+                headerAvatar.innerHTML = '<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">' + u.charAt(0).toUpperCase() + '</div>';
             }
 
             document.getElementById('telaLogin').style.display = 'none';
@@ -1373,7 +1372,7 @@
                 renderizarAuditLogs();
             }
 
-            registarAuditLog('Login', `Sessão iniciada por ${u}`);
+            registarAuditLog('Login', 'Sessão iniciada por ' + u);
             resetarTimerInatividade();
         } else {
             window.tocarSom('alerta');
@@ -1382,7 +1381,7 @@
     };
 
     window.fazerLogout = function() {
-        if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
+        if(usuarioAtual) registarAuditLog('Logout', 'Sessão encerrada por ' + usuarioAtual.nome);
         if(timerInatividade) clearTimeout(timerInatividade);
         usuarioAtual = null;
         desconectarEscutadores();
@@ -1416,8 +1415,8 @@
                 listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
-            registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
+            alert("A palavra-passe de '" + u.toUpperCase() + "' foi alterada com sucesso!");
+            registarAuditLog('Redefinição de Senha', 'Senha de ' + u + ' redefinida via Chave Mestra');
             window.fecharModalResetSenha();
         } else {
             alert("Chave Mestra Incorreta!");
@@ -1478,27 +1477,27 @@
             document.getElementById('novoUserNome').value = '';
             document.getElementById('novoUserSenha').value = '';
             document.getElementById('novoUserFoto').value = '';
-            registarAuditLog('Perfil Criado', `Perfil '${u}' (${t}) criado`);
-            alert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`);
+            registarAuditLog('Perfil Criado', 'Perfil \'' + u + '\' (' + t + ') criado');
+            alert("✅ Perfil '" + u.toUpperCase() + "' criado com sucesso!");
         });
     };
 
     window.apagarUsuario = async function(u) {
         if(u === usuarioAtual.nome) return alert("Não pode apagar o seu próprio perfil!");
-        if(confirm(`Eliminar o perfil '${u.toUpperCase()}'?`)) {
+        if(confirm("Eliminar o perfil '" + u.toUpperCase() + "'?")) {
             delete usuarios[u];
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
                 listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
-            alert(`Perfil '${u.toUpperCase()}' removido.`);
+            registarAuditLog('Perfil Removido', 'Perfil \'' + u + '\' eliminado');
+            alert("Perfil '" + u.toUpperCase() + "' removido.");
         }
     };
 
     window.redefinirSenhaDiretaAdmin = async function(u) {
-        let novaS = prompt(`ADMINISTRADOR: Nova palavra-passe para '${u.toUpperCase()}':`);
+        let novaS = prompt("ADMINISTRADOR: Nova palavra-passe para '" + u.toUpperCase() + "':");
         if(novaS && novaS.trim() !== "") {
             usuarios[u].senha = novaS.trim();
             let listaArrayFirestore = [];
@@ -1506,8 +1505,8 @@
                 listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            registarAuditLog('Senha Alterada', `Palavra-passe de '${u}' alterada por Admin`);
-            alert(`Palavra-passe alterada!`);
+            registarAuditLog('Senha Alterada', 'Palavra-passe de \'' + u + '\' alterada por Admin');
+            alert("Palavra-passe alterada!");
         }
     };
 
@@ -1524,7 +1523,7 @@
                         listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
                     }
                     await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-                    alert(`Foto atualizada!`);
+                    alert("Foto atualizada!");
                 }
             });
         };
@@ -1543,22 +1542,26 @@
             let numVendas = vendasUser.length;
 
             let fotoTd = userObj.foto 
-                ? `<img src="${userObj.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` 
-                : `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
+                ? '<img src="' + userObj.foto + '" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">' 
+                : '<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">' + u.charAt(0).toUpperCase() + '</div>';
 
-            tbody.innerHTML += `<tr>
-                <td>${fotoTd}</td>
-                <td><b style="text-transform:uppercase;">${u}</b></td>
-                <td><span class="badge" style="background:${userObj.tipo==='admin'?'var(--primary)':'#6c757d'}; color:white;">${userObj.tipo==='admin'?'Administrador':'Operador'}</span></td>
-                <td style="color:var(--success); font-weight:bold;">${totalVendido.toFixed(2)} MT</td>
-                <td><b>${numVendas}</b> vendas</td>
-                <td>
-                    <button class="btn-primary btn-sm" onclick="window.verHistoricoPerfil('${u}')">🔍 Vendas</button>
-                    <button class="btn-purple btn-sm" onclick="window.alterarFotoUsuarioAdmin('${u}')">📷 Foto</button>
-                    <button class="btn-warning btn-sm" onclick="window.redefinirSenhaDiretaAdmin('${u}')">🔑 Senha</button>
-                    ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
-                </td>
-            </tr>`;
+            let btnEliminar = (u !== 'admin') 
+                ? '<button class="btn-saida btn-sm" onclick="window.apagarUsuario(\'' + u + '\')">Eliminar</button>' 
+                : '';
+
+            tbody.innerHTML += '<tr>' +
+                '<td>' + fotoTd + '</td>' +
+                '<td><b style="text-transform:uppercase;">' + u + '</b></td>' +
+                '<td><span class="badge" style="background:' + (userObj.tipo==='admin'?'var(--primary)':'#6c757d') + '; color:white;">' + (userObj.tipo==='admin'?'Administrador':'Operador') + '</span></td>' +
+                '<td style="color:var(--success); font-weight:bold;">' + totalVendido.toFixed(2) + ' MT</td>' +
+                '<td><b>' + numVendas + '</b> vendas</td>' +
+                '<td>' +
+                    '<button class="btn-primary btn-sm" onclick="window.verHistoricoPerfil(\'' + u + '\')">🔍 Vendas</button> ' +
+                    '<button class="btn-purple btn-sm" onclick="window.alterarFotoUsuarioAdmin(\'' + u + '\')">📷 Foto</button> ' +
+                    '<button class="btn-warning btn-sm" onclick="window.redefinirSenhaDiretaAdmin(\'' + u + '\')">🔑 Senha</button> ' +
+                    btnEliminar +
+                '</td>' +
+            '</tr>';
         }
     }
 
@@ -1577,20 +1580,22 @@
         }
 
         vendasUser.forEach(v => {
-            let resumoItens = v.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ');
+            let resumoItens = v.itens.map(i => i.qtd + 'x ' + i.produto).join(', ');
             let ehCancelado = v.status === 'cancelado';
-            tbody.innerHTML += `<tr>
-                <td>${v.data}</td>
-                <td>${v.mesa || 'Balcão'}</td>
-                <td><span class="badge">${v.metodo}</span></td>
-                <td><small>${resumoItens}</small></td>
-                <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
-                    ${v.totalVenda.toFixed(2)} MT ${ehCancelado ? '(CANCELADO)' : ''}
-                </td>
-                <td>
-                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc || ''}', ${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
-                </td>
-            </tr>`;
+            let btnAcao = !ehCancelado 
+                ? '<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin(\'' + (v.idDoc || '') + '\', ' + v.id + ')">🚫 Cancelar</button>' 
+                : '<span class="badge badge-cancelado">Cancelado</span>';
+
+            tbody.innerHTML += '<tr>' +
+                '<td>' + v.data + '</td>' +
+                '<td>' + (v.mesa || 'Balcão') + '</td>' +
+                '<td><span class="badge">' + v.metodo + '</span></td>' +
+                '<td><small>' + resumoItens + '</small></td>' +
+                '<td style="font-weight:bold; color:' + (ehCancelado?'#6c757d':'var(--success)') + '; text-decoration:' + (ehCancelado?'line-through':'none') + ';">' +
+                    v.totalVenda.toFixed(2) + ' MT ' + (ehCancelado ? '(CANCELADO)' : '') +
+                '</td>' +
+                '<td>' + btnAcao + '</td>' +
+            '</tr>';
         });
     };
 
@@ -1605,7 +1610,7 @@
 
         if(caixaEstado.aberto) {
             banner.className = "status-caixa-banner caixa-aberto";
-            txt.innerText = `🟢 Caixa Aberto desde ${caixaEstado.dataAbertura || ''} (${caixaEstado.usuarioAbertura || ''})`;
+            txt.innerText = "🟢 Caixa Aberto desde " + (caixaEstado.dataAbertura || '') + " (" + (caixaEstado.usuarioAbertura || '') + ")";
             secAbrir.style.display = 'none';
             secAberto.style.display = 'block';
             if(alertaCaixaFechado) alertaCaixaFechado.style.display = 'none';
@@ -1639,7 +1644,7 @@
         let fundo = parseFloat(document.getElementById('inputFundoManeio').value) || 0;
         caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), dataAbertura: new Date().toLocaleString('pt-MZ'), usuarioAbertura: usuarioAtual.nome };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
-        registarAuditLog('Caixa Aberto', `Caixa aberto com fundo inicial de ${fundo} MT`);
+        registarAuditLog('Caixa Aberto', 'Caixa aberto com fundo inicial de ' + fundo + ' MT');
         alert("Caixa aberto com sucesso!");
     };
 
@@ -1681,11 +1686,11 @@
         caixaEstado = { aberto: false, fundo: 0 };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
 
-        registarAuditLog('Caixa Encerrado', `Fecho Cego - Contado: ${valContado} MT | Diferenca: ${diferenca} MT`);
+        registarAuditLog('Caixa Encerrado', 'Fecho Cego - Contado: ' + valContado + ' MT | Diferenca: ' + diferenca + ' MT');
 
         document.getElementById('inputFechoValorContado').value = '';
         window.tocarSom('sucesso');
-        alert(`🔒 Turno Encerrado!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
+        alert("🔒 Turno Encerrado!\n\n• Vendas Dinheiro: " + vendasNum.toFixed(2) + " MT\n• Valor Contado: " + valContado.toFixed(2) + " MT\n• Diferença: " + diferenca.toFixed(2) + " MT");
     };
 
     function renderizarHistoricoTurnos() {
@@ -1710,18 +1715,18 @@
 
         itensPagina.forEach(t => {
             let difClass = t.diferenca < 0 ? 'alerta' : t.diferenca > 0 ? 'color:var(--success); font-weight:bold;' : '';
-            let difTexto = t.diferenca === 0 ? '0.00 MT (Exato)' : `${t.diferenca > 0 ? '+' : ''}${t.diferenca.toFixed(2)} MT`;
+            let difTexto = t.diferenca === 0 ? '0.00 MT (Exato)' : (t.diferenca > 0 ? '+' : '') + t.diferenca.toFixed(2) + ' MT';
 
-            tbody.innerHTML += `<tr>
-                <td><small>${t.dataAbertura || '-'}</small></td>
-                <td><small>${t.dataFecho || '-'}</small></td>
-                <td><b style="text-transform:uppercase;">${t.usuarioFecho || '-'}</b></td>
-                <td>${(t.fundoInicial || 0).toFixed(2)} MT</td>
-                <td><b>${(t.vendasEspécie || 0).toFixed(2)} MT</b></td>
-                <td>${(t.despesas || 0).toFixed(2)} MT</td>
-                <td><b>${(t.valorContado || 0).toFixed(2)} MT</b></td>
-                <td style="${difClass}">${difTexto}</td>
-            </tr>`;
+            tbody.innerHTML += '<tr>' +
+                '<td><small>' + (t.dataAbertura || '-') + '</small></td>' +
+                '<td><small>' + (t.dataFecho || '-') + '</small></td>' +
+                '<td><b style="text-transform:uppercase;">' + (t.usuarioFecho || '-') + '</b></td>' +
+                '<td>' + (t.fundoInicial || 0).toFixed(2) + ' MT</td>' +
+                '<td><b>' + (t.vendasEspécie || 0).toFixed(2) + ' MT</b></td>' +
+                '<td>' + (t.despesas || 0).toFixed(2) + ' MT</td>' +
+                '<td><b>' + (t.valorContado || 0).toFixed(2) + ' MT</b></td>' +
+                '<td style="' + difClass + '">' + difTexto + '</td>' +
+            '</tr>';
         });
     }
 
@@ -1739,7 +1744,7 @@
 
         despesas.push({ id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') });
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: despesas });
-        registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
+        registarAuditLog('Despesa Registada', 'Despesa: ' + desc + ' (' + val + ' MT)');
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
         alert("Despesa registada!");
@@ -1752,9 +1757,9 @@
         for(let m in mesas) {
             let temItens = mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
-            grid.innerHTML += `<div class="card-mesa ${temItens?'ocupada':''} ${isSel?'selecionada':''}" onclick="window.selecionarMesa('${m}')">
-                ${m}<br><span style="font-size:0.75em;">${temItens ? mesas[m].length + ' itens' : 'Livre'}</span>
-            </div>`;
+            grid.innerHTML += '<div class="card-mesa ' + (temItens?'ocupada':'') + ' ' + (isSel?'selecionada':'') + '" onclick="window.selecionarMesa(\'' + m + '\')">' +
+                m + '<br><span style="font-size:0.75em;">' + (temItens ? mesas[m].length + ' itens' : 'Livre') + '</span>' +
+            '</div>';
         }
     }
 
@@ -1769,7 +1774,7 @@
         let sel = document.getElementById('cartSelectProduto');
         if(!sel) return;
         sel.innerHTML = '<option value="">-- Selecionar Produto --</option>';
-        for(let p in stock) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
+        for(let p in stock) sel.innerHTML += '<option value="' + p + '">' + p.toUpperCase() + ' (Disp: ' + stock[p].qtd + ')</option>';
     }
 
     window.filtrarCategoriaPOS = function(cat, evt) {
@@ -1811,13 +1816,12 @@
 
         prodsExibicao.forEach(p => {
             let item = stock[p];
-            grid.innerHTML += `
-                <div class="card-produto-pos" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    <strong style="font-size:0.85em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.toUpperCase()}</strong>
-                    <small style="color:var(--success); font-weight:bold;">${(item.preco_venda||0).toFixed(2)} MT</small><br>
-                    <small style="font-size:0.75em; color:#666;">Disp: ${item.qtd}</small>
-                </div>
-            `;
+            grid.innerHTML += 
+                '<div class="card-produto-pos" onclick="window.selecionarProdutoCardPOS(\'' + p + '\')">' +
+                    '<strong style="font-size:0.85em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + p.toUpperCase() + '</strong>' +
+                    '<small style="color:var(--success); font-weight:bold;">' + (item.preco_venda||0).toFixed(2) + ' MT</small><br>' +
+                    '<small style="font-size:0.75em; color:#666;">Disp: ' + item.qtd + '</small>' +
+                '</div>';
         });
     };
 
@@ -1883,13 +1887,13 @@
 
         itens.forEach((item, idx) => {
             total += item.subtotal;
-            tbody.innerHTML += `<tr>
-                <td>${item.produto.toUpperCase()}</td>
-                <td>${item.qtd}</td>
-                <td>${item.precoUnit.toFixed(2)} MT</td>
-                <td><b>${item.subtotal.toFixed(2)} MT</b></td>
-                <td><button class="btn-saida btn-sm" onclick="window.removerItemCarrinho(${idx})">x</button></td>
-            </tr>`;
+            tbody.innerHTML += '<tr>' +
+                '<td>' + item.produto.toUpperCase() + '</td>' +
+                '<td>' + item.qtd + '</td>' +
+                '<td>' + item.precoUnit.toFixed(2) + ' MT</td>' +
+                '<td><b>' + item.subtotal.toFixed(2) + ' MT</b></td>' +
+                '<td><button class="btn-saida btn-sm" onclick="window.removerItemCarrinho(' + idx + ')">x</button></td>' +
+            '</tr>';
         });
 
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
@@ -1904,8 +1908,8 @@
 
         document.getElementById('cartTotalTexto').innerText = totalFinal.toFixed(2) + " MT";
         document.getElementById('cartSubtotalIvaTexto').innerText = (dadosEmpresa.aplicarIva === 'sim' && met !== 'Cortesia') 
-            ? `Base: ${subtotalLiq.toFixed(2)} MT | IVA (${taxaIva}%): ${valorIva.toFixed(2)} MT`
-            : `Isento de IVA / Cortesia`;
+            ? ("Base: " + subtotalLiq.toFixed(2) + " MT | IVA (" + taxaIva + "%): " + valorIva.toFixed(2) + " MT")
+            : "Isento de IVA / Cortesia";
 
         window.calcularTroco();
     };
@@ -1919,11 +1923,11 @@
             mesas[mesaSelecionada].splice(idx, 1);
             renderizarMesasGrid();
             window.renderizarCarrinho();
-            registarAuditLog('Item Removido Carrinho', `Admin removeu ${item.produto} do carrinho`);
+            registarAuditLog('Item Removido Carrinho', 'Admin removeu ' + item.produto + ' do carrinho');
             return;
         }
 
-        let senhaAdmin = prompt(`🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para remover ${item.produto.toUpperCase()}:`);
+        let senhaAdmin = prompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para remover " + item.produto.toUpperCase() + ":");
         let autorizacao = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
@@ -1933,7 +1937,7 @@
             mesas[mesaSelecionada].splice(idx, 1);
             renderizarMesasGrid();
             window.renderizarCarrinho();
-            registarAuditLog('Item Removido Carrinho', `Operador com autorizacao removeu ${item.produto}`);
+            registarAuditLog('Item Removido Carrinho', 'Operador com autorizacao removeu ' + item.produto);
         } else {
             alert("❌ Senha incorreta!");
         }
@@ -1986,7 +1990,7 @@
                     produto: item.produto,
                     qtd: item.qtd,
                     usuario: usuarioAtual.nome,
-                    origem: `${metodo === 'Cortesia' ? 'Cortesia' : 'Venda'} ${mesaSelecionada}`
+                    origem: (metodo === 'Cortesia' ? 'Cortesia' : 'Venda') + ' ' + mesaSelecionada
                 });
             }
 
@@ -2023,14 +2027,14 @@
             await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
 
-            registarAuditLog('Venda Concluída', `Venda #${registoVenda.id} (${metodo}) - Total: ${totalVenda} MT`);
+            registarAuditLog('Venda Concluída', 'Venda #' + registoVenda.id + ' (' + metodo + ') - Total: ' + totalVenda + ' MT');
 
             window.tocarSom('sucesso');
 
             let telWa = document.getElementById('cartTelefoneWa').value.trim();
             if(telWa) {
-                let msg = `*${dadosEmpresa.nome || 'RESTAURANTE'}*%0ARecibo: ${registoVenda.data}%0AMesa: ${mesaSelecionada}%0ATotal: ${totalVenda.toFixed(2)} MT%0A*Obrigado!*`;
-                window.open(`https://wa.me/${telWa}?text=${msg}`, '_blank');
+                let msg = "*" + (dadosEmpresa.nome || 'RESTAURANTE') + "*%0ARecibo: " + registoVenda.data + "%0AMesa: " + mesaSelecionada + "%0ATotal: " + totalVenda.toFixed(2) + " MT%0A*Obrigado!*";
+                window.open("https://wa.me/" + telWa + "?text=" + msg, '_blank');
             }
 
             mesas[mesaSelecionada] = [];
@@ -2069,7 +2073,7 @@
         let venda = historico[vIdx];
         if (venda.status === 'cancelado') return alert("⚠️ Esta venda já se encontra cancelada.");
 
-        if (!confirm(`ADMINISTRADOR: Confirmar o cancelamento da venda #${venda.id} no valor de ${(venda.totalVenda || 0).toFixed(2)} MT?`)) {
+        if (!confirm("ADMINISTRADOR: Confirmar o cancelamento da venda #" + venda.id + " no valor de " + (venda.totalVenda || 0).toFixed(2) + " MT?")) {
             return;
         }
 
@@ -2089,7 +2093,7 @@
                     produto: item.produto,
                     qtd: item.qtd,
                     usuario: usuarioAtual.nome,
-                    origem: `Cancelamento Venda #${venda.id}`
+                    origem: 'Cancelamento Venda #' + venda.id
                 });
             }
 
@@ -2103,7 +2107,7 @@
 
             venda.status = 'cancelado';
 
-            registarAuditLog('Venda Cancelada', `Venda #${venda.id} cancelada por ${usuarioAtual.nome}`);
+            registarAuditLog('Venda Cancelada', 'Venda #' + venda.id + ' cancelada por ' + usuarioAtual.nome);
 
             window.tocarSom('sucesso');
             filtrarEExibirProdutosVenda();
@@ -2135,7 +2139,7 @@
 
         let divItens = document.getElementById('cozinhaItens');
         divItens.innerHTML = '';
-        itens.forEach(i => divItens.innerHTML += `<div>${i.qtd}x ${i.produto.toUpperCase()}</div>`);
+        itens.forEach(i => divItens.innerHTML += '<div>' + i.qtd + 'x ' + i.produto.toUpperCase() + '</div>');
         
         setTimeout(() => {
             window.print();
@@ -2147,9 +2151,9 @@
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
         document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
-        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
+        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? ('NUIT: ' + dadosEmpresa.nuit) : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
-        document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : '';
+        document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? ('Tel: ' + dadosEmpresa.telefone) : '';
         document.getElementById('reciboSlogan').innerText = dadosEmpresa.slogan || 'Obrigado pela preferência!';
 
         document.getElementById('reciboMesa').innerText = v.mesa;
@@ -2166,10 +2170,10 @@
         let divItens = document.getElementById('reciboItens');
         divItens.innerHTML = '';
         v.itens.forEach(i => {
-            divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span>
-                <span>${i.subtotal.toFixed(2)} MT</span>
-            </div>`;
+            divItens.innerHTML += '<div style="display:flex; justify-content:space-between; margin-bottom:2px;">' +
+                '<span>' + i.qtd + 'x ' + i.produto + '</span>' +
+                '<span>' + i.subtotal.toFixed(2) + ' MT</span>' +
+            '</div>';
         });
         document.getElementById('reciboTotal').innerText = v.totalVenda.toFixed(2);
         document.getElementById('reciboValorEntregue').innerText = (v.valorEntregue || 0).toFixed(2);
@@ -2192,7 +2196,7 @@
             const services = await server.getPrimaryServices();
             const characteristics = await services[0].getCharacteristics();
             bluetoothCharacteristic = characteristics[0];
-            document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
+            document.getElementById('statusBtPrinter').innerText = "Conectado a " + (bluetoothDevice.name || 'Impressora') + " 🟢";
             alert("✅ Bluetooth Conectado!");
         } catch (erro) {
             document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
@@ -2212,19 +2216,19 @@
         try {
             let encoder = new TextEncoder();
             let txt = "\x1B\x40\x1B\x61\x01" + 
-                      `${dadosEmpresa.nome || 'RESTAURANTE'}\n` +
-                      `--------------------------------\n` +
-                      `${v.data}\n` +
+                      (dadosEmpresa.nome || 'RESTAURANTE') + "\n" +
+                      "--------------------------------\n" +
+                      v.data + "\n" +
                       "\x1B\x61\x00" + 
-                      `Mesa: ${v.mesa} | Op: ${v.usuario}\n` +
-                      `Pagamento: ${v.metodo}\n` +
-                      `--------------------------------\n`;
+                      "Mesa: " + v.mesa + " | Op: " + v.usuario + "\n" +
+                      "Pagamento: " + v.metodo + "\n" +
+                      "--------------------------------\n";
 
-            v.itens.forEach(i => { txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`; });
+            v.itens.forEach(i => { txt += i.qtd + "x " + i.produto + " - " + i.subtotal.toFixed(2) + " MT\n"; });
 
-            txt += `--------------------------------\n` +
-                   `TOTAL: ${v.totalVenda.toFixed(2)} MT\n` +
-                   `Troco: ${v.troco.toFixed(2)} MT\n` +
+            txt += "--------------------------------\n" +
+                   "TOTAL: " + v.totalVenda.toFixed(2) + " MT\n" +
+                   "Troco: " + v.troco.toFixed(2) + " MT\n" +
                    "\x1B\x61\x01\nObrigado pela preferencia!\n\n\n\n";
 
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
@@ -2248,24 +2252,24 @@
         if(!tbody) return;
         tbody.innerHTML = '';
         clientes.forEach((c, idx) => {
-            tbody.innerHTML += `<tr>
-                <td><b>${c.nome}</b></td>
-                <td>${c.telefone || '-'}</td>
-                <td style="color:${c.divida>0?'var(--danger)':'var(--success)'}; font-weight:bold;">${(c.divida||0).toFixed(2)} MT</td>
-                <td>
-                    <button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(${idx})">💵 Liquidar</button>
-                </td>
-            </tr>`;
+            tbody.innerHTML += '<tr>' +
+                '<td><b>' + c.nome + '</b></td>' +
+                '<td>' + (c.telefone || '-') + '</td>' +
+                '<td style="color:' + (c.divida>0?'var(--danger)':'var(--success)') + '; font-weight:bold;">' + (c.divida||0).toFixed(2) + ' MT</td>' +
+                '<td>' +
+                    '<button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(' + idx + ')">💵 Liquidar</button>' +
+                '</td>' +
+            '</tr>';
         });
     }
 
     window.liquidarDividaCliente = async function(idx) {
         let c = clientes[idx];
-        let val = parseFloat(prompt(`Liquidar quanto da dívida de ${c.nome}? (Total: ${c.divida} MT)`, c.divida));
+        let val = parseFloat(prompt("Liquidar quanto da dívida de " + c.nome + "? (Total: " + c.divida + " MT)", c.divida));
         if(val > 0) {
             c.divida = Math.max(0, c.divida - val);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
-            registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
+            registarAuditLog('Dívida Liquidada', 'Liquidação de ' + val + ' MT para ' + c.nome);
             alert("Pagamento registado!");
         }
     };
@@ -2274,7 +2278,7 @@
         let sel = document.getElementById('cartSelectClienteFiado');
         if(!sel) return;
         sel.innerHTML = '<option value="">-- Selecionar Cliente --</option>';
-        clientes.forEach(c => sel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`);
+        clientes.forEach(c => sel.innerHTML += '<option value="' + c.nome + '">' + c.nome + '</option>');
     }
 
     window.alternarCampoClienteFiado = function() {
@@ -2359,7 +2363,7 @@
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
 
-        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}'`);
+        registarAuditLog('Entrada Stock', 'Entrada de ' + totalUnidades + ' unid do produto \'' + prod + '\'');
 
         document.getElementById('simplesProduto').value = '';
         filtrarEExibirProdutosVenda();
@@ -2396,20 +2400,19 @@
             let precoVenda = item.preco_venda || 0;
             let isCritico = item.qtd <= (item.min_alerta || 5);
 
-            let colFin = isAdmin ? `
-                <td>${custoMedio.toFixed(2)} MT</td>
-                <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = isAdmin ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
+            let colFin = isAdmin ? 
+                '<td>' + custoMedio.toFixed(2) + ' MT</td><td style="color:var(--success); font-weight:bold;">' + (precoVenda - custoMedio).toFixed(2) + ' MT</td>' : '';
+            let colAdmin = isAdmin ? '<td><button class="btn-saida btn-sm" onclick="window.apagarProduto(\'' + p + '\')">Apagar</button></td>' : '';
 
-            tbody.innerHTML += `<tr>
-                <td><b>${p.toUpperCase()}</b></td>
-                <td><span class="badge" style="background:#e9ecef; color:#333;">${(item.categoria||'outros').toUpperCase()}</span></td>
-                <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
-                <td>${item.min_alerta || 5}</td>
-                <td><b>${precoVenda.toFixed(2)} MT</b></td>
-                ${colFin}
-                ${colAdmin}
-            </tr>`;
+            tbody.innerHTML += '<tr>' +
+                '<td><b>' + p.toUpperCase() + '</b></td>' +
+                '<td><span class="badge" style="background:#e9ecef; color:#333;">' + (item.categoria||'outros').toUpperCase() + '</span></td>' +
+                '<td class="' + (isCritico ? 'alerta' : '') + '">' + item.qtd + ' ' + (isCritico ? '⚠️' : '') + '</td>' +
+                '<td>' + (item.min_alerta || 5) + '</td>' +
+                '<td><b>' + precoVenda.toFixed(2) + ' MT</b></td>' +
+                colFin +
+                colAdmin +
+            '</tr>';
         });
     }
 
@@ -2452,20 +2455,20 @@
         itensPagina.forEach((m) => {
             let isEntrada = m.tipo.includes('ENTRADA') || m.tipo.includes('DEVOLUÇÃO');
             let colAdminAcao = (usuarioAtual && usuarioAtual.tipo === 'admin') 
-                ? `<td><button class="btn-saida btn-sm" onclick="window.apagarMovimentacaoIndividual('${m.idDoc}')">🗑️ Apagar</button></td>`
-                : `<td>-</td>`;
+                ? '<td><button class="btn-saida btn-sm" onclick="window.apagarMovimentacaoIndividual(\'' + m.idDoc + '\')">🗑️ Apagar</button></td>'
+                : '<td>-</td>';
 
-            tbody.innerHTML += `<tr>
-                <td><small>${m.data}</small></td>
-                <td><span class="badge ${isEntrada ? 'badge-entrada' : 'badge-saida'}">${m.tipo}</span></td>
-                <td><b>${m.produto.toUpperCase()}</b></td>
-                <td style="font-weight:bold; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">
-                    ${isEntrada ? '+' : '-'}${m.qtd}
-                </td>
-                <td><b style="text-transform:uppercase;">${m.usuario}</b></td>
-                <td><small>${m.origem || '-'}</small></td>
-                ${colAdminAcao}
-            </tr>`;
+            tbody.innerHTML += '<tr>' +
+                '<td><small>' + m.data + '</small></td>' +
+                '<td><span class="badge ' + (isEntrada ? 'badge-entrada' : 'badge-saida') + '">' + m.tipo + '</span></td>' +
+                '<td><b>' + m.produto.toUpperCase() + '</b></td>' +
+                '<td style="font-weight:bold; color:' + (isEntrada ? 'var(--success)' : 'var(--danger)') + ';">' +
+                    (isEntrada ? '+' : '-') + m.qtd +
+                '</td>' +
+                '<td><b style="text-transform:uppercase;">' + m.usuario + '</b></td>' +
+                '<td><small>' + (m.origem || '-') + '</small></td>' +
+                colAdminAcao +
+            '</tr>';
         });
     }
 
@@ -2482,7 +2485,7 @@
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
         if(confirm("Confirmar a remoção do registo?")) {
             await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
-            registarAuditLog('Movimentação Apagada', `Removido registo de movimentação #${idDocMov}`);
+            registarAuditLog('Movimentação Apagada', 'Removido registo de movimentação #' + idDocMov);
             alert("Registo removido!");
         }
     };
@@ -2497,10 +2500,10 @@
     }
 
     window.apagarProduto = async function(p) {
-        if(confirm(`Apagar o produto ${p.toUpperCase()} do stock?`)) {
+        if(confirm("Apagar o produto " + p.toUpperCase() + " do stock?")) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-            registarAuditLog('Produto Removido', `Produto '${p}' apagado do stock`);
+            registarAuditLog('Produto Removido', 'Produto \'' + p + '\' apagado do stock');
             filtrarEExibirProdutosVenda();
             renderizarStock();
         }
@@ -2538,31 +2541,33 @@
         let itensPagina = lista.slice(inicio, fim);
 
         itensPagina.forEach(h => {
-            let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : (h.detalhes || '-');
+            let resumo = h.itens ? h.itens.map(i => i.qtd + 'x ' + i.produto).join(', ') : (h.detalhes || '-');
             let ehCancelado = h.status === 'cancelado';
             let ehCortesia = h.metodo === 'Cortesia';
 
             if(h.metodo === 'Numerário') {
-                resumo += " <b style='color:var(--success);'>[💵 Espécie]</b>";
+                resumo += ' <b style="color:var(--success);">[💵 Espécie]</b>';
             } else if(ehCortesia) {
-                resumo += " <b style='color:#e83e8c;'>[🎁 Cortesia]</b>";
+                resumo += ' <b style="color:#e83e8c;">[🎁 Cortesia]</b>';
             }
 
-            tbodyHist.innerHTML += `<tr>
-                <td><small>${h.data || '-'}</small></td>
-                <td><b style="text-transform:uppercase;">${h.usuario || '-'}</b></td>
-                <td><small>${resumo}</small></td>
-                <td>
-                    <span class="badge ${ehCortesia ? 'badge-cortesia' : ''}">${h.metodo || 'Venda'}</span>
-                    ${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}
-                </td>
-                <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
-                    ${(h.totalVenda || 0).toFixed(2)} MT
-                </td>
-                <td>
-                    ${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc \vert{}\vert{} ''}',${h.id})">🚫 Cancelar</button>` : '-'}
-                </td>
-            </tr>`;
+            let btnAcao = (!ehCancelado && h.tipo === 'venda') 
+                ? '<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin(\'' + (h.idDoc || '') + '\', ' + h.id + ')">🚫 Cancelar</button>' 
+                : '-';
+
+            tbodyHist.innerHTML += '<tr>' +
+                '<td><small>' + (h.data || '-') + '</small></td>' +
+                '<td><b style="text-transform:uppercase;">' + (h.usuario || '-') + '</b></td>' +
+                '<td><small>' + resumo + '</small></td>' +
+                '<td>' +
+                    '<span class="badge ' + (ehCortesia ? 'badge-cortesia' : '') + '">' + (h.metodo || 'Venda') + '</span>' +
+                    (ehCancelado ? ' <span class="badge badge-cancelado">CANCELADO</span>' : '') +
+                '</td>' +
+                '<td style="font-weight:bold; color:' + (ehCancelado?'#6c757d':'var(--success)') + '; text-decoration:' + (ehCancelado?'line-through':'none') + ';">' +
+                    (h.totalVenda || 0).toFixed(2) + ' MT' +
+                '</td>' +
+                '<td>' + btnAcao + '</td>' +
+            '</tr>';
         });
     };
 
@@ -2632,10 +2637,10 @@
         if(divTop) {
             divTop.innerHTML = '';
             topSorted.forEach(([p, q], idx) => {
-                divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span><b>${idx+1}. ${p.toUpperCase()}</b></span>
-                    <span class="badge">${q} unid</span>
-                </div>`;
+                divTop.innerHTML += '<div style="display:flex; justify-content:space-between; margin-bottom:5px;">' +
+                    '<span><b>' + (idx+1) + '. ' + p.toUpperCase() + '</b></span>' +
+                    '<span class="badge">' + q + ' unid</span>' +
+                '</div>';
             });
         }
 
@@ -2686,7 +2691,7 @@
         let blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
         let a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `backup_${codigoEmpresa}_${Date.now()}.json`;
+        a.download = 'backup_' + codigoEmpresa + '_' + Date.now() + '.json';
         a.click();
         URL.revokeObjectURL(a.href);
     };
@@ -2704,7 +2709,7 @@
         let ws = XLSX.utils.json_to_sheet(dadosExcel);
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Vendas");
-        XLSX.writeFile(wb, `Vendas_${codigoEmpresa}_${Date.now()}.xlsx`);
+        XLSX.writeFile(wb, 'Vendas_' + codigoEmpresa + '_' + Date.now() + '.xlsx');
     };
 
     window.exportarStockExcel = function() {
@@ -2724,7 +2729,7 @@
         let ws = XLSX.utils.json_to_sheet(dadosStock);
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Stock");
-        XLSX.writeFile(wb, `Stock_${codigoEmpresa}_${Date.now()}.xlsx`);
+        XLSX.writeFile(wb, 'Stock_' + codigoEmpresa + '_' + Date.now() + '.xlsx');
     };
 
     window.abrirModalQRMenu = function() {
@@ -2781,7 +2786,7 @@
             listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-        registarAuditLog('Senha Pessoal Alterada', `Palavra-passe pessoal alterada por ${usuarioAtual.nome}`);
+        registarAuditLog('Senha Pessoal Alterada', 'Palavra-passe pessoal alterada por ' + usuarioAtual.nome);
         alert("Palavra-passe alterada!");
     };
 </script>
