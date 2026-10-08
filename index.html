@@ -771,7 +771,7 @@
                 </table>
             </div>
 
-            <!-- Paginação do Histórico -->
+            <!-- Paginação do Histórico de Transações (5 Por Página) -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
@@ -784,6 +784,13 @@
                     <thead><tr><th>Data/Hora</th><th>Utilizador</th><th>Evento</th><th>Detalhes</th></tr></thead>
                     <tbody id="corpoTabelaAuditLogs"></tbody>
                 </table>
+            </div>
+
+            <!-- Paginação do Registo de Auditoria (5 Por Página) -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
+                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(1)">Próxima ➡️</button>
             </div>
 
             <div style="margin-top:20px;">
@@ -1021,8 +1028,28 @@
     const ITENS_POR_PAGINA_ADMIN_HIST = 5;
     let historicoDashFiltrado = [];
 
+    let paginaAtualAuditLogs = 1;
+    const ITENS_POR_PAGINA_AUDIT = 5;
+
     let bluetoothDevice = null;
     let bluetoothCharacteristic = null;
+
+    // --- BLOQUEIO AUTOMÁTICO POR INATIVIDADE (1 MINUTO) ---
+    let timerInatividade = null;
+
+    function resetarTimerInatividade() {
+        if (timerInatividade) clearTimeout(timerInatividade);
+        if (usuarioAtual && document.getElementById('telaBloqueio').style.display === 'none') {
+            timerInatividade = setTimeout(() => {
+                window.bloquearEcra();
+                registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente após 1 min sem ação`);
+            }, 60000); // 60.000 ms = 1 minuto
+        }
+    }
+
+    ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => {
+        document.addEventListener(evt, resetarTimerInatividade, true);
+    });
 
     // --- MODO NOTURNO (DARK MODE) & BLOQUEIO DE ECRÃ ---
     window.alternarModoNoturno = function() {
@@ -1042,7 +1069,7 @@
         document.getElementById('lockUserNomeDisplay').innerText = usuarioAtual.nome;
         document.getElementById('inputSenhaDesbloqueio').value = '';
         document.getElementById('telaBloqueio').style.display = 'flex';
-        registarAuditLog('Bloqueio de Ecrã', `Ecrã bloqueado por ${usuarioAtual.nome}`);
+        if (timerInatividade) clearTimeout(timerInatividade);
     };
 
     window.desbloquearEcra = function() {
@@ -1051,6 +1078,7 @@
             window.tocarSom('sucesso');
             document.getElementById('telaBloqueio').style.display = 'none';
             registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
+            resetarTimerInatividade();
         } else {
             window.tocarSom('alerta');
             alert("Palavra-passe incorreta!");
@@ -1071,6 +1099,13 @@
         } catch(e) { console.error("Erro ao guardar audit log:", e); }
     }
 
+    window.mudarPaginaAuditLogs = function(dir) {
+        window.tocarSom('click');
+        paginaAtualAuditLogs += dir;
+        if(paginaAtualAuditLogs < 1) paginaAtualAuditLogs = 1;
+        renderizarAuditLogs();
+    };
+
     function renderizarAuditLogs() {
         let tbody = document.getElementById('corpoTabelaAuditLogs');
         if(!tbody) return;
@@ -1078,10 +1113,22 @@
 
         if(auditLogs.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#666;">Sem registos de auditoria.</td></tr>';
+            if(document.getElementById('pagAtualAuditLogs')) document.getElementById('pagAtualAuditLogs').innerText = 1;
+            if(document.getElementById('pagTotalAuditLogs')) document.getElementById('pagTotalAuditLogs').innerText = 1;
             return;
         }
 
-        auditLogs.slice(0, 30).forEach(log => {
+        let totalPaginas = Math.ceil(auditLogs.length / ITENS_POR_PAGINA_AUDIT) || 1;
+        if(paginaAtualAuditLogs > totalPaginas) paginaAtualAuditLogs = totalPaginas;
+
+        if(document.getElementById('pagAtualAuditLogs')) document.getElementById('pagAtualAuditLogs').innerText = paginaAtualAuditLogs;
+        if(document.getElementById('pagTotalAuditLogs')) document.getElementById('pagTotalAuditLogs').innerText = totalPaginas;
+
+        let inicio = (paginaAtualAuditLogs - 1) * ITENS_POR_PAGINA_AUDIT;
+        let fim = inicio + ITENS_POR_PAGINA_AUDIT;
+        let itensPagina = auditLogs.slice(inicio, fim);
+
+        itensPagina.forEach(log => {
             tbody.innerHTML += `<tr>
                 <td><small>${log.data || '-'}</small></td>
                 <td><b style="text-transform:uppercase;">${log.usuario || '-'}</b></td>
@@ -1327,6 +1374,7 @@
             }
 
             registarAuditLog('Login', `Sessão iniciada por ${u}`);
+            resetarTimerInatividade();
         } else {
             window.tocarSom('alerta');
             alert("Credenciais inválidas!");
@@ -1335,6 +1383,7 @@
 
     window.fazerLogout = function() {
         if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
+        if(timerInatividade) clearTimeout(timerInatividade);
         usuarioAtual = null;
         desconectarEscutadores();
         document.getElementById('telaSistema').style.display = 'none';
@@ -1547,7 +1596,6 @@
 
     window.fecharDetalhesPerfil = function() { document.getElementById('seccaoDetalhesPerfil').style.display = 'none'; };
 
-    // Agrega vendas em espécie de TODOS OS PERFIS do turno ativo
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -1724,7 +1772,6 @@
         for(let p in stock) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
     }
 
-    // FILTRO POR CATEGORIA NO BALCÃO
     window.filtrarCategoriaPOS = function(cat, evt) {
         window.tocarSom('click');
         categoriaPOSSelecionada = cat;
@@ -1892,7 +1939,7 @@
         }
     };
 
- window.finalizarVendaCarrinho = async function() {
+    window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
 
         let itens = mesas[mesaSelecionada] || [];
@@ -1903,7 +1950,6 @@
         let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
         let totalVenda = Math.max(0, totalSemDesc - desc);
 
-        // Se for Cortesia / Consumo da Casa, o valor cobrado é 0 MT
         if (metodo === 'Cortesia') {
             totalVenda = 0;
             desc = totalSemDesc;
@@ -1934,7 +1980,7 @@
                 id: Date.now() + Math.random(),
                 data: new Date().toLocaleString('pt-MZ'),
                 timestamp: Date.now(),
-                tipo: metodo === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)', // Corrigido: metodo sem acento
+                tipo: metodo === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)',
                 produto: item.produto,
                 qtd: item.qtd,
                 usuario: usuarioAtual.nome,
@@ -2000,7 +2046,8 @@
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
         alert("✅ Venda concluída com sucesso!");
-    }; 
+    };
+
     window.cancelarVendaAdmin = async function(idDocVenda, idNumeric) {
         if (!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administradores!");
 
@@ -2417,7 +2464,6 @@
         }
     };
 
-    // PAGINAÇÃO DO HISTÓRICO ADMIN (5 ITENS POR PÁGINA)
     window.mudarPaginaAdminHist = function(dir) {
         window.tocarSom('click');
         paginaAtualAdminHist += dir;
@@ -2501,7 +2547,6 @@
         let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia': 0 };
         let topProds = {};
 
-        // Verificação de Cancelamentos em Excesso no Turno Ativo
         let tAbertura = caixaEstado.timestampAbertura || 0;
         let cancelamentosNoTurno = historico.filter(h => h.status === 'cancelado' && (h.timestamp || 0) >= tAbertura).length;
         
