@@ -1043,7 +1043,7 @@
             timerInatividade = setTimeout(() => {
                 window.bloquearEcra();
                 registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente após 1 min sem ação`);
-            }, 60000); // 60.000 ms = 1 minuto
+            }, 60000); // 60 segundos
         }
     }
 
@@ -1588,7 +1588,7 @@
                     ${v.totalVenda.toFixed(2)} MT ${ehCancelado ? '(CANCELADO)' : ''}
                 </td>
                 <td>
-                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc}', ${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
+                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc || ''}', ${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
                 </td>
             </tr>`;
         });
@@ -1939,7 +1939,7 @@
         }
     };
 
-  window.finalizarVendaCarrinho = async function() {
+    window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
 
         let itens = mesas[mesaSelecionada] || [];
@@ -1971,9 +1971,8 @@
                 if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
             }
 
-            // Atualização de Stock e Histórico de Movimentações
             for(let item of itens) {
-                if(stock[item.produto]) {
+                if (stock[item.produto]) {
                     stock[item.produto].qtd -= item.qtd;
                     stock[item.produto].preco_total -= (item.qtd * item.custoUnit);
                     if(stock[item.produto].qtd < 0.01) { stock[item.produto].qtd = 0; stock[item.produto].preco_total = 0; }
@@ -2028,14 +2027,12 @@
 
             window.tocarSom('sucesso');
 
-            // Envio opcional para WhatsApp
             let telWa = document.getElementById('cartTelefoneWa').value.trim();
             if(telWa) {
                 let msg = `*${dadosEmpresa.nome || 'RESTAURANTE'}*%0ARecibo: ${registoVenda.data}%0AMesa: ${mesaSelecionada}%0ATotal: ${totalVenda.toFixed(2)} MT%0A*Obrigado!*`;
                 window.open(`https://wa.me/${telWa}?text=${msg}`, '_blank');
             }
 
-            // Limpeza dos campos
             mesas[mesaSelecionada] = [];
             document.getElementById('cartDesconto').value = 0;
             document.getElementById('cartValorEntregue').value = 0;
@@ -2045,7 +2042,6 @@
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
-            // Emissão do Recibo
             if (bluetoothCharacteristic) {
                 await window.imprimirReciboBluetoothESC(registoVenda);
             } else {
@@ -2056,6 +2052,94 @@
             console.error("Erro ao finalizar venda:", erro);
             alert("⚠️ Falha ao registar venda: " + erro.message);
         }
+    };
+
+    window.cancelarVendaAdmin = async function(idDocVenda, idNumeric) {
+        if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
+            return alert("🔴 Apenas Administradores podem cancelar vendas!");
+        }
+
+        let vIdx = historico.findIndex(h => 
+            (idDocVenda && h.idDoc === idDocVenda) || 
+            (idNumeric && Number(h.id) === Number(idNumeric))
+        );
+
+        if (vIdx === -1) return alert("⚠️ Venda não encontrada no histórico.");
+
+        let venda = historico[vIdx];
+        if (venda.status === 'cancelado') return alert("⚠️ Esta venda já se encontra cancelada.");
+
+        if (!confirm(`ADMINISTRADOR: Confirmar o cancelamento da venda #${venda.id} no valor de ${(venda.totalVenda || 0).toFixed(2)} MT?`)) {
+            return;
+        }
+
+        try {
+            for (let item of (venda.itens || [])) {
+                if (!stock[item.produto]) {
+                    stock[item.produto] = { qtd: 0, preco_total: 0, preco_venda: item.precoUnit || 0, min_alerta: 5, categoria: 'outros' };
+                }
+                stock[item.produto].qtd += item.qtd;
+                stock[item.produto].preco_total += (item.qtd * (item.custoUnit || 0));
+
+                await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                    id: Date.now() + Math.random(),
+                    data: new Date().toLocaleString('pt-MZ'),
+                    timestamp: Date.now(),
+                    tipo: 'DEVOLUÇÃO (CANCELAMENTO)',
+                    produto: item.produto,
+                    qtd: item.qtd,
+                    usuario: usuarioAtual.nome,
+                    origem: `Cancelamento Venda #${venda.id}`
+                });
+            }
+
+            let targetDocId = venda.idDoc || (idDocVenda && idDocVenda !== 'undefined' ? idDocVenda : null);
+
+            if (targetDocId) {
+                await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", targetDocId), { status: 'cancelado' }, { merge: true });
+            }
+
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+            venda.status = 'cancelado';
+
+            registarAuditLog('Venda Cancelada', `Venda #${venda.id} cancelada por ${usuarioAtual.nome}`);
+
+            window.tocarSom('sucesso');
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+            window.atualizarDashboard();
+
+            let elPerfilSel = document.getElementById('nomePerfilSelecionado');
+            if (elPerfilSel && elPerfilSel.innerText) {
+                window.verHistoricoPerfil(elPerfilSel.innerText.toLowerCase());
+            }
+
+            alert("✅ Venda cancelada com sucesso! Produtos devolvidos ao stock.");
+
+        } catch (erro) {
+            console.error("Erro ao cancelar venda:", erro);
+            alert("⚠️ Erro ao cancelar venda: " + erro.message);
+        }
+    };
+
+    window.imprimirGuiaCozinha = function() {
+        let itens = mesas[mesaSelecionada] || [];
+        if(itens.length === 0) return alert("Carrinho vazio.");
+
+        document.getElementById('conteudoReciboFiscal').style.display = 'none';
+        document.getElementById('conteudoGuiaCozinha').style.display = 'block';
+
+        document.getElementById('cozinhaMesa').innerText = mesaSelecionada;
+        document.getElementById('cozinhaData').innerText = new Date().toLocaleString('pt-MZ');
+
+        let divItens = document.getElementById('cozinhaItens');
+        divItens.innerHTML = '';
+        itens.forEach(i => divItens.innerHTML += `<div>${i.qtd}x ${i.produto.toUpperCase()}</div>`);
+        
+        setTimeout(() => {
+            window.print();
+        }, 300);
     };
 
     function imprimirTalão(v) {
@@ -2091,7 +2175,6 @@
         document.getElementById('reciboValorEntregue').innerText = (v.valorEntregue || 0).toFixed(2);
         document.getElementById('reciboTroco').innerText = (v.troco || 0).toFixed(2);
 
-        // Atraso de 300ms para permitir a renderização completa do DOM antes de abrir o diálogo de impressão
         setTimeout(() => {
             window.print();
         }, 300);
@@ -2477,7 +2560,7 @@
                     ${(h.totalVenda || 0).toFixed(2)} MT
                 </td>
                 <td>
-                    ${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc}',${h.id})">🚫 Cancelar</button>` : '-'}
+                    ${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc \vert{}\vert{} ''}',${h.id})">🚫 Cancelar</button>` : '-'}
                 </td>
             </tr>`;
         });
