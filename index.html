@@ -156,7 +156,7 @@
                 <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
                 <div style="font-size:0.9em; line-height:1.6; color:#222;">
                     • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>e-Mola:</b> 87 406 3572 (Valter Lopes)<br>
+                    • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>Valor da Mensalidade:</b> 1.500 MT
                 </div>
             </div>
@@ -883,12 +883,17 @@
         <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
         <p style="margin:5px 0;">==============================</p>
     </div>
-    <!-- MÓDULO JAVASCRIPT & FIREBASE MULTI-TENANT -->
+</div>
+
+<!-- MÓDULO JAVASCRIPT & FIREBASE MULTI-TENANT COM AUTENTICAÇÃO -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    
+    // IMPORT DO FIREBASE AUTH PARA SEGURANÇA
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
@@ -901,6 +906,16 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // ATIVAÇÃO DA SESSÃO ANÓNIMA DE SEGURANÇA DO FIREBASE
+    signInAnonymously(auth)
+      .then((userCredential) => {
+        console.log("🔒 Autenticação de Segurança Firebase ativa! UID:", userCredential.user.uid);
+      })
+      .catch((error) => {
+        console.error("⚠️ Erro na autenticação de segurança:", error.message);
+      });
 
     // 1. RESILIÊNCIA OFFLINE (INDEXEDDB)
     enableIndexedDbPersistence(db).catch((err) => {
@@ -1267,9 +1282,7 @@
         document.getElementById(abaId).classList.add('active');
         if(abaId === 'abaDashboard') window.atualizarDashboard();
         if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-    };
-
-    // GESTÃO DE PERFIS COM FOTO
+        // GESTÃO DE PERFIS COM FOTO
     function processarFotoAvatar(file, callback) {
         if (!file) return callback("");
         let reader = new FileReader();
@@ -2466,4 +2479,4 @@
 
 </body>
 </html>
-</div>
+    };
