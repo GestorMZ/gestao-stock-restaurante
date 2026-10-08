@@ -1939,168 +1939,123 @@
         }
     };
 
-    window.finalizarVendaCarrinho = async function() {
+  window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
 
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return alert("O carrinho está vazio.");
 
-        let metodo = document.getElementById('cartMetodoPagamento').value;
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let totalVenda = Math.max(0, totalSemDesc - desc);
+        try {
+            let metodo = document.getElementById('cartMetodoPagamento').value;
+            let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
+            let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
+            let totalVenda = Math.max(0, totalSemDesc - desc);
 
-        if (metodo === 'Cortesia') {
-            totalVenda = 0;
-            desc = totalSemDesc;
-        }
-
-        let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
-
-        let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
-        let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
-        let valorIva = totalVenda - subtotalLiq;
-
-        let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
-        let troco = Math.max(0, valorEntregue - totalVenda);
-        let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
-
-        let clienteFiado = null;
-        if(metodo === 'Fiado') {
-            clienteFiado = document.getElementById('cartSelectClienteFiado').value;
-            if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
-        }
-
-        for(let item of itens) {
-            stock[item.produto].qtd -= item.qtd;
-            stock[item.produto].preco_total -= (item.qtd * item.custoUnit);
-            if(stock[item.produto].qtd < 0.01) { stock[item.produto].qtd = 0; stock[item.produto].preco_total = 0; }
-
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(),
-                data: new Date().toLocaleString('pt-MZ'),
-                timestamp: Date.now(),
-                tipo: metodo === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)',
-                produto: item.produto,
-                qtd: item.qtd,
-                usuario: usuarioAtual.nome,
-                origem: `${metodo === 'Cortesia' ? 'Cortesia' : 'Venda'} ${mesaSelecionada}`
-            });
-        }
-
-        let registoVenda = {
-            id: Date.now(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            usuario: usuarioAtual.nome,
-            tipo: 'venda',
-            status: 'concluido',
-            mesa: mesaSelecionada,
-            itens,
-            desconto: desc,
-            totalVenda,
-            subtotalLiq,
-            valorIva,
-            taxaIva,
-            nuitCliente,
-            totalCusto,
-            valorEntregue,
-            troco,
-            metodo,
-            clienteFiado
-        };
-
-        if(metodo === 'Fiado') {
-            let cIdx = clientes.findIndex(c => c.nome === clienteFiado);
-            if(cIdx !== -1) {
-                clientes[cIdx].divida = (clientes[cIdx].divida || 0) + totalVenda;
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+            if (metodo === 'Cortesia') {
+                totalVenda = 0;
+                desc = totalSemDesc;
             }
-        }
 
-        await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
+            let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
+            let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
+            let valorIva = totalVenda - subtotalLiq;
 
-        registarAuditLog('Venda Concluída', `Venda #${registoVenda.id} (${metodo}) - Total: ${totalVenda} MT`);
+            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
+            let troco = Math.max(0, valorEntregue - totalVenda);
+            let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
 
-        window.tocarSom('sucesso');
+            let clienteFiado = null;
+            if(metodo === 'Fiado') {
+                clienteFiado = document.getElementById('cartSelectClienteFiado').value;
+                if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
+            }
 
-        if (bluetoothCharacteristic) {
-            window.imprimirReciboBluetoothESC(registoVenda);
-        } else {
-            imprimirTalão(registoVenda);
-        }
+            // Atualização de Stock e Histórico de Movimentações
+            for(let item of itens) {
+                if(stock[item.produto]) {
+                    stock[item.produto].qtd -= item.qtd;
+                    stock[item.produto].preco_total -= (item.qtd * item.custoUnit);
+                    if(stock[item.produto].qtd < 0.01) { stock[item.produto].qtd = 0; stock[item.produto].preco_total = 0; }
+                }
 
-        let telWa = document.getElementById('cartTelefoneWa').value.trim();
-        if(telWa) {
-            let msg = `*${dadosEmpresa.nome || 'RESTAURANTE'}*%0ARecibo: ${registoVenda.data}%0AMesa: ${mesaSelecionada}%0ATotal: ${totalVenda.toFixed(2)} MT%0A*Obrigado!*`;
-            window.open(`https://wa.me/${telWa}?text=${msg}`, '_blank');
-        }
+                await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                    id: Date.now() + Math.random(),
+                    data: new Date().toLocaleString('pt-MZ'),
+                    timestamp: Date.now(),
+                    tipo: metodo === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)',
+                    produto: item.produto,
+                    qtd: item.qtd,
+                    usuario: usuarioAtual.nome,
+                    origem: `${metodo === 'Cortesia' ? 'Cortesia' : 'Venda'} ${mesaSelecionada}`
+                });
+            }
 
-        mesas[mesaSelecionada] = [];
-        document.getElementById('cartDesconto').value = 0;
-        document.getElementById('cartValorEntregue').value = 0;
-        document.getElementById('cartNuitCliente').value = '';
-        document.getElementById('cartTelefoneWa').value = '';
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
-        alert("✅ Venda concluída com sucesso!");
-    };
-
-    window.cancelarVendaAdmin = async function(idDocVenda, idNumeric) {
-        if (!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administradores!");
-
-        let vIdx = historico.findIndex(h => (h.idDoc === idDocVenda || h.id === idNumeric));
-        if (vIdx === -1) return alert("Venda não encontrada.");
-
-        let venda = historico[vIdx];
-        if (venda.status === 'cancelado') return alert("Esta venda já está cancelada.");
-
-        if (!confirm(`ADMINISTRADOR: Cancelar venda #${venda.id} de ${venda.totalVenda.toFixed(2)} MT?`)) return;
-
-        for (let item of venda.itens) {
-            if (!stock[item.produto]) stock[item.produto] = { qtd: 0, preco_total: 0, preco_venda: item.precoUnit, min_alerta: 5, categoria: 'outros' };
-            stock[item.produto].qtd += item.qtd;
-            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
-
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(),
+            let registoVenda = {
+                id: Date.now(),
                 data: new Date().toLocaleString('pt-MZ'),
                 timestamp: Date.now(),
-                tipo: 'DEVOLUÇÃO (CANCELAMENTO)',
-                produto: item.produto,
-                qtd: item.qtd,
                 usuario: usuarioAtual.nome,
-                origem: `Cancelamento Venda #${venda.id}`
-            });
+                tipo: 'venda',
+                status: 'concluido',
+                mesa: mesaSelecionada,
+                itens,
+                desconto: desc,
+                totalVenda,
+                subtotalLiq,
+                valorIva,
+                taxaIva,
+                nuitCliente,
+                totalCusto,
+                valorEntregue,
+                troco,
+                metodo,
+                clienteFiado
+            };
+
+            if(metodo === 'Fiado') {
+                let cIdx = clientes.findIndex(c => c.nome === clienteFiado);
+                if(cIdx !== -1) {
+                    clientes[cIdx].divida = (clientes[cIdx].divida || 0) + totalVenda;
+                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+                }
+            }
+
+            await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+            registarAuditLog('Venda Concluída', `Venda #${registoVenda.id} (${metodo}) - Total: ${totalVenda} MT`);
+
+            window.tocarSom('sucesso');
+
+            // Envio opcional para WhatsApp
+            let telWa = document.getElementById('cartTelefoneWa').value.trim();
+            if(telWa) {
+                let msg = `*${dadosEmpresa.nome || 'RESTAURANTE'}*%0ARecibo: ${registoVenda.data}%0AMesa: ${mesaSelecionada}%0ATotal: ${totalVenda.toFixed(2)} MT%0A*Obrigado!*`;
+                window.open(`https://wa.me/${telWa}?text=${msg}`, '_blank');
+            }
+
+            // Limpeza dos campos
+            mesas[mesaSelecionada] = [];
+            document.getElementById('cartDesconto').value = 0;
+            document.getElementById('cartValorEntregue').value = 0;
+            document.getElementById('cartNuitCliente').value = '';
+            document.getElementById('cartTelefoneWa').value = '';
+            renderizarMesasGrid();
+            window.renderizarCarrinho();
+            filtrarEExibirProdutosVenda();
+
+            // Emissão do Recibo
+            if (bluetoothCharacteristic) {
+                await window.imprimirReciboBluetoothESC(registoVenda);
+            } else {
+                imprimirTalão(registoVenda);
+            }
+
+        } catch (erro) {
+            console.error("Erro ao finalizar venda:", erro);
+            alert("⚠️ Falha ao registar venda: " + erro.message);
         }
-
-        if (venda.idDoc) {
-            await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", venda.idDoc), { status: 'cancelado' }, { merge: true });
-        }
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-
-        registarAuditLog('Venda Cancelada', `Venda #${venda.id} cancelada por Admin`);
-
-        filtrarEExibirProdutosVenda();
-        alert("✅ Venda cancelada e produtos repostos ao stock!");
-    };
-
-    window.imprimirGuiaCozinha = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("Carrinho vazio.");
-
-        document.getElementById('conteudoReciboFiscal').style.display = 'none';
-        document.getElementById('conteudoGuiaCozinha').style.display = 'block';
-
-        document.getElementById('cozinhaMesa').innerText = mesaSelecionada;
-        document.getElementById('cozinhaData').innerText = new Date().toLocaleString('pt-MZ');
-
-        let divItens = document.getElementById('cozinhaItens');
-        divItens.innerHTML = '';
-        itens.forEach(i => divItens.innerHTML += `<div>${i.qtd}x ${i.produto.toUpperCase()}</div>`);
-        window.print();
     };
 
     function imprimirTalão(v) {
@@ -2135,7 +2090,11 @@
         document.getElementById('reciboTotal').innerText = v.totalVenda.toFixed(2);
         document.getElementById('reciboValorEntregue').innerText = (v.valorEntregue || 0).toFixed(2);
         document.getElementById('reciboTroco').innerText = (v.troco || 0).toFixed(2);
-        window.print();
+
+        // Atraso de 300ms para permitir a renderização completa do DOM antes de abrir o diálogo de impressão
+        setTimeout(() => {
+            window.print();
+        }, 300);
     }
 
     window.conectarImpressoraBluetooth = async function() {
