@@ -61,7 +61,7 @@
         .btn-dark { background-color: #555; }
         .btn-sm { padding: 6px 12px; font-size: 12px; width: auto; margin: 0; }
 
-        /* Perfis de Utilizadores (Limite de 3 + Modal) */
+        /* Perfis de Utilizadores (3 visíveis + Modal) */
         .grid-perfis-login { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; justify-content: center; margin-bottom: 20px; }
         .card-perfil-login { background: #f8f9fa; border: 2px solid #e9ecef; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #e7f5ff; transform: translateY(-2px); }
@@ -69,8 +69,8 @@
         .avatar-placeholder { width: 55px; height: 55px; border-radius: 50%; background: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; margin: 0 auto 6px auto; }
         .btn-mais-perfis { background: #fff4e6; color: #d9480f; border: 2px solid #ffd8a8; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* Grid de Produtos no Balcão POS */
-        .grid-produtos-pos { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 220px; overflow-y: auto; margin-bottom: 12px; padding: 4px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
+        /* Grid de 8 Produtos Mais Vendidos / Frequentes no POS */
+        .grid-produtos-pos { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; max-height: 220px; overflow-y: auto; margin-bottom: 12px; padding: 6px; background: #fff; border: 1px solid #ddd; border-radius: 6px; }
         .card-produto-pos { background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; padding: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-produto-pos:hover { border-color: var(--primary); background: #e7f5ff; transform: scale(1.02); }
 
@@ -108,7 +108,7 @@
         .badge-saida { background: #f8d7da; color: #721c24; }
         .badge-cancelado { background: #6c757d; color: white; text-decoration: line-through; }
 
-        /* Mesas Grid */
+        /* Mesas Grid (5 Mesas) */
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .card-mesa { background: #e9ecef; border: 2px solid #ced4da; padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; font-weight: bold; }
         .card-mesa.ocupada { background: #ffe3e3; border-color: var(--danger); color: var(--danger); }
@@ -236,7 +236,7 @@
                 ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
             </div>
 
-            <h4>Selecionar Mesa / Comanda</h4>
+            <h4>Selecionar Mesa / Comanda (5 Mesas Disponíveis)</h4>
             <div class="mesas-grid" id="gridMesas"></div>
 
             <div style="background:#eef7ff; border:1px solid #b6e0fe; padding:15px; border-radius:8px;">
@@ -245,16 +245,16 @@
                     <button class="btn-dark btn-sm" onclick="window.selecionarMesa('Balcão')">Limpar para Balcão</button>
                 </div>
 
-                <!-- PESQUISA RÁPIDA E GRID VISUAL DE PRODUTOS PARA ADICIONAR RÁPIDO -->
+                <!-- SELECÇÃO DOS 8 PRODUTOS MAIS FREQUENTES + PESQUISA RÁPIDA -->
                 <div style="margin-top:12px;">
-                    <label>🔍 Pesquisa Rápida e Seleção de Produto:</label>
-                    <input type="text" id="cartPesquisaProduto" placeholder="Digite o nome do produto para filtrar..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px;">
+                    <label style="font-weight:bold; color:var(--primary);">⭐ 8 Produtos Mais Comprados / Frequentes (Clique para Selecionar):</label>
+                    <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar outro produto por nome..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px;">
                     <div id="gridProdutosVendaPOS" class="grid-produtos-pos"></div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Ou Selecione na Lista</label>
+                        <label>Ou Selecione na Lista Completa</label>
                         <select id="cartSelectProduto" onchange="window.preencherPrecoVenda()"></select>
                     </div>
                     <div class="form-group">
@@ -328,7 +328,7 @@
             </div>
         </div>
 
-        <!-- ================= ABA 2: CAIXA, DESPESAS & FECHO CEGO ================= -->
+        <!-- ================= ABA 2: CAIXA, DESPESAS & FECHO CEGO (HISTÓRICO LIMITADO A 5) ================= -->
         <div id="abaCaixa" class="tab-content">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
@@ -381,8 +381,9 @@
                 </div>
             </div>
 
+            <!-- HISTÓRICO DE FECHOS COM PAGINAÇÃO DE 5 EM 5 -->
             <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
-                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos de Caixa</h4>
+                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos de Caixa (5 por página)</h4>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -399,6 +400,12 @@
                         </thead>
                         <tbody id="corpoHistoricoTurnosCaixa"></tbody>
                     </table>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px;">
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(-1)">⬅️ Anterior</button>
+                    <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualTurnos">1</span> de <span id="pagTotalTurnos">1</span></span>
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(1)">Próxima ➡️</button>
                 </div>
             </div>
         </div>
@@ -533,14 +540,13 @@
                 </table>
             </div>
 
-            <!-- CONTROLO DE PAGINAÇÃO DO STOCK -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualStock">1</span> de <span id="pagTotalStock">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
             </div>
 
-            <!-- HISTÓRICO DE MOVIMENTAÇÕES COM FILTRO, PAGINAÇÃO E ELIMINAÇÃO (5 ITENS POR PÁGINA) -->
+            <!-- HISTÓRICO DE MOVIMENTAÇÕES COM FILTRO E PAGINAÇÃO (5 POR PÁGINA) -->
             <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
                     <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
@@ -572,7 +578,6 @@
                     </table>
                 </div>
 
-                <!-- PAGINAÇÃO DE MOVIMENTAÇÕES DE STOCK (5 POR PÁGINA) -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px;">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
@@ -765,7 +770,6 @@
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
         <h3>⚙️ Definições & Conectar Impressora Bluetooth</h3>
         
-        <!-- SECCÃO CONEXÃO BLUETOOTH ESC/POS -->
         <div style="background:#f8f9fa; border:2px dashed #007bff; padding:15px; border-radius:8px; margin-bottom:15px; text-align:center;">
             <h4 style="margin-top:0; color:var(--primary);">🖨️ Impressora Térmica Bluetooth (ESC/POS)</h4>
             <p style="font-size:0.85em; color:#555;">Conecte diretamente a sua impressora portátil de 58mm ou 80mm via Web Bluetooth API.</p>
@@ -868,8 +872,7 @@
         <div id="cozinhaItens" style="font-size:13px; font-weight:bold;"></div>
         <p style="margin:5px 0;">==============================</p>
     </div>
-</div>
-<!-- MÓDULO JAVASCRIPT & FIREBASE MULTI-TENANT -->
+    <!-- MÓDULO JAVASCRIPT & FIREBASE MULTI-TENANT -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -889,8 +892,10 @@
     // Estado da Aplicação Multi-Tenant
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [];
+    
+    // REDUZIDO PARA EXATAMENTE 5 MESAS (+ BALCÃO)
     let mesas = { "Balcão": [] };
-    for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
+    for(let i=1; i<=5; i++) mesas[`Mesa ${i}`] = [];
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
     
@@ -910,11 +915,13 @@
     let chartInstance = null;
     let unsubscribes = [];
 
-    // Paginação
+    // Paginações
     let paginaAtualStock = 1;
     const ITENS_POR_PAGINA_STOCK = 8;
     let paginaAtualMov = 1;
     const ITENS_POR_PAGINA_MOV = 5;
+    let paginaAtualTurnos = 1;
+    const ITENS_POR_PAGINA_TURNOS = 5;
 
     // Variáveis do Web Bluetooth
     let bluetoothDevice = null;
@@ -1024,6 +1031,7 @@
             if (usuarioAtual) {
                 window.atualizarDashboard();
                 renderizarEstadoCaixa();
+                filtrarEExibirProdutosVenda();
                 if (usuarioAtual.tipo === 'admin') renderizarUsuarios();
             }
         }));
@@ -1061,7 +1069,6 @@
         unsubscribes = [];
     }
 
-    // RENDERIZAR APENAS 3 PERFIS COM BOTÃO "+ VER MAIS" SE HOUVER MAIS
     function renderizarPerfisLogin() {
         let container = document.getElementById('gridPerfisLogin');
         if (!container) return;
@@ -1424,7 +1431,7 @@
         document.getElementById('seccaoDetalhesPerfil').style.display = 'none';
     };
 
-    // ================= LÓGICA DE CAIXA E FECHO CEGO (INCLUI VENDAS DO ADMIN) =================
+    // ================= LÓGICA DE CAIXA E FECHO CEGO (PAGINAÇÃO DE 5 EM 5 NO HISTÓRICO DE TURNOS) =================
 
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
@@ -1442,7 +1449,6 @@
 
             let tAbertura = caixaEstado.timestampAbertura || 0;
 
-            // Inclui TODAS as vendas em Numerário (tanto do Admin como dos Operadores)
             let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && h.metodo === 'Numerário' && (h.timestamp || 0) >= tAbertura)
                                      .reduce((acc, i) => acc + i.totalVenda, 0);
             let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura)
@@ -1535,7 +1541,7 @@
         document.getElementById('inputFechoValorContado').value = '';
 
         let msgResultado = `🔒 Turno Encerrado com Sucesso!\n\n` +
-            `• Total Vendas em Espécie (Todos os Vendedores/Admin): ${vendasNum.toFixed(2)} MT\n` +
+            `• Total Vendas em Espécie: ${vendasNum.toFixed(2)} MT\n` +
             `• Total Despesas: ${totalDesp.toFixed(2)} MT\n` +
             `• Saldo Esperado na Gaveta: ${saldoEsperado.toFixed(2)} MT\n` +
             `• Valor Contado: ${valContado.toFixed(2)} MT\n` +
@@ -1544,6 +1550,7 @@
         alert(msgResultado);
     };
 
+    // EXIBE APENAS 5 HISTÓRICOS DE CAIXA POR PÁGINA
     function renderizarHistoricoTurnos() {
         let tbody = document.getElementById('corpoHistoricoTurnosCaixa');
         if(!tbody) return;
@@ -1554,7 +1561,20 @@
             return;
         }
 
-        turnosCaixa.slice(-20).reverse().forEach(t => {
+        let totalPaginas = Math.ceil(turnosCaixa.length / ITENS_POR_PAGINA_TURNOS) || 1;
+        if(paginaAtualTurnos > totalPaginas) paginaAtualTurnos = totalPaginas;
+
+        let elPagAtual = document.getElementById('pagAtualTurnos');
+        let elPagTotal = document.getElementById('pagTotalTurnos');
+        if(elPagAtual) elPagAtual.innerText = paginaAtualTurnos;
+        if(elPagTotal) elPagTotal.innerText = totalPaginas;
+
+        let listaInvertida = turnosCaixa.slice().reverse();
+        let inicio = (paginaAtualTurnos - 1) * ITENS_POR_PAGINA_TURNOS;
+        let fim = inicio + ITENS_POR_PAGINA_TURNOS;
+        let itensPagina = listaInvertida.slice(inicio, fim);
+
+        itensPagina.forEach(t => {
             let difClass = t.diferenca < 0 ? 'alerta' : t.diferenca > 0 ? 'color:var(--success); font-weight:bold;' : '';
             let difTexto = t.diferenca === 0 ? '0.00 MT (Correto)' : `${t.diferenca > 0 ? '+' : ''}${t.diferenca.toFixed(2)} MT`;
             let opTexto = t.usuarioFecho ? t.usuarioFecho : (t.usuario || '-');
@@ -1571,6 +1591,12 @@
             </tr>`;
         });
     }
+
+    window.mudarPaginaTurnos = function(dir) {
+        paginaAtualTurnos += dir;
+        if(paginaAtualTurnos < 1) paginaAtualTurnos = 1;
+        renderizarHistoricoTurnos();
+    };
 
     window.registarDespesa = async function() {
         if (!caixaEstado.aberto) {
@@ -1617,25 +1643,43 @@
         }
     }
 
-    // PESQUISA E SELEÇÃO RÁPIDA DE PRODUTOS NO BALCÃO (GRID DE CARDS)
+    // EXIBE OS 8 PRODUTOS MAIS FREQUENTES / VENDIDOS NO POS
     window.filtrarEExibirProdutosVenda = function() {
         let grid = document.getElementById('gridProdutosVendaPOS');
         let termo = (document.getElementById('cartPesquisaProduto')?.value || '').trim().toLowerCase();
         if(!grid) return;
 
         grid.innerHTML = '';
+
+        // Contar vendas acumuladas por produto para ordenar por frequência de compra
+        let contagemFreq = {};
+        historico.forEach(h => {
+            if(h.tipo === 'venda' && h.status !== 'cancelado' && h.itens) {
+                h.itens.forEach(i => {
+                    contagemFreq[i.produto] = (contagemFreq[i.produto] || 0) + i.qtd;
+                });
+            }
+        });
+
+        // Filtrar produtos de stock por termo de busca
         let prods = Object.keys(stock).filter(p => p.toLowerCase().includes(termo));
 
-        if(prods.length === 0) {
+        // Ordenar produtos pelos mais vendidos / mais frequentes
+        prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
+
+        // Se o campo de pesquisa estiver vazio, limita estritamente aos 8 produtos mais frequentes
+        let prodsExibicao = termo ? prods : prods.slice(0, 8);
+
+        if(prodsExibicao.length === 0) {
             grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto encontrado.</small>';
             return;
         }
 
-        prods.forEach(p => {
+        prodsExibicao.forEach(p => {
             let item = stock[p];
             grid.innerHTML += `
                 <div class="card-produto-pos" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    <strong style="font-size:0.85em; display:block;">${p.toUpperCase()}</strong>
+                    <strong style="font-size:0.85em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.toUpperCase()}</strong>
                     <small style="color:var(--success); font-weight:bold;">${(item.preco_venda||0).toFixed(2)} MT</small><br>
                     <small style="font-size:0.75em; color:#666;">Stock: ${item.qtd}</small>
                 </div>
@@ -1864,10 +1908,10 @@
         document.getElementById('cartTelefoneWa').value = '';
         renderizarMesasGrid();
         window.renderizarCarrinho();
+        filtrarEExibirProdutosVenda();
         alert("Venda realizada com sucesso!");
     };
 
-    // CANCELAMENTO / ANULAÇÃO DE VENDA PELO ADMINISTRADOR
     window.cancelarVendaAdmin = async function(idVenda) {
         if (!usuarioAtual || usuarioAtual.tipo !== 'admin') {
             return alert("Apenas o Administrador pode cancelar vendas!");
@@ -1915,6 +1959,7 @@
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), { lista: movimentacoesStock });
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "historico"), { lista: historico });
 
+        filtrarEExibirProdutosVenda();
         alert("✅ Venda cancelada com sucesso! O valor foi estornado e os produtos voltaram ao stock.");
     };
 
@@ -1974,7 +2019,7 @@
         window.print();
     }
 
-    // ================= IMPRESSORA TÉRMICA BLUETOOTH (ESC/POS) =================
+    // IMPRESSORA TÉRMICA BLUETOOTH (ESC/POS)
     window.conectarImpressoraBluetooth = async function() {
         if (!navigator.bluetooth) {
             return alert("O seu navegador não suporta a Web Bluetooth API. Utilize o Google Chrome no Android ou PC.");
@@ -2173,6 +2218,7 @@
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "movimentacoes_stock"), { lista: movimentacoesStock });
 
         document.getElementById('simplesProduto').value = '';
+        filtrarEExibirProdutosVenda();
         alert("Stock e histórico atualizados!");
     };
 
@@ -2236,7 +2282,6 @@
         renderizarStock();
     };
 
-    // RENDERIZAÇÃO E PAGINAÇÃO DO HISTÓRICO DE MOVIMENTAÇÕES (EXATAMENTE 5 ITENS POR PÁGINA)
     function renderizarMovimentacoesStock() {
         let tbody = document.getElementById('corpoMovimentacoesStock');
         if(!tbody) return;
@@ -2568,9 +2613,11 @@
         if(confirm(`Apagar ${p.toUpperCase()}?`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            filtrarEExibirProdutosVenda();
         }
     };
 </script>
 
 </body>
 </html>
+</div>
