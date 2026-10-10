@@ -173,7 +173,6 @@
         <div id="boxContaBloqueada" style="display:none; background:#fff5f5; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
             <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; color:#333; margin-bottom:10px;"></p>
-            
             <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
                 <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
                 <div style="font-size:0.9em; line-height:1.6; color:#222;">
@@ -182,7 +181,6 @@
                     • <b>Valor da Mensalidade:</b> 1.500 MT
                 </div>
             </div>
-            
             <p style="font-size:0.85em; color:#555; margin-bottom:0;">
                 Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema.
             </p>
@@ -268,7 +266,6 @@
                 <div style="margin-top:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                         <label style="font-weight:bold; color:var(--primary);">⭐ Produtos Frequentes & Categorias:</label>
-                        <!-- FILTROS DE CATEGORIA NO POS -->
                         <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
                             <button class="cat-btn active" onclick="window.filtrarCategoriaPOS('todos', event)">Todos</button>
                             <button class="cat-btn" onclick="window.filtrarCategoriaPOS('bebidas', event)">🍺 Bebidas</button>
@@ -362,7 +359,6 @@
         <!-- ABA 2: CAIXA, DESPESAS & TURNOS -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
-            
             <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:20px;">
                 <h4>🔓 Abrir Turno de Caixa</h4>
                 <div class="form-group">
@@ -417,20 +413,12 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Abertura</th>
-                                <th>Fecho</th>
-                                <th>Operador</th>
-                                <th>Fundo Inicial</th>
-                                <th>Vendas Dinheiro</th>
-                                <th>Despesas</th>
-                                <th>Valor Contado</th>
-                                <th>Diferença</th>
+                                <th>Abertura</th><th>Fecho</th><th>Operador</th><th>Fundo Inicial</th><th>Vendas Dinheiro</th><th>Despesas</th><th>Valor Contado</th><th>Diferença</th>
                             </tr>
                         </thead>
                         <tbody id="corpoHistoricoTurnosCaixa"></tbody>
                     </table>
                 </div>
-
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px;">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualTurnos">1</span> de <span id="pagTotalTurnos">1</span></span>
@@ -442,30 +430,18 @@
         <!-- ABA 3: CLIENTES & FIADO -->
         <div id="abaFiado" class="tab-content col-gerente">
             <h2>Gestão de Clientes & Contas a Fiado</h2>
-            
             <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
                 <h4>Cadastrar Novo Cliente</h4>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome Completo</label>
-                        <input type="text" id="novoClienteNome" placeholder="Nome do cliente">
-                    </div>
-                    <div class="form-group">
-                        <label>Telefone / WhatsApp</label>
-                        <input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87...">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-primary" onclick="window.cadastrarCliente()">+ Cadastrar Cliente</button>
-                    </div>
+                    <div class="form-group"><label>Nome Completo</label><input type="text" id="novoClienteNome" placeholder="Nome do cliente"></div>
+                    <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87..."></div>
+                    <div class="form-group" style="align-self:flex-end;"><button class="btn-primary" onclick="window.cadastrarCliente()">+ Cadastrar Cliente</button></div>
                 </div>
             </div>
-
             <h4>Clientes Cadastrados e Saldo Devedor</h4>
             <div class="table-responsive">
                 <table>
-                    <thead>
-                        <tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr>
-                    </thead>
+                    <thead><tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr></thead>
                     <tbody id="corpoTabelaClientes"></tbody>
                 </table>
             </div>
@@ -481,10 +457,7 @@
             <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Produto / Bebida</label>
-                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-                    </div>
+                    <div class="form-group"><label>Produto / Bebida</label><input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola"></div>
                     <div class="form-group">
                         <label>Categoria do Produto</label>
                         <select id="simplesCategoria">
@@ -504,40 +477,19 @@
                 </div>
 
                 <div class="form-row" id="rowModoCaixa">
-                    <div class="form-group">
-                        <label>Qtd. de Caixas</label>
-                        <input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Unid. por Caixa</label>
-                        <input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Preço Pago por Caixa (MT)</label>
-                        <input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
-                    </div>
+                    <div class="form-group"><label>Qtd. de Caixas</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Unid. por Caixa</label><input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Preço Pago por Caixa (MT)</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row" id="rowModoUnidade" style="display:none;">
-                    <div class="form-group">
-                        <label>Qtd. Total Unidades</label>
-                        <input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Custo por Unidade (MT)</label>
-                        <input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
-                    </div>
+                    <div class="form-group"><label>Qtd. Total Unidades</label><input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Custo por Unidade (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label style="color:var(--success);">Preço Venda Unitário (MT)</label>
-                        <input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Limite Alerta Mínimo</label>
-                        <input type="number" id="simplesMinAlerta" value="5" min="1">
-                    </div>
+                    <div class="form-group"><label style="color:var(--success);">Preço Venda Unitário (MT)</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Limite Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="5" min="1"></div>
                 </div>
 
                 <div id="boxCalculoLucro" class="box-calculo-lucro">
@@ -562,14 +514,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Produto</th>
-                            <th>Categoria</th>
-                            <th>Stock Atual</th>
-                            <th>Mínimo Alerta</th>
-                            <th>Preço Venda Unit.</th>
-                            <th class="col-gerente">Custo Médio Unit.</th>
-                            <th class="col-gerente">Lucro Unit. Est.</th>
-                            <th class="col-gerente">Ações</th>
+                            <th>Produto</th><th>Categoria</th><th>Stock Atual</th><th>Mínimo Alerta</th><th>Preço Venda Unit.</th><th class="col-gerente">Custo Médio Unit.</th><th class="col-gerente">Lucro Unit. Est.</th><th class="col-gerente">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="corpoStock"></tbody>
@@ -597,15 +542,7 @@
                 <div class="table-responsive">
                     <table>
                         <thead>
-                            <tr>
-                                <th>Data / Hora</th>
-                                <th>Tipo</th>
-                                <th>Produto</th>
-                                <th>Qtd</th>
-                                <th>Utilizador</th>
-                                <th>Origem</th>
-                                <th class="col-gerente">Ação</th>
-                            </tr>
+                            <tr><th>Data / Hora</th><th>Tipo</th><th>Produto</th><th>Qtd</th><th>Utilizador</th><th>Origem</th><th class="col-gerente">Ação</th></tr>
                         </thead>
                         <tbody id="corpoMovimentacoesStock"></tbody>
                     </table>
@@ -622,18 +559,11 @@
         <!-- ABA 5: GESTÃO DE PERFIS (ADMIN) -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
-
             <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:20px;">
                 <h4>Criar Novo Perfil com Foto</h4>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome do Utilizador</label>
-                        <input type="text" id="novoUserNome" placeholder="Ex: joao, maria">
-                    </div>
-                    <div class="form-group">
-                        <label>Palavra-passe</label>
-                        <input type="password" id="novoUserSenha" placeholder="Senha do utilizador">
-                    </div>
+                    <div class="form-group"><label>Nome do Utilizador</label><input type="text" id="novoUserNome" placeholder="Ex: joao, maria"></div>
+                    <div class="form-group"><label>Palavra-passe</label><input type="password" id="novoUserSenha" placeholder="Senha do utilizador"></div>
                     <div class="form-group">
                         <label>Tipo de Permissão</label>
                         <select id="novoUserTipo">
@@ -644,13 +574,8 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Foto do Perfil (Opcional)</label>
-                        <input type="file" id="novoUserFoto" accept="image/*">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button>
-                    </div>
+                    <div class="form-group"><label>Foto do Perfil (Opcional)</label><input type="file" id="novoUserFoto" accept="image/*"></div>
+                    <div class="form-group" style="align-self:flex-end;"><button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button></div>
                 </div>
             </div>
 
@@ -658,14 +583,7 @@
             <div class="table-responsive" style="margin-bottom:25px;">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Foto</th>
-                            <th>Utilizador</th>
-                            <th>Permissão</th>
-                            <th>Total Vendido (MT)</th>
-                            <th>Nº Vendas</th>
-                            <th>Ações</th>
-                        </tr>
+                        <tr><th>Foto</th><th>Utilizador</th><th>Permissão</th><th>Total Vendido (MT)</th><th>Nº Vendas</th><th>Ações</th></tr>
                     </thead>
                     <tbody id="corpoTabelaPerfis"></tbody>
                 </table>
@@ -678,9 +596,7 @@
                 </div>
                 <div class="table-responsive" style="margin-top:10px;">
                     <table>
-                        <thead>
-                            <tr><th>Data/Hora</th><th>Mesa</th><th>Método</th><th>Itens</th><th>Total (MT)</th><th>Ação Admin</th></tr>
-                        </thead>
+                        <thead><tr><th>Data/Hora</th><th>Mesa</th><th>Método</th><th>Itens</th><th>Total (MT)</th><th>Ação Admin</th></tr></thead>
                         <tbody id="corpoDetalhesVendasPerfil"></tbody>
                     </table>
                 </div>
@@ -690,7 +606,6 @@
         <!-- ABA 6: DASHBOARD & CARTEIRAS DIGITAIS -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
-
             <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#ffeba2; color:#856404;">
                 ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
             </div>
@@ -712,46 +627,19 @@
 
             <h4 style="margin-top:15px; color:var(--primary);">📲 Saldos Acumulados por Carteiras Digitais e Caixas</h4>
             <div class="cards-grid">
-                <div class="card-stat roxo">
-                    <h4>📱 M-Pesa Total</h4>
-                    <div class="valor-card" id="dashValMpesa">0.00 MT</div>
-                </div>
-                <div class="card-stat laranja">
-                    <h4>📱 e-Mola Total</h4>
-                    <div class="valor-card" id="dashValEmola">0.00 MT</div>
-                </div>
-                <div class="card-stat">
-                    <h4>💳 POS / Cartão Total</h4>
-                    <div class="valor-card" id="dashValPOS">0.00 MT</div>
-                </div>
-                <div class="card-stat verde">
-                    <h4>💵 Dinheiro em Espécie</h4>
-                    <div class="valor-card" id="dashValNumerario">0.00 MT</div>
-                </div>
-                <div class="card-stat vermelho">
-                    <h4>👥 Vendas a Fiado</h4>
-                    <div class="valor-card" id="dashValFiado">0.00 MT</div>
-                </div>
+                <div class="card-stat roxo"><h4>📱 M-Pesa Total</h4><div class="valor-card" id="dashValMpesa">0.00 MT</div></div>
+                <div class="card-stat laranja"><h4>📱 e-Mola Total</h4><div class="valor-card" id="dashValEmola">0.00 MT</div></div>
+                <div class="card-stat"><h4>💳 POS / Cartão Total</h4><div class="valor-card" id="dashValPOS">0.00 MT</div></div>
+                <div class="card-stat verde"><h4>💵 Dinheiro em Espécie</h4><div class="valor-card" id="dashValNumerario">0.00 MT</div></div>
+                <div class="card-stat vermelho"><h4>👥 Vendas a Fiado</h4><div class="valor-card" id="dashValFiado">0.00 MT</div></div>
             </div>
 
             <h4 style="margin-top:20px;">📊 Balanço Geral do Período</h4>
             <div class="cards-grid">
-                <div class="card-stat verde">
-                    <h4>Vendas Totais</h4>
-                    <div class="valor-card" id="dashTotalVendas">0.00 MT</div>
-                </div>
-                <div class="card-stat laranja">
-                    <h4>Custo Produtos (COGS)</h4>
-                    <div class="valor-card" id="dashCustoVendas">0.00 MT</div>
-                </div>
-                <div class="card-stat vermelho">
-                    <h4>Despesas Gerais</h4>
-                    <div class="valor-card" id="dashDespesasGerais">0.00 MT</div>
-                </div>
-                <div class="card-stat roxo">
-                    <h4>Lucro Líquido Real</h4>
-                    <div class="valor-card" id="dashLucroReal">0.00 MT</div>
-                </div>
+                <div class="card-stat verde"><h4>Vendas Totais</h4><div class="valor-card" id="dashTotalVendas">0.00 MT</div></div>
+                <div class="card-stat laranja"><h4>Custo Produtos (COGS)</h4><div class="valor-card" id="dashCustoVendas">0.00 MT</div></div>
+                <div class="card-stat vermelho"><h4>Despesas Gerais</h4><div class="valor-card" id="dashDespesasGerais">0.00 MT</div></div>
+                <div class="card-stat roxo"><h4>Lucro Líquido Real</h4><div class="valor-card" id="dashLucroReal">0.00 MT</div></div>
             </div>
 
             <div class="form-row" style="margin-top:20px;">
@@ -773,7 +661,6 @@
                 </table>
             </div>
 
-            <!-- Paginação do Histórico de Transações (5 Por Página) -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
@@ -788,7 +675,6 @@
                 </table>
             </div>
 
-            <!-- Paginação do Registo de Auditoria (5 Por Página) -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
@@ -799,10 +685,8 @@
                 <button class="btn-dark btn-sm" onclick="window.fazerBackup()">💾 Baixar Backup Geral Seguro</button>
             </div>
         </div>
-
     </div>
 </div>
-
 <!-- MODAL SELEÇÃO DE PERFIS -->
 <div id="modalMaisPerfis" class="modal">
     <div class="modal-content" style="max-width:400px;">
@@ -818,18 +702,9 @@
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalResetSenha()">&times;</span>
         <h3>🔑 Redefinir Senha com Chave Mestra</h3>
-        <div class="form-group">
-            <label>Nome do Utilizador</label>
-            <input type="text" id="resetUsuarioNome">
-        </div>
-        <div class="form-group">
-            <label>Chave Mestra do Administrador</label>
-            <input type="password" id="resetChaveMestraInput">
-        </div>
-        <div class="form-group">
-            <label>Nova Palavra-Passe</label>
-            <input type="password" id="resetNovaSenha">
-        </div>
+        <div class="form-group"><label>Nome do Utilizador</label><input type="text" id="resetUsuarioNome"></div>
+        <div class="form-group"><label>Chave Mestra do Administrador</label><input type="password" id="resetChaveMestraInput"></div>
+        <div class="form-group"><label>Nova Palavra-Passe</label><input type="password" id="resetNovaSenha"></div>
         <button class="btn-success" onclick="window.solicitarRedefinicaoSenhaChaveMestra()">🔐 Autorizar e Guardar Nova Senha</button>
     </div>
 </div>
@@ -861,45 +736,18 @@
 
         <div id="seccaoEmpresaAdmin" style="display:none; background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px;">
             <h4>🏢 Dados do Restaurante & Chave Mestra</h4>
-            <div class="form-group">
-                <label>Nome do Restaurante</label>
-                <input type="text" id="cfgNomeEmpresa">
-            </div>
+            <div class="form-group"><label>Nome do Restaurante</label><input type="text" id="cfgNomeEmpresa"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>NUIT Empresa</label>
-                    <input type="text" id="cfgNuit">
-                </div>
-                <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="text" id="cfgTelefone">
-                </div>
+                <div class="form-group"><label>NUIT Empresa</label><input type="text" id="cfgNuit"></div>
+                <div class="form-group"><label>Telefone</label><input type="text" id="cfgTelefone"></div>
             </div>
-            <div class="form-group">
-                <label>Endereço</label>
-                <input type="text" id="cfgEndereco">
-            </div>
+            <div class="form-group"><label>Endereço</label><input type="text" id="cfgEndereco"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>Aplicar IVA?</label>
-                    <select id="cfgAplicarIva">
-                        <option value="nao">Não</option>
-                        <option value="sim" selected>Sim</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Taxa IVA (%)</label>
-                    <input type="number" id="cfgTaxaIva" value="16">
-                </div>
+                <div class="form-group"><label>Aplicar IVA?</label><select id="cfgAplicarIva"><option value="nao">Não</option><option value="sim" selected>Sim</option></select></div>
+                <div class="form-group"><label>Taxa IVA (%)</label><input type="number" id="cfgTaxaIva" value="16"></div>
             </div>
-            <div class="form-group">
-                <label>Slogan / Mensagem Recibo</label>
-                <input type="text" id="cfgSlogan">
-            </div>
-            <div class="form-group">
-                <label style="color:var(--danger); font-weight:bold;">🔑 Chave Mestra Secreta</label>
-                <input type="text" id="cfgChaveMestra">
-            </div>
+            <div class="form-group"><label>Slogan / Mensagem Recibo</label><input type="text" id="cfgSlogan"></div>
+            <div class="form-group"><label style="color:var(--danger); font-weight:bold;">🔑 Chave Mestra Secreta</label><input type="text" id="cfgChaveMestra"></div>
             <button class="btn-primary btn-sm" onclick="window.guardarDadosEmpresa()">💾 Guardar Dados da Empresa</button>
         </div>
 
@@ -1007,9 +855,8 @@
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
-    let bloqueiosMesas = {}; // Controlo de mesas bloqueadas por operador em tempo real
+    let bloqueiosMesas = {};
     
-    // 10 Mesas no total
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
@@ -1148,8 +995,6 @@
                     return;
                 }
             } else {
-                // SEGURANÇA: Bloqueia a auto-criação de novas empresas por utilizadores comuns.
-                // Apenas o Super Admin Valter Lopes cria novas licenças diretamente no Firebase.
                 alert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado. Contacte o administrador Valter Lopes (+258 84 903 0686).");
                 return;
             }
@@ -1413,13 +1258,9 @@
         let isGerente = usuarioAtual.tipo === 'gerente';
         let isVendedor = usuarioAtual.tipo === 'vendedor';
 
-        // Elementos exclusivos de Admin
         document.querySelectorAll('.col-admin').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
-        
-        // Elementos para Gerente e Admin (Caixa, Stock, Clientes)
         document.querySelectorAll('.col-gerente').forEach(el => el.style.display = (isAdmin || isGerente) ? 'block' : 'none');
 
-        // Se for operador de caixa, redireciona ou limita à aba de Vendas / Balcão
         if (isVendedor) {
             window.mudarAba('abaVendas');
         }
@@ -1751,14 +1592,12 @@
     }
 
     window.selecionarMesa = async function(m) {
-        // Validação de bloqueio em tempo real de mesa
         let bloqueioUser = bloqueiosMesas[m];
         if (bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
-        // Se a mesa anterior era diferente, liberta o bloqueio anterior
         if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
             delete bloqueiosMesas[mesaSelecionada];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
@@ -1767,7 +1606,6 @@
         mesaSelecionada = m;
         document.getElementById('labelMesaAtual').innerText = m;
 
-        // Se for mesa numerada, bloqueia para o utilizador atual
         if (m !== "Balcão") {
             bloqueiosMesas[m] = usuarioAtual.nome;
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
@@ -1919,7 +1757,6 @@
         window.calcularTroco();
     };
 
-    // O operador pode remover diretamente o item do carrinho em caso de falha de lançamento
     window.removerItemCarrinho = function(idx) {
         let itens = mesas[mesaSelecionada] || [];
         let item = itens[idx];
@@ -2012,7 +1849,6 @@
             await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
 
-            // Liberta o bloqueio da mesa após a venda
             if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
                 delete bloqueiosMesas[mesaSelecionada];
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
@@ -2452,7 +2288,6 @@
         let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
         if(!vendaObj) return alert("Venda não encontrada.");
 
-        // Reverte stock
         if(vendaObj.itens) {
             for(let item of vendaObj.itens) {
                 if(stock[item.produto]) {
