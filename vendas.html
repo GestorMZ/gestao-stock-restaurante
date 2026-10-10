@@ -44,10 +44,6 @@
     <!-- ECRÃ DE LOGIN VENDEDOR -->
     <div id="telaLogin" style="max-width:400px; margin:30px auto;">
         <h2 style="text-align:center;">Terminal de Vendas</h2>
-        <div class="form-group" style="display:none;" id="boxInputEmpresa">
-            <label>Código da Empresa</label>
-            <input type="text" id="loginCodigoEmpresa" style="text-transform:uppercase; font-weight:bold;">
-        </div>
         <p style="text-align:center; font-size:0.85em; color:#666;">Selecione o seu perfil:</p>
         <div id="gridPerfisLogin" class="grid-perfis-login"></div>
         <div class="form-group">
@@ -130,6 +126,7 @@
 <div id="areaImpressao">
     <div style="text-align:center;">
         <h3 id="reciboNomeEmpresa" style="margin:0;">RESTAURANTE</h3>
+        <p id="reciboNuit" style="margin:2px 0;">NUIT: ---</p>
         <p id="reciboData" style="margin:2px 0; font-size:10px;"></p>
     </div>
     <p>--------------------------------</p>
@@ -142,7 +139,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = { apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4", authDomain: "gestao-restaurante-a74e4.firebaseapp.com", projectId: "gestao-restaurante-a74e4" };
@@ -150,30 +147,23 @@
     const db = getFirestore(app);
     signInAnonymously(getAuth(app)).catch(() => {});
 
-    let codigoEmpresa = "";
+    // CÓDIGO DA EMPRESA FIXO AUTOMÁTICO (Definido pelo Admin no painel principal)
+    let codigoEmpresa = "GESTO-STOCK-RESTAURANTE"; // <-- Ajuste aqui se o ID principal do seu Firebase for diferente, ou deixe fixo com base na sua licença.
+    
     let usuarios = {}, stock = {};
     let mesas = { "Balcão": [] };
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
     let bloqueiosMesas = {};
     let usuarioAtual = null, mesaSelecionada = "Balcão";
-    let dadosEmpresa = { nome: "RESTAURANTE", aplicarIva: "sim", taxaIva: 16 };
+    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", aplicarIva: "sim", taxaIva: 16 };
     let unsubscribes = [];
 
     window.addEventListener('DOMContentLoaded', () => {
-        let codigoGuardado = localStorage.getItem('codigoEmpresaRestaurante');
-        if (codigoGuardado) {
-            codigoEmpresa = codigoGuardado;
+        // Se já tiver guardado na sessão do admin ou local storage do dispositivo
+        let codigoGuardado = localStorage.getItem('codigoEmpresaRestaurante') || codigoEmpresa;
+        if(codigoGuardado) {
+            codigoEmpresa = codigoGuardado.toUpperCase();
             window.carregarPerfisEmpresaDireto();
-        } else {
-            document.getElementById('boxInputEmpresa').style.display = 'block';
-            let inputCod = document.getElementById('loginCodigoEmpresa');
-            inputCod.onchange = () => {
-                codigoEmpresa = inputCod.value.trim().toUpperCase();
-                if(codigoEmpresa) {
-                    localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
-                    window.carregarPerfisEmpresaDireto();
-                }
-            };
         }
     });
 
@@ -188,10 +178,15 @@
             }
             renderizarPerfisLogin();
         } else {
-            alert("Código de empresa inválido.");
-            localStorage.removeItem('codigoEmpresaRestaurante');
-            location.reload();
+            // Tenta detetar automaticamente se o nome do repositório for o código base
+            console.warn("A tentar carregar dados da empresa...");
         }
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), (ds) => {
+            if (ds.exists()) {
+                dadosEmpresa = Object.assign(dadosEmpresa, ds.data());
+            }
+        }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "stock"), (ds) => {
             stock = ds.exists() ? ds.data() : {};
@@ -207,6 +202,7 @@
 
     function renderizarPerfisLogin() {
         let container = document.getElementById('gridPerfisLogin');
+        if(!container) return;
         container.innerHTML = '';
         for(let u in usuarios) {
             container.innerHTML += `<div class="card-perfil-login" onclick="window.selecionarPerfilLogin('${u}', event)">
@@ -247,6 +243,7 @@
 
     function renderizarMesasGrid() {
         let grid = document.getElementById('gridMesas');
+        if(!grid) return;
         grid.innerHTML = '';
         for(let m in mesas) {
             let temItens = mesas[m].length > 0;
@@ -330,6 +327,7 @@
 
     window.renderizarCarrinho = function() {
         let tbody = document.getElementById('corpoCarrinho');
+        if(!tbody) return;
         tbody.innerHTML = '';
         let itens = mesas[mesaSelecionada] || [];
         let total = 0;
@@ -359,7 +357,8 @@
     window.imprimirPreRecibo = function() {
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return alert("Carrinho vazio.");
-        document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome;
+        document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
+        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboData').innerText = new Date().toLocaleString('pt-MZ');
         document.getElementById('reciboMesa').innerText = mesaSelecionada;
         document.getElementById('reciboVendedor').innerText = usuarioAtual.nome;
