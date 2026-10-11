@@ -2370,20 +2370,25 @@
             document.getElementById('cartModoPagamentoTipo').value = 'Unico';
             window.alternarModoPagamentoVisual();
 
-            renderizarMesasGrid();
-            window.renderizarCarrinho();
-            filtrarEExibirProdutosVenda();
-
-            if (bluetoothCharacteristic) {
-                await window.imprimirReciboBluetoothESC(registoVenda);
-            } else {
-                imprimirTalão(registoVenda);
-            }
-
-        } catch (erro) {
-            console.error("Erro ao finalizar venda:", erro);
-            alert("⚠️ Falha ao registar venda: " + erro.message);
+          window.selecionarMesa = async function(m) {
+        let bloqueioUser = bloqueiosMesas[m];
+        if (bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
+            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
+            return;
         }
+
+        if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
+            if (!mesas[mesaSelecionada] || mesas[mesaSelecionada].length === 0) {
+                delete bloqueiosMesas[mesaSelecionada];
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+            }
+        }
+
+        mesaSelecionada = m;
+        document.getElementById('labelMesaAtual').innerText = m;
+
+        renderizarMesasGrid();
+        window.renderizarCarrinho();
     };
 
     function imprimirTalão(v) {
