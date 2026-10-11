@@ -156,7 +156,7 @@
         </div>
     </div>
 
-    <!-- ECRÃ DE LOGIN COM CÓDIGO OCULTO E BOTÃO DE REVELAR -->
+    <!-- ECRÃ DE LOGIN -->
     <div id="telaLogin" style="max-width:480px; margin:20px auto;">
         <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
         <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
@@ -1021,6 +1021,7 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1316,7 +1317,6 @@
             if (usuarioAtual) renderizarMesasGrid();
         }));
 
-        // ESCUTADOR PARA CARRINHOS E MESAS PERSISTENTES
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
             if (docSnap.exists()) {
                 let dadosMesasRemotas = docSnap.data();
@@ -1770,7 +1770,21 @@
         alert("Caixa aberto com sucesso!");
     };
 
+    // VALIDAÇÃO: Bloquear fecho de caixa se houver mesas em uso
     window.fecharCaixaTurnoCEGO = async function() {
+        let mesasComItens = [];
+        for(let m in mesas) {
+            if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) {
+                mesasComItens.push(m);
+            }
+        }
+
+        if(mesasComItens.length > 0) {
+            window.tocarSom('alerta');
+            alert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas com consumos ativos ou itens no carrinho por liquidar: ${mesasComItens.join(', ')}.\n\nPor favor, feche ou limpe todas as mesas antes de encerrar o turno.`);
+            return;
+        }
+
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
         if(isNaN(valContado) || valContado < 0) return alert("Introduza o valor contado na gaveta.");
 
@@ -1976,7 +1990,7 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
-    // FUNÇÃO DE ADICIONAR AO CARRINHO COM BAIXA IMEDIATA NO STOCK E PERSISTÊNCIA
+    // ADICIONAR AO CARRINHO (BAIXA IMEDIATA DE STOCK + PERSISTÊNCIA)
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
@@ -2006,7 +2020,6 @@
         let subtotal = qtd * precoUnit;
         let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
 
-        // 1. BAIXA IMEDIATA NO STOCK
         stock[prod].qtd -= qtd;
         stock[prod].preco_total -= (qtd * custoUnit);
         if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
@@ -2024,10 +2037,8 @@
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
 
-        // 2. ADICIONAR AO CARRINHO DA MESA
         mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
-        // 3. PERSISTIR MESAS E CARRINHOS NO FIRESTORE (PARA QUANDO O OPERADOR SAIR E VOLTAR)
         let mesasParaSalvar = {};
         for(let m in mesas) {
             if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
@@ -2153,7 +2164,6 @@
         let item = itens[idx];
         if (!item) return;
 
-        // REPOR O STOCK DO ITEM REMOVIDO DO CARRINHO
         if(stock[item.produto]) {
             stock[item.produto].qtd += item.qtd;
             stock[item.produto].preco_total += (item.qtd * item.custoUnit);
@@ -2233,6 +2243,7 @@
         setTimeout(() => { window.print(); }, 300);
     };
 
+    // VALIDAÇÃO: Obrigatoriedade de Valor Entregue no Fecho da Venda Final
     window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
 
@@ -2266,12 +2277,27 @@
 
             if (metodo === 'Cortesia') { totalVenda = 0; desc = totalSemDesc; }
 
+            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
+            
+            if (metodo === 'Numerário' && valorEntregue <= 0) {
+                window.tocarSom('alerta');
+                alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente antes de finalizar a venda em numerário!");
+                document.getElementById('cartValorEntregue').focus();
+                return;
+            }
+
+            if (valorEntregue > 0 && valorEntregue < totalVenda && metodo !== 'Fiado' && metodo !== 'Cortesia') {
+                window.tocarSom('alerta');
+                alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total da venda (${totalVenda.toFixed(2)} MT)!`);
+                document.getElementById('cartValorEntregue').focus();
+                return;
+            }
+
             let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
             let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
             let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
             let valorIva = totalVenda - subtotalLiq;
 
-            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
             let troco = Math.max(0, valorEntregue - totalVenda);
             let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
 
@@ -2314,7 +2340,6 @@
 
             await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
 
-            // LIMPAR CARRINHO DA MESA NO FIRESTORE (JA FOI BAIXADO AO ADICIONAR)
             mesas[mesaSelecionada] = [];
             let mesasParaSalvar = {};
             for(let m in mesas) {
