@@ -1770,7 +1770,6 @@
         alert("Caixa aberto com sucesso!");
     };
 
-    // VALIDAÇÃO: Bloquear fecho de caixa se houver mesas em uso
     window.fecharCaixaTurnoCEGO = async function() {
         let mesasComItens = [];
         for(let m in mesas) {
@@ -1880,7 +1879,7 @@
         grid.innerHTML = '';
         
         for(let m in mesas) {
-            let temItens = mesas[m].length > 0;
+            let temItens = mesas[m] && mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
             let bloqueioUser = bloqueiosMesas[m];
             let estaBloqueadaPorOutro = bloqueioUser && bloqueioUser !== usuarioAtual.nome;
@@ -1906,17 +1905,14 @@
         }
 
         if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
-            delete bloqueiosMesas[mesaSelecionada];
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+            if (!mesas[mesaSelecionada] || mesas[mesaSelecionada].length === 0) {
+                delete bloqueiosMesas[mesaSelecionada];
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+            }
         }
 
         mesaSelecionada = m;
         document.getElementById('labelMesaAtual').innerText = m;
-
-        if (m !== "Balcão") {
-            bloqueiosMesas[m] = usuarioAtual.nome;
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
-        }
 
         renderizarMesasGrid();
         window.renderizarCarrinho();
@@ -1990,7 +1986,6 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
-    // ADICIONAR AO CARRINHO (BAIXA IMEDIATA DE STOCK + PERSISTÊNCIA)
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
@@ -2243,7 +2238,6 @@
         setTimeout(() => { window.print(); }, 300);
     };
 
-    // VALIDAÇÃO: Obrigatoriedade de Valor Entregue no Fecho da Venda Final
     window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
 
@@ -2370,25 +2364,20 @@
             document.getElementById('cartModoPagamentoTipo').value = 'Unico';
             window.alternarModoPagamentoVisual();
 
-          window.selecionarMesa = async function(m) {
-        let bloqueioUser = bloqueiosMesas[m];
-        if (bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
-            return;
-        }
+            renderizarMesasGrid();
+            window.renderizarCarrinho();
+            filtrarEExibirProdutosVenda();
 
-        if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
-            if (!mesas[mesaSelecionada] || mesas[mesaSelecionada].length === 0) {
-                delete bloqueiosMesas[mesaSelecionada];
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+            if (bluetoothCharacteristic) {
+                await window.imprimirReciboBluetoothESC(registoVenda);
+            } else {
+                imprimirTalão(registoVenda);
             }
+
+        } catch (erro) {
+            console.error("Erro ao finalizar venda:", erro);
+            alert("⚠️ Falha ao registar venda: " + erro.message);
         }
-
-        mesaSelecionada = m;
-        document.getElementById('labelMesaAtual').innerText = m;
-
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
     };
 
     function imprimirTalão(v) {
