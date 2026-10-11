@@ -165,7 +165,6 @@
             <div class="form-group">
                 <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
                 <div style="display:flex; gap:6px;">
-                    <!-- Ocampo inicia como PASSWORD para mascarar o código com pontos -->
                     <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:2px;" onchange="window.carregarPerfisEmpresa()">
                     <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar Código</button>
                 </div>
@@ -192,7 +191,7 @@
         </div>
 
         <div id="seccaoPerfisEForm" style="display:none;">
-            <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.85em; font-weight:bold; color:var(--purple);">🔑 Início de Turno: Selecione o Gerente ou Administrador:</p>
+            <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.85em; font-weight:bold; color:var(--purple);">🔑 Início de Turno: Selecione o Utilizador:</p>
             <div id="gridPerfisLogin" class="grid-perfis-login"></div>
 
             <div class="form-group">
@@ -905,7 +904,7 @@
     </div>
 </div>
 
-<!-- MODAL DEFINIÇÕES COM DADOS DA EMPRESA VISÍVEIS -->
+<!-- MODAL DEFINIÇÕES -->
 <div id="modalDefinicoes" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
@@ -1125,18 +1124,14 @@
         }
     });
 
-    // FUNÇÃO PARA REVELAR CÓDIGO NO LOGIN MEDIANTE SENHA DO ADMIN
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
 
-        // Se o utilizador já tiver carregado os perfis, verifica contra os administradores cadastrados no Firebase
         let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para ver o código:");
         if (!senha) return;
 
         let autorizado = false;
-        
-        // Se já tivermos carregado os perfis da empresa
         if (Object.keys(usuarios).length > 0) {
             for (let u in usuarios) {
                 if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
@@ -1145,7 +1140,6 @@
                 }
             }
         } else {
-            // Caso seja o primeiro acesso antes de validar, consulta diretamente a Chave Mestra ou tenta validar
             if (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim()) {
                 autorizado = true;
             }
@@ -1322,6 +1316,22 @@
             if (usuarioAtual) renderizarMesasGrid();
         }));
 
+        // ESCUTADOR PARA CARRINHOS E MESAS PERSISTENTES
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
+            if (docSnap.exists()) {
+                let dadosMesasRemotas = docSnap.data();
+                for(let m in dadosMesasRemotas) {
+                    if(m !== "Balcão") {
+                        mesas[m] = dadosMesasRemotas[m] || [];
+                    }
+                }
+            }
+            if (usuarioAtual) {
+                renderizarMesasGrid();
+                window.renderizarCarrinho();
+            }
+        }));
+
         let qVendas = query(collection(db, "empresas", codigoEmpresa, "vendas"), orderBy("timestamp", "desc"), limit(500));
         unsubscribes.push(onSnapshot(qVendas, (snapshot) => {
             historico = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
@@ -1385,11 +1395,9 @@
         container.innerHTML = '';
         
         let chavesPerfis = Object.keys(usuarios);
-        
         let perfisGerentesOuAdmins = chavesPerfis.filter(u => usuarios[u].tipo === 'gerente' || usuarios[u].tipo === 'admin');
         let perfisVendedores = chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor');
         let chavesOrdenadas = [...perfisGerentesOuAdmins, ...perfisVendedores];
-
         let visiveis = chavesOrdenadas.slice(0, 3);
 
         visiveis.forEach(u => {
@@ -1968,7 +1976,8 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
-    window.adicionarAoCarrinho = function() {
+    // FUNÇÃO DE ADICIONAR AO CARRINHO COM BAIXA IMEDIATA NO STOCK E PERSISTÊNCIA
+    window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
             alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
@@ -1997,10 +2006,38 @@
         let subtotal = qtd * precoUnit;
         let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
 
+        // 1. BAIXA IMEDIATA NO STOCK
+        stock[prod].qtd -= qtd;
+        stock[prod].preco_total -= (qtd * custoUnit);
+        if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'SAÍDA (CARRINHO)',
+            produto: prod,
+            qtd: qtd,
+            usuario: usuarioAtual.nome,
+            origem: `Adicionado à ${mesaSelecionada}`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+        // 2. ADICIONAR AO CARRINHO DA MESA
         mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
+
+        // 3. PERSISTIR MESAS E CARRINHOS NO FIRESTORE (PARA QUANDO O OPERADOR SAIR E VOLTAR)
+        let mesasParaSalvar = {};
+        for(let m in mesas) {
+            if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+        }
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
+
         window.tocarSom('click');
         renderizarMesasGrid();
         window.renderizarCarrinho();
+        filtrarEExibirProdutosVenda();
     };
 
     window.calcularTroco = function() {
@@ -2104,7 +2141,7 @@
         }
     };
 
-    window.removerItemCarrinho = function(idx) {
+    window.removerItemCarrinho = async function(idx) {
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             window.tocarSom('alerta');
@@ -2116,9 +2153,36 @@
         let item = itens[idx];
         if (!item) return;
 
+        // REPOR O STOCK DO ITEM REMOVIDO DO CARRINHO
+        if(stock[item.produto]) {
+            stock[item.produto].qtd += item.qtd;
+            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
+        }
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)',
+            produto: item.produto,
+            qtd: item.qtd,
+            usuario: usuarioAtual.nome,
+            origem: `Removido da ${mesaSelecionada}`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
         mesas[mesaSelecionada].splice(idx, 1);
+
+        let mesasParaSalvar = {};
+        for(let m in mesas) {
+            if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+        }
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
+
         renderizarMesasGrid();
         window.renderizarCarrinho();
+        filtrarEExibirProdutosVenda();
         window.tocarSom('click');
     };
 
@@ -2217,25 +2281,6 @@
                 if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
             }
 
-            for(let item of itens) {
-                if(stock[item.produto]) {
-                    stock[item.produto].qtd -= item.qtd;
-                    stock[item.produto].preco_total -= (item.qtd * item.custoUnit);
-                    if(stock[item.produto].qtd < 0.01) { stock[item.produto].qtd = 0; stock[item.produto].preco_total = 0; }
-                }
-
-                await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                    id: Date.now() + Math.random(),
-                    data: new Date().toLocaleString('pt-MZ'),
-                    timestamp: Date.now(),
-                    tipo: metodo === 'Cortesia' ? 'SAÍDA (CORTESIA)' : 'SAÍDA (VENDA)',
-                    produto: item.produto,
-                    qtd: item.qtd,
-                    usuario: usuarioAtual.nome,
-                    origem: `${metodo === 'Cortesia' ? 'Cortesia' : 'Venda'} ${mesaSelecionada}`
-                });
-            }
-
             let registoVenda = {
                 id: Date.now(),
                 data: new Date().toLocaleString('pt-MZ'),
@@ -2268,7 +2313,14 @@
             }
 
             await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+            // LIMPAR CARRINHO DA MESA NO FIRESTORE (JA FOI BAIXADO AO ADICIONAR)
+            mesas[mesaSelecionada] = [];
+            let mesasParaSalvar = {};
+            for(let m in mesas) {
+                if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+            }
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
 
             if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
                 delete bloqueiosMesas[mesaSelecionada];
@@ -2284,7 +2336,6 @@
                 window.open(`https://wa.me/${telWa}?text=${msg}`, '_blank');
             }
 
-            mesas[mesaSelecionada] = [];
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
             document.getElementById('cartDesconto').value = 0;
