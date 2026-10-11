@@ -1113,6 +1113,28 @@
     let bluetoothCharacteristic = null;
     let timerInatividade = null;
 
+    // CAPTURA AUTOMÁTICA DO CÓDIGO DA EMPRESA PELO LINK (EX: ?empresa=BAR-MUNHUANA)
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        let empUrl = urlParams.get('empresa');
+        if (empUrl) {
+            codigoEmpresa = empUrl.trim().toUpperCase();
+            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
+            let inputCod = document.getElementById('loginCodigoEmpresa');
+            if (inputCod) {
+                inputCod.value = codigoEmpresa;
+                inputCod.readOnly = true; // Bloqueia para evitar alterações indevidas no terminal
+            }
+            window.carregarPerfisEmpresa();
+        } else {
+            let empSalva = localStorage.getItem('codigoEmpresaRestaurante');
+            if (empSalva) {
+                let inputCod = document.getElementById('loginCodigoEmpresa');
+                if (inputCod) inputCod.value = empSalva;
+            }
+        }
+    });
+
     function resetarTimerInatividade() {
         if (timerInatividade) clearTimeout(timerInatividade);
         if (usuarioAtual && document.getElementById('telaBloqueio').style.display === 'none') {
@@ -1209,6 +1231,7 @@
         if(!codeInput) return alert("Por favor, introduza o Código do Restaurante!");
 
         codigoEmpresa = codeInput;
+        localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
 
         try {
             let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
@@ -1336,9 +1359,12 @@
         
         let chavesPerfis = Object.keys(usuarios);
         
-        // REGRA DE ABERTURA: Filtra primeiro apenas GERENTE e ADMIN para iniciar o dia
+        // ORDENAÇÃO E FILTRAGEM: Prioriza Gerentes e Administradores em primeiro plano
         let perfisGerentesOuAdmins = chavesPerfis.filter(u => usuarios[u].tipo === 'gerente' || usuarios[u].tipo === 'admin');
-        let visiveis = perfisGerentesOuAdmins.length > 0 ? perfisGerentesOuAdmins.slice(0, 3) : chavesPerfis.slice(0, 3);
+        let perfisVendedores = chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor');
+        let chavesOrdenadas = [...perfisGerentesOuAdmins, ...perfisVendedores];
+
+        let visiveis = chavesOrdenadas.slice(0, 3);
 
         visiveis.forEach(u => {
             let uObj = usuarios[u];
@@ -1353,7 +1379,7 @@
             container.appendChild(card);
         });
 
-        if (chavesPerfis.length > 3 || perfisGerentesOuAdmins.length > 3) {
+        if (chavesOrdenadas.length > 3) {
             let btnMais = document.createElement('div');
             btnMais.className = 'btn-mais-perfis';
             btnMais.onclick = () => window.abrirModalMaisPerfis();
@@ -2958,5 +2984,6 @@
         alert("Palavra-passe alterada!");
     };
 </script>
+
 </body>
 </html>
