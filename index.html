@@ -929,6 +929,16 @@
 
         <div id="seccaoEmpresaAdmin" style="display:none; background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px;">
             <h4>🏢 Dados do Restaurante & Chave Mestra</h4>
+            
+            <!-- CÓDIGO DE LICENÇA MASCARADO POR SEGURANÇA -->
+            <div class="form-group">
+                <label style="color:var(--danger); font-weight:bold;">🏢 Código de Licença / Empresa</label>
+                <div style="display:flex; gap:6px;">
+                    <input type="password" id="cfgCodigoLicencaOculto" value="••••••••" readonly style="font-weight:bold; letter-spacing:2px; background:#e9ecef;">
+                    <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarLicencaAdmin()">👁️ Ver Licença</button>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Nome do Restaurante</label>
                 <input type="text" id="cfgNomeEmpresa">
@@ -1906,7 +1916,6 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
-    // VALIDAÇÃO RIGOROSA: Apenas quem abriu a mesa pode adicionar itens
     window.adicionarAoCarrinho = function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
@@ -2043,7 +2052,6 @@
         }
     };
 
-    // VALIDAÇÃO RIGOROSA: Apenas quem atende a mesa pode remover itens
     window.removerItemCarrinho = function(idx) {
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
@@ -2062,7 +2070,6 @@
         window.tocarSom('click');
     };
 
-    // 📄 PRÉ-RECIBO (Conferência de conta sem baixar stock)
     window.imprimirPreRecibo = function() {
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return alert("O carrinho/mesa está vazio.");
@@ -2158,7 +2165,6 @@
                 if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
             }
 
-            // BAIXA ÚNICA DE STOCK AO EMITIR O RECIBO FINAL
             for(let item of itens) {
                 if(stock[item.produto]) {
                     stock[item.produto].qtd -= item.qtd;
@@ -2880,6 +2886,8 @@
 
     function preencherCamposEmpresaModal() {
         if (document.getElementById('cfgNomeEmpresa')) {
+            document.getElementById('cfgCodigoLicencaOculto').value = "••••••••";
+            document.getElementById('cfgCodigoLicencaOculto').type = "password";
             document.getElementById('cfgNomeEmpresa').value = dadosEmpresa.nome || '';
             document.getElementById('cfgNuit').value = dadosEmpresa.nuit || '';
             document.getElementById('cfgTelefone').value = dadosEmpresa.telefone || '';
@@ -2890,6 +2898,29 @@
             document.getElementById('cfgTaxaIva').value = dadosEmpresa.taxaIva || 16;
         }
     }
+
+    window.revelarLicencaAdmin = function() {
+        let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para visualizar o Código de Licença:");
+        let autorizado = false;
+        for (let u in usuarios) {
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
+                autorizado = true;
+                break;
+            }
+        }
+        if (autorizado) {
+            let inputLicenca = document.getElementById('cfgCodigoLicencaOculto');
+            inputLicenca.type = "text";
+            inputLicenca.value = codigoEmpresa;
+            alert(`🔑 Código de Licença Ativo: ${codigoEmpresa}`);
+            setTimeout(() => {
+                inputLicenca.type = "password";
+                inputLicenca.value = "••••••••";
+            }, 8000);
+        } else {
+            alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
+        }
+    };
 
     window.abrirModalDefinicoes = function() {
         document.getElementById('modalDefinicoes').style.display = 'block';
@@ -2927,6 +2958,5 @@
         alert("Palavra-passe alterada!");
     };
 </script>
-
 </body>
 </html>
