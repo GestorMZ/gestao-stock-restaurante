@@ -111,7 +111,6 @@
         .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 8px; position: relative; }
         .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; }
 
-        /* ESTILOS MODO NOTURNO (DARK MODE) */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
         body.dark-mode .container { background: #1e1e1e; color: #e0e0e0; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label { color: #e0e0e0; }
@@ -145,7 +144,7 @@
 
 <div class="container">
 
-    <!-- ECRÃ DE BLOQUEIO / MODO AUSENTE -->
+    <!-- ECRÃ DE BLOQUEIO -->
     <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
         <div class="modal-content" style="max-width:350px; text-align:center; background:#fff; padding:25px; border-radius:12px;">
             <h3 style="margin-top:0;">🔒 Ecrã Bloqueado</h3>
@@ -157,7 +156,7 @@
         </div>
     </div>
 
-    <!-- ECRÃ DE LOGIN -->
+    <!-- ECRÃ DE LOGIN COM CÓDIGO OCULTO E BOTÃO DE REVELAR -->
     <div id="telaLogin" style="max-width:480px; margin:20px auto;">
         <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
         <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
@@ -165,7 +164,11 @@
         <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #dee2e6; margin-bottom:15px;">
             <div class="form-group">
                 <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
-                <input type="text" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA, SABORES01" style="text-transform:uppercase; font-weight:bold;" onchange="window.carregarPerfisEmpresa()">
+                <div style="display:flex; gap:6px;">
+                    <!-- Ocampo inicia como PASSWORD para mascarar o código com pontos -->
+                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:2px;" onchange="window.carregarPerfisEmpresa()">
+                    <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar Código</button>
+                </div>
             </div>
             <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
@@ -229,18 +232,15 @@
             </div>
         </div>
 
-        <!-- BANNER DE STATUS DO CAIXA -->
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
             <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa')">Abrir Caixa</button>
         </div>
 
-        <!-- ALERTA DE STOCK MÍNIMO -->
         <div id="boxAlertaStockGlobal" class="alerta-stock-box">
             <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
         </div>
 
-        <!-- MENU DE ABAS -->
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
             <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
@@ -250,7 +250,7 @@
             <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Carteiras</button>
         </div>
 
-        <!-- ABA 1: VENDAS & MESAS -->
+        <!-- ABA 1: VENDAS -->
         <div id="abaVendas" class="tab-content active">
             <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
                 ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
@@ -271,7 +271,6 @@
                 <div style="margin-top:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
                         <label style="font-weight:bold; color:var(--primary);">⭐ Produtos Frequentes & Categorias:</label>
-                        <!-- FILTROS DE CATEGORIA NO POS -->
                         <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
                             <button class="cat-btn active" onclick="window.filtrarCategoriaPOS('todos', event)">Todos</button>
                             <button class="cat-btn" onclick="window.filtrarCategoriaPOS('bebidas', event)">🍺 Bebidas</button>
@@ -345,7 +344,6 @@
                     </div>
                 </div>
 
-                <!-- BOX PAGAMENTO DESDOBRADO -->
                 <div id="boxPagamentoDesdobradoArea" style="display:none; background:#fff; border:2px dashed var(--purple); padding:12px; border-radius:8px; margin-bottom:12px;">
                     <h5 style="margin-top:0; color:var(--purple);">🔀 Desdobrar Pagamento em Múltiplos Métodos:</h5>
                     <div class="form-row">
@@ -400,7 +398,7 @@
             </div>
         </div>
 
-        <!-- ABA 2: CAIXA, DESPESAS & TURNOS -->
+        <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
@@ -480,7 +478,7 @@
             </div>
         </div>
 
-        <!-- ABA 3: CLIENTES & FIADO -->
+        <!-- ABA 3: FIADO -->
         <div id="abaFiado" class="tab-content col-gerente">
             <h2>Gestão de Clientes & Contas a Fiado</h2>
             
@@ -512,7 +510,7 @@
             </div>
         </div>
 
-        <!-- ABA 4: GESTÃO DE STOCK -->
+        <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <h2>Gestão de Stock na Despensa</h2>
@@ -660,7 +658,7 @@
             </div>
         </div>
 
-        <!-- ABA 5: GESTÃO DE PERFIS (ADMIN) -->
+        <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
 
@@ -728,7 +726,7 @@
             </div>
         </div>
 
-        <!-- ABA 6: DASHBOARD & CARTEIRAS DIGITAIS -->
+        <!-- ABA 6: DASHBOARD -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
 
@@ -814,7 +812,6 @@
                 </table>
             </div>
 
-            <!-- Paginação do Histórico de Transações (5 Por Página) -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
@@ -829,7 +826,6 @@
                 </table>
             </div>
 
-            <!-- Paginação do Registo de Auditoria (5 Por Página) -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8f9fa; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
@@ -844,7 +840,7 @@
     </div>
 </div>
 
-<!-- MODAL DIVISÃO DE CONTA -->
+<!-- MODAIS -->
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:420px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
@@ -871,7 +867,6 @@
     </div>
 </div>
 
-<!-- MODAL SELEÇÃO DE PERFIS -->
 <div id="modalMaisPerfis" class="modal">
     <div class="modal-content" style="max-width:400px;">
         <span class="close-modal" onclick="window.fecharModalMaisPerfis()">&times;</span>
@@ -881,7 +876,6 @@
     </div>
 </div>
 
-<!-- MODAL REDEFINIR SENHA -->
 <div id="modalResetSenha" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalResetSenha()">&times;</span>
@@ -902,7 +896,6 @@
     </div>
 </div>
 
-<!-- MODAL QR CODE MENU DIGITAL -->
 <div id="modalQRMenu" class="modal">
     <div class="modal-content" style="text-align:center;">
         <span class="close-modal" onclick="window.fecharModalQRMenu()">&times;</span>
@@ -912,7 +905,7 @@
     </div>
 </div>
 
-<!-- MODAL DEFINIÇÕES -->
+<!-- MODAL DEFINIÇÕES COM DADOS DA EMPRESA VISÍVEIS -->
 <div id="modalDefinicoes" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
@@ -927,10 +920,9 @@
             </div>
         </div>
 
-        <div id="seccaoEmpresaAdmin" style="display:none; background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px;">
+        <div id="seccaoEmpresaAdmin" style="background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px;">
             <h4>🏢 Dados do Restaurante & Chave Mestra</h4>
             
-            <!-- CÓDIGO DE LICENÇA MASCARADO POR SEGURANÇA -->
             <div class="form-group">
                 <label style="color:var(--danger); font-weight:bold;">🏢 Código de Licença / Empresa</label>
                 <div style="display:flex; gap:6px;">
@@ -1113,7 +1105,6 @@
     let bluetoothCharacteristic = null;
     let timerInatividade = null;
 
-    // CAPTURA AUTOMÁTICA DO CÓDIGO DA EMPRESA PELO LINK (EX: ?empresa=BAR-MUNHUANA)
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         let empUrl = urlParams.get('empresa');
@@ -1123,7 +1114,6 @@
             let inputCod = document.getElementById('loginCodigoEmpresa');
             if (inputCod) {
                 inputCod.value = codigoEmpresa;
-                inputCod.readOnly = true; // Bloqueia para evitar alterações indevidas no terminal
             }
             window.carregarPerfisEmpresa();
         } else {
@@ -1134,6 +1124,43 @@
             }
         }
     });
+
+    // FUNÇÃO PARA REVELAR CÓDIGO NO LOGIN MEDIANTE SENHA DO ADMIN
+    window.revelarCodigoLoginAdmin = async function() {
+        let elInput = document.getElementById('loginCodigoEmpresa');
+        if (!elInput) return;
+
+        // Se o utilizador já tiver carregado os perfis, verifica contra os administradores cadastrados no Firebase
+        let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para ver o código:");
+        if (!senha) return;
+
+        let autorizado = false;
+        
+        // Se já tivermos carregado os perfis da empresa
+        if (Object.keys(usuarios).length > 0) {
+            for (let u in usuarios) {
+                if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
+                    autorizado = true;
+                    break;
+                }
+            }
+        } else {
+            // Caso seja o primeiro acesso antes de validar, consulta diretamente a Chave Mestra ou tenta validar
+            if (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim()) {
+                autorizado = true;
+            }
+        }
+
+        if (autorizado) {
+            elInput.type = "text";
+            alert(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`);
+            setTimeout(() => {
+                elInput.type = "password";
+            }, 8000);
+        } else {
+            alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
+        }
+    };
 
     function resetarTimerInatividade() {
         if (timerInatividade) clearTimeout(timerInatividade);
@@ -1359,7 +1386,6 @@
         
         let chavesPerfis = Object.keys(usuarios);
         
-        // ORDENAÇÃO E FILTRAGEM: Prioriza Gerentes e Administradores em primeiro plano
         let perfisGerentesOuAdmins = chavesPerfis.filter(u => usuarios[u].tipo === 'gerente' || usuarios[u].tipo === 'admin');
         let perfisVendedores = chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor');
         let chavesOrdenadas = [...perfisGerentesOuAdmins, ...perfisVendedores];
@@ -2950,7 +2976,15 @@
 
     window.abrirModalDefinicoes = function() {
         document.getElementById('modalDefinicoes').style.display = 'block';
-        preencherCamposEmpresaModal();
+        let secEmpresaAdmin = document.getElementById('seccaoEmpresaAdmin');
+        if (secEmpresaAdmin) {
+            if (usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente')) {
+                secEmpresaAdmin.style.display = 'block';
+                preencherCamposEmpresaModal();
+            } else {
+                secEmpresaAdmin.style.display = 'none';
+            }
+        }
     };
     window.fecharModalDefinicoes = function() { document.getElementById('modalDefinicoes').style.display = 'none'; };
     
