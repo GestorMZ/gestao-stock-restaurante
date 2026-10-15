@@ -1986,7 +1986,7 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
-    window.adicionarAoCarrinho = async function() {
+  window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
             alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
@@ -1994,10 +1994,11 @@
             return;
         }
 
+        // VERIFICAÇÃO DE SEGURANÇA: Impede mexer em mesas de outros operadores
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser atendida por outro operador (${bloqueioUser.toUpperCase()}).`);
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}). Não pode adicionar itens.`);
             return;
         }
 
@@ -2010,6 +2011,12 @@
         if(stock[prod].qtd < qtd) {
             window.tocarSom('alerta');
             return alert("Stock insuficiente!");
+        }
+
+        // Se for o primeiro item a entrar na mesa, bloqueia automaticamente para o utilizador atual
+        if (mesaSelecionada !== "Balcão" && !bloqueiosMesas[mesaSelecionada]) {
+            bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
         }
 
         let subtotal = qtd * precoUnit;
@@ -2044,6 +2051,51 @@
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
+    };
+
+    window.removerItemCarrinho = async function(idx) {
+        // VERIFICAÇÃO DE SEGURANÇA: Impede remover itens de mesas de outros operadores
+        let bloqueioUser = bloqueiosMesas[mesaSelecionada];
+        if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
+            window.tocarSom('alerta');
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}). Não pode remover itens.`);
+            return;
+        }
+
+        let itens = mesas[mesaSelecionada] || [];
+        let item = itens[idx];
+        if (!item) return;
+
+        if(stock[item.produto]) {
+            stock[item.produto].qtd += item.qtd;
+            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
+        }
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)',
+            produto: item.produto,
+            qtd: item.qtd,
+            usuario: usuarioAtual.nome,
+            origem: `Removido da ${mesaSelecionada}`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+
+        mesas[mesaSelecionada].splice(idx, 1);
+
+        let mesasParaSalvar = {};
+        for(let m in mesas) {
+            if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+        }
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
+
+        renderizarMesasGrid();
+        window.renderizarCarrinho();
+        filtrarEExibirProdutosVenda();
+        window.tocarSom('click');
     };
 
     window.calcularTroco = function() {
