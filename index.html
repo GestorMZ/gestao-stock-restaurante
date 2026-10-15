@@ -1021,7 +1021,6 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1322,7 +1321,15 @@
                 let dadosMesasRemotas = docSnap.data();
                 for(let m in dadosMesasRemotas) {
                     if(m !== "Balcão") {
-                        mesas[m] = dadosMesasRemotas[m] || [];
+                        let infoMesa = dadosMesasRemotas[m];
+                        if (Array.isArray(infoMesa)) {
+                            mesas[m] = infoMesa;
+                        } else if (infoMesa && typeof infoMesa === 'object') {
+                            mesas[m] = infoMesa.itens || [];
+                            if (infoMesa.operador && !bloqueiosMesas[m]) {
+                                bloqueiosMesas[m] = infoMesa.operador;
+                            }
+                        }
                     }
                 }
             }
@@ -1692,7 +1699,6 @@
             </tr>`;
         }
     }
-
     window.verHistoricoPerfil = function(u) {
         let sec = document.getElementById('seccaoDetalhesPerfil');
         document.getElementById('nomePerfilSelecionado').innerText = u;
@@ -1986,7 +1992,7 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
-  window.adicionarAoCarrinho = async function() {
+    window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
             alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
@@ -1994,11 +2000,10 @@
             return;
         }
 
-        // VERIFICAÇÃO DE SEGURANÇA: Impede mexer em mesas de outros operadores
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}). Não pode adicionar itens.`);
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
@@ -2013,7 +2018,6 @@
             return alert("Stock insuficiente!");
         }
 
-        // Se for o primeiro item a entrar na mesa, bloqueia automaticamente para o utilizador atual
         if (mesaSelecionada !== "Balcão" && !bloqueiosMesas[mesaSelecionada]) {
             bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
@@ -2043,7 +2047,7 @@
 
         let mesasParaSalvar = {};
         for(let m in mesas) {
-            if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+            if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
         }
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
 
@@ -2051,51 +2055,6 @@
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
-    };
-
-    window.removerItemCarrinho = async function(idx) {
-        // VERIFICAÇÃO DE SEGURANÇA: Impede remover itens de mesas de outros operadores
-        let bloqueioUser = bloqueiosMesas[mesaSelecionada];
-        if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}). Não pode remover itens.`);
-            return;
-        }
-
-        let itens = mesas[mesaSelecionada] || [];
-        let item = itens[idx];
-        if (!item) return;
-
-        if(stock[item.produto]) {
-            stock[item.produto].qtd += item.qtd;
-            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
-        }
-
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)',
-            produto: item.produto,
-            qtd: item.qtd,
-            usuario: usuarioAtual.nome,
-            origem: `Removido da ${mesaSelecionada}`
-        });
-
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-
-        mesas[mesaSelecionada].splice(idx, 1);
-
-        let mesasParaSalvar = {};
-        for(let m in mesas) {
-            if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
-        }
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
-
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
-        window.tocarSom('click');
     };
 
     window.calcularTroco = function() {
@@ -2203,7 +2162,7 @@
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: Não pode alterar esta mesa pois está a ser atendida por outro operador (${bloqueioUser.toUpperCase()}).`);
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`);
             return;
         }
 
@@ -2233,7 +2192,7 @@
 
         let mesasParaSalvar = {};
         for(let m in mesas) {
-            if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+            if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
         }
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
 
@@ -2389,7 +2348,7 @@
             mesas[mesaSelecionada] = [];
             let mesasParaSalvar = {};
             for(let m in mesas) {
-                if(m !== "Balcão") mesasParaSalvar[m] = mesas[m];
+                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
             }
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
 
