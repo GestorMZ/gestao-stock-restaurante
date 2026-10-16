@@ -2084,13 +2084,18 @@ window.adicionarAoCarrinho = async function() {
     let qtd = parseFloat(document.getElementById('cartQtd').value);
     let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
 
-    if(!prod || !stock[prod]) return alert("Selecione um produto.");
+    if(!prod) return alert("Selecione um produto.");
     if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
-    
-    // Verifica stock local
-    if(stock[prod].qtd < qtd) {
-        window.tocarSom('alerta');
-        return alert("Stock insuficiente!");
+
+    // Se o stock local existir, valida; se estiver offline e sem objeto stock carregado, permite adicionar por segurança
+    if (stock[prod]) {
+        if(stock[prod].qtd < qtd) {
+            window.tocarSom('alerta');
+            return alert("Stock insuficiente!");
+        }
+    } else {
+        // Fallback para modo offline estrito caso o objeto stock esteja vazio
+        stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
     }
 
     let subtotal = qtd * precoUnit;
@@ -2103,34 +2108,34 @@ window.adicionarAoCarrinho = async function() {
 
     // Adiciona ao array da mesa atual
     if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
-    mesas[mesaSelecionada].produtoAdd = true; // Flag opcional
     mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
-    // **SALVAGUARDA LOCAL:** Grava imediatamente no localStorage para resistir a falhas de internet
+    // 1. GRAVAÇÃO LOCAL IMEDIATA (LocalStorage) - Garante persistência offline
     try {
         localStorage.setItem(`mesa_carrinho_${mesaSelecionada}`, JSON.stringify(mesas[mesaSelecionada]));
+        localStorage.setItem(`stock_local_backup`, JSON.stringify(stock));
     } catch(e) {
-        console.error("Erro ao gravar no localStorage", e);
+        console.error("Erro ao gravar localmente:", e);
     }
 
-    // Tenta atualizar o Firebase em segundo plano (se houver net, sincroniza; se não houver, o IndexedDB/Offline do Firebase gere)
+    // 2. TENTATIVA DE SINCRONIZAÇÃO EM SEGUNDO PLANO COM O FIREBASE
     try {
         if (mesaSelecionada !== "Balcão") {
             bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
         }
 
         let mesasParaSalvar = {};
         for(let m in mesas) {
             if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
         }
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
+        setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock).catch(()=>{});
     } catch (err) {
-        console.ivado("A operar offline: os dados foram salvos localmente e serão sincronizados quando a net voltar.");
+        console.log("A operar offline: alterações guardadas localmente.");
     }
 
-    window.tocarSom('click');
+    window.tocarSom('sucesso');
     renderizarMesasGrid();
     window.renderizarCarrinho();
     filtrarEExibirProdutosVenda();
