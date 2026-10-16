@@ -213,23 +213,29 @@
     <!-- ECRÃ PRINCIPAL -->
     <div id="telaSistema" style="display:none;">
         
-        <div class="header-usuario">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div id="headerAvatarBox"></div>
-                <div>
-                    <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
-                    Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
-                    <small id="cargoUsuarioLogado" style="color:#666;"></small>
-                </div>
-            </div>
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
-                <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
-                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
-                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
-                <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
-            </div>
+    <div class="header-usuario">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div id="headerAvatarBox"></div>
+        <div>
+            <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
+            Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
+            <small id="cargoUsuarioLogado" style="color:#666;"></small>
         </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        
+        <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
+        <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
+            ⏳ A verificar rede...
+        </span>
+
+        <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
+        <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
+        <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+        <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
+        <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+    </div>
+</div>
 
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
@@ -1174,7 +1180,20 @@
             }
         }
     });
-
+// Recuperar carrinhos salvos localmente caso abra a página sem internet
+for(let m in mesas) {
+    if(m !== "Balcão") {
+        let salvoLocal = localStorage.getItem(`mesa_carrinho_${m}`);
+        if(salvoLocal) {
+            try {
+                let itensLocal = JSON.parse(salvoLocal);
+                if(Array.isArray(itensLocal) && itensLocal.length > 0) {
+                    mesas[m] = itensLocal;
+                }
+            } catch(e) {}
+        }
+    }
+}
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
@@ -2054,75 +2073,68 @@
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 window.adicionarAoCarrinho = async function() {
-        if (!caixaEstado.aberto) {
-            window.tocarSom('alerta');
-            alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
-            window.mudarAba('abaCaixa');
-            return;
-        }
+    if (!caixaEstado.aberto) {
+        window.tocarSom('alerta');
+        alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
+        window.mudarAba('abaCaixa');
+        return;
+    }
 
-        // CORREÇÃO: Verifica se a mesa está REALMENTE ocupada com itens por outro operador
-        let temItensNaMesa = mesas[mesaSelecionada] && mesas[mesaSelecionada].length > 0;
-        let bloqueioUser = bloqueiosMesas[mesaSelecionada];
+    let prod = document.getElementById('cartSelectProduto').value;
+    let qtd = parseFloat(document.getElementById('cartQtd').value);
+    let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
 
-        if (mesaSelecionada !== "Balcão" && temItensNaMesa && bloqueioUser && bloqueioUser.toLowerCase() !== usuarioAtual.nome.toLowerCase()) {
-            window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}).`);
-            return;
-        }
+    if(!prod || !stock[prod]) return alert("Selecione um produto.");
+    if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
+    
+    // Verifica stock local
+    if(stock[prod].qtd < qtd) {
+        window.tocarSom('alerta');
+        return alert("Stock insuficiente!");
+    }
 
-        let prod = document.getElementById('cartSelectProduto').value;
-        let qtd = parseFloat(document.getElementById('cartQtd').value);
-        let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
+    let subtotal = qtd * precoUnit;
+    let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
 
-        if(!prod || !stock[prod]) return alert("Selecione um produto.");
-        if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
-        if(stock[prod].qtd < qtd) {
-            window.tocarSom('alerta');
-            return alert("Stock insuficiente!");
-        }
+    // Atualiza o stock localmente
+    stock[prod].qtd -= qtd;
+    stock[prod].preco_total -= (qtd * custoUnit);
+    if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
 
-        // Atribui o bloqueio/posse da mesa ao operador atual ao adicionar o primeiro item
+    // Adiciona ao array da mesa atual
+    if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
+    mesas[mesaSelecionada].produtoAdd = true; // Flag opcional
+    mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
+
+    // **SALVAGUARDA LOCAL:** Grava imediatamente no localStorage para resistir a falhas de internet
+    try {
+        localStorage.setItem(`mesa_carrinho_${mesaSelecionada}`, JSON.stringify(mesas[mesaSelecionada]));
+    } catch(e) {
+        console.error("Erro ao gravar no localStorage", e);
+    }
+
+    // Tenta atualizar o Firebase em segundo plano (se houver net, sincroniza; se não houver, o IndexedDB/Offline do Firebase gere)
+    try {
         if (mesaSelecionada !== "Balcão") {
             bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
         }
-
-        let subtotal = qtd * precoUnit;
-        let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
-
-        stock[prod].qtd -= qtd;
-        stock[prod].preco_total -= (qtd * custoUnit);
-        if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
-
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            tipo: 'SAÍDA (CARRINHO)',
-            produto: prod,
-            qtd: qtd,
-            usuario: usuarioAtual.nome,
-            origem: `Adicionado à ${mesaSelecionada}`
-        });
-
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-
-        if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
-        mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
         let mesasParaSalvar = {};
         for(let m in mesas) {
             if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
         }
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+    } catch (err) {
+        console.ivado("A operar offline: os dados foram salvos localmente e serão sincronizados quando a net voltar.");
+    }
 
-        window.tocarSom('click');
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
-    };
-
+    window.tocarSom('click');
+    renderizarMesasGrid();
+    window.renderizarCarrinho();
+    filtrarEExibirProdutosVenda();
+};
     window.calcularTroco = function() {
         let itens = mesas[mesaSelecionada] || [];
         let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
