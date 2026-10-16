@@ -2002,8 +2002,7 @@
         let p = document.getElementById('cartSelectProduto').value;
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
-
-    window.adicionarAoCarrinho = async function() {
+window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
             alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
@@ -2011,8 +2010,11 @@
             return;
         }
 
+        // CORREÇÃO: Verifica se a mesa está REALMENTE ocupada com itens por outro operador
+        let temItensNaMesa = mesas[mesaSelecionada] && mesas[mesaSelecionada].length > 0;
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
-        if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
+
+        if (mesaSelecionada !== "Balcão" && temItensNaMesa && bloqueioUser && bloqueioUser.toLowerCase() !== usuarioAtual.nome.toLowerCase()) {
             window.tocarSom('alerta');
             alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
@@ -2029,7 +2031,8 @@
             return alert("Stock insuficiente!");
         }
 
-        if (mesaSelecionada !== "Balcão" && !bloqueiosMesas[mesaSelecionada]) {
+        // Atribui o bloqueio/posse da mesa ao operador atual ao adicionar o primeiro item
+        if (mesaSelecionada !== "Balcão") {
             bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
         }
@@ -2054,6 +2057,7 @@
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
 
+        if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
         mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
         let mesasParaSalvar = {};
