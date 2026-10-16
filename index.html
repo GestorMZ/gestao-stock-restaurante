@@ -1879,7 +1879,7 @@
         alert("Despesa registada!");
     };
 
-    function renderizarMesasGrid() {
+  function renderizarMesasGrid() {
         let grid = document.getElementById('gridMesas');
         if(!grid) return;
         grid.innerHTML = '';
@@ -1888,11 +1888,16 @@
             let temItens = mesas[m] && mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
             let bloqueioUser = bloqueiosMesas[m];
-            let estaBloqueadaPorOutro = bloqueioUser && bloqueioUser !== usuarioAtual.nome;
+            
+            // CORREÇÃO: Só considera bloqueada se tiver itens reais adicionados
+            let estaBloqueadaPorOutro = temItens && bloqueioUser && bloqueioUser !== usuarioAtual.nome;
 
             let classeEstado = '';
-            if (estaBloqueadaPorOutro) classeEstado = 'bloqueada';
-            else if (temItens) classeEstado = 'ocupada';
+            if (estaBloqueadaPorOutro) {
+                classeEstado = 'bloqueada';
+            } else if (temItens) {
+                classeEstado = 'ocupada';
+            }
 
             grid.innerHTML += `<div class="card-mesa ${classeEstado} ${isSel?'selecionada':''}" onclick="window.selecionarMesa('${m}')">
                 ${m}<br>
@@ -1904,16 +1909,22 @@
     }
 
     window.selecionarMesa = async function(m) {
+        let temItensTarget = mesas[m] && mesas[m].length > 0;
         let bloqueioUser = bloqueiosMesas[m];
-        if (bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
+
+        // Só bloqueia a seleção se a mesa destino tiver produtos e for de outro operador
+        if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
-        if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
+        // Se mudou de mesa e a mesa antiga estava vazia, remove o bloqueio do Firebase
+        if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m) {
             if (!mesas[mesaSelecionada] || mesas[mesaSelecionada].length === 0) {
-                delete bloqueiosMesas[mesaSelecionada];
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+                if (bloqueiosMesas[mesaSelecionada]) {
+                    delete bloqueiosMesas[mesaSelecionada];
+                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+                }
             }
         }
 
