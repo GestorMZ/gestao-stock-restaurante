@@ -2263,9 +2263,12 @@ window.adicionarAoCarrinho = async function() {
 
         setTimeout(() => { window.print(); }, 300);
     };
-
-    window.finalizarVendaCarrinho = async function() {
-        if (!caixaEstado.aberto) return alert("🔴 Caixa Fechado!");
+window.finalizarVendaCarrinho = async function() {
+        // 1. Verifica se o caixa está aberto na memória local
+        if (!caixaEstado.aberto) {
+            window.tocarSom('alerta');
+            return alert("🔴 Caixa Fechado!");
+        }
 
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return alert("O carrinho está vazio.");
@@ -2301,14 +2304,14 @@ window.adicionarAoCarrinho = async function() {
             
             if (metodo === 'Numerário' && valorEntregue <= 0) {
                 window.tocarSom('alerta');
-                alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente antes de finalizar a venda em numerário!");
+                alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
                 document.getElementById('cartValorEntregue').focus();
                 return;
             }
 
             if (valorEntregue > 0 && valorEntregue < totalVenda && metodo !== 'Fiado' && metodo !== 'Cortesia') {
                 window.tocarSom('alerta');
-                alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total da venda (${totalVenda.toFixed(2)} MT)!`);
+                alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
                 document.getElementById('cartValorEntregue').focus();
                 return;
             }
@@ -2350,37 +2353,34 @@ window.adicionarAoCarrinho = async function() {
                 clienteFiado
             };
 
+            // 2. Operações de persistência lançadas sem 'await' travante
             if(metodo === 'Fiado') {
                 let cIdx = clientes.findIndex(c => c.nome === clienteFiado);
                 if(cIdx !== -1) {
                     clientes[cIdx].divida = (clientes[cIdx].divida || 0) + totalVenda;
-                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes }).catch(()=>{});
                 }
             }
 
-            await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
+            // Envia a venda para o banco de dados (o Firestore guarda localmente se estiver offline)
+            addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
 
+            // Limpa a mesa na memória local
             mesas[mesaSelecionada] = [];
             let mesasParaSalvar = {};
             for(let m in mesas) {
                 if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
             }
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
+            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
 
             if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
                 delete bloqueiosMesas[mesaSelecionada];
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
             }
 
-            registarAuditLog('Venda Concluída', `Venda #${registoVenda.id} (${metodo}) - Total: ${totalVenda} MT`);
             window.tocarSom('sucesso');
 
-            let telWa = document.getElementById('cartTelefoneWa').value.trim();
-            if(telWa) {
-                let msg = `*${dadosEmpresa.nome || 'RESTAURANTE'}*%0ARecibo Final: ${registoVenda.data}%0AMesa: ${mesaSelecionada}%0ATotal: ${totalVenda.toFixed(2)} MT%0A*Obrigado!*`;
-                window.open(`https://wa.me/${telWa}?text=${msg}`, '_blank');
-            }
-
+            // 3. Reset do formulário de vendas
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
             document.getElementById('cartDesconto').value = 0;
@@ -2394,8 +2394,9 @@ window.adicionarAoCarrinho = async function() {
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
+            // 4. EMISSÃO / IMPRESSÃO DO RECIBO (Executa imediatamente mesmo sem internet)
             if (bluetoothCharacteristic) {
-                await window.imprimirReciboBluetoothESC(registoVenda);
+                window.imprimirReciboBluetoothESC(registoVenda);
             } else {
                 imprimirTalão(registoVenda);
             }
@@ -2405,7 +2406,6 @@ window.adicionarAoCarrinho = async function() {
             alert("⚠️ Falha ao registar venda: " + erro.message);
         }
     };
-
     function imprimirTalão(v) {
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
