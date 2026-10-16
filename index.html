@@ -248,7 +248,6 @@
             <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios')">👤 Gestão de Perfis</button>
             <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Carteiras</button>
         </div>
-
         <!-- ABA 1: VENDAS -->
         <div id="abaVendas" class="tab-content active">
             <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
@@ -656,7 +655,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
@@ -1021,6 +1019,7 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1889,7 +1888,6 @@
             let isSel = m === mesaSelecionada;
             let bloqueioUser = bloqueiosMesas[m];
             
-            // CORREÇÃO: Só considera bloqueada se tiver itens reais adicionados
             let estaBloqueadaPorOutro = temItens && bloqueioUser && bloqueioUser !== usuarioAtual.nome;
 
             let classeEstado = '';
@@ -1912,13 +1910,11 @@
         let temItensTarget = mesas[m] && mesas[m].length > 0;
         let bloqueioUser = bloqueiosMesas[m];
 
-        // Só bloqueia a seleção se a mesa destino tiver produtos e for de outro operador
         if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
-        // Se mudou de mesa e a mesa antiga estava vazia, remove o bloqueio do Firebase
         if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m) {
             if (!mesas[mesaSelecionada] || mesas[mesaSelecionada].length === 0) {
                 if (bloqueiosMesas[mesaSelecionada]) {
@@ -2002,7 +1998,8 @@
         let p = document.getElementById('cartSelectProduto').value;
         if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
-window.adicionarAoCarrinho = async function() {
+
+    window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
             alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
@@ -2010,7 +2007,6 @@ window.adicionarAoCarrinho = async function() {
             return;
         }
 
-        // CORREÇÃO: Verifica se a mesa está REALMENTE ocupada com itens por outro operador
         let temItensNaMesa = mesas[mesaSelecionada] && mesas[mesaSelecionada].length > 0;
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
 
@@ -2031,7 +2027,6 @@ window.adicionarAoCarrinho = async function() {
             return alert("Stock insuficiente!");
         }
 
-        // Atribui o bloqueio/posse da mesa ao operador atual ao adicionar o primeiro item
         if (mesaSelecionada !== "Balcão") {
             bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
@@ -2263,8 +2258,8 @@ window.adicionarAoCarrinho = async function() {
 
         setTimeout(() => { window.print(); }, 300);
     };
-window.finalizarVendaCarrinho = async function() {
-        // 1. Verifica se o caixa está aberto na memória local
+
+    window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
             return alert("🔴 Caixa Fechado!");
@@ -2353,7 +2348,6 @@ window.finalizarVendaCarrinho = async function() {
                 clienteFiado
             };
 
-            // 2. Operações de persistência lançadas sem 'await' travante
             if(metodo === 'Fiado') {
                 let cIdx = clientes.findIndex(c => c.nome === clienteFiado);
                 if(cIdx !== -1) {
@@ -2362,10 +2356,8 @@ window.finalizarVendaCarrinho = async function() {
                 }
             }
 
-            // Envia a venda para o banco de dados (o Firestore guarda localmente se estiver offline)
             addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
 
-            // Limpa a mesa na memória local
             mesas[mesaSelecionada] = [];
             let mesasParaSalvar = {};
             for(let m in mesas) {
@@ -2380,7 +2372,6 @@ window.finalizarVendaCarrinho = async function() {
 
             window.tocarSom('sucesso');
 
-            // 3. Reset do formulário de vendas
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
             document.getElementById('cartDesconto').value = 0;
@@ -2394,7 +2385,6 @@ window.finalizarVendaCarrinho = async function() {
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
-            // 4. EMISSÃO / IMPRESSÃO DO RECIBO (Executa imediatamente mesmo sem internet)
             if (bluetoothCharacteristic) {
                 window.imprimirReciboBluetoothESC(registoVenda);
             } else {
@@ -2406,6 +2396,7 @@ window.finalizarVendaCarrinho = async function() {
             alert("⚠️ Falha ao registar venda: " + erro.message);
         }
     };
+
     function imprimirTalão(v) {
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
