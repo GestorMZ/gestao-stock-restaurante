@@ -2187,18 +2187,17 @@ window.filtrarEExibirProdutosVenda = function() {
         });
     };
 
-    window.selecionarProdutoCardPOS = function(p) {
+   window.selecionarProdutoCardPOS = function(p) {
         window.tocarSom('click');
         let sel = document.getElementById('cartSelectProduto');
         if(sel) {
             sel.value = p;
             window.preencherPrecoVenda();
+            
+            // Adiciona automaticamente ao carrinho com quantidade 1
+            document.getElementById('cartQtd').value = "1";
+            window.adicionarAoCarrinho();
         }
-    };
-
-    window.preencherPrecoVenda = function() {
-        let p = document.getElementById('cartSelectProduto').value;
-        if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
     };
 
     window.adicionarAoCarrinho = async function() {
@@ -3314,6 +3313,70 @@ window.filtrarEExibirProdutosVenda = function() {
         registarAuditLog('Senha Pessoal Alterada', `Palavra-passe pessoal alterada por ${usuarioAtual.nome}`);
         alert("Palavra-passe alterada!");
     };
+// Sistema de Teclas de Atalho Globais (F2, F4, F9)
+    window.addEventListener('keydown', function(event) {
+        // Ignora se estiver a digitar num campo de texto (exceto no Enter do valor entregue)
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
+                window.finalizarVendaCarrinho();
+                event.preventDefault();
+            }
+            return;
+        }
+
+        if (event.key === 'F2') {
+            event.preventDefault();
+            window.imprimirPreRecibo();
+// Sistema de Teclas de Atalho Globais (F2, F4, F9)
+    window.addEventListener('keydown', function(event) {
+        // Ignora se estiver a digitar num campo de texto (exceto no Enter do valor entregue)
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
+                window.finalizarVendaCarrinho();
+                event.preventDefault();
+            }
+            return;
+        }
+
+        if (event.key === 'F2') {
+            event.preventDefault();
+            window.imprimirPreRecibo();
+        } else if (event.key === 'F4') {
+            event.preventDefault();
+            window.imprimirGuiaCozinha();
+        } else if (event.key === 'F9') {
+            event.preventDefault();
+            window.finalizarVendaCarrinho();
+        }
+    });// Sistema de Teclas de Atalho Globais (F2, F4, F9)
+    window.addEventListener('keydown', function(event) {
+        // Ignora se estiver a digitar num campo de texto (exceto no Enter do valor entregue)
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
+                window.finalizarVendaCarrinho();
+                event.preventDefault();
+            }
+            return;
+        }
+
+        if (event.key === 'F2') {
+            event.preventDefault();
+            window.imprimirPreRecibo();
+        } else if (event.key === 'F4') {
+            event.preventDefault();
+            window.imprimirGuiaCozinha();
+        } else if (event.key === 'F9') {
+            event.preventDefault();
+            window.finalizarVendaCarrinho();
+        }
+    });        } else if (event.key === 'F4') {
+            event.preventDefault();
+            window.imprimirGuiaCozinha();
+        } else if (event.key === 'F9') {
+            event.preventDefault();
+            window.finalizarVendaCarrinho();
+        }
+    });
 </script>
 
 </body>
