@@ -2187,25 +2187,57 @@ window.filtrarEExibirProdutosVenda = function() {
         });
     };
 
-   window.selecionarProdutoCardPOS = function(p) {
+  window.selecionarProdutoCardPOS = function(p) {
         window.tocarSom('click');
         let sel = document.getElementById('cartSelectProduto');
         if(sel) {
             sel.value = p;
-            window.preencherPrecoVenda();
-            
-            // Garante que o preço unitário está preenchido antes de adicionar ao carrinho
-            let precoInput = parseFloat(document.getElementById('cartPrecoUnit').value);
-            if (isNaN(precoInput) || precoInput <= 0) {
-                if (stock[p] && stock[p].preco_venda) {
-                    document.getElementById('cartPrecoUnit').value = stock[p].preco_venda;
-                }
-            }
-
-            document.getElementById('cartQtd').value = "1";
-            window.adicionarAoCarrinho();
         }
-    };
+        
+        // Pega o preço diretamente do objeto de stock associado ao produto
+        let precoDefinido = 0;
+        if (stock[p] && stock[p].preco_venda) {
+            precoDefinido = stock[p].preco_venda;
+        }
+        
+        let inputPreco = document.getElementById('cartPrecoUnit');
+        if (inputPreco) {
+            inputPreco.value = precoDefinido;
+        }
+
+        let inputQtd = document.getElementById('cartQtd');
+        if (inputQtd) {
+            inputQtd.value = "1";
+        }
+
+        // Executa a adição ao carrinho com os valores já garantidos
+        window.adicionarAoCarrinho();
+    window.selecionarProdutoCardPOS = function(p) {
+        window.tocarSom('click');
+        let sel = document.getElementById('cartSelectProduto');
+        if(sel) {
+            sel.value = p;
+        }
+        
+        // Pega o preço diretamente do objeto de stock associado ao produto
+        let precoDefinido = 0;
+        if (stock[p] && stock[p].preco_venda) {
+            precoDefinido = stock[p].preco_venda;
+        }
+        
+        let inputPreco = document.getElementById('cartPrecoUnit');
+        if (inputPreco) {
+            inputPreco.value = precoDefinido;
+        }
+
+        let inputQtd = document.getElementById('cartQtd');
+        if (inputQtd) {
+            inputQtd.value = "1";
+        }
+
+        // Executa a adição ao carrinho com os valores já garantidos
+        window.adicionarAoCarrinho();
+     };
 
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
