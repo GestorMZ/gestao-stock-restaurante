@@ -2146,7 +2146,7 @@
         window.filtrarEExibirProdutosVenda();
     };
 
-    window.filtrarEExibirProdutosVenda = function() {
+window.filtrarEExibirProdutosVenda = function() {
         let grid = document.getElementById('gridProdutosVendaPOS');
         let termo = (document.getElementById('cartPesquisaProduto')?.value || '').trim().toLowerCase();
         if(!grid) return;
@@ -2166,7 +2166,9 @@
         });
 
         prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
-        let prodsExibicao = termo ? prods : prods.slice(0, 12);
+        
+        // AQUI ESTÁ O AJUSTE: Limitado estritamente a 8 produtos frequentes
+        let prodsExibicao = termo ? prods : prods.slice(0, 8);
 
         if(prodsExibicao.length === 0) {
             grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto nesta categoria.</small>';
