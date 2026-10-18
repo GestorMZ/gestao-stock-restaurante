@@ -2194,7 +2194,14 @@ window.filtrarEExibirProdutosVenda = function() {
             sel.value = p;
             window.preencherPrecoVenda();
             
-            // Adiciona automaticamente ao carrinho com quantidade 1
+            // Garante que o preço unitário está preenchido antes de adicionar ao carrinho
+            let precoInput = parseFloat(document.getElementById('cartPrecoUnit').value);
+            if (isNaN(precoInput) || precoInput <= 0) {
+                if (stock[p] && stock[p].preco_venda) {
+                    document.getElementById('cartPrecoUnit').value = stock[p].preco_venda;
+                }
+            }
+
             document.getElementById('cartQtd').value = "1";
             window.adicionarAoCarrinho();
         }
