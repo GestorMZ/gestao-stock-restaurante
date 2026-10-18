@@ -333,7 +333,7 @@
             </p>
         </div>
     </div>
-   <!-- ECRÃ PRINCIPAL -->
+    <!-- ECRÃ PRINCIPAL -->
     <div id="telaSistema" style="display:none;">
         
     <div class="header-usuario">
@@ -979,8 +979,8 @@
         </div>
 
     </div>
-</div> 
-    <!-- MODAIS -->
+</div>
+<!-- MODAIS -->
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:420px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
@@ -2146,7 +2146,7 @@
         window.filtrarEExibirProdutosVenda();
     };
 
-window.filtrarEExibirProdutosVenda = function() {
+    window.filtrarEExibirProdutosVenda = function() {
         let grid = document.getElementById('gridProdutosVendaPOS');
         let termo = (document.getElementById('cartPesquisaProduto')?.value || '').trim().toLowerCase();
         if(!grid) return;
@@ -2166,9 +2166,7 @@ window.filtrarEExibirProdutosVenda = function() {
         });
 
         prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
-        
-        // AQUI ESTÁ O AJUSTE: Limitado estritamente a 8 produtos frequentes
-        let prodsExibicao = termo ? prods : prods.slice(0, 8);
+        let prodsExibicao = termo ? prods : prods.slice(0, 12);
 
         if(prodsExibicao.length === 0) {
             grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto nesta categoria.</small>';
@@ -2187,57 +2185,19 @@ window.filtrarEExibirProdutosVenda = function() {
         });
     };
 
-  window.selecionarProdutoCardPOS = function(p) {
-        window.tocarSom('click');
-        let sel = document.getElementById('cartSelectProduto');
-        if(sel) {
-            sel.value = p;
-        }
-        
-        // Pega o preço diretamente do objeto de stock associado ao produto
-        let precoDefinido = 0;
-        if (stock[p] && stock[p].preco_venda) {
-            precoDefinido = stock[p].preco_venda;
-        }
-        
-        let inputPreco = document.getElementById('cartPrecoUnit');
-        if (inputPreco) {
-            inputPreco.value = precoDefinido;
-        }
-
-        let inputQtd = document.getElementById('cartQtd');
-        if (inputQtd) {
-            inputQtd.value = "1";
-        }
-
-        // Executa a adição ao carrinho com os valores já garantidos
-        window.adicionarAoCarrinho();
     window.selecionarProdutoCardPOS = function(p) {
         window.tocarSom('click');
         let sel = document.getElementById('cartSelectProduto');
         if(sel) {
             sel.value = p;
+            window.preencherPrecoVenda();
         }
-        
-        // Pega o preço diretamente do objeto de stock associado ao produto
-        let precoDefinido = 0;
-        if (stock[p] && stock[p].preco_venda) {
-            precoDefinido = stock[p].preco_venda;
-        }
-        
-        let inputPreco = document.getElementById('cartPrecoUnit');
-        if (inputPreco) {
-            inputPreco.value = precoDefinido;
-        }
+    };
 
-        let inputQtd = document.getElementById('cartQtd');
-        if (inputQtd) {
-            inputQtd.value = "1";
-        }
-
-        // Executa a adição ao carrinho com os valores já garantidos
-        window.adicionarAoCarrinho();
-     };
+    window.preencherPrecoVenda = function() {
+        let p = document.getElementById('cartSelectProduto').value;
+        if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
+    };
 
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
@@ -3352,70 +3312,6 @@ window.filtrarEExibirProdutosVenda = function() {
         registarAuditLog('Senha Pessoal Alterada', `Palavra-passe pessoal alterada por ${usuarioAtual.nome}`);
         alert("Palavra-passe alterada!");
     };
-// Sistema de Teclas de Atalho Globais (F2, F4, F9)
-    window.addEventListener('keydown', function(event) {
-        // Ignora se estiver a digitar num campo de texto (exceto no Enter do valor entregue)
-        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
-                window.finalizarVendaCarrinho();
-                event.preventDefault();
-            }
-            return;
-        }
-
-        if (event.key === 'F2') {
-            event.preventDefault();
-            window.imprimirPreRecibo();
-// Sistema de Teclas de Atalho Globais (F2, F4, F9)
-    window.addEventListener('keydown', function(event) {
-        // Ignora se estiver a digitar num campo de texto (exceto no Enter do valor entregue)
-        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
-                window.finalizarVendaCarrinho();
-                event.preventDefault();
-            }
-            return;
-        }
-
-        if (event.key === 'F2') {
-            event.preventDefault();
-            window.imprimirPreRecibo();
-        } else if (event.key === 'F4') {
-            event.preventDefault();
-            window.imprimirGuiaCozinha();
-        } else if (event.key === 'F9') {
-            event.preventDefault();
-            window.finalizarVendaCarrinho();
-        }
-    });// Sistema de Teclas de Atalho Globais (F2, F4, F9)
-    window.addEventListener('keydown', function(event) {
-        // Ignora se estiver a digitar num campo de texto (exceto no Enter do valor entregue)
-        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
-                window.finalizarVendaCarrinho();
-                event.preventDefault();
-            }
-            return;
-        }
-
-        if (event.key === 'F2') {
-            event.preventDefault();
-            window.imprimirPreRecibo();
-        } else if (event.key === 'F4') {
-            event.preventDefault();
-            window.imprimirGuiaCozinha();
-        } else if (event.key === 'F9') {
-            event.preventDefault();
-            window.finalizarVendaCarrinho();
-        }
-    });        } else if (event.key === 'F4') {
-            event.preventDefault();
-            window.imprimirGuiaCozinha();
-        } else if (event.key === 'F9') {
-            event.preventDefault();
-            window.finalizarVendaCarrinho();
-        }
-    });
 </script>
 
 </body>
