@@ -2401,6 +2401,16 @@ window.abrirModalScannerStock = function() {
             return;
         }
 
+        // 🔒 VERIFICAÇÃO DE SEGURANÇA: Bloqueio de mesa por outro operador
+        let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
+        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
+
+        if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
+            window.tocarSom('alerta');
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Não pode adicionar itens.`);
+            return;
+        }
+
         let prod = document.getElementById('cartSelectProduto').value;
         let qtd = parseFloat(document.getElementById('cartQtd').value);
         let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
