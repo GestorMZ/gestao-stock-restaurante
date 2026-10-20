@@ -679,28 +679,32 @@
 
             <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Produto / Bebida</label>
-                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoria do Produto</label>
-                        <select id="simplesCategoria">
-                            <option value="bebidas">🍺 Bebidas</option>
-                            <option value="pratos">🍲 Pratos / Refeições</option>
-                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
-                            <option value="outros">🍷 Outros / Diversos</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Formato de Compra</label>
-                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
-                            <option value="unidade">🍺 Por Unidade Avulsa</option>
-                        </select>
-                    </div>
-                </div>
+               <div class="form-row">
+    <div class="form-group">
+        <label>Produto / Bebida</label>
+        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
+    </div>
+    <div class="form-group">
+        <label>Código de Barras (Opcional)</label>
+        <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259">
+    </div>
+    <div class="form-group">
+        <label>Categoria do Produto</label>
+        <select id="simplesCategoria">
+            <option value="bebidas">🍺 Bebidas</option>
+            <option value="pratos">🍲 Pratos / Refeições</option>
+            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+            <option value="outros">🍷 Outros / Diversos</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Formato de Compra</label>
+        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+            <option value="unidade">🍺 Por Unidade Avulsa</option>
+        </select>
+    </div>
+</div>
 
                 <div class="form-row" id="rowModoCaixa">
                     <div class="form-group">
@@ -3028,55 +3032,60 @@
         document.getElementById('resLucroTotalCaixa').innerText = (lucroUnitario * totalUnidades).toFixed(2) + " MT";
     };
 
-    window.salvarEntradaStock = async function() {
-        let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-        if(!prod) return alert("Digite o nome do produto.");
+   window.salvarEntradaStock = async function() {
+    let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
+    if(!prod) return alert("Digite o nome do produto.");
 
-        let cat = document.getElementById('simplesCategoria').value || 'outros';
-        let modoCompra = document.getElementById('simplesModoCompra').value;
-        let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+    let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+    let cat = document.getElementById('simplesCategoria').value || 'outros';
+    let modoCompra = document.getElementById('simplesModoCompra').value;
+    let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
+    let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-        let totalUnidades = 0, totalCusto = 0;
+    let totalUnidades = 0, totalCusto = 0;
 
-        if(modoCompra === 'caixa') {
-            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-            totalUnidades = numCaixas * unidCaixa;
-            totalCusto = numCaixas * valCaixa;
-        } else {
-            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-            let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-            totalCusto = totalUnidades * custoUnit;
-        }
+    if(modoCompra === 'caixa') {
+        let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+        let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+        let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+        totalUnidades = numCaixas * unidCaixa;
+        totalCusto = numCaixas * valCaixa;
+    } else {
+        totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+        let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+        totalCusto = totalUnidades * custoUnit;
+    }
 
-        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat };
+    if(!stock[prod]) {
+        stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+    }
 
-        stock[prod].qtd += totalUnidades;
-        stock[prod].preco_total += totalCusto;
-        stock[prod].min_alerta = minAlerta;
-        stock[prod].categoria = cat;
-        if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+    stock[prod].qtd += totalUnidades;
+    stock[prod].preco_total += totalCusto;
+    stock[prod].min_alerta = minAlerta;
+    stock[prod].categoria = cat;
+    if(barcodeInput) stock[prod].barcode = barcodeInput; // Guarda ou atualiza o código de barras
+    if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            tipo: 'ENTRADA (COMPRA)',
-            produto: prod,
-            qtd: totalUnidades,
-            usuario: usuarioAtual.nome,
-            origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
-        });
+    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+        id: Date.now() + Math.random(),
+        data: new Date().toLocaleString('pt-MZ'),
+        timestamp: Date.now(),
+        tipo: 'ENTRADA (COMPRA)',
+        produto: prod,
+        qtd: totalUnidades,
+        usuario: usuarioAtual.nome,
+        origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
+    });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}'`);
+    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+    registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
 
-        document.getElementById('simplesProduto').value = '';
-        filtrarEExibirProdutosVenda();
-        alert("Stock atualizado!");
-    };
+    document.getElementById('simplesProduto').value = '';
+    document.getElementById('simplesBarcode').value = '';
+    filtrarEExibirProdutosVenda();
+    alert("Stock e Código de Barras atualizados com sucesso!");
+};
 
     function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
