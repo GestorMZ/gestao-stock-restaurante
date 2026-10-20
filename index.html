@@ -18,6 +18,8 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Biblioteca Html5-Qrcode para leitura de código de barras -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
         :root {
@@ -407,7 +409,12 @@
                         </div>
                     </div>
 
-                    <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto rápido..." oninput="window.filtrarEExibirProdutosVenda()" style="margin-bottom:8px; margin-top:6px; font-size:16px;">
+                    <!-- LEITOR DE CÓDIGO DE BARRAS VIA CÂMARA & PESQUISA -->
+                    <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto rápido..." oninput="window.filtrarEExibirProdutosVenda()" style="flex: 1; min-width: 200px; font-size:16px;">
+                        <button type="button" class="btn-purple" style="width: auto; padding: 0 16px;" onclick="window.abrirModalScannerBarcode()">📷 Ler Código de Barras</button>
+                    </div>
+                    
                     <div id="gridProdutosVendaPOS" class="grid-produtos-pos"></div>
                 </div>
                 
@@ -416,10 +423,21 @@
                         <label>Ou Selecione na Lista Completa</label>
                         <select id="cartSelectProduto" onchange="window.preencherPrecoVenda()"></select>
                     </div>
-                    <div class="form-group" style="max-width:120px;">
+                    <div class="form-group" style="max-width:140px;">
                         <label>Qtd</label>
                         <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
                     </div>
+                    
+                    <!-- ATALHOS DE QUANTIDADE RÁPIDA (+1, +5, +10) -->
+                    <div class="form-group" style="max-width: 180px; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <label style="font-size: 0.8em; margin-bottom: 4px;">Atalhos Qtd</label>
+                        <div style="display: flex; gap: 4px;">
+                            <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(1)">+1</button>
+                            <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(5)">+5</button>
+                            <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(10)">+10</button>
+                        </div>
+                    </div>
+
                     <div class="form-group" style="max-width:140px;">
                         <label>Preço Unit. (MT)</label>
                         <input type="number" id="cartPrecoUnit" step="0.5">
@@ -799,7 +817,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
@@ -1008,6 +1025,17 @@
     </div>
 </div>
 
+<!-- MODAL SCANNER DE CÓDIGO DE BARRAS -->
+<div id="modalScannerBarcode" class="modal">
+    <div class="modal-content" style="max-width:450px; text-align:center;">
+        <span class="close-modal" onclick="window.fecharModalScannerBarcode()">&times;</span>
+        <h3>📷 Leitor de Código de Barras</h3>
+        <p style="font-size:0.85em; color:#666;">Aponte a câmara para o código de barras do produto:</p>
+        <div id="readerHtml5Qrcode" style="width:100%; border-radius:8px; overflow:hidden; background:#000;"></div>
+        <button class="btn-saida" style="margin-top:15px;" onclick="window.fecharModalScannerBarcode()">❌ Fechar Câmara</button>
+    </div>
+</div>
+
 <div id="modalMaisPerfis" class="modal">
     <div class="modal-content" style="max-width:400px;">
         <span class="close-modal" onclick="window.fecharModalMaisPerfis()">&times;</span>
@@ -1153,7 +1181,6 @@
         </div>
     </div>
 </div>
-
 <!-- ÁREA DE IMPRESSÃO -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
@@ -1195,6 +1222,7 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1322,6 +1350,7 @@
     let bluetoothDevice = null;
     let bluetoothCharacteristic = null;
     let timerInatividade = null;
+    let html5QrCodeScanner = null;
 
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1388,6 +1417,7 @@
             alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
         }
     };
+
     function resetarTimerInatividade() {
         if (timerInatividade) clearTimeout(timerInatividade);
         if (usuarioAtual && document.getElementById('telaBloqueio').style.display === 'none') {
@@ -1402,7 +1432,6 @@
         document.addEventListener(evt, resetarTimerInatividade, true);
     });
 
-    // SISTEMA DE TECLAS DE ATALHO GLOBAIS (F2, F4, F9)
     window.addEventListener('keydown', function(event) {
         if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
             if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
@@ -1423,6 +1452,64 @@
             window.finalizarVendaCarrinho();
         }
     });
+
+    window.adicionarQtdRapida = function(valorAdicional) {
+        window.tocarSom('click');
+        let inputQtd = document.getElementById('cartQtd');
+        if (!inputQtd) return;
+        let qtdAtual = parseFloat(inputQtd.value) || 1;
+        inputQtd.value = (qtdAtual + valorAdicional);
+    };
+
+    window.abrirModalScannerBarcode = function() {
+        let modal = document.getElementById('modalScannerBarcode');
+        if (!modal) return;
+        modal.style.display = 'block';
+
+        setTimeout(() => {
+            if (!html5QrCodeScanner) {
+                html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            }
+            html5QrCodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                (decodedText, decodedResult) => {
+                    window.processarCodigoBarrasLido(decodedText);
+                    window.fecharModalScannerBarcode();
+                },
+                (errorMessage) => {}
+            ).catch(err => {
+                console.error("Erro ao iniciar câmara para barcode:", err);
+                alert("Não foi possível aceder à câmara para ler o código de barras.");
+            });
+        }, 300);
+    };
+
+    window.fecharModalScannerBarcode = function() {
+        let modal = document.getElementById('modalScannerBarcode');
+        if (modal) modal.style.display = 'none';
+        if (html5QrCodeScanner) {
+            html5QrCodeScanner.stop().catch(() => {});
+        }
+    };
+
+    window.processarCodigoBarrasLido = function(codigo) {
+        let codLimpo = codigo.trim().toLowerCase();
+        let encontrado = null;
+        for (let p in stock) {
+            if (p.toLowerCase() === codLimpo || (stock[p].barcode && stock[p].barcode.toLowerCase() === codLimpo)) {
+                encontrado = p;
+                break;
+            }
+        }
+        if (encontrado) {
+            window.tocarSom('sucesso');
+            window.selecionarProdutoCardPOS(encontrado);
+        } else {
+            window.tocarSom('alerta');
+            alert(`⚠️ Produto com código/nome '${codigo}' não encontrado no stock.`);
+        }
+    };
 
     window.alternarModoNoturno = function() {
         window.tocarSom('click');
