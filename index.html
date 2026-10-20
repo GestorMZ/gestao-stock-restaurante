@@ -130,7 +130,6 @@
         .btn-dark { background-color: #334155; }
         .btn-sm { padding: 8px 12px; font-size: 13px; min-height: 38px; width: auto; margin: 0; }
 
-        /* Botões de Atalho Rápido para Vendas de Alto Movimento */
         .btn-atacho-fast {
             background: #e0e7ff;
             color: #3730a3;
@@ -524,8 +523,8 @@
 
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:10px;">
                     <div style="display:flex; gap:6px;">
-                        <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido Cozinha</button>
-                        <button class="btn-purple btn-sm" onclick="window.imprimirPreRecibo()">📄 Pré-Recibo</button>
+                        <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido Cozinha (F4)</button>
+                        <button class="btn-purple btn-sm" onclick="window.imprimirPreRecibo()">📄 Pré-Recibo (F2)</button>
                     </div>
                     <div style="text-align:right;">
                         <small id="cartSubtotalIvaTexto" style="color:#666; display:block;">Subtotal: 0.00 MT | IVA: 0.00 MT</small>
@@ -533,12 +532,11 @@
                         <span style="font-size:1.15em; font-weight:bold; color:var(--purple);">Troco: <span id="cartTrocoTexto">0.00 MT</span></span>
                     </div>
                     <div>
-                        <button class="btn-success" style="font-size:1.2em; padding:15px 25px; min-height:60px;" onclick="window.finalizarVendaCarrinho()">⚡ CONCLUIR VENDA (RECIBO)</button>
+                        <button class="btn-success" style="font-size:1.2em; padding:15px 25px; min-height:60px;" onclick="window.finalizarVendaCarrinho()">⚡ CONCLUIR VENDA (F9)</button>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
@@ -655,7 +653,10 @@
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <h2>Gestão de Stock na Despensa</h2>
-                <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock para Excel</button>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-purple btn-sm" onclick="window.abrirModalConversaoShots()">🍷 Abrir Garrafa p/ Shots</button>
+                    <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock</button>
+                </div>
             </div>
 
             <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
@@ -1045,6 +1046,38 @@
     </div>
 </div>
 
+<!-- MODAL DE CONVERSÃO GARRAFA -> SHOTS -->
+<div id="modalConversaoShots" class="modal">
+    <div class="modal-content" style="max-width:450px;">
+        <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
+        <h3>🍷 Converter Garrafa em Shots / Doses</h3>
+        <p style="font-size:0.85em; color:#666;">Retire 1 garrafa inteira do stock e adicione os respetivos shots ao balcão:</p>
+        
+        <div class="form-group">
+            <label>Garrafa a Abrir (Stock Fechado)</label>
+            <select id="selectGarrafaConversao"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Nome do Produto Shot / Dose (Destino)</label>
+            <input type="text" id="inputNomeShotDestino" placeholder="Ex: Shot Red Label">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nº de Shots por Garrafa</label>
+                <input type="number" id="inputQtdShotsPorGarrafa" value="20" min="1">
+            </div>
+            <div class="form-group">
+                <label>Preço Venda por Shot (MT)</label>
+                <input type="number" id="inputPrecoVendaShot" value="150" min="0" step="0.5">
+            </div>
+        </div>
+
+        <button class="btn-success" style="margin-top:15px;" onclick="window.executarConversaoGarrafaParaShots()">🔄 Confirmar Conversão</button>
+    </div>
+</div>
+
 <!-- MODAL DEFINIÇÕES -->
 <div id="modalDefinicoes" class="modal">
     <div class="modal-content">
@@ -1367,6 +1400,28 @@
 
     ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => {
         document.addEventListener(evt, resetarTimerInatividade, true);
+    });
+
+    // SISTEMA DE TECLAS DE ATALHO GLOBAIS (F2, F4, F9)
+    window.addEventListener('keydown', function(event) {
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
+                window.finalizarVendaCarrinho();
+                event.preventDefault();
+            }
+            return;
+        }
+
+        if (event.key === 'F2') {
+            event.preventDefault();
+            window.imprimirPreRecibo();
+        } else if (event.key === 'F4') {
+            event.preventDefault();
+            window.imprimirGuiaCozinha();
+        } else if (event.key === 'F9') {
+            event.preventDefault();
+            window.finalizarVendaCarrinho();
+        }
     });
 
     window.alternarModoNoturno = function() {
@@ -1925,7 +1980,7 @@
                     ${v.totalVenda.toFixed(2)} MT ${ehCancelado ? '(CANCELADO)' : ''}
                 </td>
                 <td>
-                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc}', ${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
+                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc}',${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
                 </td>
             </tr>`;
         });
@@ -2166,8 +2221,6 @@
         });
 
         prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
-        
-        // AQUI ESTÁ O AJUSTE: Limitado estritamente a 8 produtos frequentes
         let prodsExibicao = termo ? prods : prods.slice(0, 8);
 
         if(prodsExibicao.length === 0) {
@@ -2192,8 +2245,24 @@
         let sel = document.getElementById('cartSelectProduto');
         if(sel) {
             sel.value = p;
-            window.preencherPrecoVenda();
         }
+        
+        let precoDefinido = 0;
+        if (stock[p] && stock[p].preco_venda) {
+            precoDefinido = stock[p].preco_venda;
+        }
+        
+        let inputPreco = document.getElementById('cartPrecoUnit');
+        if (inputPreco) {
+            inputPreco.value = precoDefinido;
+        }
+
+        let inputQtd = document.getElementById('cartQtd');
+        if (inputQtd) {
+            inputQtd.value = "1";
+        }
+
+        window.adicionarAoCarrinho();
     };
 
     window.preencherPrecoVenda = function() {
@@ -2761,6 +2830,83 @@
         let met = document.getElementById('cartMetodoPagamento').value;
         document.getElementById('boxSeletorClienteFiado').style.display = (met === 'Fiado') ? 'block' : 'none';
         window.renderizarCarrinho();
+    };
+
+    window.abrirModalConversaoShots = function() {
+        let sel = document.getElementById('selectGarrafaConversao');
+        if(!sel) return;
+        sel.innerHTML = '<option value="">-- Selecionar Garrafa --</option>';
+        for(let p in stock) {
+            if(stock[p].qtd >= 1) {
+                sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd} garrafas)</option>`;
+            }
+        }
+        document.getElementById('modalConversaoShots').style.display = 'block';
+    };
+
+    window.fecharModalConversaoShots = function() {
+        document.getElementById('modalConversaoShots').style.display = 'none';
+    };
+
+    window.executarConversaoGarrafaParaShots = async function() {
+        let garrafa = document.getElementById('selectGarrafaConversao').value;
+        let nomeShot = document.getElementById('inputNomeShotDestino').value.trim().toLowerCase();
+        let numShots = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
+        let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
+
+        if(!garrafa) return alert("Selecione a garrafa a converter.");
+        if(!nomeShot) return alert("Introduza o nome do produto de destino (ex: Shot Red Label).");
+        if(stock[garrafa].qtd < 1) return alert("Stock insuficiente da garrafa selecionada.");
+
+        let custoGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
+        stock[garrafa].qtd -= 1;
+        stock[garrafa].preco_total -= custoGarrafa;
+
+        if(!stock[nomeShot]) {
+            stock[nomeShot] = {
+                qtd: 0,
+                preco_total: 0,
+                preco_venda: precoShot,
+                min_alerta: 10,
+                categoria: 'bebidas'
+            };
+        }
+
+        stock[nomeShot].qtd += numShots;
+        stock[nomeShot].preco_total += custoGarrafa; 
+        if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'SAÍDA (CONVERSÃO SHOTS)',
+            produto: garrafa,
+            qtd: 1,
+            usuario: usuarioAtual.nome,
+            origem: `Convertida em ${numShots}x ${nomeShot}`
+        });
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'ENTRADA (CONVERSÃO SHOTS)',
+            produto: nomeShot,
+            qtd: numShots,
+            usuario: usuarioAtual.nome,
+            origem: `Origem: 1x ${garrafa}`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Conversão de Garrafa', `1x ${garrafa} convertida em ${numShots}x ${nomeShot}`);
+
+        window.tocarSom('sucesso');
+        alert(`✅ Conversão concluída com sucesso!\n\n• -1 Garrafa: ${garrafa.toUpperCase()}\n• +${numShots} Shots: ${nomeShot.toUpperCase()}`);
+
+        window.fecharModalConversaoShots();
+        filtrarEExibirProdutosVenda();
+        renderizarStock();
     };
 
     window.calcularPrecosEntrada = function() {
