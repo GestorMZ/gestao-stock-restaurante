@@ -305,7 +305,7 @@
                 <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
                 <div style="font-size:0.9em; line-height:1.6; color:#222;">
                     • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>e-Mola:</b> 87 406 3572 (Valter Lopes)<br>
+                    • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>Valor da Mensalidade:</b> 1.500 MT
                 </div>
             </div>
@@ -2284,22 +2284,24 @@ window.abrirModalScannerStock = function() {
         }
     }
 
-    window.selecionarMesa = async function(m) {
-        let temItensTarget = mesas[m] && mesas[m].length > 0;
+   window.selecionarMesa = async function(m) {
+        let itensDaMesa = mesas[m] || [];
         let bloqueioUser = bloqueiosMesas[m];
 
-        if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
-            return;
+        // Se a mesa já não tem itens mas ficou com um bloqueio fantasma guardado, limpa-o automaticamente
+        if (itensDaMesa.length === 0 && bloqueioUser) {
+            delete bloqueiosMesas[m];
+            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+            bloqueioUser = null;
         }
 
-        if (mesaSelecionada !== "Balcão" && mesaSelecionada !== m) {
-            if (!mesas[mesaSelecionada] || mesas[mesaSelecionada].length === 0) {
-                if (bloqueiosMesas[mesaSelecionada]) {
-                    delete bloqueiosMesas[mesaSelecionada];
-                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
-                }
-            }
+        let temItensTarget = itensDaMesa.length > 0;
+        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
+
+        // Se tem itens e pertence a outro operador (e quem tenta aceder não é admin/gerente)
+        if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
+            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
+            return;
         }
 
         mesaSelecionada = m;
@@ -2308,7 +2310,6 @@ window.abrirModalScannerStock = function() {
         renderizarMesasGrid();
         window.renderizarCarrinho();
     };
-
     function atualizarDropdownProdutosCart() {
         let sel = document.getElementById('cartSelectProduto');
         if(!sel) return;
@@ -2402,8 +2403,15 @@ window.abrirModalScannerStock = function() {
         }
 
         // 🔒 VERIFICAÇÃO DE SEGURANÇA: Bloqueio de mesa por outro operador
-        let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
+     let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
+        let itensMesaAtual = mesas[mesaSelecionada] || [];
+
+        // Se a mesa estiver vazia, limpa qualquer bloqueio órfão anterior
+        if (itensMesaAtual.length === 0 && bloqueioAtual) {
+            delete bloqueiosMesas[mesaSelecionada];
+            bloqueioAtual = null;
+        }
 
         if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
             window.tocarSom('alerta');
