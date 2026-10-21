@@ -555,6 +555,7 @@
                 </div>
             </div>
         </div>
+
         <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
@@ -666,7 +667,6 @@
                 </table>
             </div>
         </div>
-
         <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -679,38 +679,38 @@
 
             <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
-               <div class="form-row">
-    <div class="form-group">
-      <div class="form-row">
-    <div class="form-group">
-        <label>Produto / Bebida</label>
-        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-    </div>
-    <div class="form-group">
-        <label>Código de Barras</label>
-        <div style="display: flex; gap: 6px;">
-            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
-            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Categoria do Produto</label>
-        <select id="simplesCategoria">
-            <option value="bebidas">🍺 Bebidas</option>
-            <option value="pratos">🍲 Pratos / Refeições</option>
-            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
-            <option value="outros">🍷 Outros / Diversos</option>
-        </select>
-    </div>
-</div>
-    <div class="form-group">
-        <label>Formato de Compra</label>
-        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
-            <option value="unidade">🍺 Por Unidade Avulsa</option>
-        </select>
-    </div>
-</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Produto / Bebida</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
+                            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria do Produto</label>
+                        <select id="simplesCategoria">
+                            <option value="bebidas">🍺 Bebidas</option>
+                            <option value="pratos">🍲 Pratos / Refeições</option>
+                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+                            <option value="outros">🍷 Outros / Diversos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Formato de Compra</label>
+                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div class="form-row" id="rowModoCaixa">
                     <div class="form-group">
@@ -827,6 +827,7 @@
                 </div>
             </div>
         </div>
+
         <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
@@ -1232,7 +1233,6 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1494,7 +1494,8 @@
             });
         }, 300);
     };
-window.abrirModalScannerStock = function() {
+
+    window.abrirModalScannerStock = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
@@ -1521,6 +1522,7 @@ window.abrirModalScannerStock = function() {
             });
         }, 300);
     };
+
     window.fecharModalScannerBarcode = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (modal) modal.style.display = 'none';
@@ -2110,7 +2112,6 @@ window.abrirModalScannerStock = function() {
     };
 
     window.fecharDetalhesPerfil = function() { document.getElementById('seccaoDetalhesPerfil').style.display = 'none'; };
-
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -2284,11 +2285,10 @@ window.abrirModalScannerStock = function() {
         }
     }
 
-   window.selecionarMesa = async function(m) {
+    window.selecionarMesa = async function(m) {
         let itensDaMesa = mesas[m] || [];
         let bloqueioUser = bloqueiosMesas[m];
 
-        // Se a mesa já não tem itens mas ficou com um bloqueio fantasma guardado, limpa-o automaticamente
         if (itensDaMesa.length === 0 && bloqueioUser) {
             delete bloqueiosMesas[m];
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
@@ -2298,7 +2298,6 @@ window.abrirModalScannerStock = function() {
         let temItensTarget = itensDaMesa.length > 0;
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
 
-        // Se tem itens e pertence a outro operador (e quem tenta aceder não é admin/gerente)
         if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
             alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
@@ -2310,6 +2309,7 @@ window.abrirModalScannerStock = function() {
         renderizarMesasGrid();
         window.renderizarCarrinho();
     };
+
     function atualizarDropdownProdutosCart() {
         let sel = document.getElementById('cartSelectProduto');
         if(!sel) return;
@@ -2402,12 +2402,10 @@ window.abrirModalScannerStock = function() {
             return;
         }
 
-        // 🔒 VERIFICAÇÃO DE SEGURANÇA: Bloqueio de mesa por outro operador
-     let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
+        let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         let itensMesaAtual = mesas[mesaSelecionada] || [];
 
-        // Se a mesa estiver vazia, limpa qualquer bloqueio órfão anterior
         if (itensMesaAtual.length === 0 && bloqueioAtual) {
             delete bloqueiosMesas[mesaSelecionada];
             bloqueioAtual = null;
@@ -2920,7 +2918,6 @@ window.abrirModalScannerStock = function() {
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
         } catch (err) { imprimirTalão(v); }
     };
-
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
@@ -3082,60 +3079,106 @@ window.abrirModalScannerStock = function() {
         document.getElementById('resLucroTotalCaixa').innerText = (lucroUnitario * totalUnidades).toFixed(2) + " MT";
     };
 
-   window.salvarEntradaStock = async function() {
-    let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-    if(!prod) return alert("Digite o nome do produto.");
+    window.salvarEntradaStock = async function() {
+        let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
+        if(!prod) return alert("Digite o nome do produto.");
 
-    let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-    let cat = document.getElementById('simplesCategoria').value || 'outros';
-    let modoCompra = document.getElementById('simplesModoCompra').value;
-    let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-    let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+        let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+        let cat = document.getElementById('simplesCategoria').value || 'outros';
+        let modoCompra = document.getElementById('simplesModoCompra').value;
+        let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
+        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-    let totalUnidades = 0, totalCusto = 0;
+        let totalUnidades = 0, totalCusto = 0;
 
-    if(modoCompra === 'caixa') {
-        let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-        let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-        let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-        totalUnidades = numCaixas * unidCaixa;
-        totalCusto = numCaixas * valCaixa;
-    } else {
-        totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-        let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-        totalCusto = totalUnidades * custoUnit;
-    }
+        if(modoCompra === 'caixa') {
+            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+            totalUnidades = numCaixas * unidCaixa;
+            totalCusto = numCaixas * valCaixa;
+        } else {
+            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+            let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+            totalCusto = totalUnidades * custoUnit;
+        }
 
-    if(!stock[prod]) {
-        stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
-    }
+        if(!stock[prod]) {
+            stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+        }
 
-    stock[prod].qtd += totalUnidades;
-    stock[prod].preco_total += totalCusto;
-    stock[prod].min_alerta = minAlerta;
-    stock[prod].categoria = cat;
-    if(barcodeInput) stock[prod].barcode = barcodeInput; // Guarda ou atualiza o código de barras
-    if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+        stock[prod].qtd += totalUnidades;
+        stock[prod].preco_total += totalCusto;
+        stock[prod].min_alerta = minAlerta;
+        stock[prod].categoria = cat;
+        if(barcodeInput) stock[prod].barcode = barcodeInput;
+        if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
-    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-        id: Date.now() + Math.random(),
-        data: new Date().toLocaleString('pt-MZ'),
-        timestamp: Date.now(),
-        tipo: 'ENTRADA (COMPRA)',
-        produto: prod,
-        qtd: totalUnidades,
-        usuario: usuarioAtual.nome,
-        origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
-    });
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'ENTRADA (COMPRA)',
+            produto: prod,
+            qtd: totalUnidades,
+            usuario: usuarioAtual.nome,
+            origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
+        });
 
-    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-    registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
 
-    document.getElementById('simplesProduto').value = '';
-    document.getElementById('simplesBarcode').value = '';
-    filtrarEExibirProdutosVenda();
-    alert("Stock e Código de Barras atualizados com sucesso!");
-};
+        document.getElementById('simplesProduto').value = '';
+        document.getElementById('simplesBarcode').value = '';
+        filtrarEExibirProdutosVenda();
+        alert("Stock e Código de Barras atualizados com sucesso!");
+    };
+
+    window.abrirReposicaoStockRapida = async function(nomeProduto) {
+        if (!usuarioAtual || (usuarioAtual.tipo !== 'admin' && usuarioAtual.tipo !== 'gerente')) {
+            return alert("Apenas Administradores ou Gerentes podem dar entrada rápida de stock.");
+        }
+
+        let qtdStr = prompt(`📦 REPOR STOCK: ${nomeProduto.toUpperCase()}\n\nIntroduza a quantidade de unidades que deseja adicionar ao stock atual:`, "10");
+        if (!qtdStr) return;
+
+        let qtdAdicionar = parseFloat(qtdStr);
+        if (isNaN(qtdAdicionar) || qtdAdicionar <= 0) {
+            return alert("Quantidade inválida.");
+        }
+
+        let custoStr = prompt(`Introduza o custo total pago por estas ${qtdAdicionar} unidades (em MT):`, "0");
+        let custoTotalAdicionar = parseFloat(custoStr) || 0;
+
+        if (!stock[nomeProduto]) return alert("Produto não encontrado.");
+
+        stock[nomeProduto].qtd += qtdAdicionar;
+        stock[nomeProduto].preco_total += custoTotalAdicionar;
+
+        try {
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now() + Math.random(),
+                data: new Date().toLocaleString('pt-MZ'),
+                timestamp: Date.now(),
+                tipo: 'ENTRADA (REPOSIÇÃO RÁPIDA)',
+                produto: nomeProduto,
+                qtd: qtdAdicionar,
+                usuario: usuarioAtual.nome,
+                origem: 'Botão Repor Rápido na Tabela'
+            });
+
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            
+            window.tocarSom('sucesso');
+            alert(`✅ Stock atualizado com sucesso!\n\n• Produto: ${nomeProduto.toUpperCase()}\n• +${qtdAdicionar} unidades adicionadas.`);
+            
+            renderizarStock();
+            filtrarEExibirProdutosVenda();
+        } catch (err) {
+            console.error("Erro ao atualizar stock rápido:", err);
+            alert("⚠️ Erro ao atualizar stock no servidor.");
+        }
+    };
 
     function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
@@ -3162,7 +3205,11 @@ window.abrirModalScannerStock = function() {
             let colFin = isGerenteOuAdmin ? `
                 <td>${custoMedio.toFixed(2)} MT</td>
                 <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
+            
+            let botoesAcao = `<button class="btn-success btn-sm" onclick="window.abrirReposicaoStockRapida('${p}')" title="Adicionar mais stock">+ Repor</button>`;
+            if (usuarioAtual.tipo === 'admin') {
+                botoesAcao += ` <button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button>`;
+            }
 
             tbody.innerHTML += `<tr>
                 <td><b>${p.toUpperCase()}</b></td>
@@ -3171,7 +3218,7 @@ window.abrirModalScannerStock = function() {
                 <td>${item.min_alerta || 5}</td>
                 <td><b>${precoVenda.toFixed(2)} MT</b></td>
                 ${colFin}
-                ${colAdmin}
+                <td>${botoesAcao}</td>
             </tr>`;
         });
     }
