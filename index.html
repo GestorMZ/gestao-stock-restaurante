@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Biblioteca Html5-Qrcode para leitura de código de barras -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
@@ -555,7 +554,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
@@ -667,6 +665,7 @@
                 </table>
             </div>
         </div>
+
         <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -760,6 +759,20 @@
                 <button class="btn-success" onclick="window.salvarEntradaStock()">📥 Dar Entrada / Atualizar Stock</button>
             </div>
 
+            <!-- SECÇÃO PARA APAGAR PRODUTO POR NÚMERO / NOME -->
+            <div style="background:#fff5f5; border:2px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:15px;" class="col-admin">
+                <h4 style="color:#c53030; margin-top:0;">🗑️ Apagar Produto Específico por Número ou Nome</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nº do Produto (da Lista) ou Nome Exato</label>
+                        <input type="text" id="inputNumeroOuNomeApagarProduto" placeholder="Ex: 1 ou coca-cola">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button class="btn-saida" onclick="window.apagarProdutoPorNumeroOuNome()">🗑️ Apagar Produto</button>
+                    </div>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px;">
                 <h4 style="margin:0;">📦 Stock Atual de Produtos</h4>
                 <div style="max-width:250px; width:100%;">
@@ -771,6 +784,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Nº</th>
                             <th>Produto</th>
                             <th>Categoria</th>
                             <th>Stock Atual</th>
@@ -827,7 +841,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
@@ -863,7 +876,11 @@
                 </div>
             </div>
 
-            <h4>📊 Perfis Ativos</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="margin:0;">📊 Perfis Ativos</h4>
+                <button class="btn-purple btn-sm" onclick="window.alternarVerMaisPerfis()" id="btnVerMaisPerfis">Ver Mais / Ver Menos</button>
+            </div>
+            
             <div class="table-responsive" style="margin-bottom:25px;">
                 <table>
                     <thead>
@@ -899,6 +916,18 @@
         <!-- ABA 6: DASHBOARD -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
+
+            <!-- SECÇÃO DE APAGAR HISTÓRICOS PELA ADMINISTRAÇÃO -->
+            <div style="background:#fff5f5; border:2px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <h4 style="color:#c53030; margin-top:0;">🛡️ Painel de Administração - Limpeza e Apagamento de Históricos</h4>
+                <p style="font-size:0.85em; color:#666; margin-bottom:12px;">Como administrador, pode limpar os registos históricos do sistema conforme necessário:</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn-saida btn-sm" onclick="window.adminApagarTodoHistoricoVendas()">🗑️ Apagar Todo Histórico de Vendas</button>
+                    <button class="btn-saida btn-sm" onclick="window.adminApagarTodoHistoricoMovimentacoes()">🗑️ Apagar Movimentações de Stock</button>
+                    <button class="btn-saida btn-sm" onclick="window.adminApagarTodoHistoricoTurnos()">🗑️ Apagar Histórico de Turnos</button>
+                    <button class="btn-saida btn-sm" onclick="window.adminApagarTodoHistoricoAuditoria()">🗑️ Apagar Logs de Auditoria</button>
+                </div>
+            </div>
 
             <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#ffeba2; color:#856404;">
                 ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
@@ -1085,16 +1114,21 @@
     </div>
 </div>
 
-<!-- MODAL DE CONVERSÃO GARRAFA -> SHOTS -->
+<!-- MODAL DE CONVERSÃO GARRAFA -> SHOTS (COM Nº DE GARRAFAS) -->
 <div id="modalConversaoShots" class="modal">
     <div class="modal-content" style="max-width:450px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
-        <h3>🍷 Converter Garrafa em Shots / Doses</h3>
-        <p style="font-size:0.85em; color:#666;">Retire 1 garrafa inteira do stock e adicione os respetivos shots ao balcão:</p>
+        <h3>🍷 Converter Garrafas em Shots / Doses</h3>
+        <p style="font-size:0.85em; color:#666;">Retire garrafas inteiras do stock e adicione os respetivos shots ao balcão:</p>
         
         <div class="form-group">
             <label>Garrafa a Abrir (Stock Fechado)</label>
             <select id="selectGarrafaConversao"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Número de Garrafas a Dividir</label>
+            <input type="number" id="inputQtdGarrafasConverter" value="1" min="1" step="1">
         </div>
 
         <div class="form-group">
@@ -1104,7 +1138,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Nº de Shots por Garrafa</label>
+                <label>Nº de Shots por Cada Garrafa</label>
                 <input type="number" id="inputQtdShotsPorGarrafa" value="20" min="1">
             </div>
             <div class="form-group">
@@ -1236,7 +1270,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
+        getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, getDocs 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -1250,11 +1284,17 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    
+    // 🟢 PERSISTÊNCIA OFFLINE AVANÇADA (Firebase v10 com cache persistente multi-aba)
+    const db = initializeFirestore(app, {
+        localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager()
+        })
+    });
+    
     const auth = getAuth(app);
 
     signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
-    enableIndexedDbPersistence(db).catch(() => {});
 
     window.tocarSom = function(tipo) {
         try {
@@ -1333,6 +1373,7 @@
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
     let bloqueiosMesas = {}; 
+    let verMaisPerfisAtivo = false;
     
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
@@ -1670,10 +1711,12 @@
             });
 
             unsubscribes.push(unsubUser);
+            iniciarEscutadoresCompletosEmpresa();
 
         } catch (erro) {
             console.error("Erro ao validar licença:", erro);
-            alert("Erro ao ligar ao servidor. Verifique a internet.");
+            alert("A executar com dados em cache local offline.");
+            iniciarEscutadoresCompletosEmpresa();
         }
     };
 
@@ -1866,7 +1909,6 @@
             document.getElementById('telaLogin').style.display = 'none';
             document.getElementById('telaSistema').style.display = 'block';
             
-            iniciarEscutadoresCompletosEmpresa();
             configurarPerfilPermissoes();
             renderizarMesasGrid();
             atualizarDropdownProdutosCart();
@@ -1893,7 +1935,6 @@
         if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
         if(timerInatividade) clearTimeout(timerInatividade);
         usuarioAtual = null;
-        desconectarEscutadores();
         document.getElementById('telaSistema').style.display = 'none';
         document.getElementById('telaLogin').style.display = 'block';
         document.getElementById('loginPass').value = '';
@@ -1972,6 +2013,12 @@
         };
         reader.readAsDataURL(file);
     }
+    window.alternarVerMaisPerfis = function() {
+        verMaisPerfisAtivo = !verMaisPerfisAtivo;
+        let btn = document.getElementById('btnVerMaisPerfis');
+        if(btn) btn.innerText = verMaisPerfisAtivo ? "Ver Menos 🔼" : "Ver Mais 🔽";
+        renderizarUsuarios();
+    };
 
     window.cadastrarUsuario = function() {
         let u = document.getElementById('novoUserNome').value.trim().toLowerCase();
@@ -2050,7 +2097,12 @@
         if(!tbody) return;
         tbody.innerHTML = '';
 
-        for(let u in usuarios) {
+        let chavesUsuarios = Object.keys(usuarios);
+        if(!verMaisPerfisAtivo && chavesUsuarios.length > 5) {
+            chavesUsuarios = chavesUsuarios.slice(0, 5);
+        }
+
+        chavesUsuarios.forEach(u => {
             let userObj = usuarios[u];
             let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
             let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
@@ -2076,7 +2128,7 @@
                     ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
                 </td>
             </tr>`;
-        }
+        });
     }
 
     window.verHistoricoPerfil = function(u) {
@@ -2112,6 +2164,7 @@
     };
 
     window.fecharDetalhesPerfil = function() { document.getElementById('seccaoDetalhesPerfil').style.display = 'none'; };
+
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -2918,6 +2971,7 @@
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
         } catch (err) { imprimirTalão(v); }
     };
+
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
@@ -2986,19 +3040,25 @@
         document.getElementById('modalConversaoShots').style.display = 'none';
     };
 
+    // 🟢 CONVERSÃO DE MÚLTIPLAS GARRAFAS EM SHOTS
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
+        let numGarrafas = parseInt(document.getElementById('inputQtdGarrafasConverter').value) || 1;
         let nomeShot = document.getElementById('inputNomeShotDestino').value.trim().toLowerCase();
-        let numShots = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
+        let shotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
         if(!garrafa) return alert("Selecione a garrafa a converter.");
+        if(numGarrafas < 1) return alert("Número de garrafas inválido.");
         if(!nomeShot) return alert("Introduza o nome do produto de destino (ex: Shot Red Label).");
-        if(stock[garrafa].qtd < 1) return alert("Stock insuficiente da garrafa selecionada.");
+        if(stock[garrafa].qtd < numGarrafas) return alert(`Stock insuficiente! Só existem ${stock[garrafa].qtd} garrafas disponíveis.`);
 
-        let custoGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
-        stock[garrafa].qtd -= 1;
-        stock[garrafa].preco_total -= custoGarrafa;
+        let custoGarrafaUnit = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
+        let custoTotalRetirado = custoGarrafaUnit * numGarrafas;
+        let totalShotsGerados = numGarrafas * shotsPorGarrafa;
+
+        stock[garrafa].qtd -= numGarrafas;
+        stock[garrafa].preco_total -= custoTotalRetirado;
 
         if(!stock[nomeShot]) {
             stock[nomeShot] = {
@@ -3010,8 +3070,8 @@
             };
         }
 
-        stock[nomeShot].qtd += numShots;
-        stock[nomeShot].preco_total += custoGarrafa; 
+        stock[nomeShot].qtd += totalShotsGerados;
+        stock[nomeShot].preco_total += custoTotalRetirado; 
         if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3020,9 +3080,9 @@
             timestamp: Date.now(),
             tipo: 'SAÍDA (CONVERSÃO SHOTS)',
             produto: garrafa,
-            qtd: 1,
+            qtd: numGarrafas,
             usuario: usuarioAtual.nome,
-            origem: `Convertida em ${numShots}x ${nomeShot}`
+            origem: `Convertidas ${numGarrafas}x garrafas em ${totalShotsGerados}x ${nomeShot}`
         });
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3031,16 +3091,16 @@
             timestamp: Date.now(),
             tipo: 'ENTRADA (CONVERSÃO SHOTS)',
             produto: nomeShot,
-            qtd: numShots,
+            qtd: totalShotsGerados,
             usuario: usuarioAtual.nome,
-            origem: `Origem: 1x ${garrafa}`
+            origem: `Origem: ${numGarrafas}x ${garrafa}`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Conversão de Garrafa', `1x ${garrafa} convertida em ${numShots}x ${nomeShot}`);
+        registarAuditLog('Conversão de Garrafas', `${numGarrafas}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
-        alert(`✅ Conversão concluída com sucesso!\n\n• -1 Garrafa: ${garrafa.toUpperCase()}\n• +${numShots} Shots: ${nomeShot.toUpperCase()}`);
+        alert(`✅ Conversão concluída com sucesso!\n\n• -${numGarrafas} Garrafas: ${garrafa.toUpperCase()}\n• +${totalShotsGerados} Shots: ${nomeShot.toUpperCase()}`);
 
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
@@ -3126,7 +3186,7 @@
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}'`);
 
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
@@ -3134,49 +3194,34 @@
         alert("Stock e Código de Barras atualizados com sucesso!");
     };
 
-    window.abrirReposicaoStockRapida = async function(nomeProduto) {
-        if (!usuarioAtual || (usuarioAtual.tipo !== 'admin' && usuarioAtual.tipo !== 'gerente')) {
-            return alert("Apenas Administradores ou Gerentes podem dar entrada rápida de stock.");
+    // 🟢 APAGAR PRODUTO POR NÚMERO OU NOME
+    window.apagarProdutoPorNumeroOuNome = async function() {
+        let inputVal = document.getElementById('inputNumeroOuNomeApagarProduto').value.trim();
+        if(!inputVal) return alert("Insira o número (posição) ou o nome do produto a apagar.");
+
+        let chavesStock = Object.keys(stock);
+        let produtoAlvo = null;
+
+        // Verificar se foi inserido um número (índice 1-based)
+        let num = parseInt(inputVal);
+        if(!isNaN(num) && num >= 1 && num <= chavesStock.length) {
+            produtoAlvo = chavesStock[num - 1];
+        } else {
+            // Verificar se corresponde a um nome exato ou parcial
+            let encontrado = chavesStock.find(p => p.toLowerCase() === inputVal.toLowerCase());
+            if(encontrado) produtoAlvo = encontrado;
         }
 
-        let qtdStr = prompt(`📦 REPOR STOCK: ${nomeProduto.toUpperCase()}\n\nIntroduza a quantidade de unidades que deseja adicionar ao stock atual:`, "10");
-        if (!qtdStr) return;
+        if(!produtoAlvo) return alert("❌ Produto não encontrado com esse número ou nome.");
 
-        let qtdAdicionar = parseFloat(qtdStr);
-        if (isNaN(qtdAdicionar) || qtdAdicionar <= 0) {
-            return alert("Quantidade inválida.");
-        }
-
-        let custoStr = prompt(`Introduza o custo total pago por estas ${qtdAdicionar} unidades (em MT):`, "0");
-        let custoTotalAdicionar = parseFloat(custoStr) || 0;
-
-        if (!stock[nomeProduto]) return alert("Produto não encontrado.");
-
-        stock[nomeProduto].qtd += qtdAdicionar;
-        stock[nomeProduto].preco_total += custoTotalAdicionar;
-
-        try {
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(),
-                data: new Date().toLocaleString('pt-MZ'),
-                timestamp: Date.now(),
-                tipo: 'ENTRADA (REPOSIÇÃO RÁPIDA)',
-                produto: nomeProduto,
-                qtd: qtdAdicionar,
-                usuario: usuarioAtual.nome,
-                origem: 'Botão Repor Rápido na Tabela'
-            });
-
+        if(confirm(`Tem certeza que pretende apagar o produto '${produtoAlvo.toUpperCase()}' do stock?`)) {
+            delete stock[produtoAlvo];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-            
-            window.tocarSom('sucesso');
-            alert(`✅ Stock atualizado com sucesso!\n\n• Produto: ${nomeProduto.toUpperCase()}\n• +${qtdAdicionar} unidades adicionadas.`);
-            
-            renderizarStock();
+            registarAuditLog('Produto Removido', `Produto '${produtoAlvo}' apagado por número/nome`);
+            document.getElementById('inputNumeroOuNomeApagarProduto').value = '';
             filtrarEExibirProdutosVenda();
-        } catch (err) {
-            console.error("Erro ao atualizar stock rápido:", err);
-            alert("⚠️ Erro ao atualizar stock no servidor.");
+            renderizarStock();
+            alert(`✅ Produto '${produtoAlvo.toUpperCase()}' apagado com sucesso!`);
         }
     };
 
@@ -3196,29 +3241,27 @@
         document.getElementById('pagTotalStock').innerText = totalPaginas;
 
         let inicio = (paginaAtualStock - 1) * ITENS_POR_PAGINA_STOCK;
-        produtosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA_STOCK).forEach(p => {
+        produtosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA_STOCK).forEach((p, idxAbs) => {
             let item = stock[p];
             let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
             let precoVenda = item.preco_venda || 0;
             let isCritico = item.qtd <= (item.min_alerta || 5);
+            let numeroRealOrdem = inicio + idxAbs + 1;
 
             let colFin = isGerenteOuAdmin ? `
                 <td>${custoMedio.toFixed(2)} MT</td>
                 <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            
-            let botoesAcao = `<button class="btn-success btn-sm" onclick="window.abrirReposicaoStockRapida('${p}')" title="Adicionar mais stock">+ Repor</button>`;
-            if (usuarioAtual.tipo === 'admin') {
-                botoesAcao += ` <button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button>`;
-            }
+            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
 
             tbody.innerHTML += `<tr>
+                <td><span class="badge" style="background:#cbd5e1; color:#0f172a;">#${numeroRealOrdem}</span></td>
                 <td><b>${p.toUpperCase()}</b></td>
                 <td><span class="badge" style="background:#e9ecef; color:#333;">${(item.categoria||'outros').toUpperCase()}</span></td>
                 <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
                 <td>${item.min_alerta || 5}</td>
                 <td><b>${precoVenda.toFixed(2)} MT</b></td>
                 ${colFin}
-                <td>${botoesAcao}</td>
+                ${colAdmin}
             </tr>`;
         });
     }
@@ -3392,6 +3435,82 @@
         alert("Venda cancelada e stock revertido com sucesso!");
     };
 
+    // 🟢 FUNÇÕES DO ADMINISTRADOR PARA APAGAR CADA TIPO DE HISTÓRICO
+    window.adminApagarTodoHistoricoVendas = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação de TODO O HISTÓRICO DE VENDAS:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar permanentemente todas as vendas registadas? Esta ação é irreversível.")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                registarAuditLog('Limpeza de Histórico', 'Administrador apagou todo o histórico de vendas');
+                alert("✅ Histórico de vendas apagado com sucesso.");
+            } catch(e) {
+                alert("Erro ao apagar vendas: " + e.message);
+            }
+        }
+    };
+
+    window.adminApagarTodoHistoricoMovimentacoes = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação das MOVIMENTAÇÕES DE STOCK:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar todas as movimentações de stock?")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                registarAuditLog('Limpeza de Histórico', 'Administrador apagou todas as movimentações de stock');
+                alert("✅ Movimentações de stock apagadas.");
+            } catch(e) {
+                alert("Erro: " + e.message);
+            }
+        }
+    };
+
+    window.adminApagarTodoHistoricoTurnos = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação do HISTÓRICO DE TURNOS:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar todo o histórico de fechos de turnos de caixa?")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "turnos"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                registarAuditLog('Limpeza de Histórico', 'Administrador apagou histórico de turnos');
+                alert("✅ Histórico de turnos apagado.");
+            } catch(e) {
+                alert("Erro: " + e.message);
+            }
+        }
+    };
+
+    window.adminApagarTodoHistoricoAuditoria = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação dos LOGS DE AUDITORIA:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar todos os logs de auditoria e segurança?")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                alert("✅ Logs de auditoria apagados.");
+            } catch(e) {
+                alert("Erro: " + e.message);
+            }
+        }
+    };
+
     window.atualizarDashboard = function() {
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return;
 
@@ -3412,7 +3531,9 @@
         });
 
         let totalVendas = 0, totalCOGS = 0;
-        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia': 0 };
+        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia
+            ```javascript
+: 0 };
         let topProds = {};
 
         let tAbertura = caixaEstado.timestampAbertura || 0;
@@ -3657,3 +3778,5 @@
 
 </body>
 </html>
+```</FollowUp>
+</ElicitationsGroup>
