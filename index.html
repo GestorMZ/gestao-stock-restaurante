@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Biblioteca Html5-Qrcode para leitura de código de barras -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
@@ -147,12 +146,15 @@
             background: #c7d2fe;
         }
 
-        .grid-perfis-login { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; justify-content: center; margin-bottom: 20px; }
+        .grid-perfis-login { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-content: center; margin-bottom: 20px; }
         .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #eff6ff; transform: translateY(-2px); }
         .avatar-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 6px; background: #cbd5e1; }
         .avatar-placeholder { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 6px auto; }
         
+        .btn-mais-perfis { background: #e2e8f0; border: 2px dashed #cbd5e1; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #334155; font-weight: bold; min-height: 90px; }
+        .btn-mais-perfis:hover { background: #cbd5e1; }
+
         .grid-produtos-pos { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
@@ -666,7 +668,6 @@
                 </table>
             </div>
         </div>
-
         <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -679,38 +680,38 @@
 
             <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
-               <div class="form-row">
-    <div class="form-group">
-      <div class="form-row">
-    <div class="form-group">
-        <label>Produto / Bebida</label>
-        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-    </div>
-    <div class="form-group">
-        <label>Código de Barras</label>
-        <div style="display: flex; gap: 6px;">
-            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
-            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Categoria do Produto</label>
-        <select id="simplesCategoria">
-            <option value="bebidas">🍺 Bebidas</option>
-            <option value="pratos">🍲 Pratos / Refeições</option>
-            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
-            <option value="outros">🍷 Outros / Diversos</option>
-        </select>
-    </div>
-</div>
-    <div class="form-group">
-        <label>Formato de Compra</label>
-        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
-            <option value="unidade">🍺 Por Unidade Avulsa</option>
-        </select>
-    </div>
-</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Produto / Bebida</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
+                            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria do Produto</label>
+                        <select id="simplesCategoria">
+                            <option value="bebidas">🍺 Bebidas</option>
+                            <option value="pratos">🍲 Pratos / Refeições</option>
+                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+                            <option value="outros">🍷 Outros / Diversos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Formato de Compra</label>
+                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div class="form-row" id="rowModoCaixa">
                     <div class="form-group">
@@ -778,7 +779,7 @@
                             <th>Preço Venda Unit.</th>
                             <th class="col-gerente">Custo Médio Unit.</th>
                             <th class="col-gerente">Lucro Unit. Est.</th>
-                            <th class="col-gerente">Ações</th>
+                            <th class="col-gerente">Ações (Remover Qtd / Apagar)</th>
                         </tr>
                     </thead>
                     <tbody id="corpoStock"></tbody>
@@ -862,8 +863,8 @@
                 </div>
             </div>
 
-            <h4>📊 Perfis Ativos</h4>
-            <div class="table-responsive" style="margin-bottom:25px;">
+            <h4>📊 Perfis Ativos (3 por página)</h4>
+            <div class="table-responsive" style="margin-bottom:15px;">
                 <table>
                     <thead>
                         <tr>
@@ -877,6 +878,12 @@
                     </thead>
                     <tbody id="corpoTabelaPerfis"></tbody>
                 </table>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfisAdmin(-1)">⬅️ Anterior</button>
+                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualPerfisAdmin">1</span> de <span id="pagTotalPerfisAdmin">1</span></span>
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfisAdmin(1)">Próxima ➡️</button>
             </div>
 
             <div id="seccaoDetalhesPerfil" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe;">
@@ -913,8 +920,9 @@
                         <option value="todos">Todo o Histórico</option>
                     </select>
                 </div>
-                <div class="form-group" style="margin:0; text-align:right; align-self:flex-end;">
-                    <button class="btn-excel btn-sm" onclick="window.exportarVendasExcel()">📊 Exportar Vendas para Excel</button>
+                <div class="form-group" style="margin:0; text-align:right; align-self:flex-end; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                    <button class="btn-excel btn-sm" onclick="window.exportarVendasExcel()">📊 Exportar Vendas</button>
+                    <button class="btn-saida btn-sm" onclick="window.apagarTodoHistoricoApp()">🗑️ Apagar Todo o Histórico</button>
                 </div>
             </div>
 
@@ -1008,6 +1016,7 @@
 
     </div>
 </div>
+
 <!-- MODAIS -->
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:420px;">
@@ -1089,11 +1098,16 @@
     <div class="modal-content" style="max-width:450px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
         <h3>🍷 Converter Garrafa em Shots / Doses</h3>
-        <p style="font-size:0.85em; color:#666;">Retire 1 garrafa inteira do stock e adicione os respetivos shots ao balcão:</p>
+        <p style="font-size:0.85em; color:#666;">Selecione a garrafa, o número de garrafas a abrir e adicione os respetivos shots:</p>
         
         <div class="form-group">
             <label>Garrafa a Abrir (Stock Fechado)</label>
             <select id="selectGarrafaConversao"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Número de Garrafas a Abrir</label>
+            <input type="number" id="inputQtdGarrafasAbrir" value="1" min="1" step="1">
         </div>
 
         <div class="form-group">
@@ -1236,7 +1250,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
+        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence, getDocs 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -1322,13 +1336,6 @@
         window.tocarSom('alerta');
     });
 
-    const conexaoInfo = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conexaoInfo) {
-        conexaoInfo.addEventListener('change', window.atualizarEstadoConexao);
-    }
-
-    window.addEventListener('load', window.atualizarEstadoConexao);
-
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
@@ -1356,6 +1363,8 @@
     let historicoDashFiltrado = [];
     let paginaAtualAuditLogs = 1;
     const ITENS_POR_PAGINA_AUDIT = 5;
+    let paginaAtualPerfisAdmin = 1;
+    const ITENS_POR_PAGINA_PERFIS = 3;
 
     let bluetoothDevice = null;
     let bluetoothCharacteristic = null;
@@ -1494,7 +1503,8 @@
             });
         }, 300);
     };
-window.abrirModalScannerStock = function() {
+
+    window.abrirModalScannerStock = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
@@ -1521,6 +1531,7 @@ window.abrirModalScannerStock = function() {
             });
         }, 300);
     };
+
     window.fecharModalScannerBarcode = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (modal) modal.style.display = 'none';
@@ -1674,7 +1685,6 @@ window.abrirModalScannerStock = function() {
             alert("Erro ao ligar ao servidor. Verifique a internet.");
         }
     };
-
     function iniciarEscutadoresCompletosEmpresa() {
         if(!codigoEmpresa) return;
 
@@ -2048,7 +2058,18 @@ window.abrirModalScannerStock = function() {
         if(!tbody) return;
         tbody.innerHTML = '';
 
-        for(let u in usuarios) {
+        let chavesPerfis = Object.keys(usuarios);
+        let totalPaginas = Math.ceil(chavesPerfis.length / ITENS_POR_PAGINA_PERFIS) || 1;
+        if(paginaAtualPerfisAdmin > totalPaginas) paginaAtualPerfisAdmin = totalPaginas;
+        let elPagAtual = document.getElementById('pagAtualPerfisAdmin');
+        let elPagTotal = document.getElementById('pagTotalPerfisAdmin');
+        if(elPagAtual) elPagAtual.innerText = paginaAtualPerfisAdmin;
+        if(elPagTotal) elPagTotal.innerText = totalPaginas;
+
+        let inicio = (paginaAtualPerfisAdmin - 1) * ITENS_POR_PAGINA_PERFIS;
+        let perfisPagina = chavesPerfis.slice(inicio, inicio + ITENS_POR_PAGINA_PERFIS);
+
+        perfisPagina.forEach(u => {
             let userObj = usuarios[u];
             let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
             let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
@@ -2074,8 +2095,17 @@ window.abrirModalScannerStock = function() {
                     ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
                 </td>
             </tr>`;
-        }
+        });
     }
+
+    window.mudarPaginaPerfisAdmin = function(dir) {
+        window.tocarSom('click');
+        paginaAtualPerfisAdmin += dir;
+        let totalPaginas = Math.ceil(Object.keys(usuarios).length / ITENS_POR_PAGINA_PERFIS) || 1;
+        if(paginaAtualPerfisAdmin < 1) paginaAtualPerfisAdmin = 1;
+        if(paginaAtualPerfisAdmin > totalPaginas) paginaAtualPerfisAdmin = totalPaginas;
+        renderizarUsuarios();
+    };
 
     window.verHistoricoPerfil = function(u) {
         let sec = document.getElementById('seccaoDetalhesPerfil');
@@ -2284,11 +2314,10 @@ window.abrirModalScannerStock = function() {
         }
     }
 
-   window.selecionarMesa = async function(m) {
+    window.selecionarMesa = async function(m) {
         let itensDaMesa = mesas[m] || [];
         let bloqueioUser = bloqueiosMesas[m];
 
-        // Se a mesa já não tem itens mas ficou com um bloqueio fantasma guardado, limpa-o automaticamente
         if (itensDaMesa.length === 0 && bloqueioUser) {
             delete bloqueiosMesas[m];
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
@@ -2298,7 +2327,6 @@ window.abrirModalScannerStock = function() {
         let temItensTarget = itensDaMesa.length > 0;
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
 
-        // Se tem itens e pertence a outro operador (e quem tenta aceder não é admin/gerente)
         if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
             alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
@@ -2310,6 +2338,7 @@ window.abrirModalScannerStock = function() {
         renderizarMesasGrid();
         window.renderizarCarrinho();
     };
+
     function atualizarDropdownProdutosCart() {
         let sel = document.getElementById('cartSelectProduto');
         if(!sel) return;
@@ -2402,12 +2431,10 @@ window.abrirModalScannerStock = function() {
             return;
         }
 
-        // 🔒 VERIFICAÇÃO DE SEGURANÇA: Bloqueio de mesa por outro operador
-     let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
+        let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         let itensMesaAtual = mesas[mesaSelecionada] || [];
 
-        // Se a mesa estiver vazia, limpa qualquer bloqueio órfão anterior
         if (itensMesaAtual.length === 0 && bloqueioAtual) {
             delete bloqueiosMesas[mesaSelecionada];
             bloqueioAtual = null;
@@ -2944,6 +2971,7 @@ window.abrirModalScannerStock = function() {
                 <td style="color:${c.divida>0?'var(--danger)':'var(--success)'}; font-weight:bold;">${(c.divida||0).toFixed(2)} MT</td>
                 <td>
                     <button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(${idx})">💵 Liquidar</button>
+                    <button class="btn-saida btn-sm" onclick="window.eliminarClienteFiado(${idx})">🗑️ Eliminar</button>
                 </td>
             </tr>`;
         });
@@ -2958,6 +2986,21 @@ window.abrirModalScannerStock = function() {
             registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
             alert("Pagamento registado!");
         }
+    };
+
+    window.eliminarClienteFiado = async function(idx) {
+        let c = clientes[idx];
+        if(!c) return;
+        if(c.divida > 0) {
+            if(!confirm(`⚠️ ATENÇÃO: O cliente ${c.nome} tem uma dívida pendente de ${c.divida} MT. Deseja mesmo eliminá-lo?`)) return;
+        } else {
+            if(!confirm(`Deseja eliminar o cliente ${c.nome}?`)) return;
+        }
+
+        clientes.splice(idx, 1);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+        registarAuditLog('Cliente Removido', `Cliente fiado '${c.nome}' eliminado`);
+        alert("Cliente eliminado com sucesso!");
     };
 
     function atualizarDropdownClientesFiado() {
@@ -2991,17 +3034,23 @@ window.abrirModalScannerStock = function() {
 
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
+        let qtdGarrafasAbrir = parseInt(document.getElementById('inputQtdGarrafasAbrir').value) || 1;
         let nomeShot = document.getElementById('inputNomeShotDestino').value.trim().toLowerCase();
-        let numShots = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
+        let numShotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
         if(!garrafa) return alert("Selecione a garrafa a converter.");
+        if(qtdGarrafasAbrir < 1) return alert("Quantidade de garrafas inválida.");
         if(!nomeShot) return alert("Introduza o nome do produto de destino (ex: Shot Red Label).");
-        if(stock[garrafa].qtd < 1) return alert("Stock insuficiente da garrafa selecionada.");
+        if(stock[garrafa].qtd < qtdGarrafasAbrir) return alert("Stock insuficiente da garrafa selecionada.");
 
-        let custoGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
-        stock[garrafa].qtd -= 1;
-        stock[garrafa].preco_total -= custoGarrafa;
+        let custoUnitGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
+        let custoTotalGarrafas = qtdGarrafasAbrir * custoUnitGarrafa;
+        let totalShotsGerados = qtdGarrafasAbrir * numShotsPorGarrafa;
+
+        stock[garrafa].qtd -= qtdGarrafasAbrir;
+        stock[garrafa].preco_total -= custoTotalGarrafas;
+        if(stock[garrafa].qtd < 0.01) { stock[garrafa].qtd = 0; stock[garrafa].preco_total = 0; }
 
         if(!stock[nomeShot]) {
             stock[nomeShot] = {
@@ -3013,8 +3062,8 @@ window.abrirModalScannerStock = function() {
             };
         }
 
-        stock[nomeShot].qtd += numShots;
-        stock[nomeShot].preco_total += custoGarrafa; 
+        stock[nomeShot].qtd += totalShotsGerados;
+        stock[nomeShot].preco_total += custoTotalGarrafas; 
         if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3023,9 +3072,9 @@ window.abrirModalScannerStock = function() {
             timestamp: Date.now(),
             tipo: 'SAÍDA (CONVERSÃO SHOTS)',
             produto: garrafa,
-            qtd: 1,
+            qtd: qtdGarrafasAbrir,
             usuario: usuarioAtual.nome,
-            origem: `Convertida em ${numShots}x ${nomeShot}`
+            origem: `Convertidas em ${totalShotsGerados}x ${nomeShot}`
         });
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3034,16 +3083,16 @@ window.abrirModalScannerStock = function() {
             timestamp: Date.now(),
             tipo: 'ENTRADA (CONVERSÃO SHOTS)',
             produto: nomeShot,
-            qtd: numShots,
+            qtd: totalShotsGerados,
             usuario: usuarioAtual.nome,
-            origem: `Origem: 1x ${garrafa}`
+            origem: `Origem: ${qtdGarrafasAbrir}x ${garrafa}`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Conversão de Garrafa', `1x ${garrafa} convertida em ${numShots}x ${nomeShot}`);
+        registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
-        alert(`✅ Conversão concluída com sucesso!\n\n• -1 Garrafa: ${garrafa.toUpperCase()}\n• +${numShots} Shots: ${nomeShot.toUpperCase()}`);
+        alert(`✅ Conversão concluída com sucesso!\n\n• -${qtdGarrafasAbrir} Garrafa(s): ${garrafa.toUpperCase()}\n• +${totalShotsGerados} Shots: ${nomeShot.toUpperCase()}`);
 
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
@@ -3082,60 +3131,60 @@ window.abrirModalScannerStock = function() {
         document.getElementById('resLucroTotalCaixa').innerText = (lucroUnitario * totalUnidades).toFixed(2) + " MT";
     };
 
-   window.salvarEntradaStock = async function() {
-    let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-    if(!prod) return alert("Digite o nome do produto.");
+    window.salvarEntradaStock = async function() {
+        let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
+        if(!prod) return alert("Digite o nome do produto.");
 
-    let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-    let cat = document.getElementById('simplesCategoria').value || 'outros';
-    let modoCompra = document.getElementById('simplesModoCompra').value;
-    let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-    let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+        let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+        let cat = document.getElementById('simplesCategoria').value || 'outros';
+        let modoCompra = document.getElementById('simplesModoCompra').value;
+        let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
+        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-    let totalUnidades = 0, totalCusto = 0;
+        let totalUnidades = 0, totalCusto = 0;
 
-    if(modoCompra === 'caixa') {
-        let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-        let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-        let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-        totalUnidades = numCaixas * unidCaixa;
-        totalCusto = numCaixas * valCaixa;
-    } else {
-        totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-        let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-        totalCusto = totalUnidades * custoUnit;
-    }
+        if(modoCompra === 'caixa') {
+            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+            totalUnidades = numCaixas * unidCaixa;
+            totalCusto = numCaixas * valCaixa;
+        } else {
+            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+            let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+            totalCusto = totalUnidades * custoUnit;
+        }
 
-    if(!stock[prod]) {
-        stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
-    }
+        if(!stock[prod]) {
+            stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+        }
 
-    stock[prod].qtd += totalUnidades;
-    stock[prod].preco_total += totalCusto;
-    stock[prod].min_alerta = minAlerta;
-    stock[prod].categoria = cat;
-    if(barcodeInput) stock[prod].barcode = barcodeInput; // Guarda ou atualiza o código de barras
-    if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+        stock[prod].qtd += totalUnidades;
+        stock[prod].preco_total += totalCusto;
+        stock[prod].min_alerta = minAlerta;
+        stock[prod].categoria = cat;
+        if(barcodeInput) stock[prod].barcode = barcodeInput;
+        if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
-    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-        id: Date.now() + Math.random(),
-        data: new Date().toLocaleString('pt-MZ'),
-        timestamp: Date.now(),
-        tipo: 'ENTRADA (COMPRA)',
-        produto: prod,
-        qtd: totalUnidades,
-        usuario: usuarioAtual.nome,
-        origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
-    });
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'ENTRADA (COMPRA)',
+            produto: prod,
+            qtd: totalUnidades,
+            usuario: usuarioAtual.nome,
+            origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
+        });
 
-    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-    registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
 
-    document.getElementById('simplesProduto').value = '';
-    document.getElementById('simplesBarcode').value = '';
-    filtrarEExibirProdutosVenda();
-    alert("Stock e Código de Barras atualizados com sucesso!");
-};
+        document.getElementById('simplesProduto').value = '';
+        document.getElementById('simplesBarcode').value = '';
+        filtrarEExibirProdutosVenda();
+        alert("Stock e Código de Barras atualizados com sucesso!");
+    };
 
     function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
@@ -3162,7 +3211,12 @@ window.abrirModalScannerStock = function() {
             let colFin = isGerenteOuAdmin ? `
                 <td>${custoMedio.toFixed(2)} MT</td>
                 <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
+            
+            let colAdmin = usuarioAtual.tipo === 'admin' ? `
+                <td>
+                    <button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProduto('${p}')">➖ Apagar Qtd</button>
+                    <button class="btn-saida btn-sm" onclick="window.apagarProdutoTotal('${p}')">🗑️ Apagar Total</button>
+                </td>` : '';
 
             tbody.innerHTML += `<tr>
                 <td><b>${p.toUpperCase()}</b></td>
@@ -3182,6 +3236,49 @@ window.abrirModalScannerStock = function() {
         else paginaAtualStock += dir;
         if(paginaAtualStock < 1) paginaAtualStock = 1;
         renderizarStock();
+    };
+
+    window.apagarQuantidadeProduto = async function(p) {
+        let item = stock[p];
+        if(!item) return;
+        let qtdRemover = parseFloat(prompt(`Quantas unidades de '${p.toUpperCase()}' deseja apagar/remover do stock? (Stock atual: ${item.qtd})`, "1"));
+        if(isNaN(qtdRemover) || qtdRemover <= 0) return;
+
+        if(qtdRemover > item.qtd) {
+            return alert(`⚠️ Não pode remover ${qtdRemover} unidades pois o stock atual é apenas de ${item.qtd}!`);
+        }
+
+        let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+        item.qtd -= qtdRemover;
+        item.preco_total -= (qtdRemover * custoUnit);
+        if(item.qtd < 0.01) { item.qtd = 0; item.preco_total = 0; }
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'REMOÇÃO MANUAL (STOCK)',
+            produto: p,
+            qtd: qtdRemover,
+            usuario: usuarioAtual.nome,
+            origem: `Remoção direta de ${qtdRemover} unidades`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
+        alert(`Removidas ${qtdRemover} unidades de '${p.toUpperCase()}' com sucesso!`);
+        filtrarEExibirProdutosVenda();
+        renderizarStock();
+    };
+
+    window.apagarProdutoTotal = async function(p) {
+        if(confirm(`Tem certeza absoluta que deseja apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
+            delete stock[p];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            registarAuditLog('Produto Eliminado', `Produto '${p}' apagado totalmente do stock`);
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+        }
     };
 
     function renderizarMovimentacoesStock() {
@@ -3246,16 +3343,6 @@ window.abrirModalScannerStock = function() {
         if(temCritico) window.tocarSom('alerta');
         document.getElementById('boxAlertaStockGlobal').style.display = temCritico ? 'block' : 'none';
     }
-
-    window.apagarProduto = async function(p) {
-        if(confirm(`Apagar o produto ${p.toUpperCase()} do stock?`)) {
-            delete stock[p];
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-            registarAuditLog('Produto Removido', `Produto '${p}' apagado do stock`);
-            filtrarEExibirProdutosVenda();
-            renderizarStock();
-        }
-    };
 
     window.mudarPaginaAdminHist = function(dir) {
         window.tocarSom('click');
@@ -3343,6 +3430,48 @@ window.abrirModalScannerStock = function() {
         await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
         registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
         alert("Venda cancelada e stock revertido com sucesso!");
+    };
+
+    window.apagarTodoHistoricoApp = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas o Administrador pode apagar todo o histórico da aplicação!");
+        let senha = prompt("⚠️ ZONA DE PERIGO\nPara apagar todo o histórico de vendas, turnos, movimentações e auditoria, insira a palavra-passe do Administrador:");
+        let autorizado = false;
+        for (let u in usuarios) {
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
+        }
+        if(!autorizado) return alert("❌ Senha incorreta! Operação cancelada.");
+
+        if(!confirm("⚠️ TEM CERTEZA ABSOLUTA?\n\nEsta ação irá apagar permanentemente todas as vendas, turnos, movimentações e registos de auditoria do banco de dados da empresa.")) return;
+
+        try {
+            // Apaga documentos da coleção de vendas
+            let snapshotVendas = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
+            let promessas = snapshotVendas.docs.map(d => deleteDoc(d.ref));
+
+            let snapshotMov = await getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes"));
+            snapshotMov.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
+
+            let snapshotTurnos = await getDocs(collection(db, "empresas", codigoEmpresa, "turnos"));
+            snapshotTurnos.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
+
+            let snapshotAudit = await getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"));
+            snapshotAudit.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
+
+            await Promise.all(promessas);
+
+            historico = [];
+            movimentacoesStock = [];
+            turnosCaixa = [];
+            auditLogs = [];
+
+            registarAuditLog('Histórico Apagado', `Todo o histórico da app foi limpo por ${usuarioAtual.nome}`);
+            window.tocarSom('sucesso');
+            alert("✅ Todo o histórico da aplicação foi apagado com sucesso!");
+            window.atualizarDashboard();
+        } catch(err) {
+            console.error("Erro ao apagar histórico:", err);
+            alert("Erro ao apagar histórico: " + err.message);
+        }
     };
 
     window.atualizarDashboard = function() {
