@@ -1285,7 +1285,7 @@
 
     const app = initializeApp(firebaseConfig);
     
-    // 🟢 PERSISTÊNCIA OFFLINE AVANÇADA (Firebase v10 com cache persistente multi-aba)
+    // PERSISTÊNCIA OFFLINE AVANÇADA (Firebase v10 com cache persistente multi-aba)
     const db = initializeFirestore(app, {
         localCache: persistentLocalCache({
             tabManager: persistentMultipleTabManager()
@@ -3040,7 +3040,7 @@
         document.getElementById('modalConversaoShots').style.display = 'none';
     };
 
-    // 🟢 CONVERSÃO DE MÚLTIPLAS GARRAFAS EM SHOTS
+    // CONVERSÃO DE MÚLTIPLAS GARRAFAS EM SHOTS
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
         let numGarrafas = parseInt(document.getElementById('inputQtdGarrafasConverter').value) || 1;
@@ -3194,7 +3194,7 @@
         alert("Stock e Código de Barras atualizados com sucesso!");
     };
 
-    // 🟢 APAGAR PRODUTO POR NÚMERO OU NOME
+    // APAGAR PRODUTO POR NÚMERO OU NOME
     window.apagarProdutoPorNumeroOuNome = async function() {
         let inputVal = document.getElementById('inputNumeroOuNomeApagarProduto').value.trim();
         if(!inputVal) return alert("Insira o número (posição) ou o nome do produto a apagar.");
@@ -3202,12 +3202,10 @@
         let chavesStock = Object.keys(stock);
         let produtoAlvo = null;
 
-        // Verificar se foi inserido um número (índice 1-based)
         let num = parseInt(inputVal);
         if(!isNaN(num) && num >= 1 && num <= chavesStock.length) {
             produtoAlvo = chavesStock[num - 1];
         } else {
-            // Verificar se corresponde a um nome exato ou parcial
             let encontrado = chavesStock.find(p => p.toLowerCase() === inputVal.toLowerCase());
             if(encontrado) produtoAlvo = encontrado;
         }
@@ -3435,7 +3433,7 @@
         alert("Venda cancelada e stock revertido com sucesso!");
     };
 
-    // 🟢 FUNÇÕES DO ADMINISTRADOR PARA APAGAR CADA TIPO DE HISTÓRICO
+    // FUNÇÕES DO ADMINISTRADOR PARA APAGAR HISTÓRICOS
     window.adminApagarTodoHistoricoVendas = async function() {
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
         let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação de TODO O HISTÓRICO DE VENDAS:");
@@ -3531,9 +3529,7 @@
         });
 
         let totalVendas = 0, totalCOGS = 0;
-        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia
-            ```javascript
-: 0 };
+        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia': 0 };
         let topProds = {};
 
         let tAbertura = caixaEstado.timestampAbertura || 0;
@@ -3778,5 +3774,3 @@
 
 </body>
 </html>
-```</FollowUp>
-</ElicitationsGroup>
