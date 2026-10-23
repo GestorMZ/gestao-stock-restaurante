@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistema de Gestão Rápida POS - Restaurante Pro</title>
 
-    <!-- Meta Tags PWA -->
+    <!-- Meta Tags PWA & Offline Avançado -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007bff">
     <meta name="mobile-web-app-capable" content="yes">
@@ -266,8 +266,7 @@
     </style>
 </head>
 <body>
-
-<div class="container">
+    <div class="container">
 
     <!-- ECRÃ DE BLOQUEIO -->
     <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
@@ -337,29 +336,29 @@
     <!-- ECRÃ PRINCIPAL -->
     <div id="telaSistema" style="display:none;">
         
-    <div class="header-usuario">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <div id="headerAvatarBox"></div>
-        <div>
-            <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
-            Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
-            <small id="cargoUsuarioLogado" style="color:#666;"></small>
-        </div>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        
-        <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
-        <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
-            ⏳ A verificar rede...
-        </span>
+        <div class="header-usuario">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div id="headerAvatarBox"></div>
+                <div>
+                    <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
+                    Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
+                    <small id="cargoUsuarioLogado" style="color:#666;"></small>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                
+                <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
+                <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
+                    ⏳ A verificar rede...
+                </span>
 
-        <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
-        <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
-        <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
-        <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
-        <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
-    </div>
-</div>
+                <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
+                <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
+                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
+                <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+            </div>
+        </div>
 
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
@@ -680,37 +679,34 @@
             <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
                <div class="form-row">
-    <div class="form-group">
-      <div class="form-row">
-    <div class="form-group">
-        <label>Produto / Bebida</label>
-        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-    </div>
-    <div class="form-group">
-        <label>Código de Barras</label>
-        <div style="display: flex; gap: 6px;">
-            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
-            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Categoria do Produto</label>
-        <select id="simplesCategoria">
-            <option value="bebidas">🍺 Bebidas</option>
-            <option value="pratos">🍲 Pratos / Refeições</option>
-            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
-            <option value="outros">🍷 Outros / Diversos</option>
-        </select>
-    </div>
-</div>
-    <div class="form-group">
-        <label>Formato de Compra</label>
-        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
-            <option value="unidade">🍺 Por Unidade Avulsa</option>
-        </select>
-    </div>
-</div>
+                    <div class="form-group">
+                        <label>Produto / Bebida</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
+                            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria do Produto</label>
+                        <select id="simplesCategoria">
+                            <option value="bebidas">🍺 Bebidas</option>
+                            <option value="pratos">🍲 Pratos / Refeições</option>
+                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+                            <option value="outros">🍷 Outros / Diversos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Formato de Compra</label>
+                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div class="form-row" id="rowModoCaixa">
                     <div class="form-group">
@@ -748,7 +744,6 @@
                         <input type="number" id="simplesMinAlerta" value="5" min="1">
                     </div>
                 </div>
-
                 <div id="boxCalculoLucro" class="box-calculo-lucro">
                     <div>
                         <strong>📊 Resumo do Lucro Calculado:</strong><br>
@@ -827,6 +822,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
@@ -897,7 +893,10 @@
 
         <!-- ABA 6: DASHBOARD -->
         <div id="abaDashboard" class="tab-content col-admin">
-            <h2>Painel Financeiro & Desempenho</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h2>Painel Financeiro & Desempenho</h2>
+                <button class="btn-saida btn-sm" onclick="window.apagarTodoHistoricoAdmin()">🗑️ Reset / Apagar Todo Histórico</button>
+            </div>
 
             <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#ffeba2; color:#856404;">
                 ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
@@ -1009,6 +1008,8 @@
     </div>
 </div>
 <!-- MODAIS -->
+
+<!-- MODAL DIVISÃO DE CONTA -->
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:420px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
@@ -1046,6 +1047,7 @@
     </div>
 </div>
 
+<!-- MODAL MAIS PERFIS DE LOGIN -->
 <div id="modalMaisPerfis" class="modal">
     <div class="modal-content" style="max-width:400px;">
         <span class="close-modal" onclick="window.fecharModalMaisPerfis()">&times;</span>
@@ -1055,6 +1057,7 @@
     </div>
 </div>
 
+<!-- MODAL REDEFINIR SENHA -->
 <div id="modalResetSenha" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="window.fecharModalResetSenha()">&times;</span>
@@ -1075,6 +1078,7 @@
     </div>
 </div>
 
+<!-- MODAL QR MENU -->
 <div id="modalQRMenu" class="modal">
     <div class="modal-content" style="text-align:center;">
         <span class="close-modal" onclick="window.fecharModalQRMenu()">&times;</span>
@@ -1084,12 +1088,12 @@
     </div>
 </div>
 
-<!-- MODAL DE CONVERSÃO GARRAFA -> SHOTS -->
+<!-- MODAL DE CONVERSÃO GARRAFA -> SHOTS (ATUALIZADO) -->
 <div id="modalConversaoShots" class="modal">
     <div class="modal-content" style="max-width:450px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
-        <h3>🍷 Converter Garrafa em Shots / Doses</h3>
-        <p style="font-size:0.85em; color:#666;">Retire 1 garrafa inteira do stock e adicione os respetivos shots ao balcão:</p>
+        <h3>🍷 Converter Garrafas em Shots / Doses</h3>
+        <p style="font-size:0.85em; color:#666;">Retire garrafas do stock e adicione os respetivos shots à lista de venda:</p>
         
         <div class="form-group">
             <label>Garrafa a Abrir (Stock Fechado)</label>
@@ -1103,16 +1107,48 @@
 
         <div class="form-row">
             <div class="form-group">
+                <label>Qtd. de Garrafas a Abrir</label>
+                <input type="number" id="inputQtdGarrafasAbrir" value="1" min="1" step="1">
+            </div>
+            <div class="form-group">
                 <label>Nº de Shots por Garrafa</label>
                 <input type="number" id="inputQtdShotsPorGarrafa" value="20" min="1">
             </div>
-            <div class="form-group">
-                <label>Preço Venda por Shot (MT)</label>
-                <input type="number" id="inputPrecoVendaShot" value="150" min="0" step="0.5">
-            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Preço Venda por Shot (MT)</label>
+            <input type="number" id="inputPrecoVendaShot" value="150" min="0" step="0.5">
         </div>
 
         <button class="btn-success" style="margin-top:15px;" onclick="window.executarConversaoGarrafaParaShots()">🔄 Confirmar Conversão</button>
+    </div>
+</div>
+
+<!-- MODAL DE APAGAR STOCK PARCIAL (NOVO) -->
+<div id="modalApagarStockParcial" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+        <span class="close-modal" onclick="window.fecharModalApagarStockParcial()">&times;</span>
+        <h3>🗑️ Reduzir / Apagar Produto</h3>
+        <p style="font-size:0.85em; color:#666;">
+            Produto: <b id="lblProdutoApagarParcial" style="color:var(--primary); text-transform:uppercase;"></b><br>
+            Stock Atual: <b id="lblStockAtualApagar" style="color:var(--success);"></b>
+        </p>
+        <input type="hidden" id="inputProdutoApagarNome">
+        
+        <div class="form-group">
+            <label style="color:var(--danger);">Quantidade a Retirar / Apagar (Ex: 5)</label>
+            <input type="number" id="inputQtdApagarParcial" min="0.1" step="0.1" placeholder="Introduza a quantidade">
+        </div>
+        <div class="form-group">
+            <label>Motivo da Remoção</label>
+            <input type="text" id="inputMotivoApagarParcial" placeholder="Ex: Quebra, Caducado, Ajuste de Inventário">
+        </div>
+        
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn-warning" style="flex:1;" onclick="window.confirmarApagarStockParcial()">📉 Retirar Quantidade</button>
+            <button class="btn-saida" style="flex:1;" onclick="window.apagarProdutoCompleto()">💥 Apagar Tudo</button>
+        </div>
     </div>
 </div>
 
@@ -1191,7 +1227,8 @@
         </div>
     </div>
 </div>
-<!-- ÁREA DE IMPRESSÃO -->
+
+<!-- ÁREA DE IMPRESSÃO (OCULTA NO ECRÃ) -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
         <div style="text-align:center;">
@@ -1232,11 +1269,17 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-
+```<br>
+<br>
+<FollowUp>Estou a acompanhar corretamente? Podemos avançar para a Parte 6 (Início do Script e Persistência PWA)?</FollowUp>
+<ElicitationsGroup>
+    <Elicitation>Houve alguma alteração no nome das variáveis ou devo continuar exatamente com os nomes do seu ficheiro original?</Elicitation>
+    <Elicitation>Tem a certeza de que a estrutura HTML e CSS não sofreu alterações nos estilos desde a última vez?</Elicitation>
+</ElicitationsGroup>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
+        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence, writeBatch, getDocs 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -1253,9 +1296,62 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
-    enableIndexedDbPersistence(db).catch(() => {});
+    // 🚀 ATIVAÇÃO DA PERSISTÊNCIA OFFLINE AVANÇADA (App Ultra Rápida e Imune a falhas de rede)
+    enableIndexedDbPersistence(db).catch((err) => {
+        if (err.code == 'failed-precondition') {
+            console.warn('⚠️ Múltiplos separadores abertos. A persistência offline funciona apenas num.');
+        } else if (err.code == 'unimplemented') {
+            console.warn('⚠️ O seu navegador não suporta persistência offline avançada.');
+        }
+    });
 
+    signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
+
+    // ==========================================
+    // VARIÁVEIS GLOBAIS E ESTADO DO SISTEMA
+    // ==========================================
+    let codigoEmpresa = "";
+    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
+    let mesas = { "Balcão": [] };
+    let bloqueiosMesas = {}; 
+    
+    for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
+
+    let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
+    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16 };
+
+    let usuarioAtual = null;
+    let mesaSelecionada = "Balcão";
+    let categoriaPOSSelecionada = "todos";
+    let chartInstance = null;
+    let unsubscribes = [];
+
+    // Paginação
+    let paginaAtualStock = 1;
+    const ITENS_POR_PAGINA_STOCK = 8;
+    let paginaAtualMov = 1;
+    const ITENS_POR_PAGINA_MOV = 5;
+    let paginaAtualTurnos = 1;
+    const ITENS_POR_PAGINA_TURNOS = 5;
+    let paginaAtualAdminHist = 1;
+    const ITENS_POR_PAGINA_ADMIN_HIST = 5;
+    let paginaAtualAuditLogs = 1;
+    const ITENS_POR_PAGINA_AUDIT = 5;
+    
+    // Nova regra de perfis: 3 por página
+    let paginaAtualPerfis = 1;
+    const ITENS_POR_PAGINA_PERFIS = 3;
+
+    let historicoDashFiltrado = [];
+
+    let bluetoothDevice = null;
+    let bluetoothCharacteristic = null;
+    let timerInatividade = null;
+    let html5QrCodeScanner = null;
+
+    // ==========================================
+    // UTILITÁRIOS (Som, Conexão, Bloqueio)
+    // ==========================================
     window.tocarSom = function(tipo) {
         try {
             let ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1290,7 +1386,7 @@
 
         if (!navigator.onLine) {
             badge.className = 'btn btn-sm btn-danger';
-            badge.innerHTML = '🔴 Offline (Modo Local)';
+            badge.innerHTML = '🔴 Offline (Cache Ativo)';
             return;
         }
 
@@ -1312,55 +1408,25 @@
         }
     };
 
-    window.addEventListener('online', () => {
-        window.atualizarEstadoConexao();
-        window.tocarSom('sucesso');
-    });
-
-    window.addEventListener('offline', () => {
-        window.atualizarEstadoConexao();
-        window.tocarSom('alerta');
-    });
+    window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); });
+    window.addEventListener('offline', () => { window.atualizarEstadoConexao(); window.tocarSom('alerta'); });
 
     const conexaoInfo = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conexaoInfo) {
-        conexaoInfo.addEventListener('change', window.atualizarEstadoConexao);
-    }
-
+    if (conexaoInfo) conexaoInfo.addEventListener('change', window.atualizarEstadoConexao);
     window.addEventListener('load', window.atualizarEstadoConexao);
 
-    let codigoEmpresa = "";
-    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
-    let mesas = { "Balcão": [] };
-    let bloqueiosMesas = {}; 
-    
-    for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
-
-    let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
-    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16 };
-
-    let usuarioAtual = null;
-    let mesaSelecionada = "Balcão";
-    let categoriaPOSSelecionada = "todos";
-    let chartInstance = null;
-    let unsubscribes = [];
-
-    let paginaAtualStock = 1;
-    const ITENS_POR_PAGINA_STOCK = 8;
-    let paginaAtualMov = 1;
-    const ITENS_POR_PAGINA_MOV = 5;
-    let paginaAtualTurnos = 1;
-    const ITENS_POR_PAGINA_TURNOS = 5;
-    let paginaAtualAdminHist = 1;
-    const ITENS_POR_PAGINA_ADMIN_HIST = 5;
-    let historicoDashFiltrado = [];
-    let paginaAtualAuditLogs = 1;
-    const ITENS_POR_PAGINA_AUDIT = 5;
-
-    let bluetoothDevice = null;
-    let bluetoothCharacteristic = null;
-    let timerInatividade = null;
-    let html5QrCodeScanner = null;
+    // Recuperação local do carrinho em caso de fecho acidental
+    for(let m in mesas) {
+        if(m !== "Balcão") {
+            let salvoLocal = localStorage.getItem(`mesa_carrinho_${m}`);
+            if(salvoLocal) {
+                try {
+                    let itensLocal = JSON.parse(salvoLocal);
+                    if(Array.isArray(itensLocal) && itensLocal.length > 0) mesas[m] = itensLocal;
+                } catch(e) {}
+            }
+        }
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1369,9 +1435,7 @@
             codigoEmpresa = empUrl.trim().toUpperCase();
             localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
             let inputCod = document.getElementById('loginCodigoEmpresa');
-            if (inputCod) {
-                inputCod.value = codigoEmpresa;
-            }
+            if (inputCod) inputCod.value = codigoEmpresa;
             window.carregarPerfisEmpresa();
         } else {
             let empSalva = localStorage.getItem('codigoEmpresaRestaurante');
@@ -1381,20 +1445,6 @@
             }
         }
     });
-
-    for(let m in mesas) {
-        if(m !== "Balcão") {
-            let salvoLocal = localStorage.getItem(`mesa_carrinho_${m}`);
-            if(salvoLocal) {
-                try {
-                    let itensLocal = JSON.parse(salvoLocal);
-                    if(Array.isArray(itensLocal) && itensLocal.length > 0) {
-                        mesas[m] = itensLocal;
-                    }
-                } catch(e) {}
-            }
-        }
-    }
 
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
@@ -1406,23 +1456,16 @@
         let autorizado = false;
         if (Object.keys(usuarios).length > 0) {
             for (let u in usuarios) {
-                if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
-                    autorizado = true;
-                    break;
-                }
+                if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
             }
         } else {
-            if (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim()) {
-                autorizado = true;
-            }
+            if (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim()) autorizado = true;
         }
 
         if (autorizado) {
             elInput.type = "text";
             alert(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`);
-            setTimeout(() => {
-                elInput.type = "password";
-            }, 8000);
+            setTimeout(() => { elInput.type = "password"; }, 8000);
         } else {
             alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
         }
@@ -1434,7 +1477,7 @@
             timerInatividade = setTimeout(() => {
                 window.bloquearEcra();
                 registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente após 1 min sem ação`);
-            }, 60000);
+            }, 60000); // 1 minuto
         }
     }
 
@@ -1450,136 +1493,14 @@
             }
             return;
         }
-
-        if (event.key === 'F2') {
-            event.preventDefault();
-            window.imprimirPreRecibo();
-        } else if (event.key === 'F4') {
-            event.preventDefault();
-            window.imprimirGuiaCozinha();
-        } else if (event.key === 'F9') {
-            event.preventDefault();
-            window.finalizarVendaCarrinho();
-        }
+        if (event.key === 'F2') { event.preventDefault(); window.imprimirPreRecibo(); } 
+        else if (event.key === 'F4') { event.preventDefault(); window.imprimirGuiaCozinha(); } 
+        else if (event.key === 'F9') { event.preventDefault(); window.finalizarVendaCarrinho(); }
     });
 
-    window.adicionarQtdRapida = function(valorAdicional) {
-        window.tocarSom('click');
-        let inputQtd = document.getElementById('cartQtd');
-        if (!inputQtd) return;
-        let qtdAtual = parseFloat(inputQtd.value) || 1;
-        inputQtd.value = (qtdAtual + valorAdicional);
-    };
-
-    window.abrirModalScannerBarcode = function() {
-        let modal = document.getElementById('modalScannerBarcode');
-        if (!modal) return;
-        modal.style.display = 'block';
-
-        setTimeout(() => {
-            if (!html5QrCodeScanner) {
-                html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
-            }
-            html5QrCodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText, decodedResult) => {
-                    window.processarCodigoBarrasLido(decodedText);
-                    window.fecharModalScannerBarcode();
-                },
-                (errorMessage) => {}
-            ).catch(err => {
-                console.error("Erro ao iniciar câmara para barcode:", err);
-                alert("Não foi possível aceder à câmara para ler o código de barras.");
-            });
-        }, 300);
-    };
-window.abrirModalScannerStock = function() {
-        let modal = document.getElementById('modalScannerBarcode');
-        if (!modal) return;
-        modal.style.display = 'block';
-
-        setTimeout(() => {
-            if (!html5QrCodeScanner) {
-                html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
-            }
-            html5QrCodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText, decodedResult) => {
-                    let inputBarcode = document.getElementById('simplesBarcode');
-                    if (inputBarcode) {
-                        inputBarcode.value = decodedText.trim();
-                    }
-                    window.tocarSom('sucesso');
-                    window.fecharModalScannerBarcode();
-                },
-                (errorMessage) => {}
-            ).catch(err => {
-                console.error("Erro ao iniciar câmara:", err);
-                alert("Não foi possível aceder à câmara.");
-            });
-        }, 300);
-    };
-    window.fecharModalScannerBarcode = function() {
-        let modal = document.getElementById('modalScannerBarcode');
-        if (modal) modal.style.display = 'none';
-        if (html5QrCodeScanner) {
-            html5QrCodeScanner.stop().catch(() => {});
-        }
-    };
-
-    window.processarCodigoBarrasLido = function(codigo) {
-        let codLimpo = codigo.trim().toLowerCase();
-        let encontrado = null;
-        for (let p in stock) {
-            if (p.toLowerCase() === codLimpo || (stock[p].barcode && stock[p].barcode.toLowerCase() === codLimpo)) {
-                encontrado = p;
-                break;
-            }
-        }
-        if (encontrado) {
-            window.tocarSom('sucesso');
-            window.selecionarProdutoCardPOS(encontrado);
-        } else {
-            window.tocarSom('alerta');
-            alert(`⚠️ Produto com código/nome '${codigo}' não encontrado no stock.`);
-        }
-    };
-
-    window.alternarModoNoturno = function() {
-        window.tocarSom('click');
-        document.body.classList.toggle('dark-mode');
-        let ehDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('modoNoturno', ehDark ? 'sim' : 'nao');
-    };
-
-    if(localStorage.getItem('modoNoturno') === 'sim') {
-        document.body.classList.add('dark-mode');
-    }
-
-    window.bloquearEcra = function() {
-        if(!usuarioAtual) return;
-        window.tocarSom('alerta');
-        document.getElementById('lockUserNomeDisplay').innerText = usuarioAtual.nome;
-        document.getElementById('inputSenhaDesbloqueio').value = '';
-        document.getElementById('telaBloqueio').style.display = 'flex';
-        if (timerInatividade) clearTimeout(timerInatividade);
-    };
-
-    window.desbloquearEcra = function() {
-        let pwd = document.getElementById('inputSenhaDesbloqueio').value;
-        if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
-            window.tocarSom('sucesso');
-            document.getElementById('telaBloqueio').style.display = 'none';
-            registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
-            resetarTimerInatividade();
-        } else {
-            window.tocarSom('alerta');
-            alert("Palavra-passe incorreta!");
-        }
-    };
-
+    // ==========================================
+    // FUNÇÕES DE AUDITORIA E LOGS
+    // ==========================================
     async function registarAuditLog(evento, detalhes) {
         if(!codigoEmpresa || !usuarioAtual) return;
         try {
@@ -1592,7 +1513,11 @@ window.abrirModalScannerStock = function() {
             });
         } catch(e) { console.error("Erro ao guardar audit log:", e); }
     }
+    Aqui está a **Parte 7**. Continuamos com o JavaScript, ativando a sincronização em tempo real (Firestore `onSnapshot`), a lógica de Login e, como pediu, a **paginação de 3 perfis por página** na aba de Gestão de Utilizadores.
 
+Copie o código abaixo e diga-me para enviar a Parte 8 (que conterá as funções de apagar histórico, conversão parcial de stock e as restantes operações de fecho de caixa/vendas).
+
+```javascript
     window.mudarPaginaAuditLogs = function(dir) {
         window.tocarSom('click');
         paginaAtualAuditLogs += dir;
@@ -1645,7 +1570,7 @@ window.abrirModalScannerStock = function() {
                     return;
                 }
             } else {
-                alert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado. Contacte o administrador Valter Lopes (+258 84 903 0686).");
+                alert("🔴 ERRO DE LICENÇA: Este código não existe. Contacte o administrador Valter Lopes (+258 84 903 0686).");
                 return;
             }
 
@@ -1671,7 +1596,7 @@ window.abrirModalScannerStock = function() {
 
         } catch (erro) {
             console.error("Erro ao validar licença:", erro);
-            alert("Erro ao ligar ao servidor. Verifique a internet.");
+            alert("Erro ao ligar ao servidor. A persistência offline assumirá se já houver cache.");
         }
     };
 
@@ -1995,6 +1920,72 @@ window.abrirModalScannerStock = function() {
         });
     };
 
+    // Função de paginação de perfis (3 por página)
+    window.mudarPaginaPerfis = function(dir) {
+        window.tocarSom('click');
+        paginaAtualPerfis += dir;
+        if(paginaAtualPerfis < 1) paginaAtualPerfis = 1;
+        renderizarUsuarios();
+    };
+
+    function renderizarUsuarios() {
+        let tbody = document.getElementById('corpoTabelaPerfis');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        
+        let chavesPerfis = Object.keys(usuarios);
+        let totalPaginas = Math.ceil(chavesPerfis.length / ITENS_POR_PAGINA_PERFIS) || 1;
+        if(paginaAtualPerfis > totalPaginas) paginaAtualPerfis = totalPaginas;
+
+        let inicio = (paginaAtualPerfis - 1) * ITENS_POR_PAGINA_PERFIS;
+        let perfisExibicao = chavesPerfis.slice(inicio, inicio + ITENS_POR_PAGINA_PERFIS);
+
+        perfisExibicao.forEach(u => {
+            let userObj = usuarios[u];
+            let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
+            let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+            let numVendas = vendasUser.length;
+
+            let fotoTd = userObj.foto 
+                ? `<img src="${userObj.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` 
+                : `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
+
+            let tipoBadge = userObj.tipo === 'admin' ? 'Administrador' : userObj.tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
+            let badgeBg = userObj.tipo === 'admin' ? 'var(--primary)' : userObj.tipo === 'gerente' ? 'var(--purple)' : '#6c757d';
+
+            tbody.innerHTML += `<tr>
+                <td>${fotoTd}</td>
+                <td><b style="text-transform:uppercase;">${u}</b></td>
+                <td><span class="badge" style="background:${badgeBg}; color:white;">${tipoBadge}</span></td>
+                <td style="color:var(--success); font-weight:bold;">${totalVendido.toFixed(2)} MT</td>
+                <td><b>${numVendas}</b> vendas</td>
+                <td>
+                    <button class="btn-primary btn-sm" onclick="window.verHistoricoPerfil('${u}')">🔍 Vendas</button>
+                    <button class="btn-purple btn-sm" onclick="window.alterarFotoUsuarioAdmin('${u}')">📷 Foto</button>
+                    <button class="btn-warning btn-sm" onclick="window.redefinirSenhaDiretaAdmin('${u}')">🔑 Senha</button>
+                    ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
+                </td>
+            </tr>`;
+        });
+
+        // Adiciona controlos de paginação dinamicamente
+        let rowPaginacao = document.getElementById('rowPaginacaoPerfis');
+        if(!rowPaginacao) {
+            rowPaginacao = document.createElement('tr');
+            rowPaginacao.id = 'rowPaginacaoPerfis';
+            tbody.parentNode.appendChild(rowPaginacao);
+        }
+        
+        rowPaginacao.innerHTML = `
+            <td colspan="6" style="background:#f8fafc; padding:8px 12px; border-radius:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfis(-1)">⬅️ Anterior</button>
+                    <span style="font-size:0.85em; font-weight:bold;">Página ${paginaAtualPerfis} de ${totalPaginas}</span>
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfis(1)">Próxima ➡️</button>
+                </div>
+            </td>`;
+    }
+
     window.apagarUsuario = async function(u) {
         if(u === usuarioAtual.nome) return alert("Não pode apagar o seu próprio perfil!");
         if(confirm(`Eliminar o perfil '${u.toUpperCase()}'?`)) {
@@ -2006,6 +1997,7 @@ window.abrirModalScannerStock = function() {
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
             alert(`Perfil '${u.toUpperCase()}' removido.`);
+            renderizarUsuarios();
         }
     };
 
@@ -2037,45 +2029,12 @@ window.abrirModalScannerStock = function() {
                     }
                     await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
                     alert(`Foto atualizada!`);
+                    renderizarUsuarios();
                 }
             });
         };
         input.click();
     };
-
-    function renderizarUsuarios() {
-        let tbody = document.getElementById('corpoTabelaPerfis');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-
-        for(let u in usuarios) {
-            let userObj = usuarios[u];
-            let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
-            let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
-            let numVendas = vendasUser.length;
-
-            let fotoTd = userObj.foto 
-                ? `<img src="${userObj.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` 
-                : `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
-
-            let tipoBadge = userObj.tipo === 'admin' ? 'Administrador' : userObj.tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
-            let badgeBg = userObj.tipo === 'admin' ? 'var(--primary)' : userObj.tipo === 'gerente' ? 'var(--purple)' : '#6c757d';
-
-            tbody.innerHTML += `<tr>
-                <td>${fotoTd}</td>
-                <td><b style="text-transform:uppercase;">${u}</b></td>
-                <td><span class="badge" style="background:${badgeBg}; color:white;">${tipoBadge}</span></td>
-                <td style="color:var(--success); font-weight:bold;">${totalVendido.toFixed(2)} MT</td>
-                <td><b>${numVendas}</b> vendas</td>
-                <td>
-                    <button class="btn-primary btn-sm" onclick="window.verHistoricoPerfil('${u}')">🔍 Vendas</button>
-                    <button class="btn-purple btn-sm" onclick="window.alterarFotoUsuarioAdmin('${u}')">📷 Foto</button>
-                    <button class="btn-warning btn-sm" onclick="window.redefinirSenhaDiretaAdmin('${u}')">🔑 Senha</button>
-                    ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
-                </td>
-            </tr>`;
-        }
-    }
 
     window.verHistoricoPerfil = function(u) {
         let sec = document.getElementById('seccaoDetalhesPerfil');
@@ -2111,6 +2070,9 @@ window.abrirModalScannerStock = function() {
 
     window.fecharDetalhesPerfil = function() { document.getElementById('seccaoDetalhesPerfil').style.display = 'none'; };
 
+// ==========================================
+    // CAIXA E TURNOS
+    // ==========================================
     function renderizarEstadoCaixa() {
         let banner = document.getElementById('bannerStatusCaixa');
         let txt = document.getElementById('textoStatusCaixa');
@@ -2257,670 +2219,9 @@ window.abrirModalScannerStock = function() {
         alert("Despesa registada!");
     };
 
-    function renderizarMesasGrid() {
-        let grid = document.getElementById('gridMesas');
-        if(!grid) return;
-        grid.innerHTML = '';
-        
-        for(let m in mesas) {
-            let temItens = mesas[m] && mesas[m].length > 0;
-            let isSel = m === mesaSelecionada;
-            let bloqueioUser = bloqueiosMesas[m];
-            let estaBloqueadaPorOutro = temItens && bloqueioUser && bloqueioUser !== usuarioAtual.nome;
-
-            let classeEstado = '';
-            if (estaBloqueadaPorOutro) {
-                classeEstado = 'bloqueada';
-            } else if (temItens) {
-                classeEstado = 'ocupada';
-            }
-
-            grid.innerHTML += `<div class="card-mesa ${classeEstado} ${isSel?'selecionada':''}" onclick="window.selecionarMesa('${m}')">
-                ${m}<br>
-                <span style="font-size:0.75em;">
-                    ${estaBloqueadaPorOutro ? `🔒 Em uso por ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens' : 'Livre')}
-                </span>
-            </div>`;
-        }
-    }
-
-   window.selecionarMesa = async function(m) {
-        let itensDaMesa = mesas[m] || [];
-        let bloqueioUser = bloqueiosMesas[m];
-
-        // Se a mesa já não tem itens mas ficou com um bloqueio fantasma guardado, limpa-o automaticamente
-        if (itensDaMesa.length === 0 && bloqueioUser) {
-            delete bloqueiosMesas[m];
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            bloqueioUser = null;
-        }
-
-        let temItensTarget = itensDaMesa.length > 0;
-        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
-
-        // Se tem itens e pertence a outro operador (e quem tenta aceder não é admin/gerente)
-        if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
-            return;
-        }
-
-        mesaSelecionada = m;
-        document.getElementById('labelMesaAtual').innerText = m;
-
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-    };
-    function atualizarDropdownProdutosCart() {
-        let sel = document.getElementById('cartSelectProduto');
-        if(!sel) return;
-        sel.innerHTML = '<option value="">-- Selecionar Produto --</option>';
-        for(let p in stock) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
-    }
-
-    window.filtrarCategoriaPOS = function(cat, evt) {
-        window.tocarSom('click');
-        categoriaPOSSelecionada = cat;
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        if(evt && evt.target) evt.target.classList.add('active');
-        window.filtrarEExibirProdutosVenda();
-    };
-
-    window.filtrarEExibirProdutosVenda = function() {
-        let grid = document.getElementById('gridProdutosVendaPOS');
-        let termo = (document.getElementById('cartPesquisaProduto')?.value || '').trim().toLowerCase();
-        if(!grid) return;
-        grid.innerHTML = '';
-
-        let contagemFreq = {};
-        historico.forEach(h => {
-            if(h.tipo === 'venda' && h.status !== 'cancelado' && h.itens) {
-                h.itens.forEach(i => contagemFreq[i.produto] = (contagemFreq[i.produto] || 0) + i.qtd);
-            }
-        });
-
-        let prods = Object.keys(stock).filter(p => {
-            let atendeNome = p.toLowerCase().includes(termo);
-            let atendeCat = (categoriaPOSSelecionada === 'todos') || (stock[p].categoria === categoriaPOSSelecionada);
-            return atendeNome && atendeCat;
-        });
-
-        prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
-        let prodsExibicao = termo ? prods : prods.slice(0, 8);
-
-        if(prodsExibicao.length === 0) {
-            grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto nesta categoria.</small>';
-            return;
-        }
-
-        prodsExibicao.forEach(p => {
-            let item = stock[p];
-            grid.innerHTML += `
-                <div class="card-produto-pos" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    <strong style="font-size:0.9em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.toUpperCase()}</strong>
-                    <span style="color:var(--success); font-weight:bold; font-size:1.1em;">${(item.preco_venda||0).toFixed(2)} MT</span>
-                    <small style="font-size:0.8em; color:#64748b;">Stock: ${item.qtd}</small>
-                </div>
-            `;
-        });
-    };
-
-    window.selecionarProdutoCardPOS = function(p) {
-        window.tocarSom('click');
-        let sel = document.getElementById('cartSelectProduto');
-        if(sel) {
-            sel.value = p;
-        }
-        
-        let precoDefinido = 0;
-        if (stock[p] && stock[p].preco_venda) {
-            precoDefinido = stock[p].preco_venda;
-        }
-        
-        let inputPreco = document.getElementById('cartPrecoUnit');
-        if (inputPreco) {
-            inputPreco.value = precoDefinido;
-        }
-
-        let inputQtd = document.getElementById('cartQtd');
-        if (inputQtd) {
-            inputQtd.value = "1";
-        }
-
-        window.adicionarAoCarrinho();
-    };
-
-    window.preencherPrecoVenda = function() {
-        let p = document.getElementById('cartSelectProduto').value;
-        if(p && stock[p]) document.getElementById('cartPrecoUnit').value = stock[p].preco_venda || 0;
-    };
-
-    window.adicionarAoCarrinho = async function() {
-        if (!caixaEstado.aberto) {
-            window.tocarSom('alerta');
-            alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
-            window.mudarAba('abaCaixa');
-            return;
-        }
-
-        // 🔒 VERIFICAÇÃO DE SEGURANÇA: Bloqueio de mesa por outro operador
-     let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
-        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
-        let itensMesaAtual = mesas[mesaSelecionada] || [];
-
-        // Se a mesa estiver vazia, limpa qualquer bloqueio órfão anterior
-        if (itensMesaAtual.length === 0 && bloqueioAtual) {
-            delete bloqueiosMesas[mesaSelecionada];
-            bloqueioAtual = null;
-        }
-
-        if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Não pode adicionar itens.`);
-            return;
-        }
-
-        let prod = document.getElementById('cartSelectProduto').value;
-        let qtd = parseFloat(document.getElementById('cartQtd').value);
-        let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
-
-        if(!prod) return alert("Selecione um produto.");
-        if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
-
-        if (stock[prod]) {
-            if(stock[prod].qtd < qtd) {
-                window.tocarSom('alerta');
-                return alert("Stock insuficiente!");
-            }
-        } else {
-            stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
-        }
-
-        let subtotal = qtd * precoUnit;
-        let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
-
-        stock[prod].qtd -= qtd;
-        stock[prod].preco_total -= (qtd * custoUnit);
-        if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
-
-        if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
-        mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
-
-        try {
-            localStorage.setItem(`mesa_carrinho_${mesaSelecionada}`, JSON.stringify(mesas[mesaSelecionada]));
-            localStorage.setItem(`stock_local_backup`, JSON.stringify(stock));
-        } catch(e) {}
-
-        try {
-            if (mesaSelecionada !== "Balcão") {
-                bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
-
-            let mesasParaSalvar = {};
-            for(let m in mesas) {
-                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
-            }
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock).catch(()=>{});
-        } catch (err) {}
-
-        window.tocarSom('sucesso');
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
-    };
-
-    window.setValorEntregueRapido = function(val) {
-        window.tocarSom('click');
-        let itens = mesas[mesaSelecionada] || [];
-        let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalFinal = Math.max(0, total - desc);
-
-        let inputEntregue = document.getElementById('cartValorEntregue');
-        if(val === 'exato') {
-            inputEntregue.value = totalFinal.toFixed(2);
-        } else {
-            inputEntregue.value = val;
-        }
-        window.calcularTroco();
-    };
-
-    window.calcularTroco = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalFinal = Math.max(0, total - desc);
-        let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
-        let troco = Math.max(0, valorEntregue - totalFinal);
-        document.getElementById('cartTrocoTexto').innerText = troco.toFixed(2) + " MT";
-        return troco;
-    };
-
-    window.alternarModoPagamentoVisual = function() {
-        let modo = document.getElementById('cartModoPagamentoTipo').value;
-        document.getElementById('boxPagamentoUnico').style.display = modo === 'Unico' ? 'block' : 'none';
-        document.getElementById('boxPagamentoDesdobradoArea').style.display = modo === 'Desdobrado' ? 'block' : 'none';
-        if(modo === 'Desdobrado') window.calcularTotaisDesdobrados();
-    };
-
-    window.calcularTotaisDesdobrados = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalFinal = Math.max(0, total - desc);
-
-        let dDin = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
-        let dMpe = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
-        let dEmo = parseFloat(document.getElementById('payDesdEmola').value) || 0;
-        let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
-
-        let soma = dDin + dMpe + dEmo + dPos;
-        let falta = totalFinal - soma;
-
-        document.getElementById('lblSomaDesdobrado').innerText = soma.toFixed(2) + " MT";
-        document.getElementById('lblFaltaDesdobrado').innerText = falta.toFixed(2) + " MT";
-    };
-
-    window.abrirModalDivisaoConta = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalFinal = Math.max(0, total - desc);
-
-        document.getElementById('lblTotalMesaDivisao').innerText = totalFinal.toFixed(2) + " MT";
-        window.calcularValorPorPessoa();
-        document.getElementById('modalDivisaoConta').style.display = 'block';
-    };
-
-    window.fecharModalDivisaoConta = function() {
-        document.getElementById('modalDivisaoConta').style.display = 'none';
-    };
-
-    window.calcularValorPorPessoa = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalFinal = Math.max(0, total - desc);
-        let pessoas = parseInt(document.getElementById('numPessoasDivisao').value) || 1;
-        if(pessoas < 1) pessoas = 1;
-
-        let porPessoa = totalFinal / pessoas;
-        document.getElementById('lblValorPorPessoa').innerText = porPessoa.toFixed(2) + " MT";
-    };
-
-    window.renderizarCarrinho = function() {
-        let tbody = document.getElementById('corpoCarrinho');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        let itens = mesas[mesaSelecionada] || [];
-        let total = 0;
-
-        itens.forEach((item, idx) => {
-            total += item.subtotal;
-            tbody.innerHTML += `<tr>
-                <td>${item.produto.toUpperCase()}</td>
-                <td>${item.qtd}</td>
-                <td>${item.precoUnit.toFixed(2)} MT</td>
-                <td><b>${item.subtotal.toFixed(2)} MT</b></td>
-                <td><button class="btn-saida btn-sm" onclick="window.removerItemCarrinho(${idx})">x</button></td>
-            </tr>`;
-        });
-
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalFinal = Math.max(0, total - desc);
-        let met = document.getElementById('cartMetodoPagamento').value;
-        if(met === 'Cortesia') totalFinal = 0;
-
-        let taxaIva = dadosEmpresa.aplicarIva === 'sim' ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
-        let subtotalLiq = totalFinal / (1 + (taxaIva / 100));
-        let valorIva = totalFinal - subtotalLiq;
-
-        document.getElementById('cartTotalTexto').innerText = totalFinal.toFixed(2) + " MT";
-        document.getElementById('cartSubtotalIvaTexto').innerText = (dadosEmpresa.aplicarIva === 'sim' && met !== 'Cortesia') 
-            ? `Base: ${subtotalLiq.toFixed(2)} MT | IVA (${taxaIva}%): ${valorIva.toFixed(2)} MT`
-            : `Isento de IVA / Cortesia`;
-
-        window.calcularTroco();
-        if(document.getElementById('cartModoPagamentoTipo').value === 'Desdobrado') {
-            window.calcularTotaisDesdobrados();
-        }
-    };
-
-    window.removerItemCarrinho = async function(idx) {
-        let bloqueioUser = bloqueiosMesas[mesaSelecionada];
-        if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`);
-            return;
-        }
-
-        let itens = mesas[mesaSelecionada] || [];
-        let item = itens[idx];
-        if (!item) return;
-
-        if(stock[item.produto]) {
-            stock[item.produto].qtd += item.qtd;
-            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
-        }
-
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)',
-            produto: item.produto,
-            qtd: item.qtd,
-            usuario: usuarioAtual.nome,
-            origem: `Removido da ${mesaSelecionada}`
-        });
-
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        mesas[mesaSelecionada].splice(idx, 1);
-
-        let mesasParaSalvar = {};
-        for(let m in mesas) {
-            if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
-        }
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
-
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
-        window.tocarSom('click');
-    };
-
-    window.imprimirPreRecibo = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("O carrinho/mesa está vazio.");
-
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-        let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
-        let totalVenda = Math.max(0, totalSemDesc - desc);
-
-        let taxaIva = dadosEmpresa.aplicarIva === 'sim' ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
-        let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
-        let valorIva = totalVenda - subtotalLiq;
-
-        document.getElementById('conteudoReciboFiscal').style.display = 'block';
-        document.getElementById('conteudoGuiaCozinha').style.display = 'none';
-
-        document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
-        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
-        document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
-        document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : '';
-        document.getElementById('reciboSlogan').innerText = "CONFERÊNCIA DE MESA - NÃO É TALÃO FISCAL";
-
-        document.getElementById('reciboTipoTituloDisplay').innerText = "PRÉ-RECIBO (CONTA MESA)";
-        document.getElementById('reciboMesa').innerText = mesaSelecionada;
-        document.getElementById('reciboData').innerText = new Date().toLocaleString('pt-MZ');
-        document.getElementById('reciboVendedor').innerText = usuarioAtual.nome;
-        document.getElementById('reciboNuitClienteDisplay').innerText = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
-        document.getElementById('reciboMetodo').innerText = "Aguardando Pagamento";
-        document.getElementById('reciboDesconto').innerText = desc.toFixed(2);
-        document.getElementById('reciboSubtotalLiq').innerText = subtotalLiq.toFixed(2);
-        document.getElementById('reciboTaxaIvaValor').innerText = taxaIva;
-        document.getElementById('reciboValIva').innerText = valorIva.toFixed(2);
-
-        let divItens = document.getElementById('reciboItens');
-        divItens.innerHTML = '';
-        itens.forEach(i => {
-            divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span>
-                <span>${i.subtotal.toFixed(2)} MT</span>
-            </div>`;
-        });
-        document.getElementById('reciboTotal').innerText = totalVenda.toFixed(2);
-        document.getElementById('reciboValorEntregue').innerText = "0.00";
-        document.getElementById('reciboTroco').innerText = "0.00";
-
-        setTimeout(() => { window.print(); }, 300);
-    };
-
-    window.finalizarVendaCarrinho = async function() {
-        if (!caixaEstado.aberto) {
-            window.tocarSom('alerta');
-            return alert("🔴 Caixa Fechado!");
-        }
-
-        let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("O carrinho está vazio.");
-
-        try {
-            let modoPag = document.getElementById('cartModoPagamentoTipo').value;
-            let metodo = "";
-            let desdobramentoInfo = null;
-
-            let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-            let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
-            let totalVenda = Math.max(0, totalSemDesc - desc);
-
-            if(modoPag === 'Desdobrado') {
-                let dDin = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
-                let dMpe = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
-                let dEmo = parseFloat(document.getElementById('payDesdEmola').value) || 0;
-                let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
-                let somaDesd = dDin + dMpe + dEmo + dPos;
-
-                if(Math.abs(somaDesd - totalVenda) > 0.1) {
-                    return alert(`⚠️ A soma dos pagamentos desdobrados (${somaDesd.toFixed(2)} MT) deve ser exatamente igual ao Total Final (${totalVenda.toFixed(2)} MT)!`);
-                }
-                metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
-                desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
-            } else {
-                metodo = document.getElementById('cartMetodoPagamento').value;
-            }
-
-            if (metodo === 'Cortesia') { totalVenda = 0; desc = totalSemDesc; }
-
-            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
-            
-            if (metodo === 'Numerário' && valorEntregue <= 0) {
-                window.tocarSom('alerta');
-                alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
-                document.getElementById('cartValorEntregue').focus();
-                return;
-            }
-
-            if (valorEntregue > 0 && valorEntregue < totalVenda && metodo !== 'Fiado' && metodo !== 'Cortesia') {
-                window.tocarSom('alerta');
-                alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
-                document.getElementById('cartValorEntregue').focus();
-                return;
-            }
-
-            let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
-            let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
-            let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
-            let valorIva = totalVenda - subtotalLiq;
-
-            let troco = Math.max(0, valorEntregue - totalVenda);
-            let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
-
-            let clienteFiado = null;
-            if(metodo === 'Fiado') {
-                clienteFiado = document.getElementById('cartSelectClienteFiado').value;
-                if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
-            }
-
-            let registoVenda = {
-                id: Date.now(),
-                data: new Date().toLocaleString('pt-MZ'),
-                timestamp: Date.now(),
-                usuario: usuarioAtual.nome,
-                tipo: 'venda',
-                status: 'concluido',
-                mesa: mesaSelecionada,
-                itens,
-                desconto: desc,
-                totalVenda,
-                subtotalLiq,
-                valorIva,
-                taxaIva,
-                nuitCliente,
-                totalCusto,
-                valorEntregue,
-                troco,
-                metodo,
-                desdobramentoInfo,
-                clienteFiado
-            };
-
-            if(metodo === 'Fiado') {
-                let cIdx = clientes.findIndex(c => c.nome === clienteFiado);
-                if(cIdx !== -1) {
-                    clientes[cIdx].divida = (clientes[cIdx].divida || 0) + totalVenda;
-                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes }).catch(()=>{});
-                }
-            }
-
-            addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
-
-            mesas[mesaSelecionada] = [];
-            let mesasParaSalvar = {};
-            for(let m in mesas) {
-                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
-            }
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
-
-            if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
-                delete bloqueiosMesas[mesaSelecionada];
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
-
-            window.tocarSom('sucesso');
-
-            mesaSelecionada = "Balcão";
-            document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
-            document.getElementById('cartDesconto').value = 0;
-            document.getElementById('cartValorEntregue').value = 0;
-            document.getElementById('cartNuitCliente').value = '';
-            document.getElementById('cartTelefoneWa').value = '';
-            document.getElementById('cartModoPagamentoTipo').value = 'Unico';
-            window.alternarModoPagamentoVisual();
-
-            renderizarMesasGrid();
-            window.renderizarCarrinho();
-            filtrarEExibirProdutosVenda();
-
-            if (bluetoothCharacteristic) {
-                window.imprimirReciboBluetoothESC(registoVenda);
-            } else {
-                imprimirTalão(registoVenda);
-            }
-
-        } catch (erro) {
-            console.error("Erro ao finalizar venda:", erro);
-            alert("⚠️ Falha ao registar venda: " + erro.message);
-        }
-    };
-
-    function imprimirTalão(v) {
-        document.getElementById('conteudoReciboFiscal').style.display = 'block';
-        document.getElementById('conteudoGuiaCozinha').style.display = 'none';
-
-        document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
-        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
-        document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
-        document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : '';
-        document.getElementById('reciboSlogan').innerText = dadosEmpresa.slogan || 'Obrigado pela preferência!';
-
-        document.getElementById('reciboTipoTituloDisplay').innerText = "COMPROVATIVO DE VENDA (VD)";
-        document.getElementById('reciboMesa').innerText = v.mesa;
-        document.getElementById('reciboData').innerText = v.data;
-        document.getElementById('reciboVendedor').innerText = v.usuario;
-        document.getElementById('reciboNuitClienteDisplay').innerText = v.nuitCliente || 'Consumidor Final';
-        document.getElementById('reciboMetodo').innerText = v.metodo;
-        document.getElementById('reciboDesconto').innerText = (v.desconto || 0).toFixed(2);
-        document.getElementById('reciboSubtotalLiq').innerText = (v.subtotalLiq || v.totalVenda).toFixed(2);
-        document.getElementById('reciboTaxaIvaValor').innerText = v.taxaIva || 0;
-        document.getElementById('reciboValIva').innerText = (v.valorIva || 0).toFixed(2);
-
-        let divItens = document.getElementById('reciboItens');
-        divItens.innerHTML = '';
-        v.itens.forEach(i => {
-            divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span>
-                <span>${i.subtotal.toFixed(2)} MT</span>
-            </div>`;
-        });
-        document.getElementById('reciboTotal').innerText = v.totalVenda.toFixed(2);
-        document.getElementById('reciboValorEntregue').innerText = (v.valorEntregue || 0).toFixed(2);
-        document.getElementById('reciboTroco').innerText = (v.troco || 0).toFixed(2);
-
-        setTimeout(() => { window.print(); }, 300);
-    }
-
-    window.imprimirGuiaCozinha = function() {
-        let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("Carrinho vazio.");
-
-        document.getElementById('conteudoReciboFiscal').style.display = 'none';
-        document.getElementById('conteudoGuiaCozinha').style.display = 'block';
-
-        document.getElementById('cozinhaMesa').innerText = mesaSelecionada;
-        document.getElementById('cozinhaData').innerText = new Date().toLocaleString('pt-MZ');
-
-        let divItens = document.getElementById('cozinhaItens');
-        divItens.innerHTML = '';
-        itens.forEach(i => {
-            divItens.innerHTML += `<div>• ${i.qtd}x ${i.produto.toUpperCase()}</div>`;
-        });
-
-        setTimeout(() => { window.print(); }, 300);
-    };
-
-    window.conectarImpressoraBluetooth = async function() {
-        if (!navigator.bluetooth) return alert("Navegador não suporta Bluetooth API.");
-        try {
-            document.getElementById('statusBtPrinter').innerText = "Procurando... 🟡";
-            bluetoothDevice = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2']
-            });
-            const server = await bluetoothDevice.gatt.connect();
-            const services = await server.getPrimaryServices();
-            const characteristics = await services[0].getCharacteristics();
-            bluetoothCharacteristic = characteristics[0];
-            document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
-            alert("✅ Bluetooth Conectado!");
-        } catch (erro) {
-            document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
-            alert("Falha na ligação Bluetooth.");
-        }
-    };
-
-    window.testarImpressaoBluetooth = async function() {
-        if (!bluetoothCharacteristic) return alert("Conecte a impressora primeiro.");
-        let encoder = new TextEncoder();
-        let texto = "\x1B\x40\x1B\x61\x01TESTE IMPRESSAO\nRESTAURANTE PRO SaaS\n--------------------------------\n\n\n\n";
-        await bluetoothCharacteristic.writeValue(encoder.encode(texto));
-    };
-
-    window.imprimirReciboBluetoothESC = async function(v) {
-        if (!bluetoothCharacteristic) return;
-        try {
-            let encoder = new TextEncoder();
-            let txt = "\x1B\x40\x1B\x61\x01" + 
-                      `${dadosEmpresa.nome || 'RESTAURANTE'}\n` +
-                      `--------------------------------\n` +
-                      `${v.data}\n` +
-                      "\x1B\x61\x00" + 
-                      `Mesa: ${v.mesa} | Op: ${v.usuario}\n` +
-                      `Pagamento: ${v.metodo}\n` +
-                      `--------------------------------\n`;
-
-            v.itens.forEach(i => { txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`; });
-
-            txt += `--------------------------------\n` +
-                   `TOTAL: ${v.totalVenda.toFixed(2)} MT\n` +
-                   `Troco: ${v.troco.toFixed(2)} MT\n` +
-                   "\x1B\x61\x01\nObrigado pela preferencia!\n\n\n\n";
-
-            await bluetoothCharacteristic.writeValue(encoder.encode(txt));
-        } catch (err) { imprimirTalão(v); }
-    };
-
+    // ==========================================
+    // CLIENTES & FIADO
+    // ==========================================
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
@@ -2942,9 +2243,7 @@ window.abrirModalScannerStock = function() {
                 <td><b>${c.nome}</b></td>
                 <td>${c.telefone || '-'}</td>
                 <td style="color:${c.divida>0?'var(--danger)':'var(--success)'}; font-weight:bold;">${(c.divida||0).toFixed(2)} MT</td>
-                <td>
-                    <button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(${idx})">💵 Liquidar</button>
-                </td>
+                <td><button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(${idx})">💵 Liquidar</button></td>
             </tr>`;
         });
     }
@@ -2973,595 +2272,190 @@ window.abrirModalScannerStock = function() {
         window.renderizarCarrinho();
     };
 
-    window.abrirModalConversaoShots = function() {
-        let sel = document.getElementById('selectGarrafaConversao');
-        if(!sel) return;
-        sel.innerHTML = '<option value="">-- Selecionar Garrafa --</option>';
-        for(let p in stock) {
-            if(stock[p].qtd >= 1) {
-                sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd} garrafas)</option>`;
-            }
-        }
-        document.getElementById('modalConversaoShots').style.display = 'block';
-    };
-
-    window.fecharModalConversaoShots = function() {
-        document.getElementById('modalConversaoShots').style.display = 'none';
-    };
-
+    // ==========================================
+    // CONVERSÃO DE GARRAFAS PARA SHOTS (COM MULTI-GARRAFA)
+    // ==========================================
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
         let nomeShot = document.getElementById('inputNomeShotDestino').value.trim().toLowerCase();
-        let numShots = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
+        let numGarrafas = parseInt(document.getElementById('inputQtdGarrafasAbrir').value) || 1;
+        let numShotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
         if(!garrafa) return alert("Selecione a garrafa a converter.");
         if(!nomeShot) return alert("Introduza o nome do produto de destino (ex: Shot Red Label).");
-        if(stock[garrafa].qtd < 1) return alert("Stock insuficiente da garrafa selecionada.");
+        if(stock[garrafa].qtd < numGarrafas) return alert(`Stock insuficiente. Apenas tem ${stock[garrafa].qtd} garrafa(s).`);
 
+        let totalShots = numGarrafas * numShotsPorGarrafa;
         let custoGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
-        stock[garrafa].qtd -= 1;
-        stock[garrafa].preco_total -= custoGarrafa;
+        let custoTotalAbatido = custoGarrafa * numGarrafas;
+
+        stock[garrafa].qtd -= numGarrafas;
+        stock[garrafa].preco_total -= custoTotalAbatido;
 
         if(!stock[nomeShot]) {
-            stock[nomeShot] = {
-                qtd: 0,
-                preco_total: 0,
-                preco_venda: precoShot,
-                min_alerta: 10,
-                categoria: 'bebidas'
-            };
+            stock[nomeShot] = { qtd: 0, preco_total: 0, preco_venda: precoShot, min_alerta: 10, categoria: 'bebidas' };
         }
 
-        stock[nomeShot].qtd += numShots;
-        stock[nomeShot].preco_total += custoGarrafa; 
+        stock[nomeShot].qtd += totalShots;
+        stock[nomeShot].preco_total += custoTotalAbatido; 
         if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            tipo: 'SAÍDA (CONVERSÃO SHOTS)',
-            produto: garrafa,
-            qtd: 1,
-            usuario: usuarioAtual.nome,
-            origem: `Convertida em ${numShots}x ${nomeShot}`
+            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+            tipo: 'SAÍDA (CONVERSÃO SHOTS)', produto: garrafa, qtd: numGarrafas, usuario: usuarioAtual.nome,
+            origem: `Convertida em ${totalShots}x ${nomeShot}`
         });
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(),
-            data: new Date().toLocaleString('pt-MZ'),
-            timestamp: Date.now(),
-            tipo: 'ENTRADA (CONVERSÃO SHOTS)',
-            produto: nomeShot,
-            qtd: numShots,
-            usuario: usuarioAtual.nome,
-            origem: `Origem: 1x ${garrafa}`
+            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+            tipo: 'ENTRADA (CONVERSÃO SHOTS)', produto: nomeShot, qtd: totalShots, usuario: usuarioAtual.nome,
+            origem: `Origem: ${numGarrafas}x ${garrafa}`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Conversão de Garrafa', `1x ${garrafa} convertida em ${numShots}x ${nomeShot}`);
+        registarAuditLog('Conversão de Garrafa', `${numGarrafas}x ${garrafa} convertida em ${totalShots}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
-        alert(`✅ Conversão concluída com sucesso!\n\n• -1 Garrafa: ${garrafa.toUpperCase()}\n• +${numShots} Shots: ${nomeShot.toUpperCase()}`);
+        alert(`✅ Conversão concluída com sucesso!\n\n• -${numGarrafas} Garrafa(s): ${garrafa.toUpperCase()}\n• +${totalShots} Shots: ${nomeShot.toUpperCase()}`);
 
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
         renderizarStock();
     };
 
-    window.calcularPrecosEntrada = function() {
-        let modoCompra = document.getElementById('simplesModoCompra').value;
-        let totalUnidades = 0, custoUnitario = 0;
-
-        if (modoCompra === 'caixa') {
-            document.getElementById('rowModoCaixa').style.display = 'flex';
-            document.getElementById('rowModoUnidade').style.display = 'none';
-
-            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-
-            totalUnidades = numCaixas * unidCaixa;
-            custoUnitario = unidCaixa > 0 ? (valCaixa / unidCaixa) : 0;
-        } else {
-            document.getElementById('rowModoCaixa').style.display = 'none';
-            document.getElementById('rowModoUnidade').style.display = 'flex';
-
-            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-            custoUnitario = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-        }
-
-        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
-        let lucroUnitario = precoVendaUnit - custoUnitario;
-
-        document.getElementById('boxCalculoLucro').style.display = 'block';
-        document.getElementById('resTotalUnid').innerText = totalUnidades;
-        document.getElementById('resCustoUnit').innerText = custoUnitario.toFixed(2);
-        document.getElementById('resLucroUnit').innerText = lucroUnitario.toFixed(2) + " MT";
-        document.getElementById('resLucroTotalCaixa').innerText = (lucroUnitario * totalUnidades).toFixed(2) + " MT";
+    // ==========================================
+    // APAGAR / RETIRAR STOCK PARCIAL
+    // ==========================================
+    window.apagarProduto = function(p) {
+        document.getElementById('lblProdutoApagarParcial').innerText = p;
+        document.getElementById('lblStockAtualApagar').innerText = stock[p].qtd + ' unid';
+        document.getElementById('inputProdutoApagarNome').value = p;
+        document.getElementById('inputQtdApagarParcial').value = '';
+        document.getElementById('inputMotivoApagarParcial').value = '';
+        document.getElementById('modalApagarStockParcial').style.display = 'block';
     };
 
-   window.salvarEntradaStock = async function() {
-    let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-    if(!prod) return alert("Digite o nome do produto.");
+    window.fecharModalApagarStockParcial = function() {
+        document.getElementById('modalApagarStockParcial').style.display = 'none';
+    };
 
-    let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-    let cat = document.getElementById('simplesCategoria').value || 'outros';
-    let modoCompra = document.getElementById('simplesModoCompra').value;
-    let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-    let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+    window.confirmarApagarStockParcial = async function() {
+        let p = document.getElementById('inputProdutoApagarNome').value;
+        let qtd = parseFloat(document.getElementById('inputQtdApagarParcial').value);
+        let motivo = document.getElementById('inputMotivoApagarParcial').value.trim() || 'Ajuste de Inventário';
 
-    let totalUnidades = 0, totalCusto = 0;
+        if(isNaN(qtd) || qtd <= 0) return alert("Insira uma quantidade válida a retirar.");
+        if(!stock[p]) return;
+        if(qtd > stock[p].qtd) return alert(`Não pode retirar mais do que o stock atual (${stock[p].qtd})!`);
 
-    if(modoCompra === 'caixa') {
-        let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-        let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-        let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-        totalUnidades = numCaixas * unidCaixa;
-        totalCusto = numCaixas * valCaixa;
-    } else {
-        totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-        let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-        totalCusto = totalUnidades * custoUnit;
-    }
+        let custoUnit = stock[p].qtd > 0 ? (stock[p].preco_total / stock[p].qtd) : 0;
+        
+        stock[p].qtd -= qtd;
+        stock[p].preco_total -= (qtd * custoUnit);
 
-    if(!stock[prod]) {
-        stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
-    }
-
-    stock[prod].qtd += totalUnidades;
-    stock[prod].preco_total += totalCusto;
-    stock[prod].min_alerta = minAlerta;
-    stock[prod].categoria = cat;
-    if(barcodeInput) stock[prod].barcode = barcodeInput; // Guarda ou atualiza o código de barras
-    if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
-
-    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-        id: Date.now() + Math.random(),
-        data: new Date().toLocaleString('pt-MZ'),
-        timestamp: Date.now(),
-        tipo: 'ENTRADA (COMPRA)',
-        produto: prod,
-        qtd: totalUnidades,
-        usuario: usuarioAtual.nome,
-        origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
-    });
-
-    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-    registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
-
-    document.getElementById('simplesProduto').value = '';
-    document.getElementById('simplesBarcode').value = '';
-    filtrarEExibirProdutosVenda();
-    alert("Stock e Código de Barras atualizados com sucesso!");
-};
-
-    function renderizarStock() {
-        let tbody = document.getElementById('corpoStock');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
-
-        let termoBusca = (document.getElementById('filtroBuscarStock')?.value || '').trim().toLowerCase();
-        let produtosFiltrados = Object.keys(stock).filter(p => p.toLowerCase().includes(termoBusca));
-
-        let totalPaginas = Math.ceil(produtosFiltrados.length / ITENS_POR_PAGINA_STOCK) || 1;
-        if(paginaAtualStock > totalPaginas) paginaAtualStock = totalPaginas;
-
-        document.getElementById('pagAtualStock').innerText = paginaAtualStock;
-        document.getElementById('pagTotalStock').innerText = totalPaginas;
-
-        let inicio = (paginaAtualStock - 1) * ITENS_POR_PAGINA_STOCK;
-        produtosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA_STOCK).forEach(p => {
-            let item = stock[p];
-            let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-            let precoVenda = item.preco_venda || 0;
-            let isCritico = item.qtd <= (item.min_alerta || 5);
-
-            let colFin = isGerenteOuAdmin ? `
-                <td>${custoMedio.toFixed(2)} MT</td>
-                <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
-
-            tbody.innerHTML += `<tr>
-                <td><b>${p.toUpperCase()}</b></td>
-                <td><span class="badge" style="background:#e9ecef; color:#333;">${(item.categoria||'outros').toUpperCase()}</span></td>
-                <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
-                <td>${item.min_alerta || 5}</td>
-                <td><b>${precoVenda.toFixed(2)} MT</b></td>
-                ${colFin}
-                ${colAdmin}
-            </tr>`;
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+            tipo: 'SAÍDA (AJUSTE/REMOÇÃO)', produto: p, qtd: qtd, usuario: usuarioAtual.nome, origem: motivo
         });
-    }
 
-    window.mudarPaginaStock = function(dir, ehAvancoDireto = false) {
-        if(ehAvancoDireto) paginaAtualStock++;
-        else if(dir === 1 && document.getElementById('filtroBuscarStock')) paginaAtualStock = 1;
-        else paginaAtualStock += dir;
-        if(paginaAtualStock < 1) paginaAtualStock = 1;
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Remoção Parcial de Stock', `Retiradas ${qtd}x de ${p}. Motivo: ${motivo}`);
+        
+        alert("Stock reduzido com sucesso!");
+        window.fecharModalApagarStockParcial();
         renderizarStock();
+        filtrarEExibirProdutosVenda();
     };
 
-    function renderizarMovimentacoesStock() {
-        let tbody = document.getElementById('corpoMovimentacoesStock');
-        if(!tbody) return;
-        tbody.innerHTML = '';
-        let filtroTipo = document.getElementById('filtroTipoMovimentacao')?.value || 'todos';
-
-        let listaFiltrada = movimentacoesStock.filter(m => {
-            if(filtroTipo === 'todos') return true;
-            return m.tipo.includes(filtroTipo);
-        });
-
-        let totalPaginas = Math.ceil(listaFiltrada.length / ITENS_POR_PAGINA_MOV) || 1;
-        if(paginaAtualMov > totalPaginas) paginaAtualMov = totalPaginas;
-        document.getElementById('pagAtualMov').innerText = paginaAtualMov;
-        document.getElementById('pagTotalMov').innerText = totalPaginas;
-
-        let inicio = (paginaAtualMov - 1) * ITENS_POR_PAGINA_MOV;
-        listaFiltrada.slice(inicio, inicio + ITENS_POR_PAGINA_MOV).forEach((m) => {
-            let isEntrada = m.tipo.includes('ENTRADA') || m.tipo.includes('DEVOLUÇÃO');
-            let colAdminAcao = (usuarioAtual && usuarioAtual.tipo === 'admin') 
-                ? `<td><button class="btn-saida btn-sm" onclick="window.apagarMovimentacaoIndividual('${m.idDoc}')">🗑️ Apagar</button></td>`
-                : `<td>-</td>`;
-
-            tbody.innerHTML += `<tr>
-                <td><small>${m.data}</small></td>
-                <td><span class="badge ${isEntrada ? 'badge-entrada' : 'badge-saida'}">${m.tipo}</span></td>
-                <td><b>${m.produto.toUpperCase()}</b></td>
-                <td style="font-weight:bold; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">
-                    ${isEntrada ? '+' : '-'}${m.qtd}
-                </td>
-                <td><b style="text-transform:uppercase;">${m.usuario}</b></td>
-                <td><small>${m.origem || '-'}</small></td>
-                ${colAdminAcao}
-            </tr>`;
-        });
-    }
-
-    window.mudarPaginaMovimentacao = function(dir, ehAvancoDireto = false) {
-        if(ehAvancoDireto) paginaAtualMov++;
-        else if(dir === 1 && document.getElementById('filtroTipoMovimentacao')) paginaAtualMov = 1;
-        else paginaAtualMov += dir;
-        if(paginaAtualMov < 1) paginaAtualMov = 1;
-        renderizarMovimentacoesStock();
-    };
-
-    window.apagarMovimentacaoIndividual = async function(idDocMov) {
-        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
-        if(confirm("Confirmar a remoção do registo?")) {
-            await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
-            registarAuditLog('Movimentação Apagada', `Removido registo de movimentação #${idDocMov}`);
-            alert("Registo removido!");
-        }
-    };
-
-    function verificarAlertasStock() {
-        let temCritico = false;
-        for(let p in stock) {
-            if(stock[p].qtd <= (stock[p].min_alerta || 5)) { temCritico = true; break; }
-        }
-        if(temCritico) window.tocarSom('alerta');
-        document.getElementById('boxAlertaStockGlobal').style.display = temCritico ? 'block' : 'none';
-    }
-
-    window.apagarProduto = async function(p) {
-        if(confirm(`Apagar o produto ${p.toUpperCase()} do stock?`)) {
+    window.apagarProdutoCompleto = async function() {
+        let p = document.getElementById('inputProdutoApagarNome').value;
+        if(confirm(`Tem a certeza ABSOLUTA que quer apagar o produto ${p.toUpperCase()} de forma permanente? Todo o histórico dele será perdido.`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-            registarAuditLog('Produto Removido', `Produto '${p}' apagado do stock`);
-            filtrarEExibirProdutosVenda();
+            registarAuditLog('Produto Eliminado', `O produto ${p} foi apagado totalmente do sistema.`);
+            alert("Produto apagado com sucesso!");
+            window.fecharModalApagarStockParcial();
             renderizarStock();
+            filtrarEExibirProdutosVenda();
         }
     };
 
-    window.mudarPaginaAdminHist = function(dir) {
-        window.tocarSom('click');
-        paginaAtualAdminHist += dir;
-        if(paginaAtualAdminHist < 1) paginaAtualAdminHist = 1;
-        window.renderizarHistoricoAdmin();
-    };
-
-    window.renderizarHistoricoAdmin = function() {
-        let tbodyHist = document.getElementById('corpoHistoricoAdmin');
-        if(!tbodyHist) return;
-        tbodyHist.innerHTML = '';
-        let lista = historicoDashFiltrado;
-
-        if(lista.length === 0) {
-            tbodyHist.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Sem transações registadas para este período.</td></tr>';
-            return;
-        }
-
-        let totalPaginas = Math.ceil(lista.length / ITENS_POR_PAGINA_ADMIN_HIST) || 1;
-        if(paginaAtualAdminHist > totalPaginas) paginaAtualAdminHist = totalPaginas;
-        document.getElementById('pagAtualAdminHist').innerText = paginaAtualAdminHist;
-        document.getElementById('pagTotalAdminHist').innerText = totalPaginas;
-
-        let inicio = (paginaAtualAdminHist - 1) * ITENS_POR_PAGINA_ADMIN_HIST;
-        lista.slice(inicio, inicio + ITENS_POR_PAGINA_ADMIN_HIST).forEach(h => {
-            let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : (h.detalhes || '-');
-            let ehCancelado = h.status === 'cancelado';
-            let ehCortesia = h.metodo === 'Cortesia';
-
-            if(h.metodo === 'Numerário') resumo += " <b style='color:var(--success);'>[💵 Espécie]</b>";
-            else if(ehCortesia) resumo += " <b style='color:#e83e8c;'>[🎁 Cortesia]</b>";
-
-            tbodyHist.innerHTML += `<tr>
-                <td><small>${h.data || '-'}</small></td>
-                <td><b style="text-transform:uppercase;">${h.usuario || '-'}</b></td>
-                <td><small>${resumo}</small></td>
-                <td>
-                    <span class="badge ${ehCortesia ? 'badge-cortesia' : ''}">${h.metodo || 'Venda'}</span>
-                    ${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}
-                </td>
-                <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
-                    ${(h.totalVenda || 0).toFixed(2)} MT
-                </td>
-                <td>
-                    ${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc}',${h.id})">🚫 Cancelar</button>` : '-'}
-                </td>
-            </tr>`;
-        });
-    };
-
-    window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
-        let senhaAdmin = prompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para cancelar esta venda:");
-        let autorizacao = false;
-        for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
-        }
-
-        if (!autorizacao) return alert("❌ Senha incorreta!");
-
-        let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
-        if(!vendaObj) return alert("Venda não encontrada.");
-
-        if(vendaObj.itens) {
-            for(let item of vendaObj.itens) {
-                if(stock[item.produto]) {
-                    stock[item.produto].qtd += item.qtd;
-                    stock[item.produto].preco_total += (item.qtd * item.custoUnit);
-                }
-                await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                    id: Date.now() + Math.random(),
-                    data: new Date().toLocaleString('pt-MZ'),
-                    timestamp: Date.now(),
-                    tipo: 'DEVOLUÇÃO (CANCELAMENTO)',
-                    produto: item.produto,
-                    qtd: item.qtd,
-                    usuario: usuarioAtual.nome,
-                    origem: `Cancelamento Venda #${vendaObj.id}`
-                });
-            }
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        }
-
-        vendaObj.status = 'cancelado';
-        await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
-        registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
-        alert("Venda cancelada e stock revertido com sucesso!");
-    };
-
-    window.atualizarDashboard = function() {
-        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return;
-
-        let filtro = document.getElementById('filtroDataTipo') ? document.getElementById('filtroDataTipo').value : 'todos';
-        let agora = new Date();
+    // ==========================================
+    // APAGAR TODO O HISTÓRICO (ADMIN RESET)
+    // ==========================================
+    window.apagarTodoHistoricoAdmin = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
         
-        historicoDashFiltrado = historico.filter(h => {
-            if(filtro === 'todos') return true;
-            let d = new Date(h.timestamp || Date.now());
-            if(filtro === 'hoje') return d.toDateString() === agora.toDateString();
-            if(filtro === 'ontem') {
-                let ontem = new Date();
-                ontem.setDate(agora.getDate() - 1);
-                return d.toDateString() === ontem.toDateString();
-            }
-            if(filtro === 'mes') return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
-            return true;
-        });
-
-        let totalVendas = 0, totalCOGS = 0;
-        let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia': 0 };
-        let topProds = {};
-
-        let tAbertura = caixaEstado.timestampAbertura || 0;
-        let cancelamentosNoTurno = historico.filter(h => h.status === 'cancelado' && (h.timestamp || 0) >= tAbertura).length;
+        let senhaAdmin = prompt("⚠️ PERIGO: RESET AO SISTEMA!\n\nEsta ação vai APAGAR DEFINITIVAMENTE todas as vendas, movimentações de stock, fechos de caixa e registos de auditoria.\n\nO Stock atual e os Utilizadores serão mantidos.\n\nInsira a sua senha de Admin para confirmar:");
         
-        let boxAlertaCanc = document.getElementById('boxAlertaCancelamentosMuitos');
-        if(boxAlertaCanc) {
-            if(caixaEstado.aberto && cancelamentosNoTurno >= 3) {
-                boxAlertaCanc.style.display = 'block';
-                document.getElementById('numCancelamentosDetetados').innerText = cancelamentosNoTurno;
-            } else {
-                boxAlertaCanc.style.display = 'none';
-            }
-        }
-
-        historicoDashFiltrado.forEach(h => {
-            if(h.tipo === 'venda' && h.status !== 'cancelado') {
-                totalVendas += (h.totalVenda || 0);
-                totalCOGS += (h.totalCusto || 0);
-                
-                if(h.desdobramentoInfo) {
-                    canais['Numerário'] = (canais['Numerário'] || 0) + (h.desdobramentoInfo.din || 0);
-                    canais['M-Pesa'] = (canais['M-Pesa'] || 0) + (h.desdobramentoInfo.mpe || 0);
-                    canais['e-Mola'] = (canais['e-Mola'] || 0) + (h.desdobramentoInfo.emo || 0);
-                    canais['POS'] = (canais['POS'] || 0) + (h.desdobramentoInfo.pos || 0);
-                } else if(h.metodo) {
-                    canais[h.metodo] = (canais[h.metodo] || 0) + h.totalVenda;
-                }
-
-                if(h.itens) {
-                    h.itens.forEach(i => topProds[i.produto] = (topProds[i.produto] || 0) + i.qtd);
-                }
-            }
-        });
-
-        let totalDesp = despesas.reduce((acc, i) => acc + i.valor, 0);
-
-        document.getElementById('dashValMpesa').innerText = (canais['M-Pesa'] || 0).toFixed(2) + " MT";
-        document.getElementById('dashValEmola').innerText = (canais['e-Mola'] || 0).toFixed(2) + " MT";
-        document.getElementById('dashValPOS').innerText = (canais['POS'] || 0).toFixed(2) + " MT";
-        document.getElementById('dashValNumerario').innerText = (canais['Numerário'] || 0).toFixed(2) + " MT";
-        document.getElementById('dashValFiado').innerText = (canais['Fiado'] || 0).toFixed(2) + " MT";
-
-        document.getElementById('dashTotalVendas').innerText = totalVendas.toFixed(2) + " MT";
-        document.getElementById('dashCustoVendas').innerText = totalCOGS.toFixed(2) + " MT";
-        document.getElementById('dashDespesasGerais').innerText = totalDesp.toFixed(2) + " MT";
-        document.getElementById('dashLucroReal').innerText = (totalVendas - totalCOGS - totalDesp).toFixed(2) + " MT";
-
-        let topSorted = Object.entries(topProds).sort((a,b) => b[1] - a[1]).slice(0, 5);
-        let divTop = document.getElementById('listaTopProdutos');
-        if(divTop) {
-            divTop.innerHTML = '';
-            topSorted.forEach(([p, q], idx) => {
-                divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span><b>${idx+1}. ${p.toUpperCase()}</b></span>
-                    <span class="badge">${q} unid</span>
-                </div>`;
-            });
-        }
-
-        paginaAtualAdminHist = 1;
-        window.renderizarHistoricoAdmin();
-        renderizarGraficoCanais(canais);
-    };
-
-    function renderizarGraficoCanais(canais) {
-        let elCanvas = document.getElementById('graficoCanaisPay');
-        if(!elCanvas) return;
-        let ctx = elCanvas.getContext('2d');
-        if(chartInstance) chartInstance.destroy();
-
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['M-Pesa', 'e-Mola', 'POS', 'Numerário', 'Fiado'],
-                datasets: [{
-                    data: [canais['M-Pesa']||0, canais['e-Mola']||0, canais['POS']||0, canais['Numerário']||0, canais['Fiado']||0],
-                    backgroundColor: ['#6f42c1', '#fd7e14', '#007bff', '#28a745', '#dc3545']
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    }
-
-    window.fazerBackup = function() {
-        let usuariosSemSenhas = {};
-        for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
-
-        let backupData = {
-            codigoEmpresa,
-            usuarios: usuariosSemSenhas,
-            stock,
-            movimentacoesStock,
-            historico,
-            clientes,
-            despesas,
-            turnosCaixa,
-            auditLogs,
-            dadosEmpresa: {
-                nome: dadosEmpresa.nome, nuit: dadosEmpresa.nuit, endereco: dadosEmpresa.endereco, telefone: dadosEmpresa.telefone, slogan: dadosEmpresa.slogan
-            },
-            dataBackup: new Date().toLocaleString('pt-MZ')
-        };
-
-        let blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
-        let a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `backup_${codigoEmpresa}_${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(a.href);
-    };
-
-    window.exportarVendasExcel = function() {
-        let dadosExcel = historico.map(item => ({
-            "Empresa": codigoEmpresa,
-            "Data": item.data,
-            "Estado": item.status || "concluido",
-            "Utilizador": item.usuario,
-            "Mesa": item.mesa || "Balcão",
-            "Método": item.metodo,
-            "Total Venda (MT)": item.totalVenda || 0
-        }));
-        let ws = XLSX.utils.json_to_sheet(dadosExcel);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Vendas");
-        XLSX.writeFile(wb, `Vendas_${codigoEmpresa}_${Date.now()}.xlsx`);
-    };
-
-    window.exportarStockExcel = function() {
-        let dadosStock = [];
-        for(let p in stock) {
-            let item = stock[p];
-            let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-            dadosStock.push({
-                "Empresa": codigoEmpresa,
-                "Produto": p.toUpperCase(),
-                "Categoria": (item.categoria||'outros').toUpperCase(),
-                "Stock": item.qtd,
-                "Custo Unit. (MT)": custoMedio.toFixed(2),
-                "Preço Venda (MT)": (item.preco_venda||0).toFixed(2)
-            });
-        }
-        let ws = XLSX.utils.json_to_sheet(dadosStock);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Stock");
-        XLSX.writeFile(wb, `Stock_${codigoEmpresa}_${Date.now()}.xlsx`);
-    };
-
-    window.abrirModalQRMenu = function() {
-        document.getElementById('modalQRMenu').style.display = 'block';
-        let urlSite = window.location.href;
-        document.getElementById('textLinkMenu').innerText = urlSite;
-        document.getElementById('qrcodeArea').innerHTML = '';
-        new QRCode(document.getElementById('qrcodeArea'), { text: urlSite, width: 160, height: 160 });
-    };
-
-    window.fecharModalQRMenu = function() { document.getElementById('modalQRMenu').style.display = 'none'; };
-
-    function preencherCamposEmpresaModal() {
-        if (document.getElementById('cfgNomeEmpresa')) {
-            document.getElementById('cfgCodigoLicencaOculto').value = "••••••••";
-            document.getElementById('cfgCodigoLicencaOculto').type = "password";
-            document.getElementById('cfgNomeEmpresa').value = dadosEmpresa.nome || '';
-            document.getElementById('cfgNuit').value = dadosEmpresa.nuit || '';
-            document.getElementById('cfgTelefone').value = dadosEmpresa.telefone || '';
-            document.getElementById('cfgEndereco').value = dadosEmpresa.endereco || '';
-            document.getElementById('cfgSlogan').value = dadosEmpresa.slogan || '';
-            document.getElementById('cfgChaveMestra').value = dadosEmpresa.chaveMestra || '1234';
-            document.getElementById('cfgAplicarIva').value = dadosEmpresa.aplicarIva || 'sim';
-            document.getElementById('cfgTaxaIva').value = dadosEmpresa.taxaIva || 16;
-        }
-    }
-
-    window.revelarLicencaAdmin = function() {
-        let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para visualizar o Código de Licença:");
         let autorizado = false;
         for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
-                autorizado = true;
-                break;
-            }
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; }
         }
-        if (autorizado) {
-            let inputLicenca = document.getElementById('cfgCodigoLicencaOculto');
-            inputLicenca.type = "text";
-            inputLicenca.value = codigoEmpresa;
-            alert(`🔑 Código de Licença Ativo: ${codigoEmpresa}`);
-            setTimeout(() => {
-                inputLicenca.type = "password";
-                inputLicenca.value = "••••••••";
-            }, 8000);
-        } else {
-            alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
+        if(!autorizado) return alert("❌ Senha incorreta. Operação cancelada.");
+
+        if(confirm("TEM A CERTEZA ABSOLUTA? Esta ação é IRREVERSÍVEL! Toda a informação financeira desaparecerá.")) {
+            alert("A apagar histórico do servidor... Por favor aguarde. O sistema poderá piscar durante o processo.");
+            
+            try {
+                let vSnap = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
+                vSnap.forEach(d => deleteDoc(doc(db, "empresas", codigoEmpresa, "vendas", d.id)));
+                
+                let mSnap = await getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes"));
+                mSnap.forEach(d => deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", d.id)));
+
+                let tSnap = await getDocs(collection(db, "empresas", codigoEmpresa, "turnos"));
+                tSnap.forEach(d => deleteDoc(doc(db, "empresas", codigoEmpresa, "turnos", d.id)));
+
+                let aSnap = await getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"));
+                aSnap.forEach(d => deleteDoc(doc(db, "empresas", codigoEmpresa, "auditLogs", d.id)));
+
+                despesas = [];
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: despesas });
+
+                registarAuditLog('RESET DE SISTEMA', 'O Administrador formatou/apagou todo o histórico do sistema (Vendas, Movimentações e Caixas).');
+                alert("✅ Todo o histórico foi limpo e formatado com sucesso!");
+                window.atualizarDashboard();
+            } catch (err) {
+                alert("Ocorreu um erro ao limpar. Verifique a internet e tente novamente.");
+            }
         }
     };
 
+    // ==========================================
+    // IMPRESSORA BLUETOOTH E PDF
+    // ==========================================
+    window.conectarImpressoraBluetooth = async function() {
+        if (!navigator.bluetooth) return alert("Navegador não suporta Bluetooth API.");
+        try {
+            document.getElementById('statusBtPrinter').innerText = "Procurando... 🟡";
+            bluetoothDevice = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2']
+            });
+            const server = await bluetoothDevice.gatt.connect();
+            const services = await server.getPrimaryServices();
+            const characteristics = await services[0].getCharacteristics();
+            bluetoothCharacteristic = characteristics[0];
+            document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
+            alert("✅ Bluetooth Conectado!");
+        } catch (erro) {
+            document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
+            alert("Falha na ligação Bluetooth.");
+        }
+    };
+
+    window.testarImpressaoBluetooth = async function() {
+        if (!bluetoothCharacteristic) return alert("Conecte a impressora primeiro.");
+        let encoder = new TextEncoder();
+        let texto = "\x1B\x40\x1B\x61\x01TESTE IMPRESSAO\nRESTAURANTE PRO SaaS\n--------------------------------\n\n\n\n";
+        await bluetoothCharacteristic.writeValue(encoder.encode(texto));
+    };
+
+    // ==========================================
+    // DEFINIÇÕES E EMPRESA
+    // ==========================================
     window.abrirModalDefinicoes = function() {
         document.getElementById('modalDefinicoes').style.display = 'block';
         let secEmpresaAdmin = document.getElementById('seccaoEmpresaAdmin');
@@ -3574,9 +2468,9 @@ window.abrirModalScannerStock = function() {
             }
         }
     };
-
-    window.fecharModalDefinicoes = function() { document.getElementById('modalDefinicoes').style.display = 'none'; };
     
+    window.fecharModalDefinicoes = function() { document.getElementById('modalDefinicoes').style.display = 'none'; };
+
     window.guardarDadosEmpresa = async function() {
         dadosEmpresa = {
             nome: document.getElementById('cfgNomeEmpresa').value.trim() || 'RESTAURANTE',
