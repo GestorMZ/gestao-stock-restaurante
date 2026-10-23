@@ -1542,9 +1542,8 @@ Copie o código abaixo e diga-me para enviar a Parte 8 (que conterá as funçõe
                 <td><small>${log.detalhes || '-'}</small></td>
             </tr>`;
         });
-    }
-
-    window.carregarPerfisEmpresa = async function() {
+       };
+window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
         let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
         if(!codeInput) return alert("Por favor, introduza o Código do Restaurante!");
@@ -1553,21 +1552,23 @@ Copie o código abaixo e diga-me para enviar a Parte 8 (que conterá as funçõe
         localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
 
         try {
-            let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
+            // Tenta validar a licença online/offline com tratamento de erro seguro
+            let licencaValida = true;
+            try {
+                let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
+                if (docLicenca && docLicenca.exists()) {
+                    let dadosLicenca = docLicenca.data();
+                    let hoje = new Date().toISOString().split('T')[0];
 
-            if (docLicenca && docLicenca.exists()) {
-                let dadosLicenca = docLicenca.data();
-                let hoje = new Date().toISOString().split('T')[0];
-
-                if (dadosLicenca.status === "suspenso" || (dadosLicenca.validade && dadosLicenca.validade < hoje)) {
-                    document.getElementById('seccaoPerfisEForm').style.display = 'none';
-                    document.getElementById('boxContaBloqueada').style.display = 'block';
-                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso.';
-                    return;
+                    if (dadosLicenca.status === "suspenso" || (dadosLicenca.validade && dadosLicenca.validade < hoje)) {
+                        document.getElementById('seccaoPerfisEForm').style.display = 'none';
+                        document.getElementById('boxContaBloqueada').style.display = 'block';
+                        document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso.';
+                        return;
+                    }
                 }
-            } else {
-                alert("🔴 ERRO DE LICENÇA: Este código não existe. Contacte o administrador Valter Lopes (+258 84 903 0686).");
-                return;
+            } catch (e) {
+                console.warn("⚠️ Aviso: Não foi possível validar a licença online (Modo Offline ativo). A carregar perfis locais...", e);
             }
 
             document.getElementById('boxContaBloqueada').style.display = 'none';
@@ -1583,19 +1584,22 @@ Copie o código abaixo e diga-me para enviar a Parte 8 (que conterá as funçõe
                             if (u.nome) usuarios[u.nome.toLowerCase()] = { senha: u.senha || "123", tipo: u.tipo || "vendedor", foto: u.foto || "" };
                         });
                     }
+                } else {
+                    console.warn("⚠️ Documento da empresa não encontrado no Firestore. A verificar dados locais...");
                 }
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+            }, (error) => {
+                console.error("Erro no listener de perfis:", error);
             });
 
             unsubscribes.push(unsubUser);
 
-        } catch (erro) {
-            console.error("Erro ao validar licença:", erro);
-            alert("Erro ao ligar ao servidor. A persistência offline assumirá se já houver cache.");
+        }ajustado: catch (erro) {
+            console.error("Erro ao carregar perfis:", erro);
+            alert("Erro ao carregar perfis. Verifique o código da empresa.");
         }
     };
-
     function iniciarEscutadoresCompletosEmpresa() {
         if(!codigoEmpresa) return;
 
