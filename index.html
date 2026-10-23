@@ -1885,173 +1885,134 @@
         unsubscribes = [];
     }
 
-    function renderizarPerfisLogin() {
-        let container = document.getElementById('gridPerfisLogin');
-        if (!container) return;
-        container.innerHTML = '';
+  function renderizarPerfisLogin() {
+    let container = document.getElementById('gridPerfisLogin');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    let chavesPerfis = Object.keys(usuarios);
+    if (chavesPerfis.length === 0) {
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#666; font-size:0.85em;">Introduza o Código do Restaurante e clique em "Validar Licença" para carregar os perfis.</p>';
+        return;
+    }
+
+    let perfisGerentesOuAdmins = chavesPerfis.filter(u => usuarios[u].tipo === 'gerente' || usuarios[u].tipo === 'admin');
+    let perfisVendedores = chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor');
+    let chavesOrdenadas = [...perfisGerentesOuAdmins, ...perfisVendedores];
+    let visiveis = chavesOrdenadas.slice(0, 3);
+
+    visiveis.forEach(u => {
+        let uObj = usuarios[u];
+        let avatarHtml = uObj.foto 
+            ? `<img src="${uObj.foto}" class="avatar-img" alt="${u}">` 
+            : `<div class="avatar-placeholder">${u.charAt(0).toUpperCase()}</div>`;
+
+        let card = document.createElement('div');
+        card.className = 'card-perfil-login';
+        card.onclick = (e) => window.selecionarPerfilLogin(u, e);
+        card.innerHTML = `${avatarHtml}<div style="font-weight:bold; font-size:0.85em; text-transform:uppercase;">${u}</div>`;
+        container.appendChild(card);
+    });
+
+    if (chavesOrdenadas.length > 3) {
+        let btnMais = document.createElement('div');
+        btnMais.className = 'card-perfil-login';
+        btnMais.style.background = '#e0e7ff';
+        btnMais.style.borderColor = '#c7d2fe';
+        btnMais.onclick = () => window.abrirModalMaisPerfis();
+        btnMais.innerHTML = `<div class="avatar-placeholder" style="background:var(--purple);">👤+</div><div style="font-weight:bold; font-size:0.85em; color:var(--purple);">Outros Perfis (${chavesOrdenadas.length - 3})</div>`;
+        container.appendChild(card);
+    }
+}
+
+window.abrirModalMaisPerfis = function() {
+    let chaves = Object.keys(usuarios);
+    if (chaves.length === 0) {
+        alert("⚠️ Por favor, digite o Código do Restaurante e clique em 'Validar Licença' primeiro.");
+        return;
+    }
+    let modalLista = document.getElementById('listaTodosPerfisModal');
+    if(!modalLista) return;
+    modalLista.innerHTML = '';
+    
+    chaves.forEach(u => {
+        let uObj = usuarios[u];
+        let avatarHtml = uObj.foto 
+            ? `<img src="${uObj.foto}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` 
+            : `<span style="display:inline-block; width:36px; height:36px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:36px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
+
+        modalLista.innerHTML += `
+            <button type="button" class="btn-perfil" style="display:flex; align-items:center; gap:12px; background:#f8fafc; border:2px solid #cbd5e1; color:#0f172a; padding:12px; border-radius:8px; text-align:left; width:100%; font-weight:bold; cursor:pointer;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
+                ${avatarHtml}
+                <div>
+                    <strong style="text-transform:uppercase; font-size:1em; display:block;">${u}</strong>
+                    <small style="color:#64748b; font-weight:normal;">Cargo: ${(uObj.tipo || 'vendedor').toUpperCase()}</small>
+                </div>
+            </button>
+        `;
+    });
+    document.getElementById('modalMaisPerfis').style.display = 'block';
+window.fazerLogin = function() {
+    let elUser = document.getElementById('loginUser');
+    let elPass = document.getElementById('loginPass');
+    let u = elUser ? elUser.value.trim().toLowerCase() : "";
+    let p = elPass ? elPass.value : "";
+
+    if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante!");
+
+    if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
+        window.tocarSom('sucesso');
+        usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
         
-        let chavesPerfis = Object.keys(usuarios);
-        let perfisGerentesOuAdmins = chavesPerfis.filter(u => usuarios[u].tipo === 'gerente' || usuarios[u].tipo === 'admin');
-        let perfisVendedores = chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor');
-        let chavesOrdenadas = [...perfisGerentesOuAdmins, ...perfisVendedores];
-        let visiveis = chavesOrdenadas.slice(0, 3);
-
-        visiveis.forEach(u => {
-            let uObj = usuarios[u];
-            let avatarHtml = uObj.foto 
-                ? `<img src="${uObj.foto}" class="avatar-img" alt="${u}">` 
-                : `<div class="avatar-placeholder">${u.charAt(0).toUpperCase()}</div>`;
-
-            let card = document.createElement('div');
-            card.className = 'card-perfil-login';
-            card.onclick = (e) => window.selecionarPerfilLogin(u, e);
-            card.innerHTML = `${avatarHtml}<div style="font-weight:bold; font-size:0.85em; text-transform:uppercase;">${u}</div>`;
-            container.appendChild(card);
-        });
-
-        if (chavesOrdenadas.length > 3) {
-            let btnMais = document.createElement('div');
-            btnMais.className = 'btn-mais-perfis';
-            btnMais.onclick = () => window.abrirModalMaisPerfis();
-            btnMais.innerHTML = `<span style="font-size:20px;">👤+</span><span style="font-size:0.8em;">Outros Perfis</span>`;
-            container.appendChild(btnMais);
-        }
-    }
-
-    window.abrirModalMaisPerfis = function() {
-        let modalLista = document.getElementById('listaTodosPerfisModal');
-        if(!modalLista) return;
-        modalLista.innerHTML = '';
-        for (let u in usuarios) {
-            let uObj = usuarios[u];
-            let avatarHtml = uObj.foto 
-                ? `<img src="${uObj.foto}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">` 
-                : `<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:30px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
-
-            modalLista.innerHTML += `
-                <button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border:1px solid #ddd; color:#333; padding:10px; text-align:left;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
-                    ${avatarHtml}
-                    <strong style="text-transform:uppercase;">${u}</strong> (${uObj.tipo})
-                </button>
-            `;
-        }
-        document.getElementById('modalMaisPerfis').style.display = 'block';
-    };
-
-    window.fecharModalMaisPerfis = function() { document.getElementById('modalMaisPerfis').style.display = 'none'; };
-
-    window.selecionarPerfilLogin = function(u, evt) {
-        window.tocarSom('click');
-        let elUser = document.getElementById('loginUser');
-        let elPass = document.getElementById('loginPass');
-        if(elUser) elUser.value = u;
-        if(elPass) elPass.focus();
-        document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
-        if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
-    };
-
-    window.fazerLogin = function() {
-        let elUser = document.getElementById('loginUser');
-        let elPass = document.getElementById('loginPass');
-        let u = elUser ? elUser.value.trim().toLowerCase() : "";
-        let p = elPass ? elPass.value : "";
-
-        if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
-
-        if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
-            window.tocarSom('sucesso');
-            usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
-            
-            document.getElementById('nomeEmpresaHeader').innerText = codigoEmpresa;
-            document.getElementById('nomeUsuarioLogado').innerText = u;
-            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : usuarios[u].tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
-            
-            let headerAvatar = document.getElementById('headerAvatarBox');
-            if(usuarioAtual.foto) {
-                headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
-            } else {
-                headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
-            }
-
-            document.getElementById('telaLogin').style.display = 'none';
-            document.getElementById('telaSistema').style.display = 'block';
-            
-            configurarPerfilPermissoes();
-            renderizarMesasGrid();
-            atualizarDropdownProdutosCart();
-            filtrarEExibirProdutosVenda();
-            renderizarStock();
-            renderizarMovimentacoesStock();
-            renderizarEstadoCaixa();
-            renderizarClientes();
-            window.atualizarDashboard();
-            if(usuarioAtual.tipo === 'admin') {
-                renderizarUsuarios();
-                renderizarAuditLogs();
-            }
-
-            registarAuditLog('Login', `Sessão iniciada por ${u}`);
-            resetarTimerInatividade();
+        document.getElementById('nomeEmpresaHeader').innerText = codigoEmpresa;
+        document.getElementById('nomeUsuarioLogado').innerText = u;
+        document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : usuarios[u].tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
+        
+        let headerAvatar = document.getElementById('headerAvatarBox');
+        if(usuarioAtual.foto) {
+            headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
         } else {
-            window.tocarSom('alerta');
-            alert("Credenciais inválidas!");
+            headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
         }
-    };
 
-    window.fazerLogout = function() {
-        if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
-        if(timerInatividade) clearTimeout(timerInatividade);
-        usuarioAtual = null;
-        document.getElementById('telaSistema').style.display = 'none';
-        document.getElementById('telaLogin').style.display = 'block';
-        document.getElementById('loginPass').value = '';
-    };
+        document.getElementById('telaLogin').style.display = 'none';
+        document.getElementById('telaSistema').style.display = 'block';
+        
+        // Força a atualização imediata das permissões e da tabela de perfis
+        configurarPerfilPermissoes();
+        renderizarUsuarios();
+        
+        renderizarMesasGrid();
+        atualizarDropdownProdutosCart();
+        filtrarEExibirProdutosVenda();
+        renderizarStock();
+        renderizarMovimentacoesStock();
+        renderizarEstadoCaixa();
+        renderizarClientes();
+        window.atualizarDashboard();
 
-    window.abrirModalResetSenha = function() { document.getElementById('modalResetSenha').style.display = 'block'; };
-    window.fecharModalResetSenha = function() {
-        document.getElementById('modalResetSenha').style.display = 'none';
-        document.getElementById('resetUsuarioNome').value = '';
-        document.getElementById('resetChaveMestraInput').value = '';
-        document.getElementById('resetNovaSenha').value = '';
-    };
-
-    window.solicitarRedefinicaoSenhaChaveMestra = async function() {
-        let u = document.getElementById('resetUsuarioNome').value.trim().toLowerCase();
-        let chaveEntrada = document.getElementById('resetChaveMestraInput').value.trim();
-        let novaP = document.getElementById('resetNovaSenha').value;
-
-        if (!u || !chaveEntrada || !novaP) return alert("Preencha todos os campos.");
-        if (!usuarios[u]) return alert("Utilizador não encontrado.");
-
-        let chaveMestraCadastrada = (dadosEmpresa.chaveMestra || "1234").trim();
-
-        if (chaveEntrada === chaveMestraCadastrada) {
-            usuarios[u].senha = novaP;
-            let listaArrayFirestore = [];
-            for (let nomeKey in usuarios) {
-                listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
-            }
-            await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
-            registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
-            window.fecharModalResetSenha();
-        } else {
-            alert("Chave Mestra Incorreta!");
-        }
-    };
-
-    function configurarPerfilPermissoes() {
-        let isAdmin = usuarioAtual.tipo === 'admin';
-        let isGerente = usuarioAtual.tipo === 'gerente';
-        let isVendedor = usuarioAtual.tipo === 'vendedor';
-
-        document.querySelectorAll('.col-admin').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
-        document.querySelectorAll('.col-gerente').forEach(el => el.style.display = (isAdmin || isGerente) ? 'block' : 'none');
-
-        if (isVendedor) {
-            window.mudarAba('abaVendas');
-        }
+        registarAuditLog('Login', `Sessão iniciada por ${u}`);
+        resetarTimerInatividade();
+    } else {
+        window.tocarSom('alerta');
+        alert("Credenciais inválidas!");
     }
+};
+
+function configurarPerfilPermissoes() {
+    if (!usuarioAtual) return;
+    let isAdmin = usuarioAtual.tipo === 'admin';
+    let isGerente = usuarioAtual.tipo === 'gerente';
+
+    // Exibe ou oculta as abas e botões restritos
+    document.querySelectorAll('.col-admin').forEach(el => el.style.display = isAdmin ? '' : 'none');
+    document.querySelectorAll('.col-gerente').forEach(el => el.style.display = (isAdmin || isGerente) ? '' : 'none');
+
+    // Se for operador normal, força a permanência na aba de vendas
+    if (usuarioAtual.tipo === 'vendedor') {
+        window.mudarAba('abaVendas');
+    }
+}
 
     window.mudarAba = function(abaId) {
         window.tocarSom('click');
