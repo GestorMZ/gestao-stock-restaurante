@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Biblioteca Html5-Qrcode para leitura de código de barras -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
@@ -333,33 +332,32 @@
                 <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
             </p>
         </div>
-    </div>
-    <!-- ECRÃ PRINCIPAL -->
+    </div> <!-- FECHO CORRETO DA TELA DE LOGIN -->
+<!-- ECRÃ PRINCIPAL -->
     <div id="telaSistema" style="display:none;">
         
-    <div class="header-usuario">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <div id="headerAvatarBox"></div>
-        <div>
-            <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
-            Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
-            <small id="cargoUsuarioLogado" style="color:#666;"></small>
-        </div>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        
-        <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
-        <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
-            ⏳ A verificar rede...
-        </span>
+        <div class="header-usuario">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div id="headerAvatarBox"></div>
+                <div>
+                    <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
+                    Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
+                    <small id="cargoUsuarioLogado" style="color:#666;"></small>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <!-- ÍCONE DE ESTADO DE REDE -->
+                <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
+                    ⏳ A verificar rede...
+                </span>
 
-        <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
-        <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
-        <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
-        <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
-        <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
-    </div>
-</div>
+                <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
+                <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
+                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
+                <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+            </div>
+        </div>
 
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
@@ -555,7 +553,7 @@
                 </div>
             </div>
         </div>
-        <!-- ABA 2: CAIXA -->
+<!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
@@ -679,38 +677,38 @@
 
             <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
-               <div class="form-row">
-    <div class="form-group">
-      <div class="form-row">
-    <div class="form-group">
-        <label>Produto / Bebida</label>
-        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-    </div>
-    <div class="form-group">
-        <label>Código de Barras</label>
-        <div style="display: flex; gap: 6px;">
-            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
-            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
-        </div>
-    </div>
-    <div class="form-group">
-        <label>Categoria do Produto</label>
-        <select id="simplesCategoria">
-            <option value="bebidas">🍺 Bebidas</option>
-            <option value="pratos">🍲 Pratos / Refeições</option>
-            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
-            <option value="outros">🍷 Outros / Diversos</option>
-        </select>
-    </div>
-</div>
-    <div class="form-group">
-        <label>Formato de Compra</label>
-        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
-            <option value="unidade">🍺 Por Unidade Avulsa</option>
-        </select>
-    </div>
-</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Produto / Bebida</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
+                            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria do Produto</label>
+                        <select id="simplesCategoria">
+                            <option value="bebidas">🍺 Bebidas</option>
+                            <option value="pratos">🍲 Pratos / Refeições</option>
+                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+                            <option value="outros">🍷 Outros / Diversos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Formato de Compra</label>
+                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                        </select>
+                    </div>
+                </div>
 
                 <div class="form-row" id="rowModoCaixa">
                     <div class="form-group">
@@ -760,6 +758,20 @@
                 <button class="btn-success" onclick="window.salvarEntradaStock()">📥 Dar Entrada / Atualizar Stock</button>
             </div>
 
+            <!-- SECÇÃO PARA APAGAR PRODUTO POR NÚMERO / NOME -->
+            <div style="background:#fff5f5; border:2px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:15px;" class="col-admin">
+                <h4 style="color:#c53030; margin-top:0;">🗑️ Apagar Produto Específico por Número ou Nome</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nº do Produto (da Lista) ou Nome Exato</label>
+                        <input type="text" id="inputNumeroOuNomeApagarProduto" placeholder="Ex: 1 ou coca-cola">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button class="btn-saida" onclick="window.apagarProdutoPorNumeroOuNome()">🗑️ Apagar Produto</button>
+                    </div>
+                </div>
+            </div>
+
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px;">
                 <h4 style="margin:0;">📦 Stock Atual de Produtos</h4>
                 <div style="max-width:250px; width:100%;">
@@ -771,6 +783,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Nº</th>
                             <th>Produto</th>
                             <th>Categoria</th>
                             <th>Stock Atual</th>
@@ -827,214 +840,293 @@
                 </div>
             </div>
         </div>
-        <!-- ABA 5: USUÁRIOS -->
-        <div id="abaUsuarios" class="tab-content col-admin">
-            <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
+<!-- ABA 2: CAIXA -->
+        <div id="abaCaixa" class="tab-content col-gerente">
+            <h2>Controlo de Caixa & Fecho Cego</h2>
+            
+            <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:20px;">
+                <h4>🔓 Abrir Turno de Caixa</h4>
+                <div class="form-group">
+                    <label>Fundo de Maneio na Gaveta (MT)</label>
+                    <input type="number" id="inputFundoManeio" value="1000" min="0" step="50">
+                </div>
+                <button class="btn-success" onclick="window.abrirCaixaTurno()">Confirmar Abertura de Caixa</button>
+            </div>
 
-            <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <h4>Criar Novo Perfil com Foto</h4>
+            <div id="seccaoCaixaAberto" style="display:none;">
+                <div class="cards-grid">
+                    <div class="card-stat"><h4>Fundo Inicial</h4><div class="valor-card" id="cxValFundo">0.00 MT</div></div>
+                    <div class="card-stat verde"><h4>Entradas em Espécie (Turno)</h4><div class="valor-card" id="cxValVendasNum">0.00 MT</div></div>
+                    <div class="card-stat vermelho"><h4>Saídas / Despesas (Turno)</h4><div class="valor-card" id="cxValDespesas">0.00 MT</div></div>
+                    <div class="card-stat roxo col-gerente"><h4>Saldo em Gaveta</h4><div class="valor-card" id="cxValSaldoGaveta">***</div></div>
+                </div>
+
+                <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #dee2e6;">
+                    <h4>💸 Registar Saída / Despesa do Turno</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Carvão">
+                        </div>
+                        <div class="form-group">
+                            <label>Valor (MT)</label>
+                            <input type="number" id="despesaValor" min="1" step="0.5">
+                        </div>
+                        <div class="form-group" style="align-self:flex-end;">
+                            <button class="btn-saida" onclick="window.registarDespesa()">Registar Saída</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#fff3cd; border:2px solid #ffeba2; padding:18px; border-radius:8px; margin-top:20px;">
+                    <h4 style="color:#856404; margin-top:0;">🔒 Encerrar Turno (Fecho Cego de Caixa)</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label style="font-weight:bold; color:#333;">Valor Total Contado na Gaveta (MT)</label>
+                            <input type="number" id="inputFechoValorContado" step="0.5" min="0" placeholder="Ex: 4500 MT" style="font-size:1.1em; font-weight:bold;">
+                        </div>
+                        <div class="form-group" style="align-self:flex-end;">
+                            <button class="btn-saida" onclick="window.fecharCaixaTurnoCEGO()">🔒 Confirmar Fecho de Turno</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
+                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos (5 por página)</h4>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Abertura</th>
+                                <th>Fecho</th>
+                                <th>Operador</th>
+                                <th>Fundo Inicial</th>
+                                <th>Vendas Dinheiro</th>
+                                <th>Despesas</th>
+                                <th>Valor Contado</th>
+                                <th>Diferença</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoHistoricoTurnosCaixa"></tbody>
+                    </table>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px;">
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(-1)">⬅️ Anterior</button>
+                    <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualTurnos">1</span> de <span id="pagTotalTurnos">1</span></span>
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(1)">Próxima ➡️</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 3: FIADO -->
+        <div id="abaFiado" class="tab-content col-gerente">
+            <h2>Gestão de Clientes & Contas a Fiado</h2>
+            
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px;">
+                <h4>Cadastrar Novo Cliente</h4>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nome do Utilizador</label>
-                        <input type="text" id="novoUserNome" placeholder="Ex: joao, maria">
+                        <label>Nome Completo</label>
+                        <input type="text" id="novoClienteNome" placeholder="Nome do cliente">
                     </div>
                     <div class="form-group">
-                        <label>Palavra-passe</label>
-                        <input type="password" id="novoUserSenha" placeholder="Senha do utilizador">
+                        <label>Telefone / WhatsApp</label>
+                        <input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87...">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button class="btn-primary" onclick="window.cadastrarCliente()">+ Cadastrar Cliente</button>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Clientes Cadastrados e Saldo Devedor</h4>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody id="corpoTabelaClientes"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA 4: STOCK -->
+        <div id="abaStock" class="tab-content col-gerente">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <h2>Gestão de Stock na Despensa</h2>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-purple btn-sm" onclick="window.abrirModalConversaoShots()">🍷 Abrir Garrafa p/ Shots</button>
+                    <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock</button>
+                </div>
+            </div>
+
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
+                <h4>📥 Entrada de Produtos (Compras)</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Produto / Bebida</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
                     </div>
                     <div class="form-group">
-                        <label>Tipo de Permissão</label>
-                        <select id="novoUserTipo">
-                            <option value="vendedor">🛒 Operador de Caixa (Mesas e Vendas)</option>
-                            <option value="gerente">🛡️ Gerente (Caixa, Stock, Clientes)</option>
-                            <option value="admin">⚙️ Administrador (Acesso Total)</option>
+                        <label>Código de Barras</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
+                            <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 12px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria do Produto</label>
+                        <select id="simplesCategoria">
+                            <option value="bebidas">🍺 Bebidas</option>
+                            <option value="pratos">🍲 Pratos / Refeições</option>
+                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
+                            <option value="outros">🍷 Outros / Diversos</option>
                         </select>
                     </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Foto do Perfil (Opcional)</label>
-                        <input type="file" id="novoUserFoto" accept="image/*">
+                        <label>Formato de Compra</label>
+                        <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row" id="rowModoCaixa">
+                    <div class="form-group">
+                        <label>Qtd. de Caixas</label>
+                        <input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Unid. por Caixa</label>
+                        <input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Preço Pago por Caixa (MT)</label>
+                        <input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                </div>
+
+                <div class="form-row" id="rowModoUnidade" style="display:none;">
+                    <div class="form-group">
+                        <label>Qtd. Total Unidades</label>
+                        <input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Custo por Unidade (MT)</label>
+                        <input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label style="color:var(--success);">Preço Venda Unitário (MT)</label>
+                        <input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
+                    </div>
+                    <div class="form-group">
+                        <label>Limite Alerta Mínimo</label>
+                        <input type="number" id="simplesMinAlerta" value="5" min="1">
+                    </div>
+                </div>
+
+                <div id="boxCalculoLucro" class="box-calculo-lucro">
+                    <div>
+                        <strong>📊 Resumo do Lucro Calculado:</strong><br>
+                        • Total Unidades: <b><span id="resTotalUnid">0</span></b> | Custo Unit.: <b><span id="resCustoUnit">0.00</span> MT</b><br>
+                        • Lucro Unit.: <span id="resLucroUnit" style="color:var(--success); font-weight:bold;">0.00 MT</span> | Total Esperado: <b id="resLucroTotalCaixa" style="color:var(--success);">0.00 MT</b>
+                    </div>
+                </div>
+
+                <button class="btn-success" onclick="window.salvarEntradaStock()">📥 Dar Entrada / Atualizar Stock</button>
+            </div>
+
+            <!-- SECÇÃO PARA APAGAR PRODUTO POR NÚMERO / NOME -->
+            <div style="background:#fff5f5; border:2px solid #feb2b2; padding:15px; border-radius:8px; margin-bottom:15px;" class="col-admin">
+                <h4 style="color:#c53030; margin-top:0;">🗑️ Apagar Produto Específico por Número ou Nome</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nº do Produto (da Lista) ou Nome Exato</label>
+                        <input type="text" id="inputNumeroOuNomeApagarProduto" placeholder="Ex: 1 ou coca-cola">
                     </div>
                     <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button>
+                        <button class="btn-saida" onclick="window.apagarProdutoPorNumeroOuNome()">🗑️ Apagar Produto</button>
                     </div>
                 </div>
             </div>
 
-            <h4>📊 Perfis Ativos</h4>
-            <div class="table-responsive" style="margin-bottom:25px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px;">
+                <h4 style="margin:0;">📦 Stock Atual de Produtos</h4>
+                <div style="max-width:250px; width:100%;">
+                    <input type="text" id="filtroBuscarStock" placeholder="🔍 Pesquisar produto..." oninput="window.mudarPaginaStock(1)" style="padding:6px 10px; font-size:0.85em;">
+                </div>
+            </div>
+
+            <div class="table-responsive" style="margin-bottom:10px;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Foto</th>
-                            <th>Utilizador</th>
-                            <th>Permissão</th>
-                            <th>Total Vendido (MT)</th>
-                            <th>Nº Vendas</th>
-                            <th>Ações</th>
+                            <th>Nº</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Stock Atual</th>
+                            <th>Mínimo Alerta</th>
+                            <th>Preço Venda Unit.</th>
+                            <th class="col-gerente">Custo Médio Unit.</th>
+                            <th class="col-gerente">Lucro Unit. Est.</th>
+                            <th class="col-gerente">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="corpoTabelaPerfis"></tbody>
+                    <tbody id="corpoStock"></tbody>
                 </table>
             </div>
 
-            <div id="seccaoDetalhesPerfil" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="margin:0;">Histórico Detalhado: <span id="nomePerfilSelecionado" style="color:var(--primary); text-transform:uppercase;"></span></h4>
-                    <button class="btn-dark btn-sm" onclick="window.fecharDetalhesPerfil()">Fechar</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
+                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualStock">1</span> de <span id="pagTotalStock">1</span></span>
+                <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
+            </div>
+
+            <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+                    <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <select id="filtroTipoMovimentacao" onchange="window.mudarPaginaMovimentacao(1)" style="width:auto; padding:6px 10px; font-size:0.85em;">
+                            <option value="todos">Todas as Movimentações</option>
+                            <option value="ENTRADA">Apenas Entradas</option>
+                            <option value="SAÍDA">Apenas Saídas</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="table-responsive" style="margin-top:10px;">
+
+                <div class="table-responsive">
                     <table>
                         <thead>
-                            <tr><th>Data/Hora</th><th>Mesa</th><th>Método</th><th>Itens</th><th>Total (MT)</th><th>Ação Admin</th></tr>
+                            <tr>
+                                <th>Data / Hora</th>
+                                <th>Tipo</th>
+                                <th>Produto</th>
+                                <th>Qtd</th>
+                                <th>Utilizador</th>
+                                <th>Origem</th>
+                                <th class="col-gerente">Ação</th>
+                            </tr>
                         </thead>
-                        <tbody id="corpoDetalhesVendasPerfil"></tbody>
+                        <tbody id="corpoMovimentacoesStock"></tbody>
                     </table>
                 </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px;">
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
+                    <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
+                    <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(1, true)">Próxima ➡️</button>
+                </div>
             </div>
         </div>
-
-        <!-- ABA 6: DASHBOARD -->
-        <div id="abaDashboard" class="tab-content col-admin">
-            <h2>Painel Financeiro & Desempenho</h2>
-
-            <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#ffeba2; color:#856404;">
-                ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
-            </div>
-
-            <div class="form-row" style="background:#f1f3f5; padding:10px; border-radius:6px; align-items:center;">
-                <div class="form-group" style="margin:0;">
-                    <label>Período de Análise:</label>
-                    <select id="filtroDataTipo" onchange="window.atualizarDashboard()">
-                        <option value="hoje">Hoje</option>
-                        <option value="ontem">Ontem</option>
-                        <option value="mes">Este Mês</option>
-                        <option value="todos">Todo o Histórico</option>
-                    </select>
-                </div>
-                <div class="form-group" style="margin:0; text-align:right; align-self:flex-end;">
-                    <button class="btn-excel btn-sm" onclick="window.exportarVendasExcel()">📊 Exportar Vendas para Excel</button>
-                </div>
-            </div>
-
-            <h4 style="margin-top:15px; color:var(--primary);">📲 Saldos Acumulados por Carteiras Digitais e Caixas</h4>
-            <div class="cards-grid">
-                <div class="card-stat roxo">
-                    <h4>📱 M-Pesa Total</h4>
-                    <div class="valor-card" id="dashValMpesa">0.00 MT</div>
-                </div>
-                <div class="card-stat laranja">
-                    <h4>📱 e-Mola Total</h4>
-                    <div class="valor-card" id="dashValEmola">0.00 MT</div>
-                </div>
-                <div class="card-stat">
-                    <h4>💳 POS / Cartão Total</h4>
-                    <div class="valor-card" id="dashValPOS">0.00 MT</div>
-                </div>
-                <div class="card-stat verde">
-                    <h4>💵 Dinheiro em Espécie</h4>
-                    <div class="valor-card" id="dashValNumerario">0.00 MT</div>
-                </div>
-                <div class="card-stat vermelho">
-                    <h4>👥 Vendas a Fiado</h4>
-                    <div class="valor-card" id="dashValFiado">0.00 MT</div>
-                </div>
-            </div>
-
-            <h4 style="margin-top:20px;">📊 Balanço Geral do Período</h4>
-            <div class="cards-grid">
-                <div class="card-stat verde">
-                    <h4>Vendas Totais</h4>
-                    <div class="valor-card" id="dashTotalVendas">0.00 MT</div>
-                </div>
-                <div class="card-stat laranja">
-                    <h4>Custo Produtos (COGS)</h4>
-                    <div class="valor-card" id="dashCustoVendas">0.00 MT</div>
-                </div>
-                <div class="card-stat vermelho">
-                    <h4>Despesas Gerais</h4>
-                    <div class="valor-card" id="dashDespesasGerais">0.00 MT</div>
-                </div>
-                <div class="card-stat roxo">
-                    <h4>Lucro Líquido Real</h4>
-                    <div class="valor-card" id="dashLucroReal">0.00 MT</div>
-                </div>
-            </div>
-
-            <div class="form-row" style="margin-top:20px;">
-                <div style="flex:1; min-width:280px; background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px;">
-                    <h4 style="text-align:center;">Distribuição dos Pagamentos</h4>
-                    <canvas id="graficoCanaisPay" style="max-height:220px;"></canvas>
-                </div>
-                <div style="flex:1; min-width:280px; background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px;">
-                    <h4>🏆 Top 5 Produtos Mais Vendidos</h4>
-                    <div id="listaTopProdutos"></div>
-                </div>
-            </div>
-
-            <h4 style="margin-top:20px;">Histórico Geral de Transações & Cancelamentos</h4>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>Data/Hora</th><th>User</th><th>Detalhes</th><th>Tipo / Estado</th><th>Total</th><th>Ação Admin</th></tr></thead>
-                    <tbody id="corpoHistoricoAdmin"></tbody>
-                </table>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
-                <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
-                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
-                <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(1)">Próxima ➡️</button>
-            </div>
-
-            <h4 style="margin-top:25px; color:var(--purple);">🕵️ Registo de Auditoria & Segurança (Logs de Ações)</h4>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>Data/Hora</th><th>Utilizador</th><th>Evento</th><th>Detalhes</th></tr></thead>
-                    <tbody id="corpoTabelaAuditLogs"></tbody>
-                </table>
-            </div>
-
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
-                <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
-                <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
-                <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(1)">Próxima ➡️</button>
-            </div>
-
-            <div style="margin-top:20px;">
-                <button class="btn-dark btn-sm" onclick="window.fazerBackup()">💾 Baixar Backup Geral Seguro</button>
-            </div>
-        </div>
-
-    </div>
-</div>
-<!-- MODAIS -->
-<div id="modalDivisaoConta" class="modal">
-    <div class="modal-content" style="max-width:420px;">
-        <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
-        <h3>👥 Dividir Conta por Pessoas</h3>
-        <p style="font-size:0.85em; color:#666;">Calcule o valor exato a pagar por pessoa na mesa atual:</p>
-        
-        <div style="background:#eef7ff; padding:12px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:15px;">
-            <div style="font-weight:bold; font-size:1.1em; color:var(--primary);">
-                Total da Mesa: <span id="lblTotalMesaDivisao">0.00 MT</span>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Número de Pessoas na Mesa</label>
-            <input type="number" id="numPessoasDivisao" value="2" min="1" step="1" oninput="window.calcularValorPorPessoa()">
-        </div>
-
-        <div style="background:#f8fafc; border:2px dashed var(--success); padding:15px; border-radius:8px; text-align:center; margin-top:15px;">
-            <span style="font-size:0.9em; color:#555; font-weight:bold;">VALOR POR PESSOA:</span><br>
-            <span id="lblValorPorPessoa" style="font-size:1.8em; font-weight:bold; color:var(--success);">0.00 MT</span>
-        </div>
-
-        <button class="btn-primary" style="margin-top:15px;" onclick="window.fecharModalDivisaoConta()">Concluído</button>
-    </div>
-</div>
-
 <!-- MODAL SCANNER DE CÓDIGO DE BARRAS -->
 <div id="modalScannerBarcode" class="modal">
     <div class="modal-content" style="max-width:450px; text-align:center;">
@@ -1088,12 +1180,17 @@
 <div id="modalConversaoShots" class="modal">
     <div class="modal-content" style="max-width:450px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
-        <h3>🍷 Converter Garrafa em Shots / Doses</h3>
-        <p style="font-size:0.85em; color:#666;">Retire 1 garrafa inteira do stock e adicione os respetivos shots ao balcão:</p>
+        <h3>🍷 Converter Garrafas em Shots / Doses</h3>
+        <p style="font-size:0.85em; color:#666;">Retire garrafas inteiras do stock e adicione os respetivos shots ao balcão:</p>
         
         <div class="form-group">
             <label>Garrafa a Abrir (Stock Fechado)</label>
             <select id="selectGarrafaConversao"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Número de Garrafas a Dividir</label>
+            <input type="number" id="inputQtdGarrafasConverter" value="1" min="1" step="1">
         </div>
 
         <div class="form-group">
@@ -1103,7 +1200,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Nº de Shots por Garrafa</label>
+                <label>Nº de Shots por Cada Garrafa</label>
                 <input type="number" id="inputQtdShotsPorGarrafa" value="20" min="1">
             </div>
             <div class="form-group">
@@ -1191,6 +1288,7 @@
         </div>
     </div>
 </div>
+
 <!-- ÁREA DE IMPRESSÃO -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
@@ -1232,11 +1330,10 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence 
+        getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, getDocs 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -1250,11 +1347,16 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    
+    const db = initializeFirestore(app, {
+        localCache: persistentLocalCache({
+            tabManager: persistentMultipleTabManager()
+        })
+    });
+    
     const auth = getAuth(app);
 
     signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
-    enableIndexedDbPersistence(db).catch(() => {});
 
     window.tocarSom = function(tipo) {
         try {
@@ -1322,9 +1424,12 @@
         window.tocarSom('alerta');
     });
 
+    // CORREÇÃO CRÍTICA DO NAVEGADOR
     const conexaoInfo = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conexaoInfo) {
+    if (conexaoInfo && typeof conexaoInfo.addEventListener === 'function') {
         conexaoInfo.addEventListener('change', window.atualizarEstadoConexao);
+    } else if (conexaoInfo) {
+        conexaoInfo.onchange = window.atualizarEstadoConexao;
     }
 
     window.addEventListener('load', window.atualizarEstadoConexao);
@@ -1333,6 +1438,7 @@
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
     let bloqueiosMesas = {}; 
+    let verMaisPerfisAtivo = false;
     
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
@@ -1494,7 +1600,8 @@
             });
         }, 300);
     };
-window.abrirModalScannerStock = function() {
+
+    window.abrirModalScannerStock = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
@@ -1521,6 +1628,7 @@ window.abrirModalScannerStock = function() {
             });
         }, 300);
     };
+
     window.fecharModalScannerBarcode = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (modal) modal.style.display = 'none';
@@ -1668,10 +1776,12 @@ window.abrirModalScannerStock = function() {
             });
 
             unsubscribes.push(unsubUser);
+            iniciarEscutadoresCompletosEmpresa();
 
         } catch (erro) {
             console.error("Erro ao validar licença:", erro);
-            alert("Erro ao ligar ao servidor. Verifique a internet.");
+            alert("A executar com dados em cache local offline.");
+            iniciarEscutadoresCompletosEmpresa();
         }
     };
 
@@ -1703,8 +1813,10 @@ window.abrirModalScannerStock = function() {
                             mesas[m] = infoMesa;
                         } else if (infoMesa && typeof infoMesa === 'object') {
                             mesas[m] = infoMesa.itens || [];
-                            if (infoMesa.operador && !bloqueiosMesas[m]) {
+                            if (mesas[m].length > 0 && infoMesa.operador) {
                                 bloqueiosMesas[m] = infoMesa.operador;
+                            } else {
+                                delete bloqueiosMesas[m];
                             }
                         }
                     }
@@ -1864,7 +1976,6 @@ window.abrirModalScannerStock = function() {
             document.getElementById('telaLogin').style.display = 'none';
             document.getElementById('telaSistema').style.display = 'block';
             
-            iniciarEscutadoresCompletosEmpresa();
             configurarPerfilPermissoes();
             renderizarMesasGrid();
             atualizarDropdownProdutosCart();
@@ -1891,7 +2002,6 @@ window.abrirModalScannerStock = function() {
         if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
         if(timerInatividade) clearTimeout(timerInatividade);
         usuarioAtual = null;
-        desconectarEscutadores();
         document.getElementById('telaSistema').style.display = 'none';
         document.getElementById('telaLogin').style.display = 'block';
         document.getElementById('loginPass').value = '';
@@ -1970,6 +2080,12 @@ window.abrirModalScannerStock = function() {
         };
         reader.readAsDataURL(file);
     }
+window.alternarVerMaisPerfis = function() {
+        verMaisPerfisAtivo = !verMaisPerfisAtivo;
+        let btn = document.getElementById('btnVerMaisPerfis');
+        if(btn) btn.innerText = verMaisPerfisAtivo ? "Ver Menos 🔼" : "Ver Mais 🔽";
+        renderizarUsuarios();
+    };
 
     window.cadastrarUsuario = function() {
         let u = document.getElementById('novoUserNome').value.trim().toLowerCase();
@@ -2048,7 +2164,12 @@ window.abrirModalScannerStock = function() {
         if(!tbody) return;
         tbody.innerHTML = '';
 
-        for(let u in usuarios) {
+        let chavesUsuarios = Object.keys(usuarios);
+        if(!verMaisPerfisAtivo && chavesUsuarios.length > 3) {
+            chavesUsuarios = chavesUsuarios.slice(0, 3);
+        }
+
+        chavesUsuarios.forEach(u => {
             let userObj = usuarios[u];
             let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
             let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
@@ -2074,7 +2195,7 @@ window.abrirModalScannerStock = function() {
                     ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
                 </td>
             </tr>`;
-        }
+        });
     }
 
     window.verHistoricoPerfil = function(u) {
@@ -2266,6 +2387,12 @@ window.abrirModalScannerStock = function() {
             let temItens = mesas[m] && mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
             let bloqueioUser = bloqueiosMesas[m];
+            
+            if (!temItens && bloqueioUser) {
+                delete bloqueiosMesas[m];
+                bloqueioUser = null;
+            }
+
             let estaBloqueadaPorOutro = temItens && bloqueioUser && bloqueioUser !== usuarioAtual.nome;
 
             let classeEstado = '';
@@ -2278,17 +2405,16 @@ window.abrirModalScannerStock = function() {
             grid.innerHTML += `<div class="card-mesa ${classeEstado} ${isSel?'selecionada':''}" onclick="window.selecionarMesa('${m}')">
                 ${m}<br>
                 <span style="font-size:0.75em;">
-                    ${estaBloqueadaPorOutro ? `🔒 Em uso por ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens' : 'Livre')}
+                    ${estaBloqueadaPorOutro ? `🔒 Em uso por ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens (' + bloqueioUser + ')' : 'Livre')}
                 </span>
             </div>`;
         }
     }
 
-   window.selecionarMesa = async function(m) {
+    window.selecionarMesa = async function(m) {
         let itensDaMesa = mesas[m] || [];
         let bloqueioUser = bloqueiosMesas[m];
 
-        // Se a mesa já não tem itens mas ficou com um bloqueio fantasma guardado, limpa-o automaticamente
         if (itensDaMesa.length === 0 && bloqueioUser) {
             delete bloqueiosMesas[m];
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
@@ -2298,9 +2424,9 @@ window.abrirModalScannerStock = function() {
         let temItensTarget = itensDaMesa.length > 0;
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
 
-        // Se tem itens e pertence a outro operador (e quem tenta aceder não é admin/gerente)
-        if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
+        if (m !== "Balcão" && temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
+            window.tocarSom('alerta');
+            alert(`⚠️ Mesa Indisponível!\n\nA ${m} está a ser atendida por outro trabalhador (${bloqueioUser.toUpperCase()}).\nPor favor, escolha/abra uma nova mesa livre.`);
             return;
         }
 
@@ -2310,6 +2436,7 @@ window.abrirModalScannerStock = function() {
         renderizarMesasGrid();
         window.renderizarCarrinho();
     };
+
     function atualizarDropdownProdutosCart() {
         let sel = document.getElementById('cartSelectProduto');
         if(!sel) return;
@@ -2402,20 +2529,13 @@ window.abrirModalScannerStock = function() {
             return;
         }
 
-        // 🔒 VERIFICAÇÃO DE SEGURANÇA: Bloqueio de mesa por outro operador
-     let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
+        let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         let itensMesaAtual = mesas[mesaSelecionada] || [];
 
-        // Se a mesa estiver vazia, limpa qualquer bloqueio órfão anterior
-        if (itensMesaAtual.length === 0 && bloqueioAtual) {
-            delete bloqueiosMesas[mesaSelecionada];
-            bloqueioAtual = null;
-        }
-
-        if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
+        if (mesaSelecionada !== "Balcão" && itensMesaAtual.length > 0 && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Não pode adicionar itens.`);
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Abra outra mesa.`);
             return;
         }
 
@@ -2445,17 +2565,17 @@ window.abrirModalScannerStock = function() {
         if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
         mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
+        if (mesaSelecionada !== "Balcão") {
+            bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+        }
+
         try {
             localStorage.setItem(`mesa_carrinho_${mesaSelecionada}`, JSON.stringify(mesas[mesaSelecionada]));
             localStorage.setItem(`stock_local_backup`, JSON.stringify(stock));
         } catch(e) {}
 
         try {
-            if (mesaSelecionada !== "Balcão") {
-                bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
-
             let mesasParaSalvar = {};
             for(let m in mesas) {
                 if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
@@ -2618,6 +2738,11 @@ window.abrirModalScannerStock = function() {
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
         mesas[mesaSelecionada].splice(idx, 1);
 
+        if (mesas[mesaSelecionada].length === 0 && mesaSelecionada !== "Balcão") {
+            delete bloqueiosMesas[mesaSelecionada];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+        }
+
         let mesasParaSalvar = {};
         for(let m in mesas) {
             if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
@@ -2777,16 +2902,16 @@ window.abrirModalScannerStock = function() {
             addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
 
             mesas[mesaSelecionada] = [];
+            if (mesaSelecionada !== "Balcão") {
+                delete bloqueiosMesas[mesaSelecionada];
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+            }
+
             let mesasParaSalvar = {};
             for(let m in mesas) {
                 if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
             }
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
-
-            if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
-                delete bloqueiosMesas[mesaSelecionada];
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
 
             window.tocarSom('sucesso');
 
@@ -2944,6 +3069,7 @@ window.abrirModalScannerStock = function() {
                 <td style="color:${c.divida>0?'var(--danger)':'var(--success)'}; font-weight:bold;">${(c.divida||0).toFixed(2)} MT</td>
                 <td>
                     <button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(${idx})">💵 Liquidar</button>
+                    <button class="btn-saida btn-sm" onclick="window.eliminarClienteFiado(${idx})">🗑️ Eliminar</button>
                 </td>
             </tr>`;
         });
@@ -2958,6 +3084,25 @@ window.abrirModalScannerStock = function() {
             registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
             alert("Pagamento registado!");
         }
+    };
+
+    window.eliminarClienteFiado = async function(idx) {
+        let c = clientes[idx];
+        if(!c) return;
+
+        if (c.divida > 0) {
+            let confirmacao = confirm(`⚠️ O cliente '${c.nome.toUpperCase()}' possui uma dívida pendente de ${c.divida.toFixed(2)} MT.\n\nTem certeza que pretende apagar este cliente e cancelar a dívida?`);
+            if(!confirmacao) return;
+        } else {
+            if(!confirm(`Remover o cliente '${c.nome.toUpperCase()}' da lista de fiados?`)) return;
+        }
+
+        clientes.splice(idx, 1);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+        registarAuditLog('Cliente Removido', `Cliente '${c.nome}' apagado da lista de fiados`);
+        renderizarClientes();
+        atualizarDropdownClientesFiado();
+        alert("Cliente removido com sucesso!");
     };
 
     function atualizarDropdownClientesFiado() {
@@ -2991,17 +3136,22 @@ window.abrirModalScannerStock = function() {
 
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
+        let numGarrafas = parseInt(document.getElementById('inputQtdGarrafasConverter').value) || 1;
         let nomeShot = document.getElementById('inputNomeShotDestino').value.trim().toLowerCase();
-        let numShots = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
+        let shotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
         if(!garrafa) return alert("Selecione a garrafa a converter.");
+        if(numGarrafas < 1) return alert("Número de garrafas inválido.");
         if(!nomeShot) return alert("Introduza o nome do produto de destino (ex: Shot Red Label).");
-        if(stock[garrafa].qtd < 1) return alert("Stock insuficiente da garrafa selecionada.");
+        if(stock[garrafa].qtd < numGarrafas) return alert(`Stock insuficiente! Só existem ${stock[garrafa].qtd} garrafas disponíveis.`);
 
-        let custoGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
-        stock[garrafa].qtd -= 1;
-        stock[garrafa].preco_total -= custoGarrafa;
+        let custoGarrafaUnit = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
+        let custoTotalRetirado = custoGarrafaUnit * numGarrafas;
+        let totalShotsGerados = numGarrafas * shotsPorGarrafa;
+
+        stock[garrafa].qtd -= numGarrafas;
+        stock[garrafa].preco_total -= custoTotalRetirado;
 
         if(!stock[nomeShot]) {
             stock[nomeShot] = {
@@ -3013,8 +3163,8 @@ window.abrirModalScannerStock = function() {
             };
         }
 
-        stock[nomeShot].qtd += numShots;
-        stock[nomeShot].preco_total += custoGarrafa; 
+        stock[nomeShot].qtd += totalShotsGerados;
+        stock[nomeShot].preco_total += custoTotalRetirado; 
         if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3023,9 +3173,9 @@ window.abrirModalScannerStock = function() {
             timestamp: Date.now(),
             tipo: 'SAÍDA (CONVERSÃO SHOTS)',
             produto: garrafa,
-            qtd: 1,
+            qtd: numGarrafas,
             usuario: usuarioAtual.nome,
-            origem: `Convertida em ${numShots}x ${nomeShot}`
+            origem: `Convertidas ${numGarrafas}x garrafas em ${totalShotsGerados}x ${nomeShot}`
         });
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3034,16 +3184,16 @@ window.abrirModalScannerStock = function() {
             timestamp: Date.now(),
             tipo: 'ENTRADA (CONVERSÃO SHOTS)',
             produto: nomeShot,
-            qtd: numShots,
+            qtd: totalShotsGerados,
             usuario: usuarioAtual.nome,
-            origem: `Origem: 1x ${garrafa}`
+            origem: `Origem: ${numGarrafas}x ${garrafa}`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Conversão de Garrafa', `1x ${garrafa} convertida em ${numShots}x ${nomeShot}`);
+        registarAuditLog('Conversão de Garrafas', `${numGarrafas}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
-        alert(`✅ Conversão concluída com sucesso!\n\n• -1 Garrafa: ${garrafa.toUpperCase()}\n• +${numShots} Shots: ${nomeShot.toUpperCase()}`);
+        alert(`✅ Conversão concluída com sucesso!\n\n• -${numGarrafas} Garrafas: ${garrafa.toUpperCase()}\n• +${totalShotsGerados} Shots: ${nomeShot.toUpperCase()}`);
 
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
@@ -3082,60 +3232,145 @@ window.abrirModalScannerStock = function() {
         document.getElementById('resLucroTotalCaixa').innerText = (lucroUnitario * totalUnidades).toFixed(2) + " MT";
     };
 
-   window.salvarEntradaStock = async function() {
-    let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-    if(!prod) return alert("Digite o nome do produto.");
+    window.salvarEntradaStock = async function() {
+        let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
+        if(!prod) return alert("Digite o nome do produto.");
 
-    let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-    let cat = document.getElementById('simplesCategoria').value || 'outros';
-    let modoCompra = document.getElementById('simplesModoCompra').value;
-    let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-    let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+        let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+        let cat = document.getElementById('simplesCategoria').value || 'outros';
+        let modoCompra = document.getElementById('simplesModoCompra').value;
+        let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
+        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-    let totalUnidades = 0, totalCusto = 0;
+        let totalUnidades = 0, totalCusto = 0;
 
-    if(modoCompra === 'caixa') {
-        let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-        let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-        let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-        totalUnidades = numCaixas * unidCaixa;
-        totalCusto = numCaixas * valCaixa;
-    } else {
-        totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-        let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-        totalCusto = totalUnidades * custoUnit;
-    }
+        if(modoCompra === 'caixa') {
+            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+            totalUnidades = numCaixas * unidCaixa;
+            totalCusto = numCaixas * valCaixa;
+        } else {
+            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+            let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+            totalCusto = totalUnidades * custoUnit;
+        }
 
-    if(!stock[prod]) {
-        stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
-    }
+        if(!stock[prod]) {
+            stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+        }
 
-    stock[prod].qtd += totalUnidades;
-    stock[prod].preco_total += totalCusto;
-    stock[prod].min_alerta = minAlerta;
-    stock[prod].categoria = cat;
-    if(barcodeInput) stock[prod].barcode = barcodeInput; // Guarda ou atualiza o código de barras
-    if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+        stock[prod].qtd += totalUnidades;
+        stock[prod].preco_total += totalCusto;
+        stock[prod].min_alerta = minAlerta;
+        stock[prod].categoria = cat;
+        if(barcodeInput) stock[prod].barcode = barcodeInput;
+        if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
-    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-        id: Date.now() + Math.random(),
-        data: new Date().toLocaleString('pt-MZ'),
-        timestamp: Date.now(),
-        tipo: 'ENTRADA (COMPRA)',
-        produto: prod,
-        qtd: totalUnidades,
-        usuario: usuarioAtual.nome,
-        origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
-    });
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'ENTRADA (COMPRA)',
+            produto: prod,
+            qtd: totalUnidades,
+            usuario: usuarioAtual.nome,
+            origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
+        });
 
-    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-    registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}'`);
 
-    document.getElementById('simplesProduto').value = '';
-    document.getElementById('simplesBarcode').value = '';
-    filtrarEExibirProdutosVenda();
-    alert("Stock e Código de Barras atualizados com sucesso!");
-};
+        document.getElementById('simplesProduto').value = '';
+        document.getElementById('simplesBarcode').value = '';
+        filtrarEExibirProdutosVenda();
+        alert("Stock e Código de Barras atualizados com sucesso!");
+    };
+window.descartarUnidadesStock = async function() {
+        let inputProd = prompt("Digite o NOME ou NÚMERO (#) do produto para retirar/descartar unidades:");
+        if (!inputProd) return;
+
+        let chavesStock = Object.keys(stock);
+        let produtoAlvo = null;
+
+        let num = parseInt(inputProd);
+        if(!isNaN(num) && num >= 1 && num <= chavesStock.length) {
+            produtoAlvo = chavesStock[num - 1];
+        } else {
+            let encontrado = chavesStock.find(p => p.toLowerCase() === inputProd.trim().toLowerCase());
+            if(encontrado) produtoAlvo = encontrado;
+        }
+
+        if (!produtoAlvo) return alert("❌ Produto não encontrado.");
+
+        let qtdAtual = stock[produtoAlvo].qtd;
+        let qtdRemover = parseFloat(prompt(`Produto: ${produtoAlvo.toUpperCase()}\nStock atual: ${qtdAtual} unidades.\n\nQuantas unidades pretende RETIRAR/DESCARTAR? (Ex: 5):`));
+
+        if (isNaN(qtdRemover) || qtdRemover <= 0) return alert("Quantidade inválida.");
+        if (qtdRemover > qtdAtual) return alert(`⚠️ Não pode retirar ${qtdRemover} unidades porque só existem ${qtdAtual} em stock.`);
+
+        let motivo = prompt("Motivo da redução (ex: Avaria, Quebra, Validade, Consumo Interno):", "Avaria / Quebra");
+        if (!motivo) motivo = "Avaria / Quebra";
+
+        let custoUnit = qtdAtual > 0 ? (stock[produtoAlvo].preco_total / qtdAtual) : 0;
+        let custoRetirado = custoUnit * qtdRemover;
+
+        stock[produtoAlvo].qtd -= qtdRemover;
+        stock[produtoAlvo].preco_total -= custoRetirado;
+
+        if (stock[produtoAlvo].qtd <= 0) {
+            stock[produtoAlvo].qtd = 0;
+            stock[produtoAlvo].preco_total = 0;
+        }
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'SAÍDA (AJUSTE / QUEBRA)',
+            produto: produtoAlvo,
+            qtd: qtdRemover,
+            usuario: usuarioAtual.nome,
+            origem: `Ajuste/Descarte: ${motivo}`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Ajuste de Stock', `Removidas ${qtdRemover} unid de '${produtoAlvo}' - Motivo: ${motivo}`);
+
+        window.tocarSom('sucesso');
+        alert(`✅ Foram retiradas ${qtdRemover} unidades do produto '${produtoAlvo.toUpperCase()}'.\nNovo Stock: ${stock[produtoAlvo].qtd} unidades.`);
+
+        filtrarEExibirProdutosVenda();
+        renderizarStock();
+    };
+
+    window.apagarProdutoPorNumeroOuNome = async function() {
+        let inputVal = document.getElementById('inputNumeroOuNomeApagarProduto').value.trim();
+        if(!inputVal) return alert("Insira o número (posição) ou o nome do produto a apagar.");
+
+        let chavesStock = Object.keys(stock);
+        let produtoAlvo = null;
+
+        let num = parseInt(inputVal);
+        if(!isNaN(num) && num >= 1 && num <= chavesStock.length) {
+            produtoAlvo = chavesStock[num - 1];
+        } else {
+            let encontrado = chavesStock.find(p => p.toLowerCase() === inputVal.toLowerCase());
+            if(encontrado) produtoAlvo = encontrado;
+        }
+
+        if(!produtoAlvo) return alert("❌ Produto não encontrado com esse número ou nome.");
+
+        if(confirm(`Tem certeza que pretende apagar TODO o cadastro do produto '${produtoAlvo.toUpperCase()}' do stock?`)) {
+            delete stock[produtoAlvo];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            registarAuditLog('Produto Removido', `Produto '${produtoAlvo}' apagado por número/nome`);
+            document.getElementById('inputNumeroOuNomeApagarProduto').value = '';
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+            alert(`✅ Produto '${produtoAlvo.toUpperCase()}' apagado com sucesso!`);
+        }
+    };
 
     function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
@@ -3153,18 +3388,24 @@ window.abrirModalScannerStock = function() {
         document.getElementById('pagTotalStock').innerText = totalPaginas;
 
         let inicio = (paginaAtualStock - 1) * ITENS_POR_PAGINA_STOCK;
-        produtosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA_STOCK).forEach(p => {
+        produtosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA_STOCK).forEach((p, idxAbs) => {
             let item = stock[p];
             let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
             let precoVenda = item.preco_venda || 0;
             let isCritico = item.qtd <= (item.min_alerta || 5);
+            let numeroRealOrdem = inicio + idxAbs + 1;
 
             let colFin = isGerenteOuAdmin ? `
                 <td>${custoMedio.toFixed(2)} MT</td>
                 <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
+            let colAdmin = usuarioAtual.tipo === 'admin' ? `
+                <td>
+                    <button class="btn-warning btn-sm" onclick="window.descartarUnidadesStock('${p}')">➖ Descarte</button>
+                    <button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button>
+                </td>` : '';
 
             tbody.innerHTML += `<tr>
+                <td><span class="badge" style="background:#cbd5e1; color:#0f172a;">#${numeroRealOrdem}</span></td>
                 <td><b>${p.toUpperCase()}</b></td>
                 <td><span class="badge" style="background:#e9ecef; color:#333;">${(item.categoria||'outros').toUpperCase()}</span></td>
                 <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
@@ -3248,7 +3489,7 @@ window.abrirModalScannerStock = function() {
     }
 
     window.apagarProduto = async function(p) {
-        if(confirm(`Apagar o produto ${p.toUpperCase()} do stock?`)) {
+        if(confirm(`Apagar todo o cadastro do produto ${p.toUpperCase()} do stock?`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
             registarAuditLog('Produto Removido', `Produto '${p}' apagado do stock`);
@@ -3343,6 +3584,81 @@ window.abrirModalScannerStock = function() {
         await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
         registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
         alert("Venda cancelada e stock revertido com sucesso!");
+    };
+
+    window.adminApagarTodoHistoricoVendas = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação de TODO O HISTÓRICO DE VENDAS:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar permanentemente todas as vendas registadas? Esta ação é irreversível.")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                registarAuditLog('Limpeza de Histórico', 'Administrador apagou todo o histórico de vendas');
+                alert("✅ Histórico de vendas apagado com sucesso.");
+            } catch(e) {
+                alert("Erro ao apagar vendas: " + e.message);
+            }
+        }
+    };
+
+    window.adminApagarTodoHistoricoMovimentacoes = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação das MOVIMENTAÇÕES DE STOCK:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar todas as movimentações de stock?")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                registarAuditLog('Limpeza de Histórico', 'Administrador apagou todas as movimentações de stock');
+                alert("✅ Movimentações de stock apagadas.");
+            } catch(e) {
+                alert("Erro: " + e.message);
+            }
+        }
+    };
+
+    window.adminApagarTodoHistoricoTurnos = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação do HISTÓRICO DE TURNOS:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar todo o histórico de fechos de turnos de caixa?")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "turnos"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                registarAuditLog('Limpeza de Histórico', 'Administrador apagou histórico de turnos');
+                alert("✅ Histórico de turnos apagado.");
+            } catch(e) {
+                alert("Erro: " + e.message);
+            }
+        }
+    };
+
+    window.adminApagarTodoHistoricoAuditoria = async function() {
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
+        let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação dos LOGS DE AUDITORIA:");
+        if(!senha || String(senha).trim() !== String(usuarios[usuarioAtual.nome].senha).trim()) {
+            return alert("❌ Senha incorreta!");
+        }
+        if(confirm("⚠️ ATENÇÃO: Deseja apagar todos os logs de auditoria e segurança?")) {
+            try {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"));
+                let batchPromises = snap.docs.map(d => deleteDoc(d.ref));
+                await Promise.all(batchPromises);
+                alert("✅ Logs de auditoria apagados.");
+            } catch(e) {
+                alert("Erro: " + e.message);
+            }
+        }
     };
 
     window.atualizarDashboard = function() {
