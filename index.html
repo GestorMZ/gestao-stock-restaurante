@@ -332,8 +332,7 @@
                 <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
             </p>
         </div>
-    </div>
-    <!-- ECRÃ PRINCIPAL -->
+        <!-- ECRÃ PRINCIPAL -->
     <div id="telaSistema" style="display:none;">
         
     <div class="header-usuario">
@@ -1038,7 +1037,7 @@
 
     </div>
 </div>
-<!-- MODAIS -->
+    <!-- MODAIS -->
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:420px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
@@ -1267,7 +1266,7 @@
         <p style="margin:5px 0;">==============================</p>
     </div>
 </div>
-<script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, getDocs 
@@ -1285,7 +1284,6 @@
 
     const app = initializeApp(firebaseConfig);
     
-    // PERSISTÊNCIA OFFLINE AVANÇADA (Firebase v10 com cache persistente multi-aba)
     const db = initializeFirestore(app, {
         localCache: persistentLocalCache({
             tabManager: persistentMultipleTabManager()
@@ -1748,8 +1746,10 @@
                             mesas[m] = infoMesa;
                         } else if (infoMesa && typeof infoMesa === 'object') {
                             mesas[m] = infoMesa.itens || [];
-                            if (infoMesa.operador && !bloqueiosMesas[m]) {
+                            if (mesas[m].length > 0 && infoMesa.operador) {
                                 bloqueiosMesas[m] = infoMesa.operador;
+                            } else {
+                                delete bloqueiosMesas[m];
                             }
                         }
                     }
@@ -2013,7 +2013,7 @@
         };
         reader.readAsDataURL(file);
     }
-    window.alternarVerMaisPerfis = function() {
+        window.alternarVerMaisPerfis = function() {
         verMaisPerfisAtivo = !verMaisPerfisAtivo;
         let btn = document.getElementById('btnVerMaisPerfis');
         if(btn) btn.innerText = verMaisPerfisAtivo ? "Ver Menos 🔼" : "Ver Mais 🔽";
@@ -2098,8 +2098,8 @@
         tbody.innerHTML = '';
 
         let chavesUsuarios = Object.keys(usuarios);
-        if(!verMaisPerfisAtivo && chavesUsuarios.length > 5) {
-            chavesUsuarios = chavesUsuarios.slice(0, 5);
+        if(!verMaisPerfisAtivo && chavesUsuarios.length > 3) {
+            chavesUsuarios = chavesUsuarios.slice(0, 3);
         }
 
         chavesUsuarios.forEach(u => {
@@ -2320,6 +2320,12 @@
             let temItens = mesas[m] && mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
             let bloqueioUser = bloqueiosMesas[m];
+            
+            if (!temItens && bloqueioUser) {
+                delete bloqueiosMesas[m];
+                bloqueioUser = null;
+            }
+
             let estaBloqueadaPorOutro = temItens && bloqueioUser && bloqueioUser !== usuarioAtual.nome;
 
             let classeEstado = '';
@@ -2332,7 +2338,7 @@
             grid.innerHTML += `<div class="card-mesa ${classeEstado} ${isSel?'selecionada':''}" onclick="window.selecionarMesa('${m}')">
                 ${m}<br>
                 <span style="font-size:0.75em;">
-                    ${estaBloqueadaPorOutro ? `🔒 Em uso por ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens' : 'Livre')}
+                    ${estaBloqueadaPorOutro ? `🔒 Em uso por ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens (' + bloqueioUser + ')' : 'Livre')}
                 </span>
             </div>`;
         }
@@ -2351,8 +2357,9 @@
         let temItensTarget = itensDaMesa.length > 0;
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
 
-        if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
+        if (m !== "Balcão" && temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
+            window.tocarSom('alerta');
+            alert(`⚠️ Mesa Indisponível!\n\nA ${m} está a ser atendida por outro trabalhador (${bloqueioUser.toUpperCase()}).\nPor favor, escolha/abra uma nova mesa livre.`);
             return;
         }
 
@@ -2459,14 +2466,9 @@
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         let itensMesaAtual = mesas[mesaSelecionada] || [];
 
-        if (itensMesaAtual.length === 0 && bloqueioAtual) {
-            delete bloqueiosMesas[mesaSelecionada];
-            bloqueioAtual = null;
-        }
-
-        if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
+        if (mesaSelecionada !== "Balcão" && itensMesaAtual.length > 0 && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Não pode adicionar itens.`);
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Abra outra mesa.`);
             return;
         }
 
@@ -2496,17 +2498,18 @@
         if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
         mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
+        // Ocupa/Bloqueia a mesa com o operador atual assim que adiciona o 1º item
+        if (mesaSelecionada !== "Balcão") {
+            bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+        }
+
         try {
             localStorage.setItem(`mesa_carrinho_${mesaSelecionada}`, JSON.stringify(mesas[mesaSelecionada]));
             localStorage.setItem(`stock_local_backup`, JSON.stringify(stock));
         } catch(e) {}
 
         try {
-            if (mesaSelecionada !== "Balcão") {
-                bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
-
             let mesasParaSalvar = {};
             for(let m in mesas) {
                 if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
@@ -2669,6 +2672,11 @@
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
         mesas[mesaSelecionada].splice(idx, 1);
 
+        if (mesas[mesaSelecionada].length === 0 && mesaSelecionada !== "Balcão") {
+            delete bloqueiosMesas[mesaSelecionada];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas);
+        }
+
         let mesasParaSalvar = {};
         for(let m in mesas) {
             if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
@@ -2828,16 +2836,16 @@
             addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
 
             mesas[mesaSelecionada] = [];
+            if (mesaSelecionada !== "Balcão") {
+                delete bloqueiosMesas[mesaSelecionada];
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+            }
+
             let mesasParaSalvar = {};
             for(let m in mesas) {
                 if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
             }
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
-
-            if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
-                delete bloqueiosMesas[mesaSelecionada];
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
 
             window.tocarSom('sucesso');
 
@@ -2995,6 +3003,7 @@
                 <td style="color:${c.divida>0?'var(--danger)':'var(--success)'}; font-weight:bold;">${(c.divida||0).toFixed(2)} MT</td>
                 <td>
                     <button class="btn-success btn-sm" onclick="window.liquidarDividaCliente(${idx})">💵 Liquidar</button>
+                    <button class="btn-saida btn-sm" onclick="window.eliminarClienteFiado(${idx})">🗑️ Eliminar</button>
                 </td>
             </tr>`;
         });
@@ -3009,6 +3018,25 @@
             registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
             alert("Pagamento registado!");
         }
+    };
+
+    window.eliminarClienteFiado = async function(idx) {
+        let c = clientes[idx];
+        if(!c) return;
+
+        if (c.divida > 0) {
+            let confirmacao = confirm(`⚠️ O cliente '${c.nome.toUpperCase()}' possui uma dívida pendente de ${c.divida.toFixed(2)} MT.\n\nTem certeza que pretende apagar este cliente e cancelar a dívida?`);
+            if(!confirmacao) return;
+        } else {
+            if(!confirm(`Remover o cliente '${c.nome.toUpperCase()}' da lista de fiados?`)) return;
+        }
+
+        clientes.splice(idx, 1);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+        registarAuditLog('Cliente Removido', `Cliente '${c.nome}' apagado da lista de fiados`);
+        renderizarClientes();
+        atualizarDropdownClientesFiado();
+        alert("Cliente removido com sucesso!");
     };
 
     function atualizarDropdownClientesFiado() {
@@ -3040,7 +3068,6 @@
         document.getElementById('modalConversaoShots').style.display = 'none';
     };
 
-    // CONVERSÃO DE MÚLTIPLAS GARRAFAS EM SHOTS
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
         let numGarrafas = parseInt(document.getElementById('inputQtdGarrafasConverter').value) || 1;
@@ -3194,7 +3221,65 @@
         alert("Stock e Código de Barras atualizados com sucesso!");
     };
 
-    // APAGAR PRODUTO POR NÚMERO OU NOME
+    // APAGAR OU REDUZIR PARCIALMENTE UNIDADES DE UM PRODUTO (EX: TER 30 E TIRAR 5)
+    window.descartarUnidadesStock = async function() {
+        let inputProd = prompt("Digite o NOME ou NÚMERO (#) do produto para retirar/descartar unidades:");
+        if (!inputProd) return;
+
+        let chavesStock = Object.keys(stock);
+        let produtoAlvo = null;
+
+        let num = parseInt(inputProd);
+        if(!isNaN(num) && num >= 1 && num <= chavesStock.length) {
+            produtoAlvo = chavesStock[num - 1];
+        } else {
+            let encontrado = chavesStock.find(p => p.toLowerCase() === inputProd.trim().toLowerCase());
+            if(encontrado) produtoAlvo = encontrado;
+        }
+
+        if (!produtoAlvo) return alert("❌ Produto não encontrado.");
+
+        let qtdAtual = stock[produtoAlvo].qtd;
+        let qtdRemover = parseFloat(prompt(`Produto: ${produtoAlvo.toUpperCase()}\nStock atual: ${qtdAtual} unidades.\n\nQuantas unidades pretende RETIRAR/DESCARTAR? (Ex: 5):`));
+
+        if (isNaN(qtdRemover) || qtdRemover <= 0) return alert("Quantidade inválida.");
+        if (qtdRemover > qtdAtual) return alert(`⚠️ Não pode retirar ${qtdRemover} unidades porque só existem ${qtdAtual} em stock.`);
+
+        let motivo = prompt("Motivo da redução (ex: Avaria, Quebra, Validade, Consumo Interno):", "Avaria / Quebra");
+        if (!motivo) motivo = "Avaria / Quebra";
+
+        let custoUnit = qtdAtual > 0 ? (stock[produtoAlvo].preco_total / qtdAtual) : 0;
+        let custoRetirado = custoUnit * qtdRemover;
+
+        stock[produtoAlvo].qtd -= qtdRemover;
+        stock[produtoAlvo].preco_total -= custoRetirado;
+
+        if (stock[produtoAlvo].qtd <= 0) {
+            stock[produtoAlvo].qtd = 0;
+            stock[produtoAlvo].preco_total = 0;
+        }
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'SAÍDA (AJUSTE / QUEBRA)',
+            produto: produtoAlvo,
+            qtd: qtdRemover,
+            usuario: usuarioAtual.nome,
+            origem: `Ajuste/Descarte: ${motivo}`
+        });
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        registarAuditLog('Ajuste de Stock', `Removidas ${qtdRemover} unid de '${produtoAlvo}' - Motivo: ${motivo}`);
+
+        window.tocarSom('sucesso');
+        alert(`✅ Foram retiradas ${qtdRemover} unidades do produto '${produtoAlvo.toUpperCase()}'.\nNovo Stock: ${stock[produtoAlvo].qtd} unidades.`);
+
+        filtrarEExibirProdutosVenda();
+        renderizarStock();
+    };
+
     window.apagarProdutoPorNumeroOuNome = async function() {
         let inputVal = document.getElementById('inputNumeroOuNomeApagarProduto').value.trim();
         if(!inputVal) return alert("Insira o número (posição) ou o nome do produto a apagar.");
@@ -3212,7 +3297,7 @@
 
         if(!produtoAlvo) return alert("❌ Produto não encontrado com esse número ou nome.");
 
-        if(confirm(`Tem certeza que pretende apagar o produto '${produtoAlvo.toUpperCase()}' do stock?`)) {
+        if(confirm(`Tem certeza que pretende apagar TODO o cadastro do produto '${produtoAlvo.toUpperCase()}' do stock?`)) {
             delete stock[produtoAlvo];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
             registarAuditLog('Produto Removido', `Produto '${produtoAlvo}' apagado por número/nome`);
@@ -3249,7 +3334,11 @@
             let colFin = isGerenteOuAdmin ? `
                 <td>${custoMedio.toFixed(2)} MT</td>
                 <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button></td>` : '';
+            let colAdmin = usuarioAtual.tipo === 'admin' ? `
+                <td>
+                    <button class="btn-warning btn-sm" onclick="window.descartarUnidadesStock('${p}')">➖ Descarte</button>
+                    <button class="btn-saida btn-sm" onclick="window.apagarProduto('${p}')">Apagar</button>
+                </td>` : '';
 
             tbody.innerHTML += `<tr>
                 <td><span class="badge" style="background:#cbd5e1; color:#0f172a;">#${numeroRealOrdem}</span></td>
@@ -3336,7 +3425,7 @@
     }
 
     window.apagarProduto = async function(p) {
-        if(confirm(`Apagar o produto ${p.toUpperCase()} do stock?`)) {
+        if(confirm(`Apagar todo o cadastro do produto ${p.toUpperCase()} do stock?`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
             registarAuditLog('Produto Removido', `Produto '${p}' apagado do stock`);
@@ -3433,7 +3522,6 @@
         alert("Venda cancelada e stock revertido com sucesso!");
     };
 
-    // FUNÇÕES DO ADMINISTRADOR PARA APAGAR HISTÓRICOS
     window.adminApagarTodoHistoricoVendas = async function() {
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
         let senha = prompt("🔒 Digite a senha de Administrador para confirmar a eliminação de TODO O HISTÓRICO DE VENDAS:");
@@ -3774,3 +3862,4 @@
 
 </body>
 </html>
+    </div>
