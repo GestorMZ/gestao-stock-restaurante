@@ -30,108 +30,63 @@
             --teal: #20c997;
             --dark: #1e293b;
             --light: #f1f5f9;
-            --sidebar-width: 260px;
         }
 
-        * { touch-action: manipulation; box-sizing: border-box; }
+        * { touch-action: manipulation; }
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background-color: var(--light); 
             margin: 0; 
-            padding: 0; 
+            padding: 8px; 
             color: #0f172a; 
             transition: background 0.3s, color 0.3s;
             -webkit-tap-highlight-color: transparent;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* 🟢 NOVO LAYOUT PROFISSIONAL DE MENU LATERAL (SIDEBAR) ESTILO ZREST */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #1e293b;
-            color: #f8fafc;
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            font-size: 1.1em;
-            font-weight: 800;
-            background: #0f172a;
-            border-bottom: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #fff;
-        }
-
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            color: #94a3b8;
-            border: none;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            transition: 0.2s;
-            min-height: 48px;
-        }
-
-        .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.4);
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 20px;
-            max-width: calc(100% - var(--sidebar-width));
-            min-height: 100vh;
         }
 
         .container { 
             max-width: 1200px; 
             margin: 0 auto; 
             background: white; 
-            padding: 20px; 
+            padding: 15px; 
             border-radius: 12px; 
             box-shadow: 0 4px 16px rgba(0,0,0,0.08); 
         }
 
         h2, h3, h4 { margin-top: 5px; color: var(--dark); font-weight: 800; }
         
+        .tabs-nav { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 15px; 
+            border-bottom: 3px solid #cbd5e1; 
+            overflow-x: auto; 
+            padding-bottom: 6px; 
+        }
+
+        .tab-btn { 
+            background: #e2e8f0; 
+            color: #334155; 
+            border: none; 
+            padding: 14px 20px; 
+            border-radius: 10px 10px 0 0; 
+            font-weight: bold; 
+            font-size: 15px;
+            cursor: pointer; 
+            white-space: nowrap; 
+            transition: 0.2s; 
+            min-height: 48px;
+        }
+
+        .tab-btn.active { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 -2px 8px rgba(0,123,255,0.3);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
         .form-group { flex: 1; min-width: 160px; margin-bottom: 8px; }
         label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.9em; color: #475569; }
@@ -144,8 +99,6 @@
             box-sizing: border-box; 
             font-size: 16px; 
             font-weight: 600;
-            background-color: #fff;
-            color: #0f172a;
         }
         
         input:focus, select:focus {
@@ -170,12 +123,12 @@
 
         button:active { transform: scale(0.97); }
 
-        .btn-saida { background-color: var(--danger); color: white; }
-        .btn-success { background-color: var(--success); color: white; }
+        .btn-saida { background-color: var(--danger); }
+        .btn-success { background-color: var(--success); }
         .btn-warning { background-color: var(--warning); color: white; }
         .btn-excel { background-color: #1d6f42; color: white; }
         .btn-purple { background-color: var(--purple); color: white; }
-        .btn-dark { background-color: #334155; color: white; }
+        .btn-dark { background-color: #334155; }
         .btn-sm { padding: 8px 12px; font-size: 13px; min-height: 38px; width: auto; margin: 0; }
 
         .btn-atacho-fast {
@@ -189,10 +142,12 @@
             min-height: 42px;
             cursor: pointer;
         }
-        .btn-atacho-fast:hover, .btn-atacho-fast:active { background: #c7d2fe; }
+        .btn-atacho-fast:hover, .btn-atacho-fast:active {
+            background: #c7d2fe;
+        }
 
         .grid-perfis-login { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-content: center; margin-bottom: 20px; }
-        .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; color: #1e293b; }
+        .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
         .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #eff6ff; transform: translateY(-2px); }
         .avatar-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 6px; background: #cbd5e1; }
         .avatar-placeholder { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 6px auto; }
@@ -225,8 +180,8 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 80px;
-            color: #1e293b;
         }
+
         .card-produto-pos:active { border-color: var(--primary); background: #eff6ff; transform: scale(0.96); }
 
         .cat-btn { 
@@ -247,14 +202,14 @@
         .caixa-aberto { background: #dcfce7; color: #166534; border: 2px solid #bbf7d0; }
         .caixa-fechado { background: #fee2e2; color: #991b1b; border: 2px solid #fecaca; }
 
-        .box-calculo-lucro { background: #eff6ff; border: 2px solid #bfdbfe; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; color: #1e293b; }
+        .box-calculo-lucro { background: #eff6ff; border: 2px solid #bfdbfe; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; }
         .alerta-stock-box { background: #fef3c7; border: 2px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none; font-weight: 700; }
         .alerta-caixa-bloqueio { background: #fee2e2; border: 2px solid #fecaca; color: #991b1b; padding: 14px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; display: none; }
 
-        .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #e2e8f0; padding: 12px 16px; border-radius: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; color: #1e293b; }
+        .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #e2e8f0; padding: 12px 16px; border-radius: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
 
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 15px 0; }
-        .card-stat { background: #f8fafc; padding: 14px; border-radius: 10px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); color: #1e293b; }
+        .card-stat { background: #f8fafc; padding: 14px; border-radius: 10px; border-left: 6px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
         .card-stat.verde { border-left-color: var(--success); }
         .card-stat.laranja { border-left-color: var(--warning); }
         .card-stat.vermelho { border-left-color: var(--danger); }
@@ -265,43 +220,39 @@
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
         th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background-color: #f1f5f9; font-weight: 700; color: #1e293b; }
-        td { color: #0f172a; }
+        th { background-color: #f1f5f9; font-weight: 700; }
         .alerta { color: var(--danger); font-weight: bold; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; background: #e2e8f0; color: #334155; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; background: #e2e8f0; }
         .badge-entrada { background: #dcfce7; color: #166534; }
         .badge-saida { background: #fee2e2; color: #991b1b; }
         .badge-cancelado { background: #64748b; color: white; text-decoration: line-through; }
         .badge-cortesia { background: #f43f5e; color: white; }
 
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin-bottom: 15px; }
-        .card-mesa { background: #f1f5f9; border: 2px solid #cbd5e1; padding: 14px 8px; border-radius: 10px; text-align: center; cursor: pointer; font-weight: bold; min-height: 60px; color: #1e293b; }
+        .card-mesa { background: #f1f5f9; border: 2px solid #cbd5e1; padding: 14px 8px; border-radius: 10px; text-align: center; cursor: pointer; font-weight: bold; min-height: 60px; }
         .card-mesa.ocupada { background: #fee2e2; border-color: var(--danger); color: var(--danger); }
         .card-mesa.bloqueada { background: #fef3c7; border-color: var(--warning); color: #92400e; opacity: 0.85; }
         .card-mesa.selecionada { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 3px rgba(0,123,255,0.25); }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
-        .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 12px; position: relative; color: #0f172a; }
-        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; font-weight: bold; color: #0f172a; }
+        .modal-content { background: white; max-width: 550px; margin: 5% auto; padding: 20px; border-radius: 12px; position: relative; }
+        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 28px; cursor: pointer; font-weight: bold; }
 
-        /* 🟢 MODO ESCURO CORRIGIDO (Letras perfeitamente visíveis em todos os elementos) */
         body.dark-mode { background-color: #0f172a; color: #f8fafc; }
-        body.dark-mode .container, body.dark-mode .modal-content { background: #1e293b; color: #f8fafc; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
-        body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label, body.dark-mode strong, body.dark-mode span, body.dark-mode p { color: #f8fafc !important; }
-        body.dark-mode input, body.dark-mode select { background: #0f172a; color: #ffffff !important; border-color: #475569; }
-        body.dark-mode input::placeholder, body.dark-mode select option { color: #94a3b8; }
-        body.dark-mode th { background-color: #0f172a; color: #ffffff !important; }
-        body.dark-mode td { border-bottom-color: #334155; color: #f1f5f9 !important; }
-        body.dark-mode .card-stat, body.dark-mode .card-perfil-login, body.dark-mode .card-produto-pos, body.dark-mode .card-mesa { background: #1e293b; border-color: #475569; color: #f8fafc !important; }
-        body.dark-mode .card-stat h4 { color: #cbd5e1 !important; }
-        body.dark-mode .header-usuario { background: #1e293b; color: #f8fafc !important; border: 1px solid #334155; }
-        body.dark-mode .tab-btn { background: transparent; color: #94a3b8; }
-        body.dark-mode .tab-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        body.dark-mode .tab-btn.active { background: var(--primary); color: #fff !important; }
-        body.dark-mode .grid-produtos-pos, body.dark-mode .box-calculo-lucro { background: #1e293b; border-color: #475569; color: #f8fafc; }
-        body.dark-mode .cat-btn { background: #1e293b; color: #cbd5e1; border-color: #475569; }
-        body.dark-mode .cat-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-        body.dark-mode .badge { background: #334155; color: #f8fafc; }
+        body.dark-mode .container { background: #1e293b; color: #f8fafc; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+        body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label { color: #f8fafc; }
+        body.dark-mode input, body.dark-mode select { background: #0f172a; color: #fff; border-color: #334155; }
+        body.dark-mode th { background-color: #0f172a; color: #fff; }
+        body.dark-mode td { border-bottom-color: #334155; color: #cbd5e1; }
+        body.dark-mode .card-stat, body.dark-mode .card-perfil-login, body.dark-mode .card-produto-pos { background: #0f172a; border-color: #334155; color: #fff; }
+        body.dark-mode .header-usuario { background: #0f172a; color: #fff; }
+        body.dark-mode .tabs-nav { border-bottom-color: #334155; }
+        body.dark-mode .tab-btn { background: #0f172a; color: #94a3b8; }
+        body.dark-mode .tab-btn.active { background: var(--primary); color: #fff; }
+        body.dark-mode .modal-content { background: #1e293b; color: #fff; }
+        body.dark-mode .grid-produtos-pos { background: #0f172a; border-color: #334155; }
+        body.dark-mode .cat-btn { background: #0f172a; color: #cbd5e1; border-color: #334155; }
+        body.dark-mode .cat-btn.active { background: var(--primary); color: #fff; }
 
         #areaImpressao { display: none; }
         @media print {
@@ -311,9 +262,6 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.mobile-show { transform: translateX(0); }
-            .main-content { margin-left: 0; max-width: 100%; padding: 10px; }
             .form-row { flex-direction: column; gap: 0; }
             .header-usuario { flex-direction: column; align-items: stretch; }
         }
@@ -321,12 +269,26 @@
 </head>
 <body>
 
-    <!-- ECRÃ DE LOGIN (Fica visível isolado e centralizado antes de entrar) -->
-    <div id="telaLogin" style="max-width:480px; margin:40px auto; background:white; padding:25px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
-        <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
-        <p style="text-align:center; font-size:0.85em; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
+<div class="container">
 
-        <div style="background:var(--light); padding:15px; border-radius:10px; border:2px solid #cbd5e1; margin-bottom:15px;">
+    <!-- ECRÃ DE BLOQUEIO -->
+    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="max-width:350px; text-align:center; background:#fff; padding:25px; border-radius:12px;">
+            <h3 style="margin-top:0;">🔒 Ecrã Bloqueado</h3>
+            <p style="font-size:0.85em; color:#666;">Insira a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
+            <div class="form-group">
+                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
+            </div>
+            <button class="btn-primary" onclick="window.desbloquearEcra()">🔓 Desbloquear Sistema</button>
+        </div>
+    </div>
+
+    <!-- ECRÃ DE LOGIN -->
+    <div id="telaLogin" style="max-width:480px; margin:20px auto;">
+        <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
+        <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
+
+        <div style="background:#f8fafc; padding:15px; border-radius:10px; border:2px solid #e2e8f0; margin-bottom:15px;">
             <div class="form-group">
                 <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
                 <div style="display:flex; gap:6px;">
@@ -337,19 +299,20 @@
             <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
 
-        <div id="boxContaBloqueada" style="display:none; background:#fee2e2; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
+        <div id="boxContaBloqueada" style="display:none; background:#fff5f5; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
             <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
-            <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:10px;"></p>
+            <p id="textoMotivoBloqueio" style="font-size:0.9em; color:#333; margin-bottom:10px;"></p>
             
-            <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left; color:#0f172a;">
+            <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
                 <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
-                <div style="font-size:0.9em; line-height:1.6;">
+                <div style="font-size:0.9em; line-height:1.6; color:#222;">
                     • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>Valor da Mensalidade:</b> 1.500 MT
                 </div>
             </div>
-            <p style="font-size:0.85em; margin-bottom:0;">
+            
+            <p style="font-size:0.85em; color:#555; margin-bottom:0;">
                 Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema.
             </p>
         </div>
@@ -373,312 +336,232 @@
             </p>
         </div>
     </div>
-
-    <!-- ECRÃ PRINCIPAL DO SISTEMA (Contém a Sidebar e o Conteúdo Lado a Lado, oculto por defeito) -->
-    <div id="telaSistema" style="display:none; min-height:100vh;">
+    <!-- ECRÃ PRINCIPAL -->
+    <div id="telaSistema" style="display:none;">
         
-        <!-- MENU LATERAL (SIDEBAR) ESTILO ZREST -->
-        <div class="sidebar" id="appSidebar">
-            <div class="sidebar-header">
-                <span>🍽️ GS Point POS</span>
-            </div>
-            <div class="sidebar-menu">
-                <button class="tab-btn active" onclick="window.mudarAba('abaVendas', this)">🛒 Balcão / Mesas</button>
-                <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa', this)">💵 Caixa & Turnos</button>
-                <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado', this)">👥 Clientes & Fiado</button>
-                <button class="tab-btn col-gerente" onclick="window.mudarAba('abaStock', this)">📦 Gestão de Stock</button>
-                <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios', this)">👤 Gestão de Perfis</button>
-                <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard', this)">📊 Dashboard & Carteiras</button>
-            </div>
+    <div class="header-usuario">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div id="headerAvatarBox"></div>
+        <div>
+            <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
+            Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
+            <small id="cargoUsuarioLogado" style="color:#666;"></small>
+        </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        
+        <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
+        <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
+            ⏳ A verificar rede...
+        </span>
+
+        <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
+        <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
+        <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+        <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
+        <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+    </div>
+</div>
+
+        <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
+            <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
+            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa')">Abrir Caixa</button>
         </div>
 
-        <!-- CONTEÚDO PRINCIPAL À DIREITA DA SIDEBAR -->
-        <div class="main-content">
-            <div class="container">
-               
+        <div id="boxAlertaStockGlobal" class="alerta-stock-box">
+            <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
+        </div>
 
-            <!-- ECRÃ DE BLOQUEIO -->
-            <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
-                <div class="modal-content" style="max-width:350px; text-align:center; padding:25px; border-radius:12px;">
-                    <h3 style="margin-top:0;">🔒 Ecrã Bloqueado</h3>
-                    <p style="font-size:0.85em;">Insira a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
-                    <div class="form-group">
-                        <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
-                    </div>
-                    <button class="btn-primary" onclick="window.desbloquearEcra()">🔓 Desbloquear Sistema</button>
-                </div>
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
+            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
+            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado')">👥 Clientes & Fiado</button>
+            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaStock')">📦 Gestão de Stock</button>
+            <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios')">👤 Gestão de Perfis</button>
+            <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Carteiras</button>
+        </div>
+
+        <!-- ABA 1: VENDAS -->
+        <div id="abaVendas" class="tab-content active">
+            <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
+                ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
             </div>
 
-            <!-- ECRÃ DE LOGIN -->
-            <div id="telaLogin" style="max-width:480px; margin:20px auto;">
-                <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
-                <p style="text-align:center; font-size:0.85em; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
+            <h4>Selecionar Mesa / Comanda (10 Mesas Disponíveis)</h4>
+            <div class="mesas-grid" id="gridMesas"></div>
 
-                <div style="background:var(--light); padding:15px; border-radius:10px; border:2px solid #cbd5e1; margin-bottom:15px;">
-                    <div class="form-group">
-                        <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
-                        <div style="display:flex; gap:6px;">
-                            <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:2px;" onchange="window.carregarPerfisEmpresa()">
-                            <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar Código</button>
+            <div style="background:#eef7ff; border:2px solid #b6e0fe; padding:15px; border-radius:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <h4 style="margin:0;">Atendimento: <span id="labelMesaAtual" style="color:var(--primary);">Balcão (Venda Direta)</span></h4>
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-purple btn-sm" onclick="window.abrirModalDivisaoConta()">👥 Dividir Conta</button>
+                        <button class="btn-dark btn-sm" onclick="window.selecionarMesa('Balcão')">Limpar para Balcão</button>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <label style="font-weight:bold; color:var(--primary);">⭐ Produtos Frequentes & Categorias:</label>
+                        <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
+                            <button class="cat-btn active" onclick="window.filtrarCategoriaPOS('todos', event)">Todos</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('bebidas', event)">🍺 Bebidas</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('pratos', event)">🍲 Pratos</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('petiscos', event)">🍟 Petiscos</button>
+                            <button class="cat-btn" onclick="window.filtrarCategoriaPOS('outros', event)">🍷 Outros</button>
                         </div>
                     </div>
-                    <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
-                </div>
 
-                <div id="boxContaBloqueada" style="display:none; background:#fee2e2; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
-                    <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
-                    <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:10px;"></p>
-                    
-                    <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left; color:#0f172a;">
-                        <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
-                        <div style="font-size:0.9em; line-height:1.6;">
-                            • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
-                            • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
-                            • <b>Valor da Mensalidade:</b> 1.500 MT
-                        </div>
+                    <!-- LEITOR DE CÓDIGO DE BARRAS VIA CÂMARA & PESQUISA -->
+                    <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                        <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto rápido..." oninput="window.filtrarEExibirProdutosVenda()" style="flex: 1; min-width: 200px; font-size:16px;">
+                        <button type="button" class="btn-purple" style="width: auto; padding: 0 16px;" onclick="window.abrirModalScannerBarcode()">📷 Ler Código de Barras</button>
                     </div>
                     
-                    <p style="font-size:0.85em; margin-bottom:0;">
-                        Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema.
-                    </p>
+                    <div id="gridProdutosVendaPOS" class="grid-produtos-pos"></div>
                 </div>
-
-                <div id="seccaoPerfisEForm" style="display:none;">
-                    <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.85em; font-weight:bold; color:var(--purple);">🔑 Início de Turno: Selecione o Utilizador:</p>
-                    <div id="gridPerfisLogin" class="grid-perfis-login"></div>
-
-                    <div class="form-group">
-                        <label>Utilizador Selecionado</label>
-                        <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
-                    </div>
-                    <div class="form-group">
-                        <label>Palavra-passe</label>
-                        <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
-                    </div>
-                    <button onclick="window.fazerLogin()" style="margin-top:10px;">Entrar no Sistema</button>
-                    
-                    <p style="text-align:center; margin-top:20px;">
-                        <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
-                    </p>
-                </div>
-            </div>
-            <!-- ECRÃ PRINCIPAL -->
-            <div id="telaSistema" style="display:none;">
                 
-                <div class="header-usuario">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div id="headerAvatarBox"></div>
-                        <div>
-                            <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
-                            Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
-                            <small id="cargoUsuarioLogado" style="color:#64748b;"></small>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ou Selecione na Lista Completa</label>
+                        <select id="cartSelectProduto" onchange="window.preencherPrecoVenda()"></select>
+                    </div>
+                    <div class="form-group" style="max-width:140px;">
+                        <label>Qtd</label>
+                        <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
+                    </div>
+                    
+                    <!-- ATALHOS DE QUANTIDADE RÁPIDA (+1, +5, +10) -->
+                    <div class="form-group" style="max-width: 180px; display: flex; flex-direction: column; justify-content: flex-end;">
+                        <label style="font-size: 0.8em; margin-bottom: 4px;">Atalhos Qtd</label>
+                        <div style="display: flex; gap: 4px;">
+                            <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(1)">+1</button>
+                            <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(5)">+5</button>
+                            <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(10)">+10</button>
                         </div>
                     </div>
-                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                        
-                        <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
-                        <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
-                            ⏳ A verificar rede...
-                        </span>
 
-                        <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
-                        <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
-                        <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
-                        <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
-                        <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+                    <div class="form-group" style="max-width:140px;">
+                        <label>Preço Unit. (MT)</label>
+                        <input type="number" id="cartPrecoUnit" step="0.5">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button type="button" class="btn-success" style="font-size:1.1em;" onclick="window.adicionarAoCarrinho()">+ Adicionar Item</button>
                     </div>
                 </div>
 
-                <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
-                    <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
-                    <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa')">Abrir Caixa</button>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr><th>Produto</th><th>Qtd</th><th>Preço Unit.</th><th>Subtotal</th><th>Ação</th></tr>
+                        </thead>
+                        <tbody id="corpoCarrinho"></tbody>
+                    </table>
                 </div>
 
-                <div id="boxAlertaStockGlobal" class="alerta-stock-box">
-                    <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
-                </div>
-
-                <!-- ABA 1: VENDAS -->
-                <div id="abaVendas" class="tab-content active">
-                    <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
-                        ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
+                <div class="form-row" style="margin-top:15px; align-items:center;">
+                    <div class="form-group">
+                        <label>Desconto (MT)</label>
+                        <input type="number" id="cartDesconto" value="0" min="0" step="0.5" oninput="window.renderizarCarrinho()">
                     </div>
-
-                    <h4>Selecionar Mesa / Comanda (10 Mesas Disponíveis)</h4>
-                    <div class="mesas-grid" id="gridMesas"></div>
-
-                    <div style="background:var(--light); border:2px solid #cbd5e1; padding:15px; border-radius:10px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                            <h4 style="margin:0;">Atendimento: <span id="labelMesaAtual" style="color:var(--primary);">Balcão (Venda Direta)</span></h4>
-                            <div style="display:flex; gap:6px;">
-                                <button class="btn-purple btn-sm" onclick="window.abrirModalDivisaoConta()">👥 Dividir Conta</button>
-                                <button class="btn-dark btn-sm" onclick="window.selecionarMesa('Balcão')">Limpar para Balcão</button>
-                            </div>
-                        </div>
-
-                        <div style="margin-top:12px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                                <label style="font-weight:bold; color:var(--primary);">⭐ Produtos Frequentes & Categorias:</label>
-                                <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
-                                    <button class="cat-btn active" onclick="window.filtrarCategoriaPOS('todos', event)">Todos</button>
-                                    <button class="cat-btn" onclick="window.filtrarCategoriaPOS('bebidas', event)">🍺 Bebidas</button>
-                                    <button class="cat-btn" onclick="window.filtrarCategoriaPOS('pratos', event)">🍲 Pratos</button>
-                                    <button class="cat-btn" onclick="window.filtrarCategoriaPOS('petiscos', event)">🍟 Petiscos</button>
-                                    <button class="cat-btn" onclick="window.filtrarCategoriaPOS('outros', event)">🍷 Outros</button>
-                                </div>
-                            </div>
-
-                            <!-- LEITOR DE CÓDIGO DE BARRAS VIA CÂMARA & PESQUISA -->
-                            <div style="display: flex; gap: 8px; margin-top: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-                                <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto rápido..." oninput="window.filtrarEExibirProdutosVenda()" style="flex: 1; min-width: 200px; font-size:16px;">
-                                <button type="button" class="btn-purple" style="width: auto; padding: 0 16px;" onclick="window.abrirModalScannerBarcode()">📷 Ler Código de Barras</button>
-                            </div>
-                            
-                            <div id="gridProdutosVendaPOS" class="grid-produtos-pos"></div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Ou Selecione na Lista Completa</label>
-                                <select id="cartSelectProduto" onchange="window.preencherPrecoVenda()"></select>
-                            </div>
-                            <div class="form-group" style="max-width:140px;">
-                                <label>Qtd</label>
-                                <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
-                            </div>
-                            
-                            <!-- ATALHOS DE QUANTIDADE RÁPIDA (+1, +5, +10) -->
-                            <div class="form-group" style="max-width: 180px; display: flex; flex-direction: column; justify-content: flex-end;">
-                                <label style="font-size: 0.8em; margin-bottom: 4px;">Atalhos Qtd</label>
-                                <div style="display: flex; gap: 4px;">
-                                    <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(1)">+1</button>
-                                    <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(5)">+5</button>
-                                    <button type="button" class="btn-sm btn-dark" onclick="window.adicionarQtdRapida(10)">+10</button>
-                                </div>
-                            </div>
-
-                            <div class="form-group" style="max-width:140px;">
-                                <label>Preço Unit. (MT)</label>
-                                <input type="number" id="cartPrecoUnit" step="0.5">
-                            </div>
-                            <div class="form-group" style="align-self:flex-end;">
-                                <button type="button" class="btn-success" style="font-size:1.1em;" onclick="window.adicionarAoCarrinho()">+ Adicionar Item</button>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr><th>Produto</th><th>Qtd</th><th>Preço Unit.</th><th>Subtotal</th><th>Ação</th></tr>
-                                </thead>
-                                <tbody id="corpoCarrinho"></tbody>
-                            </table>
-                        </div>
-
-                        <div class="form-row" style="margin-top:15px; align-items:center;">
-                            <div class="form-group">
-                                <label>Desconto (MT)</label>
-                                <input type="number" id="cartDesconto" value="0" min="0" step="0.5" oninput="window.renderizarCarrinho()">
-                            </div>
-                            <div class="form-group">
-                                <label>Modo de Pagamento</label>
-                                <select id="cartModoPagamentoTipo" onchange="window.alternarModoPagamentoVisual()">
-                                    <option value="Unico">Pagamento Único</option>
-                                    <option value="Desdobrado">🔀 Pagamento Desdobrado (Múltiplos Métodos)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="boxPagamentoUnico">
-                                <label>Forma de Pagamento</label>
-                                <select id="cartMetodoPagamento" onchange="window.alternarCampoClienteFiado()">
-                                    <option value="Numerário">💵 Numerário (Espécie)</option>
-                                    <option value="M-Pesa">📱 M-Pesa</option>
-                                    <option value="e-Mola">📱 e-Mola</option>
-                                    <option value="POS">💳 POS (Cartão)</option>
-                                    <option value="Fiado">👥 Venda a Fiado (Conta Cliente)</option>
-                                    <option value="Cortesia">🎁 Consumo da Casa / Cortesia (0 MT)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="boxSeletorClienteFiado" style="display:none;">
-                                <label>Selecionar Cliente</label>
-                                <select id="cartSelectClienteFiado"></select>
-                            </div>
-                            <div class="form-group">
-                                <label>NUIT do Cliente</label>
-                                <input type="text" id="cartNuitCliente" placeholder="Ex: 999888777">
-                            </div>
-                        </div>
-
-                        <div id="boxPagamentoDesdobradoArea" style="display:none; background:var(--light); border:2px dashed var(--purple); padding:12px; border-radius:8px; margin-bottom:12px;">
-                            <h5 style="margin-top:0; color:var(--purple);">🔀 Desdobrar Pagamento em Múltiplos Métodos:</h5>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>💵 Dinheiro (MT)</label>
-                                    <input type="number" id="payDesdDinheiro" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                                </div>
-                                <div class="form-group">
-                                    <label>📱 M-Pesa (MT)</label>
-                                    <input type="number" id="payDesdMpesa" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                                </div>
-                                <div class="form-group">
-                                    <label>📱 e-Mola (MT)</label>
-                                    <input type="number" id="payDesdEmola" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                                </div>
-                                <div class="form-group">
-                                    <label>💳 POS (MT)</label>
-                                    <input type="number" id="payDesdPOS" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                                </div>
-                            </div>
-                            <div style="font-size:0.9em; font-weight:bold;">
-                                Soma dos Pagamentos: <span id="lblSomaDesdobrado" style="color:var(--primary);">0.00 MT</span> | 
-                                Falta Pagar: <span id="lblFaltaDesdobrado" style="color:var(--danger);">0.00 MT</span>
-                            </div>
-                        </div>
-
-                        <!-- TECLADO DE ATALHOS RÁPIDOS PARA VALORES ENTREGUES -->
-                        <div style="background:var(--light); border:2px solid #cbd5e1; padding:12px; border-radius:8px; margin-bottom:12px;">
-                            <label style="font-weight:bold; color:var(--primary); margin-bottom:8px; display:block;">⚡ Atalhos de Valor Entregue Rápidos (1-Toque):</label>
-                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:8px;">
-                                <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido('exato')">Exacto</button>
-                                <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(50)">50 MT</button>
-                                <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(100)">100 MT</button>
-                                <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(200)">200 MT</button>
-                                <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(500)">500 MT</button>
-                                <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(1000)">1000 MT</button>
-                            </div>
-                        </div>
-
-                        <div class="form-row" style="align-items:center;">
-                            <div class="form-group">
-                                <label style="color:var(--primary); font-weight:bold; font-size:1em;">Valor Entregue pelo Cliente (MT)</label>
-                                <input type="number" id="cartValorEntregue" value="0" min="0" step="0.5" oninput="window.calcularTroco()" style="font-size:1.3em; font-weight:bold; color:var(--primary);">
-                            </div>
-                            <div class="form-group">
-                                <label>WhatsApp Cliente</label>
-                                <input type="text" id="cartTelefoneWa" placeholder="Ex: 841234567">
-                            </div>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:10px;">
-                            <div style="display:flex; gap:6px;">
-                                <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido Cozinha (F4)</button>
-                                <button class="btn-purple btn-sm" onclick="window.imprimirPreRecibo()">📄 Pré-Recibo (F2)</button>
-                            </div>
-                            <div style="text-align:right;">
-                                <small id="cartSubtotalIvaTexto" style="color:#64748b; display:block;">Subtotal: 0.00 MT | IVA: 0.00 MT</small>
-                                <span style="font-size:1.3em; font-weight:bold;">Total Final: <span id="cartTotalTexto" style="color:var(--success);">0.00 MT</span></span><br>
-                                <span style="font-size:1.15em; font-weight:bold; color:var(--purple);">Troco: <span id="cartTrocoTexto">0.00 MT</span></span>
-                            </div>
-                            <div>
-                                <button class="btn-success" style="font-size:1.2em; padding:15px 25px; min-height:60px;" onclick="window.finalizarVendaCarrinho()">⚡ CONCLUIR VENDA (F9)</button>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label>Modo de Pagamento</label>
+                        <select id="cartModoPagamentoTipo" onchange="window.alternarModoPagamentoVisual()">
+                            <option value="Unico">Pagamento Único</option>
+                            <option value="Desdobrado">🔀 Pagamento Desdobrado (Múltiplos Métodos)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="boxPagamentoUnico">
+                        <label>Forma de Pagamento</label>
+                        <select id="cartMetodoPagamento" onchange="window.alternarCampoClienteFiado()">
+                            <option value="Numerário">💵 Numerário (Espécie)</option>
+                            <option value="M-Pesa">📱 M-Pesa</option>
+                            <option value="e-Mola">📱 e-Mola</option>
+                            <option value="POS">💳 POS (Cartão)</option>
+                            <option value="Fiado">👥 Venda a Fiado (Conta Cliente)</option>
+                            <option value="Cortesia">🎁 Consumo da Casa / Cortesia (0 MT)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="boxSeletorClienteFiado" style="display:none;">
+                        <label>Selecionar Cliente</label>
+                        <select id="cartSelectClienteFiado"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>NUIT do Cliente</label>
+                        <input type="text" id="cartNuitCliente" placeholder="Ex: 999888777">
                     </div>
                 </div>
-                <!-- ABA 2: CAIXA -->
+
+                <div id="boxPagamentoDesdobradoArea" style="display:none; background:#fff; border:2px dashed var(--purple); padding:12px; border-radius:8px; margin-bottom:12px;">
+                    <h5 style="margin-top:0; color:var(--purple);">🔀 Desdobrar Pagamento em Múltiplos Métodos:</h5>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>💵 Dinheiro (MT)</label>
+                            <input type="number" id="payDesdDinheiro" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
+                        </div>
+                        <div class="form-group">
+                            <label>📱 M-Pesa (MT)</label>
+                            <input type="number" id="payDesdMpesa" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
+                        </div>
+                        <div class="form-group">
+                            <label>📱 e-Mola (MT)</label>
+                            <input type="number" id="payDesdEmola" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
+                        </div>
+                        <div class="form-group">
+                            <label>💳 POS (MT)</label>
+                            <input type="number" id="payDesdPOS" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
+                        </div>
+                    </div>
+                    <div style="font-size:0.9em; font-weight:bold;">
+                        Soma dos Pagamentos: <span id="lblSomaDesdobrado" style="color:var(--primary);">0.00 MT</span> | 
+                        Falta Pagar: <span id="lblFaltaDesdobrado" style="color:var(--danger);">0.00 MT</span>
+                    </div>
+                </div>
+
+                <!-- TECLADO DE ATALHOS RÁPIDOS PARA VALORES ENTREGUES -->
+                <div style="background:#f8fafc; border:2px solid #e2e8f0; padding:12px; border-radius:8px; margin-bottom:12px;">
+                    <label style="font-weight:bold; color:var(--primary); margin-bottom:8px; display:block;">⚡ Atalhos de Valor Entregue Rápidos (1-Toque):</label>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:8px;">
+                        <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido('exato')">Exacto</button>
+                        <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(50)">50 MT</button>
+                        <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(100)">100 MT</button>
+                        <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(200)">200 MT</button>
+                        <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(500)">500 MT</button>
+                        <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido(1000)">1000 MT</button>
+                    </div>
+                </div>
+
+                <div class="form-row" style="align-items:center;">
+                    <div class="form-group">
+                        <label style="color:var(--primary); font-weight:bold; font-size:1em;">Valor Entregue pelo Cliente (MT)</label>
+                        <input type="number" id="cartValorEntregue" value="0" min="0" step="0.5" oninput="window.calcularTroco()" style="font-size:1.3em; font-weight:bold; color:var(--primary);">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp Cliente</label>
+                        <input type="text" id="cartTelefoneWa" placeholder="Ex: 841234567">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:10px;">
+                    <div style="display:flex; gap:6px;">
+                        <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido Cozinha (F4)</button>
+                        <button class="btn-purple btn-sm" onclick="window.imprimirPreRecibo()">📄 Pré-Recibo (F2)</button>
+                    </div>
+                    <div style="text-align:right;">
+                        <small id="cartSubtotalIvaTexto" style="color:#666; display:block;">Subtotal: 0.00 MT | IVA: 0.00 MT</small>
+                        <span style="font-size:1.3em; font-weight:bold;">Total Final: <span id="cartTotalTexto" style="color:var(--success);">0.00 MT</span></span><br>
+                        <span style="font-size:1.15em; font-weight:bold; color:var(--purple);">Troco: <span id="cartTrocoTexto">0.00 MT</span></span>
+                    </div>
+                    <div>
+                        <button class="btn-success" style="font-size:1.2em; padding:15px 25px; min-height:60px;" onclick="window.finalizarVendaCarrinho()">⚡ CONCLUIR VENDA (F9)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
-            <div id="seccaoAbrirCaixa" style="display:none; background:var(--light); padding:15px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+            <div id="seccaoAbrirCaixa" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:20px;">
                 <h4>🔓 Abrir Turno de Caixa</h4>
                 <div class="form-group">
                     <label>Fundo de Maneio na Gaveta (MT)</label>
@@ -695,7 +578,7 @@
                     <div class="card-stat roxo col-gerente"><h4>Saldo em Gaveta</h4><div class="valor-card" id="cxValSaldoGaveta">***</div></div>
                 </div>
 
-                <div style="background:var(--light); padding:15px; border-radius:8px; margin-top:15px; border:1px solid #cbd5e1;">
+                <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #dee2e6;">
                     <h4>💸 Registar Saída / Despesa do Turno</h4>
                     <div class="form-row">
                         <div class="form-group">
@@ -712,11 +595,11 @@
                     </div>
                 </div>
 
-                <div style="background:#fef3c7; border:2px solid #fde68a; padding:18px; border-radius:8px; margin-top:20px; color:#92400e;">
-                    <h4 style="color:#92400e; margin-top:0;">🔒 Encerrar Turno (Fecho Cego de Caixa)</h4>
+                <div style="background:#fff3cd; border:2px solid #ffeba2; padding:18px; border-radius:8px; margin-top:20px;">
+                    <h4 style="color:#856404; margin-top:0;">🔒 Encerrar Turno (Fecho Cego de Caixa)</h4>
                     <div class="form-row">
                         <div class="form-group">
-                            <label style="font-weight:bold; color:#92400e;">Valor Total Contado na Gaveta (MT)</label>
+                            <label style="font-weight:bold; color:#333;">Valor Total Contado na Gaveta (MT)</label>
                             <input type="number" id="inputFechoValorContado" step="0.5" min="0" placeholder="Ex: 4500 MT" style="font-size:1.1em; font-weight:bold;">
                         </div>
                         <div class="form-group" style="align-self:flex-end;">
@@ -726,7 +609,7 @@
                 </div>
             </div>
 
-            <div style="margin-top:30px; background:var(--light); border:1px solid #cbd5e1; padding:15px; border-radius:8px;">
+            <div style="margin-top:30px; background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos (5 por página)</h4>
                 <div class="table-responsive">
                     <table>
@@ -746,7 +629,7 @@
                     </table>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:var(--light); padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px;">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualTurnos">1</span> de <span id="pagTotalTurnos">1</span></span>
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(1)">Próxima ➡️</button>
@@ -758,7 +641,7 @@
         <div id="abaFiado" class="tab-content col-gerente">
             <h2>Gestão de Clientes & Contas a Fiado</h2>
             
-            <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #cbd5e1;">
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px;">
                 <h4>Cadastrar Novo Cliente</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -785,7 +668,6 @@
                 </table>
             </div>
         </div>
-
         <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
@@ -796,7 +678,7 @@
                 </div>
             </div>
 
-            <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #cbd5e1;">
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #dee2e6;">
                 <h4>📥 Entrada de Produtos (Compras)</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -904,13 +786,13 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--light); padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualStock">1</span> de <span id="pagTotalStock">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
             </div>
 
-            <div style="background:var(--light); border:1px solid #cbd5e1; padding:15px; border-radius:8px;">
+            <div style="background:#fff; border:1px solid #dee2e6; padding:15px; border-radius:8px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
                     <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
                     <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
@@ -939,7 +821,7 @@
                     </table>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:var(--light); padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px;">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(1, true)">Próxima ➡️</button>
@@ -950,7 +832,7 @@
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
 
-            <div style="background:var(--light); padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid #cbd5e1;">
+            <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px;">
                 <h4>Criar Novo Perfil com Foto</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -998,13 +880,13 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--light); padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfisAdmin(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualPerfisAdmin">1</span> de <span id="pagTotalPerfisAdmin">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfisAdmin(1)">Próxima ➡️</button>
             </div>
 
-            <div id="seccaoDetalhesPerfil" style="display:none; background:var(--light); padding:15px; border-radius:8px; border:1px solid #cbd5e1;">
+            <div id="seccaoDetalhesPerfil" style="display:none; background:#eef7ff; padding:15px; border-radius:8px; border:1px solid #b6e0fe;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h4 style="margin:0;">Histórico Detalhado: <span id="nomePerfilSelecionado" style="color:var(--primary); text-transform:uppercase;"></span></h4>
                     <button class="btn-dark btn-sm" onclick="window.fecharDetalhesPerfil()">Fechar</button>
@@ -1024,11 +906,11 @@
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
 
-            <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#fde68a; color:#92400e;">
+            <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fff3cd; border-color:#ffeba2; color:#856404;">
                 ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
             </div>
 
-            <div class="form-row" style="background:var(--light); padding:10px; border-radius:6px; align-items:center; border:1px solid #cbd5e1;">
+            <div class="form-row" style="background:#f1f3f5; padding:10px; border-radius:6px; align-items:center;">
                 <div class="form-group" style="margin:0;">
                     <label>Período de Análise:</label>
                     <select id="filtroDataTipo" onchange="window.atualizarDashboard()">
@@ -1089,11 +971,11 @@
             </div>
 
             <div class="form-row" style="margin-top:20px;">
-                <div style="flex:1; min-width:280px; background:var(--light); padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+                <div style="flex:1; min-width:280px; background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px;">
                     <h4 style="text-align:center;">Distribuição dos Pagamentos</h4>
                     <canvas id="graficoCanaisPay" style="max-height:220px;"></canvas>
                 </div>
-                <div style="flex:1; min-width:280px; background:var(--light); padding:10px; border:1px solid #cbd5e1; border-radius:8px;">
+                <div style="flex:1; min-width:280px; background:#fff; padding:10px; border:1px solid #ddd; border-radius:8px;">
                     <h4>🏆 Top 5 Produtos Mais Vendidos</h4>
                     <div id="listaTopProdutos"></div>
                 </div>
@@ -1107,7 +989,7 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:var(--light); padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(1)">Próxima ➡️</button>
@@ -1121,7 +1003,7 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:var(--light); padding:8px 12px; border-radius:6px; border:1px solid #cbd5e1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid #dee2e6;">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:bold;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(1)">Próxima ➡️</button>
@@ -1140,9 +1022,9 @@
     <div class="modal-content" style="max-width:420px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
         <h3>👥 Dividir Conta por Pessoas</h3>
-        <p style="font-size:0.85em;">Calcule o valor exato a pagar por pessoa na mesa atual:</p>
+        <p style="font-size:0.85em; color:#666;">Calcule o valor exato a pagar por pessoa na mesa atual:</p>
         
-        <div style="background:var(--light); padding:12px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:15px;">
+        <div style="background:#eef7ff; padding:12px; border-radius:8px; border:1px solid #b6e0fe; margin-bottom:15px;">
             <div style="font-weight:bold; font-size:1.1em; color:var(--primary);">
                 Total da Mesa: <span id="lblTotalMesaDivisao">0.00 MT</span>
             </div>
@@ -1153,8 +1035,8 @@
             <input type="number" id="numPessoasDivisao" value="2" min="1" step="1" oninput="window.calcularValorPorPessoa()">
         </div>
 
-        <div style="background:var(--light); border:2px dashed var(--success); padding:15px; border-radius:8px; text-align:center; margin-top:15px;">
-            <span style="font-size:0.9em; font-weight:bold;">VALOR POR PESSOA:</span><br>
+        <div style="background:#f8fafc; border:2px dashed var(--success); padding:15px; border-radius:8px; text-align:center; margin-top:15px;">
+            <span style="font-size:0.9em; color:#555; font-weight:bold;">VALOR POR PESSOA:</span><br>
             <span id="lblValorPorPessoa" style="font-size:1.8em; font-weight:bold; color:var(--success);">0.00 MT</span>
         </div>
 
@@ -1167,7 +1049,7 @@
     <div class="modal-content" style="max-width:450px; text-align:center;">
         <span class="close-modal" onclick="window.fecharModalScannerBarcode()">&times;</span>
         <h3>📷 Leitor de Código de Barras</h3>
-        <p style="font-size:0.85em;">Aponte a câmara para o código de barras do produto:</p>
+        <p style="font-size:0.85em; color:#666;">Aponte a câmara para o código de barras do produto:</p>
         <div id="readerHtml5Qrcode" style="width:100%; border-radius:8px; overflow:hidden; background:#000;"></div>
         <button class="btn-saida" style="margin-top:15px;" onclick="window.fecharModalScannerBarcode()">❌ Fechar Câmara</button>
     </div>
@@ -1201,12 +1083,13 @@
         <button class="btn-success" onclick="window.solicitarRedefinicaoSenhaChaveMestra()">🔐 Autorizar e Guardar Nova Senha</button>
     </div>
 </div>
+
 <div id="modalQRMenu" class="modal">
     <div class="modal-content" style="text-align:center;">
         <span class="close-modal" onclick="window.fecharModalQRMenu()">&times;</span>
         <h3>📱 Menu Digital / Cardápio QR</h3>
         <div id="qrcodeArea" style="display:flex; justify-content:center; margin:20px 0;"></div>
-        <p style="font-size:0.85em;">Link: <span id="textLinkMenu"></span></p>
+        <p style="font-size:0.85em; color:#666;">Link: <span id="textLinkMenu"></span></p>
     </div>
 </div>
 
@@ -1215,7 +1098,7 @@
     <div class="modal-content" style="max-width:450px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
         <h3>🍷 Converter Garrafa em Shots / Doses</h3>
-        <p style="font-size:0.85em;">Selecione a garrafa, o número de garrafas a abrir e adicione os respetivos shots:</p>
+        <p style="font-size:0.85em; color:#666;">Selecione a garrafa, o número de garrafas a abrir e adicione os respetivos shots:</p>
         
         <div class="form-group">
             <label>Garrafa a Abrir (Stock Fechado)</label>
@@ -1253,7 +1136,7 @@
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
         <h3>⚙️ Definições & Impressora Bluetooth</h3>
         
-        <div style="background:var(--light); border:2px dashed #007bff; padding:15px; border-radius:8px; margin-bottom:15px; text-align:center;">
+        <div style="background:#f8fafc; border:2px dashed #007bff; padding:15px; border-radius:8px; margin-bottom:15px; text-align:center;">
             <h4 style="margin-top:0; color:var(--primary);">🖨️ Impressora Térmica Bluetooth (ESC/POS)</h4>
             <p id="statusBtPrinter" style="font-weight:bold; color:var(--danger);">Status: Desconectado 🔴</p>
             <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
@@ -1262,13 +1145,13 @@
             </div>
         </div>
 
-        <div id="seccaoEmpresaAdmin" style="background:var(--light); padding:12px; border-radius:6px; margin-bottom:15px; border:1px solid #cbd5e1;">
+        <div id="seccaoEmpresaAdmin" style="background:#eef7ff; padding:12px; border-radius:6px; margin-bottom:15px;">
             <h4>🏢 Dados do Restaurante & Chave Mestra</h4>
             
             <div class="form-group">
                 <label style="color:var(--danger); font-weight:bold;">🏢 Código de Licença / Empresa</label>
                 <div style="display:flex; gap:6px;">
-                    <input type="password" id="cfgCodigoLicencaOculto" value="••••••••" readonly style="font-weight:bold; letter-spacing:2px;">
+                    <input type="password" id="cfgCodigoLicencaOculto" value="••••••••" readonly style="font-weight:bold; letter-spacing:2px; background:#e9ecef;">
                     <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarLicencaAdmin()">👁️ Ver Licença</button>
                 </div>
             </div>
@@ -1315,14 +1198,13 @@
             <button class="btn-primary btn-sm" onclick="window.guardarDadosEmpresa()">💾 Guardar Dados da Empresa</button>
         </div>
 
-        <div style="background:var(--light); padding:12px; border-radius:6px; border:1px solid #cbd5e1;">
+        <div style="background:#f8fafc; padding:12px; border-radius:6px;">
             <h4>Alterar Minha Palavra-Passe</h4>
             <input type="password" id="inputNovaSenha" placeholder="Nova palavra-passe" style="margin-bottom:8px;">
             <button class="btn-success btn-sm" onclick="window.mudarMinhaSenha()">Guardar Nova Senha</button>
         </div>
     </div>
 </div>
-
 <!-- ÁREA DE IMPRESSÃO -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
@@ -1444,8 +1326,15 @@
         }
     };
 
-    window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); });
-    window.addEventListener('offline', () => { window.atualizarEstadoConexao(); window.tocarSom('alerta'); });
+    window.addEventListener('online', () => {
+        window.atualizarEstadoConexao();
+        window.tocarSom('sucesso');
+    });
+
+    window.addEventListener('offline', () => {
+        window.atualizarEstadoConexao();
+        window.tocarSom('alerta');
+    });
 
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
@@ -1489,7 +1378,9 @@
             codigoEmpresa = empUrl.trim().toUpperCase();
             localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
             let inputCod = document.getElementById('loginCodigoEmpresa');
-            if (inputCod) inputCod.value = codigoEmpresa;
+            if (inputCod) {
+                inputCod.value = codigoEmpresa;
+            }
             window.carregarPerfisEmpresa();
         } else {
             let empSalva = localStorage.getItem('codigoEmpresaRestaurante');
@@ -1506,7 +1397,9 @@
             if(salvoLocal) {
                 try {
                     let itensLocal = JSON.parse(salvoLocal);
-                    if(Array.isArray(itensLocal) && itensLocal.length > 0) mesas[m] = itensLocal;
+                    if(Array.isArray(itensLocal) && itensLocal.length > 0) {
+                        mesas[m] = itensLocal;
+                    }
                 } catch(e) {}
             }
         }
@@ -1515,22 +1408,30 @@
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
+
         let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para ver o código:");
         if (!senha) return;
 
         let autorizado = false;
         if (Object.keys(usuarios).length > 0) {
             for (let u in usuarios) {
-                if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
+                if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
+                    autorizado = true;
+                    break;
+                }
             }
         } else {
-            if (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim()) autorizado = true;
+            if (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim()) {
+                autorizado = true;
+            }
         }
 
         if (autorizado) {
             elInput.type = "text";
             alert(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`);
-            setTimeout(() => { elInput.type = "password"; }, 8000);
+            setTimeout(() => {
+                elInput.type = "password";
+            }, 8000);
         } else {
             alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
         }
@@ -1558,9 +1459,17 @@
             }
             return;
         }
-        if (event.key === 'F2') { event.preventDefault(); window.imprimirPreRecibo(); }
-        else if (event.key === 'F4') { event.preventDefault(); window.imprimirGuiaCozinha(); }
-        else if (event.key === 'F9') { event.preventDefault(); window.finalizarVendaCarrinho(); }
+
+        if (event.key === 'F2') {
+            event.preventDefault();
+            window.imprimirPreRecibo();
+        } else if (event.key === 'F4') {
+            event.preventDefault();
+            window.imprimirGuiaCozinha();
+        } else if (event.key === 'F9') {
+            event.preventDefault();
+            window.finalizarVendaCarrinho();
+        }
     });
 
     window.adicionarQtdRapida = function(valorAdicional) {
@@ -1575,14 +1484,23 @@
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
+
         setTimeout(() => {
-            if (!html5QrCodeScanner) html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            if (!html5QrCodeScanner) {
+                html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            }
             html5QrCodeScanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText) => { window.processarCodigoBarrasLido(decodedText); window.fecharModalScannerBarcode(); },
-                () => {}
-            ).catch(err => { alert("Não foi possível aceder à câmara."); });
+                (decodedText, decodedResult) => {
+                    window.processarCodigoBarrasLido(decodedText);
+                    window.fecharModalScannerBarcode();
+                },
+                (errorMessage) => {}
+            ).catch(err => {
+                console.error("Erro ao iniciar câmara para barcode:", err);
+                alert("Não foi possível aceder à câmara para ler o código de barras.");
+            });
         }, 300);
     };
 
@@ -1590,26 +1508,36 @@
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
+
         setTimeout(() => {
-            if (!html5QrCodeScanner) html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            if (!html5QrCodeScanner) {
+                html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            }
             html5QrCodeScanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText) => {
+                (decodedText, decodedResult) => {
                     let inputBarcode = document.getElementById('simplesBarcode');
-                    if (inputBarcode) inputBarcode.value = decodedText.trim();
+                    if (inputBarcode) {
+                        inputBarcode.value = decodedText.trim();
+                    }
                     window.tocarSom('sucesso');
                     window.fecharModalScannerBarcode();
                 },
-                () => {}
-            ).catch(err => { alert("Não foi possível aceder à câmara."); });
+                (errorMessage) => {}
+            ).catch(err => {
+                console.error("Erro ao iniciar câmara:", err);
+                alert("Não foi possível aceder à câmara.");
+            });
         }, 300);
     };
 
     window.fecharModalScannerBarcode = function() {
         let modal = document.getElementById('modalScannerBarcode');
         if (modal) modal.style.display = 'none';
-        if (html5QrCodeScanner) html5QrCodeScanner.stop().catch(() => {});
+        if (html5QrCodeScanner) {
+            html5QrCodeScanner.stop().catch(() => {});
+        }
     };
 
     window.processarCodigoBarrasLido = function(codigo) {
@@ -1617,11 +1545,17 @@
         let encontrado = null;
         for (let p in stock) {
             if (p.toLowerCase() === codLimpo || (stock[p].barcode && stock[p].barcode.toLowerCase() === codLimpo)) {
-                encontrado = p; break;
+                encontrado = p;
+                break;
             }
         }
-        if (encontrado) { window.tocarSom('sucesso'); window.selecionarProdutoCardPOS(encontrado); }
-        else { window.tocarSom('alerta'); alert(`⚠️ Produto com código/nome '${codigo}' não encontrado no stock.`); }
+        if (encontrado) {
+            window.tocarSom('sucesso');
+            window.selecionarProdutoCardPOS(encontrado);
+        } else {
+            window.tocarSom('alerta');
+            alert(`⚠️ Produto com código/nome '${codigo}' não encontrado no stock.`);
+        }
     };
 
     window.alternarModoNoturno = function() {
@@ -1631,7 +1565,9 @@
         localStorage.setItem('modoNoturno', ehDark ? 'sim' : 'nao');
     };
 
-    if(localStorage.getItem('modoNoturno') === 'sim') document.body.classList.add('dark-mode');
+    if(localStorage.getItem('modoNoturno') === 'sim') {
+        document.body.classList.add('dark-mode');
+    }
 
     window.bloquearEcra = function() {
         if(!usuarioAtual) return;
@@ -1650,7 +1586,8 @@
             registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
             resetarTimerInatividade();
         } else {
-            window.tocarSom('alerta'); alert("Palavra-passe incorreta!");
+            window.tocarSom('alerta');
+            alert("Palavra-passe incorreta!");
         }
     };
 
@@ -1658,9 +1595,13 @@
         if(!codigoEmpresa || !usuarioAtual) return;
         try {
             await addDoc(collection(db, "empresas", codigoEmpresa, "auditLogs"), {
-                timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ'), usuario: usuarioAtual.nome, evento, detalhes
+                timestamp: Date.now(),
+                data: new Date().toLocaleString('pt-MZ'),
+                usuario: usuarioAtual.nome,
+                evento,
+                detalhes
             });
-        } catch(e) {}
+        } catch(e) { console.error("Erro ao guardar audit log:", e); }
     }
 
     window.mudarPaginaAuditLogs = function(dir) {
@@ -1703,9 +1644,11 @@
 
         try {
             let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
+
             if (docLicenca && docLicenca.exists()) {
                 let dadosLicenca = docLicenca.data();
                 let hoje = new Date().toISOString().split('T')[0];
+
                 if (dadosLicenca.status === "suspenso" || (dadosLicenca.validade && dadosLicenca.validade < hoje)) {
                     document.getElementById('seccaoPerfisEForm').style.display = 'none';
                     document.getElementById('boxContaBloqueada').style.display = 'block';
@@ -1713,7 +1656,7 @@
                     return;
                 }
             } else {
-                alert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado.");
+                alert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado. Contacte o administrador Valter Lopes (+258 84 903 0686).");
                 return;
             }
 
@@ -1734,16 +1677,25 @@
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
             });
-            unsubscribes.push(unsubUser);
-        } catch (erro) { alert("Erro ao ligar ao servidor."); }
-    };
 
+            unsubscribes.push(unsubUser);
+
+        } catch (erro) {
+            console.error("Erro ao validar licença:", erro);
+            alert("Erro ao ligar ao servidor. Verifique a internet.");
+        }
+    };
     function iniciarEscutadoresCompletosEmpresa() {
         if(!codigoEmpresa) return;
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "stock"), (docSnap) => {
             stock = docSnap.exists() ? docSnap.data() : {};
-            if (usuarioAtual) { atualizarDropdownProdutosCart(); filtrarEExibirProdutosVenda(); renderizarStock(); verificarAlertasStock(); }
+            if (usuarioAtual) { 
+                atualizarDropdownProdutosCart(); 
+                filtrarEExibirProdutosVenda();
+                renderizarStock(); 
+                verificarAlertasStock(); 
+            }
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
@@ -1757,21 +1709,32 @@
                 for(let m in dadosMesasRemotas) {
                     if(m !== "Balcão") {
                         let infoMesa = dadosMesasRemotas[m];
-                        if (Array.isArray(infoMesa)) mesas[m] = infoMesa;
-                        else if (infoMesa && typeof infoMesa === 'object') {
+                        if (Array.isArray(infoMesa)) {
+                            mesas[m] = infoMesa;
+                        } else if (infoMesa && typeof infoMesa === 'object') {
                             mesas[m] = infoMesa.itens || [];
-                            if (infoMesa.operador && !bloqueiosMesas[m]) bloqueiosMesas[m] = infoMesa.operador;
+                            if (infoMesa.operador && !bloqueiosMesas[m]) {
+                                bloqueiosMesas[m] = infoMesa.operador;
+                            }
                         }
                     }
                 }
             }
-            if (usuarioAtual) { renderizarMesasGrid(); window.renderizarCarrinho(); }
+            if (usuarioAtual) {
+                renderizarMesasGrid();
+                window.renderizarCarrinho();
+            }
         }));
 
         let qVendas = query(collection(db, "empresas", codigoEmpresa, "vendas"), orderBy("timestamp", "desc"), limit(500));
         unsubscribes.push(onSnapshot(qVendas, (snapshot) => {
             historico = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
-            if (usuarioAtual) { window.atualizarDashboard(); renderizarEstadoCaixa(); filtrarEExibirProdutosVenda(); if (usuarioAtual.tipo === 'admin') renderizarUsuarios(); }
+            if (usuarioAtual) {
+                window.atualizarDashboard();
+                renderizarEstadoCaixa();
+                filtrarEExibirProdutosVenda();
+                if (usuarioAtual.tipo === 'admin') renderizarUsuarios();
+            }
         }));
 
         let qMov = query(collection(db, "empresas", codigoEmpresa, "movimentacoes"), orderBy("timestamp", "desc"), limit(200));
@@ -1808,7 +1771,10 @@
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), (docSnap) => {
-            if (docSnap.exists()) { dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data()); preencherCamposEmpresaModal(); }
+            if (docSnap.exists()) {
+                dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
+                preencherCamposEmpresaModal();
+            }
         }));
     }
 
@@ -1821,6 +1787,7 @@
         let container = document.getElementById('gridPerfisLogin');
         if (!container) return;
         container.innerHTML = '';
+        
         let chavesPerfis = Object.keys(usuarios);
         let perfisGerentesOuAdmins = chavesPerfis.filter(u => usuarios[u].tipo === 'gerente' || usuarios[u].tipo === 'admin');
         let perfisVendedores = chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor');
@@ -1829,7 +1796,10 @@
 
         visiveis.forEach(u => {
             let uObj = usuarios[u];
-            let avatarHtml = uObj.foto ? `<img src="${uObj.foto}" class="avatar-img" alt="${u}">` : `<div class="avatar-placeholder">${u.charAt(0).toUpperCase()}</div>`;
+            let avatarHtml = uObj.foto 
+                ? `<img src="${uObj.foto}" class="avatar-img" alt="${u}">` 
+                : `<div class="avatar-placeholder">${u.charAt(0).toUpperCase()}</div>`;
+
             let card = document.createElement('div');
             card.className = 'card-perfil-login';
             card.onclick = (e) => window.selecionarPerfilLogin(u, e);
@@ -1852,9 +1822,12 @@
         modalLista.innerHTML = '';
         for (let u in usuarios) {
             let uObj = usuarios[u];
-            let avatarHtml = uObj.foto ? `<img src="${uObj.foto}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">` : `<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:30px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
+            let avatarHtml = uObj.foto 
+                ? `<img src="${uObj.foto}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">` 
+                : `<span style="display:inline-block; width:30px; height:30px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:30px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
+
             modalLista.innerHTML += `
-                <button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:var(--light); border:1px solid #cbd5e1; padding:10px; text-align:left; cursor:pointer;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
+                <button class="btn-perfil" style="display:flex; align-items:center; gap:10px; background:#f8f9fa; border:1px solid #ddd; color:#333; padding:10px; text-align:left;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
                     ${avatarHtml}
                     <strong style="text-transform:uppercase;">${u}</strong> (${uObj.tipo})
                 </button>
@@ -1875,7 +1848,7 @@
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
-  window.fazerLogin = function() {
+    window.fazerLogin = function() {
         let elUser = document.getElementById('loginUser');
         let elPass = document.getElementById('loginPass');
         let u = elUser ? elUser.value.trim().toLowerCase() : "";
@@ -1898,9 +1871,8 @@
                 headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
             }
 
-            // Oculta login e mostra o sistema corretamente
             document.getElementById('telaLogin').style.display = 'none';
-            document.getElementById('telaSistema').style.display = 'flex';
+            document.getElementById('telaSistema').style.display = 'block';
             
             iniciarEscutadoresCompletosEmpresa();
             configurarPerfilPermissoes();
@@ -1925,23 +1897,71 @@
         }
     };
 
-    window.mudarAba = function(abaId, btnElement) {
+    window.fazerLogout = function() {
+        if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
+        if(timerInatividade) clearTimeout(timerInatividade);
+        usuarioAtual = null;
+        desconectarEscutadores();
+        document.getElementById('telaSistema').style.display = 'none';
+        document.getElementById('telaLogin').style.display = 'block';
+        document.getElementById('loginPass').value = '';
+    };
+
+    window.abrirModalResetSenha = function() { document.getElementById('modalResetSenha').style.display = 'block'; };
+    window.fecharModalResetSenha = function() {
+        document.getElementById('modalResetSenha').style.display = 'none';
+        document.getElementById('resetUsuarioNome').value = '';
+        document.getElementById('resetChaveMestraInput').value = '';
+        document.getElementById('resetNovaSenha').value = '';
+    };
+
+    window.solicitarRedefinicaoSenhaChaveMestra = async function() {
+        let u = document.getElementById('resetUsuarioNome').value.trim().toLowerCase();
+        let chaveEntrada = document.getElementById('resetChaveMestraInput').value.trim();
+        let novaP = document.getElementById('resetNovaSenha').value;
+
+        if (!u || !chaveEntrada || !novaP) return alert("Preencha todos os campos.");
+        if (!usuarios[u]) return alert("Utilizador não encontrado.");
+
+        let chaveMestraCadastrada = (dadosEmpresa.chaveMestra || "1234").trim();
+
+        if (chaveEntrada === chaveMestraCadastrada) {
+            usuarios[u].senha = novaP;
+            let listaArrayFirestore = [];
+            for (let nomeKey in usuarios) {
+                listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+            }
+            await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
+            alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
+            registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
+            window.fecharModalResetSenha();
+        } else {
+            alert("Chave Mestra Incorreta!");
+        }
+    };
+
+    function configurarPerfilPermissoes() {
+        let isAdmin = usuarioAtual.tipo === 'admin';
+        let isGerente = usuarioAtual.tipo === 'gerente';
+        let isVendedor = usuarioAtual.tipo === 'vendedor';
+
+        document.querySelectorAll('.col-admin').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
+        document.querySelectorAll('.col-gerente').forEach(el => el.style.display = (isAdmin || isGerente) ? 'block' : 'none');
+
+        if (isVendedor) {
+            window.mudarAba('abaVendas');
+        }
+    }
+
+    window.mudarAba = function(abaId) {
         window.tocarSom('click');
-        document.querySelectorAll('.sidebar-menu .tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-        if (btnElement) {
-            btnElement.classList.add('active');
-        } else if (event && event.target) {
-            let btn = event.target.closest('.tab-btn');
-            if (btn) btn.classList.add('active');
-        }
-
-        let abaAlvo = document.getElementById(abaId);
-        if (abaAlvo) abaAlvo.classList.add('active');
-
+        if (event && event.target) event.target.classList.add('active');
+        document.getElementById(abaId).classList.add('active');
         if(abaId === 'abaDashboard') window.atualizarDashboard();
-        if(abaId === 'abaUsuarios' && usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+        if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
     };
 
     function processarFotoAvatar(file, callback) {
@@ -2037,6 +2057,7 @@
         let tbody = document.getElementById('corpoTabelaPerfis');
         if(!tbody) return;
         tbody.innerHTML = '';
+
         let chavesPerfis = Object.keys(usuarios);
         let totalPaginas = Math.ceil(chavesPerfis.length / ITENS_POR_PAGINA_PERFIS) || 1;
         if(paginaAtualPerfisAdmin > totalPaginas) paginaAtualPerfisAdmin = totalPaginas;
@@ -2053,7 +2074,11 @@
             let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
             let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
             let numVendas = vendasUser.length;
-            let fotoTd = userObj.foto ? `<img src="${userObj.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` : `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
+
+            let fotoTd = userObj.foto 
+                ? `<img src="${userObj.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` 
+                : `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
+
             let tipoBadge = userObj.tipo === 'admin' ? 'Administrador' : userObj.tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
             let badgeBg = userObj.tipo === 'admin' ? 'var(--primary)' : userObj.tipo === 'gerente' ? 'var(--purple)' : '#6c757d';
 
@@ -2086,10 +2111,15 @@
         let sec = document.getElementById('seccaoDetalhesPerfil');
         document.getElementById('nomePerfilSelecionado').innerText = u;
         sec.style.display = 'block';
+
         let tbody = document.getElementById('corpoDetalhesVendasPerfil');
         tbody.innerHTML = '';
+
         let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u);
-        if(vendasUser.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Sem vendas registadas.</td></tr>'; return; }
+        if(vendasUser.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Sem vendas registadas.</td></tr>';
+            return;
+        }
 
         vendasUser.forEach(v => {
             let resumoItens = v.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ');
@@ -2102,7 +2132,9 @@
                 <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
                     ${v.totalVenda.toFixed(2)} MT ${ehCancelado ? '(CANCELADO)' : ''}
                 </td>
-                <td>${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc}',${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}</td>
+                <td>
+                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc}',${v.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
+                </td>
             </tr>`;
         });
     };
@@ -2124,7 +2156,10 @@
             if(alertaCaixaFechado) alertaCaixaFechado.style.display = 'none';
 
             let tAbertura = caixaEstado.timestampAbertura || 0;
-            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+            let vendasNum = historico.filter(h => 
+                h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura
+            ).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+
             let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.valor || 0), 0);
             let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
 
@@ -2151,10 +2186,15 @@
 
     window.fecharCaixaTurnoCEGO = async function() {
         let mesasComItens = [];
-        for(let m in mesas) { if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
+        for(let m in mesas) {
+            if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) {
+                mesasComItens.push(m);
+            }
+        }
+
         if(mesasComItens.length > 0) {
             window.tocarSom('alerta');
-            alert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas com consumos ativos: ${mesasComItens.join(', ')}.`);
+            alert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas com consumos ativos ou itens no carrinho por liquidar: ${mesasComItens.join(', ')}.\n\nPor favor, feche ou limpe todas as mesas antes de encerrar o turno.`);
             return;
         }
 
@@ -2163,22 +2203,34 @@
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
         let tAbertura = caixaEstado.timestampAbertura || 0;
-        let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+
+        let vendasNum = historico.filter(h => 
+            h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura
+        ).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+
         let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.valor || 0), 0);
         let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
         let diferenca = valContado - saldoEsperado;
 
         let registoTurno = {
-            id: Date.now(), dataAbertura: caixaEstado.dataAbertura || dataFecho, dataFecho: dataFecho,
-            usuarioFecho: usuarioAtual.nome, usuarioAbertura: caixaEstado.usuarioAbertura || 'Desconhecido',
-            fundoInicial: caixaEstado.fundo || 0, vendasEspécie: vendasNum, despesas: totalDesp,
-            saldoEsperado: saldoEsperado, valorContado: valContado, diferenca: diferenca
+            id: Date.now(),
+            dataAbertura: caixaEstado.dataAbertura || dataFecho,
+            dataFecho: dataFecho,
+            usuarioFecho: usuarioAtual.nome,
+            usuarioAbertura: caixaEstado.usuarioAbertura || 'Desconhecido',
+            fundoInicial: caixaEstado.fundo || 0,
+            vendasEspécie: vendasNum,
+            despesas: totalDesp,
+            saldoEsperado: saldoEsperado,
+            valorContado: valContado,
+            diferenca: diferenca
         };
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "turnos"), registoTurno);
         caixaEstado = { aberto: false, fundo: 0 };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
-        registarAuditLog('Caixa Encerrado', `Fecho Cego - Contado: ${valContado} MT | Dif: ${diferenca} MT`);
+        registarAuditLog('Caixa Encerrado', `Fecho Cego - Contado: ${valContado} MT | Diferenca: ${diferenca} MT`);
+
         document.getElementById('inputFechoValorContado').value = '';
         window.tocarSom('sucesso');
         alert(`🔒 Turno Encerrado!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
@@ -2188,8 +2240,10 @@
         let tbody = document.getElementById('corpoHistoricoTurnosCaixa');
         if(!tbody) return;
         tbody.innerHTML = '';
-        if(turnosCaixa.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Sem turnos encerrados.</td></tr>'; return; }
-
+        if(turnosCaixa.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#666;">Sem turnos encerrados.</td></tr>';
+            return;
+        }
         let totalPaginas = Math.ceil(turnosCaixa.length / ITENS_POR_PAGINA_TURNOS) || 1;
         if(paginaAtualTurnos > totalPaginas) paginaAtualTurnos = totalPaginas;
         document.getElementById('pagAtualTurnos').innerText = paginaAtualTurnos;
@@ -2213,7 +2267,11 @@
         });
     }
 
-    window.mudarPaginaTurnos = function(dir) { paginaAtualTurnos += dir; if(paginaAtualTurnos < 1) paginaAtualTurnos = 1; renderizarHistoricoTurnos(); };
+    window.mudarPaginaTurnos = function(dir) {
+        paginaAtualTurnos += dir;
+        if(paginaAtualTurnos < 1) paginaAtualTurnos = 1;
+        renderizarHistoricoTurnos();
+    };
 
     window.registarDespesa = async function() {
         if (!caixaEstado.aberto) return alert("🔴 Caixa Encerrado!");
@@ -2233,16 +2291,25 @@
         let grid = document.getElementById('gridMesas');
         if(!grid) return;
         grid.innerHTML = '';
+        
         for(let m in mesas) {
             let temItens = mesas[m] && mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
             let bloqueioUser = bloqueiosMesas[m];
             let estaBloqueadaPorOutro = temItens && bloqueioUser && bloqueioUser !== usuarioAtual.nome;
-            let classeEstado = estaBloqueadaPorOutro ? 'bloqueada' : (temItens ? 'ocupada' : '');
+
+            let classeEstado = '';
+            if (estaBloqueadaPorOutro) {
+                classeEstado = 'bloqueada';
+            } else if (temItens) {
+                classeEstado = 'ocupada';
+            }
 
             grid.innerHTML += `<div class="card-mesa ${classeEstado} ${isSel?'selecionada':''}" onclick="window.selecionarMesa('${m}')">
                 ${m}<br>
-                <span style="font-size:0.75em;">${estaBloqueadaPorOutro ? `🔒 ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens' : 'Livre')}</span>
+                <span style="font-size:0.75em;">
+                    ${estaBloqueadaPorOutro ? `🔒 Em uso por ${bloqueioUser}` : (temItens ? mesas[m].length + ' itens' : 'Livre')}
+                </span>
             </div>`;
         }
     }
@@ -2250,6 +2317,7 @@
     window.selecionarMesa = async function(m) {
         let itensDaMesa = mesas[m] || [];
         let bloqueioUser = bloqueiosMesas[m];
+
         if (itensDaMesa.length === 0 && bloqueioUser) {
             delete bloqueiosMesas[m];
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
@@ -2260,12 +2328,13 @@
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
 
         if (temItensTarget && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}).`);
+            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
         mesaSelecionada = m;
         document.getElementById('labelMesaAtual').innerText = m;
+
         renderizarMesasGrid();
         window.renderizarCarrinho();
     };
@@ -2293,7 +2362,9 @@
 
         let contagemFreq = {};
         historico.forEach(h => {
-            if(h.tipo === 'venda' && h.status !== 'cancelado' && h.itens) h.itens.forEach(i => contagemFreq[i.produto] = (contagemFreq[i.produto] || 0) + i.qtd);
+            if(h.tipo === 'venda' && h.status !== 'cancelado' && h.itens) {
+                h.itens.forEach(i => contagemFreq[i.produto] = (contagemFreq[i.produto] || 0) + i.qtd);
+            }
         });
 
         let prods = Object.keys(stock).filter(p => {
@@ -2305,7 +2376,10 @@
         prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
         let prodsExibicao = termo ? prods : prods.slice(0, 8);
 
-        if(prodsExibicao.length === 0) { grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto nesta categoria.</small>'; return; }
+        if(prodsExibicao.length === 0) {
+            grid.innerHTML = '<small style="color:#888; padding:8px;">Nenhum produto nesta categoria.</small>';
+            return;
+        }
 
         prodsExibicao.forEach(p => {
             let item = stock[p];
@@ -2322,12 +2396,25 @@
     window.selecionarProdutoCardPOS = function(p) {
         window.tocarSom('click');
         let sel = document.getElementById('cartSelectProduto');
-        if(sel) sel.value = p;
-        let precoDefinido = (stock[p] && stock[p].preco_venda) ? stock[p].preco_venda : 0;
+        if(sel) {
+            sel.value = p;
+        }
+        
+        let precoDefinido = 0;
+        if (stock[p] && stock[p].preco_venda) {
+            precoDefinido = stock[p].preco_venda;
+        }
+        
         let inputPreco = document.getElementById('cartPrecoUnit');
-        if (inputPreco) inputPreco.value = precoDefinido;
+        if (inputPreco) {
+            inputPreco.value = precoDefinido;
+        }
+
         let inputQtd = document.getElementById('cartQtd');
-        if (inputQtd) inputQtd.value = "1";
+        if (inputQtd) {
+            inputQtd.value = "1";
+        }
+
         window.adicionarAoCarrinho();
     };
 
@@ -2338,17 +2425,25 @@
 
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
-            window.tocarSom('alerta'); alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
-            window.mudarAba('abaCaixa'); return;
+            window.tocarSom('alerta');
+            alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
+            window.mudarAba('abaCaixa');
+            return;
         }
 
         let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         let itensMesaAtual = mesas[mesaSelecionada] || [];
 
-        if (itensMesaAtual.length === 0 && bloqueioAtual) { delete bloqueiosMesas[mesaSelecionada]; bloqueioAtual = null; }
+        if (itensMesaAtual.length === 0 && bloqueioAtual) {
+            delete bloqueiosMesas[mesaSelecionada];
+            bloqueioAtual = null;
+        }
+
         if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            window.tocarSom('alerta'); alert(`⚠️ A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}.`); return;
+            window.tocarSom('alerta');
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}. Não pode adicionar itens.`);
+            return;
         }
 
         let prod = document.getElementById('cartSelectProduto').value;
@@ -2359,7 +2454,10 @@
         if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
 
         if (stock[prod]) {
-            if(stock[prod].qtd < qtd) { window.tocarSom('alerta'); return alert("Stock insuficiente!"); }
+            if(stock[prod].qtd < qtd) {
+                window.tocarSom('alerta');
+                return alert("Stock insuficiente!");
+            }
         } else {
             stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
         }
@@ -2384,8 +2482,11 @@
                 bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
                 setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
             }
+
             let mesasParaSalvar = {};
-            for(let m in mesas) { if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome }; }
+            for(let m in mesas) {
+                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
+            }
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock).catch(()=>{});
         } catch (err) {}
@@ -2402,10 +2503,13 @@
         let total = itens.reduce((acc, i) => acc + i.subtotal, 0);
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
         let totalFinal = Math.max(0, total - desc);
-        let inputEntregue = document.getElementById('cartValorEntregue');
 
-        if(val === 'exato') inputEntregue.value = totalFinal.toFixed(2);
-        else inputEntregue.value = val;
+        let inputEntregue = document.getElementById('cartValorEntregue');
+        if(val === 'exato') {
+            inputEntregue.value = totalFinal.toFixed(2);
+        } else {
+            inputEntregue.value = val;
+        }
         window.calcularTroco();
     };
 
@@ -2456,7 +2560,9 @@
         document.getElementById('modalDivisaoConta').style.display = 'block';
     };
 
-    window.fecharModalDivisaoConta = function() { document.getElementById('modalDivisaoConta').style.display = 'none'; };
+    window.fecharModalDivisaoConta = function() {
+        document.getElementById('modalDivisaoConta').style.display = 'none';
+    };
 
     window.calcularValorPorPessoa = function() {
         let itens = mesas[mesaSelecionada] || [];
@@ -2465,6 +2571,7 @@
         let totalFinal = Math.max(0, total - desc);
         let pessoas = parseInt(document.getElementById('numPessoasDivisao').value) || 1;
         if(pessoas < 1) pessoas = 1;
+
         let porPessoa = totalFinal / pessoas;
         document.getElementById('lblValorPorPessoa').innerText = porPessoa.toFixed(2) + " MT";
     };
@@ -2502,13 +2609,17 @@
             : `Isento de IVA / Cortesia`;
 
         window.calcularTroco();
-        if(document.getElementById('cartModoPagamentoTipo').value === 'Desdobrado') window.calcularTotaisDesdobrados();
+        if(document.getElementById('cartModoPagamentoTipo').value === 'Desdobrado') {
+            window.calcularTotaisDesdobrados();
+        }
     };
 
     window.removerItemCarrinho = async function(idx) {
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            window.tocarSom('alerta'); alert(`⚠️ A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`); return;
+            window.tocarSom('alerta');
+            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`);
+            return;
         }
 
         let itens = mesas[mesaSelecionada] || [];
@@ -2521,15 +2632,23 @@
         }
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Removido da ${mesaSelecionada}`
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)',
+            produto: item.produto,
+            qtd: item.qtd,
+            usuario: usuarioAtual.nome,
+            origem: `Removido da ${mesaSelecionada}`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
         mesas[mesaSelecionada].splice(idx, 1);
 
         let mesasParaSalvar = {};
-        for(let m in mesas) { if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome }; }
+        for(let m in mesas) {
+            if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
+        }
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
 
         renderizarMesasGrid();
@@ -2574,7 +2693,8 @@
         divItens.innerHTML = '';
         itens.forEach(i => {
             divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span><span>${i.subtotal.toFixed(2)} MT</span>
+                <span>${i.qtd}x ${i.produto}</span>
+                <span>${i.subtotal.toFixed(2)} MT</span>
             </div>`;
         });
         document.getElementById('reciboTotal').innerText = totalVenda.toFixed(2);
@@ -2585,13 +2705,19 @@
     };
 
     window.finalizarVendaCarrinho = async function() {
-        if (!caixaEstado.aberto) { window.tocarSom('alerta'); return alert("🔴 Caixa Fechado!"); }
+        if (!caixaEstado.aberto) {
+            window.tocarSom('alerta');
+            return alert("🔴 Caixa Fechado!");
+        }
+
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return alert("O carrinho está vazio.");
 
         try {
             let modoPag = document.getElementById('cartModoPagamentoTipo').value;
-            let metodo = "", desdobramentoInfo = null;
+            let metodo = "";
+            let desdobramentoInfo = null;
+
             let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
             let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
             let totalVenda = Math.max(0, totalSemDesc - desc);
@@ -2603,7 +2729,9 @@
                 let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
                 let somaDesd = dDin + dMpe + dEmo + dPos;
 
-                if(Math.abs(somaDesd - totalVenda) > 0.1) return alert(`⚠️ A soma dos pagamentos desdobrados (${somaDesd.toFixed(2)} MT) deve ser igual ao Total Final (${totalVenda.toFixed(2)} MT)!`);
+                if(Math.abs(somaDesd - totalVenda) > 0.1) {
+                    return alert(`⚠️ A soma dos pagamentos desdobrados (${somaDesd.toFixed(2)} MT) deve ser exatamente igual ao Total Final (${totalVenda.toFixed(2)} MT)!`);
+                }
                 metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
                 desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
             } else {
@@ -2611,22 +2739,28 @@
             }
 
             if (metodo === 'Cortesia') { totalVenda = 0; desc = totalSemDesc; }
-            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
 
+            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
+            
             if (metodo === 'Numerário' && valorEntregue <= 0) {
-                window.tocarSom('alerta'); alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
-                document.getElementById('cartValorEntregue').focus(); return;
+                window.tocarSom('alerta');
+                alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
+                document.getElementById('cartValorEntregue').focus();
+                return;
             }
 
             if (valorEntregue > 0 && valorEntregue < totalVenda && metodo !== 'Fiado' && metodo !== 'Cortesia') {
-                window.tocarSom('alerta'); alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
-                document.getElementById('cartValorEntregue').focus(); return;
+                window.tocarSom('alerta');
+                alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
+                document.getElementById('cartValorEntregue').focus();
+                return;
             }
 
             let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
             let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
             let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
             let valorIva = totalVenda - subtotalLiq;
+
             let troco = Math.max(0, valorEntregue - totalVenda);
             let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
 
@@ -2637,10 +2771,26 @@
             }
 
             let registoVenda = {
-                id: Date.now(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                usuario: usuarioAtual.nome, tipo: 'venda', status: 'concluido', mesa: mesaSelecionada,
-                itens, desconto: desc, totalVenda, subtotalLiq, valorIva, taxaIva, nuitCliente,
-                totalCusto, valorEntregue, troco, metodo, desdobramentoInfo, clienteFiado
+                id: Date.now(),
+                data: new Date().toLocaleString('pt-MZ'),
+                timestamp: Date.now(),
+                usuario: usuarioAtual.nome,
+                tipo: 'venda',
+                status: 'concluido',
+                mesa: mesaSelecionada,
+                itens,
+                desconto: desc,
+                totalVenda,
+                subtotalLiq,
+                valorIva,
+                taxaIva,
+                nuitCliente,
+                totalCusto,
+                valorEntregue,
+                troco,
+                metodo,
+                desdobramentoInfo,
+                clienteFiado
             };
 
             if(metodo === 'Fiado') {
@@ -2655,7 +2805,9 @@
 
             mesas[mesaSelecionada] = [];
             let mesasParaSalvar = {};
-            for(let m in mesas) { if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome }; }
+            for(let m in mesas) {
+                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
+            }
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
 
             if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
@@ -2664,6 +2816,7 @@
             }
 
             window.tocarSom('sucesso');
+
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
             document.getElementById('cartDesconto').value = 0;
@@ -2677,10 +2830,16 @@
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
-            if (bluetoothCharacteristic) window.imprimirReciboBluetoothESC(registoVenda);
-            else imprimirTalão(registoVenda);
+            if (bluetoothCharacteristic) {
+                window.imprimirReciboBluetoothESC(registoVenda);
+            } else {
+                imprimirTalão(registoVenda);
+            }
 
-        } catch (erro) { alert("⚠️ Falha ao registar venda: " + erro.message); }
+        } catch (erro) {
+            console.error("Erro ao finalizar venda:", erro);
+            alert("⚠️ Falha ao registar venda: " + erro.message);
+        }
     };
 
     function imprimirTalão(v) {
@@ -2708,7 +2867,8 @@
         divItens.innerHTML = '';
         v.itens.forEach(i => {
             divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span><span>${i.subtotal.toFixed(2)} MT</span>
+                <span>${i.qtd}x ${i.produto}</span>
+                <span>${i.subtotal.toFixed(2)} MT</span>
             </div>`;
         });
         document.getElementById('reciboTotal').innerText = v.totalVenda.toFixed(2);
@@ -2730,7 +2890,10 @@
 
         let divItens = document.getElementById('cozinhaItens');
         divItens.innerHTML = '';
-        itens.forEach(i => { divItens.innerHTML += `<div>• ${i.qtd}x ${i.produto.toUpperCase()}</div>`; });
+        itens.forEach(i => {
+            divItens.innerHTML += `<div>• ${i.qtd}x ${i.produto.toUpperCase()}</div>`;
+        });
+
         setTimeout(() => { window.print(); }, 300);
     };
 
@@ -2765,9 +2928,22 @@
         if (!bluetoothCharacteristic) return;
         try {
             let encoder = new TextEncoder();
-            let txt = "\x1B\x40\x1B\x61\x01" + `${dadosEmpresa.nome || 'RESTAURANTE'}\n` + `--------------------------------\n` + `${v.data}\n` + "\x1B\x61\x00" + `Mesa: ${v.mesa} | Op: ${v.usuario}\n` + `Pagamento: ${v.metodo}\n` + `--------------------------------\n`;
+            let txt = "\x1B\x40\x1B\x61\x01" + 
+                      `${dadosEmpresa.nome || 'RESTAURANTE'}\n` +
+                      `--------------------------------\n` +
+                      `${v.data}\n` +
+                      "\x1B\x61\x00" + 
+                      `Mesa: ${v.mesa} | Op: ${v.usuario}\n` +
+                      `Pagamento: ${v.metodo}\n` +
+                      `--------------------------------\n`;
+
             v.itens.forEach(i => { txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`; });
-            txt += `--------------------------------\n` + `TOTAL: ${v.totalVenda.toFixed(2)} MT\n` + `Troco: ${v.troco.toFixed(2)} MT\n` + "\x1B\x61\x01\nObrigado pela preferencia!\n\n\n\n";
+
+            txt += `--------------------------------\n` +
+                   `TOTAL: ${v.totalVenda.toFixed(2)} MT\n` +
+                   `Troco: ${v.troco.toFixed(2)} MT\n` +
+                   "\x1B\x61\x01\nObrigado pela preferencia!\n\n\n\n";
+
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
         } catch (err) { imprimirTalão(v); }
     };
@@ -2816,7 +2992,7 @@
         let c = clientes[idx];
         if(!c) return;
         if(c.divida > 0) {
-            if(!confirm(`⚠️ ATENÇÃO: O cliente ${c.nome} tem dívida pendente de ${c.divida} MT. Deseja eliminá-lo?`)) return;
+            if(!confirm(`⚠️ ATENÇÃO: O cliente ${c.nome} tem uma dívida pendente de ${c.divida} MT. Deseja mesmo eliminá-lo?`)) return;
         } else {
             if(!confirm(`Deseja eliminar o cliente ${c.nome}?`)) return;
         }
@@ -2845,12 +3021,16 @@
         if(!sel) return;
         sel.innerHTML = '<option value="">-- Selecionar Garrafa --</option>';
         for(let p in stock) {
-            if(stock[p].qtd >= 1) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd} garrafas)</option>`;
+            if(stock[p].qtd >= 1) {
+                sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd} garrafas)</option>`;
+            }
         }
         document.getElementById('modalConversaoShots').style.display = 'block';
     };
 
-    window.fecharModalConversaoShots = function() { document.getElementById('modalConversaoShots').style.display = 'none'; };
+    window.fecharModalConversaoShots = function() {
+        document.getElementById('modalConversaoShots').style.display = 'none';
+    };
 
     window.executarConversaoGarrafaParaShots = async function() {
         let garrafa = document.getElementById('selectGarrafaConversao').value;
@@ -2872,20 +3052,40 @@
         stock[garrafa].preco_total -= custoTotalGarrafas;
         if(stock[garrafa].qtd < 0.01) { stock[garrafa].qtd = 0; stock[garrafa].preco_total = 0; }
 
-        if(!stock[nomeShot]) stock[nomeShot] = { qtd: 0, preco_total: 0, preco_venda: precoShot, min_alerta: 10, categoria: 'bebidas' };
+        if(!stock[nomeShot]) {
+            stock[nomeShot] = {
+                qtd: 0,
+                preco_total: 0,
+                preco_venda: precoShot,
+                min_alerta: 10,
+                categoria: 'bebidas'
+            };
+        }
 
         stock[nomeShot].qtd += totalShotsGerados;
         stock[nomeShot].preco_total += custoTotalGarrafas; 
         if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'SAÍDA (CONVERSÃO SHOTS)', produto: garrafa, qtd: qtdGarrafasAbrir, usuario: usuarioAtual.nome, origem: `Convertidas em ${totalShotsGerados}x ${nomeShot}`
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'SAÍDA (CONVERSÃO SHOTS)',
+            produto: garrafa,
+            qtd: qtdGarrafasAbrir,
+            usuario: usuarioAtual.nome,
+            origem: `Convertidas em ${totalShotsGerados}x ${nomeShot}`
         });
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'ENTRADA (CONVERSÃO SHOTS)', produto: nomeShot, qtd: totalShotsGerados, usuario: usuarioAtual.nome, origem: `Origem: ${qtdGarrafasAbrir}x ${garrafa}`
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'ENTRADA (CONVERSÃO SHOTS)',
+            produto: nomeShot,
+            qtd: totalShotsGerados,
+            usuario: usuarioAtual.nome,
+            origem: `Origem: ${qtdGarrafasAbrir}x ${garrafa}`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
@@ -2906,14 +3106,17 @@
         if (modoCompra === 'caixa') {
             document.getElementById('rowModoCaixa').style.display = 'flex';
             document.getElementById('rowModoUnidade').style.display = 'none';
+
             let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
             let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
             let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+
             totalUnidades = numCaixas * unidCaixa;
             custoUnitario = unidCaixa > 0 ? (valCaixa / unidCaixa) : 0;
         } else {
             document.getElementById('rowModoCaixa').style.display = 'none';
             document.getElementById('rowModoUnidade').style.display = 'flex';
+
             totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
             custoUnitario = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
         }
@@ -2939,6 +3142,7 @@
         let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
         let totalUnidades = 0, totalCusto = 0;
+
         if(modoCompra === 'caixa') {
             let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
             let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
@@ -2951,7 +3155,9 @@
             totalCusto = totalUnidades * custoUnit;
         }
 
-        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+        if(!stock[prod]) {
+            stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+        }
 
         stock[prod].qtd += totalUnidades;
         stock[prod].preco_total += totalCusto;
@@ -2961,12 +3167,19 @@
         if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'ENTRADA (COMPRA)',
+            produto: prod,
+            qtd: totalUnidades,
+            usuario: usuarioAtual.nome,
+            origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}'`);
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid do produto '${prod}' (Barcode: ${barcodeInput || 'N/A'})`);
+
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
         filtrarEExibirProdutosVenda();
@@ -2978,6 +3191,7 @@
         if(!tbody) return;
         tbody.innerHTML = '';
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
+
         let termoBusca = (document.getElementById('filtroBuscarStock')?.value || '').trim().toLowerCase();
         let produtosFiltrados = Object.keys(stock).filter(p => p.toLowerCase().includes(termoBusca));
 
@@ -2994,8 +3208,15 @@
             let precoVenda = item.preco_venda || 0;
             let isCritico = item.qtd <= (item.min_alerta || 5);
 
-            let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProduto('${p}')">➖ Apagar Qtd</button><button class="btn-saida btn-sm" onclick="window.apagarProdutoTotal('${p}')">🗑️ Apagar Total</button></td>` : '';
+            let colFin = isGerenteOuAdmin ? `
+                <td>${custoMedio.toFixed(2)} MT</td>
+                <td style="color:var(--success); font-weight:bold;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
+            
+            let colAdmin = usuarioAtual.tipo === 'admin' ? `
+                <td>
+                    <button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProduto('${p}')">➖ Apagar Qtd</button>
+                    <button class="btn-saida btn-sm" onclick="window.apagarProdutoTotal('${p}')">🗑️ Apagar Total</button>
+                </td>` : '';
 
             tbody.innerHTML += `<tr>
                 <td><b>${p.toUpperCase()}</b></td>
@@ -3003,7 +3224,8 @@
                 <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
                 <td>${item.min_alerta || 5}</td>
                 <td><b>${precoVenda.toFixed(2)} MT</b></td>
-                ${colFin}${colAdmin}
+                ${colFin}
+                ${colAdmin}
             </tr>`;
         });
     }
@@ -3021,7 +3243,10 @@
         if(!item) return;
         let qtdRemover = parseFloat(prompt(`Quantas unidades de '${p.toUpperCase()}' deseja apagar/remover do stock? (Stock atual: ${item.qtd})`, "1"));
         if(isNaN(qtdRemover) || qtdRemover <= 0) return;
-        if(qtdRemover > item.qtd) return alert(`⚠️ Stock insuficiente!`);
+
+        if(qtdRemover > item.qtd) {
+            return alert(`⚠️ Não pode remover ${qtdRemover} unidades pois o stock atual é apenas de ${item.qtd}!`);
+        }
 
         let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
         item.qtd -= qtdRemover;
@@ -3029,13 +3254,19 @@
         if(item.qtd < 0.01) { item.qtd = 0; item.preco_total = 0; }
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'REMOÇÃO MANUAL (STOCK)', produto: p, qtd: qtdRemover, usuario: usuarioAtual.nome, origem: `Remoção direta`
+            id: Date.now() + Math.random(),
+            data: new Date().toLocaleString('pt-MZ'),
+            timestamp: Date.now(),
+            tipo: 'REMOÇÃO MANUAL (STOCK)',
+            produto: p,
+            qtd: qtdRemover,
+            usuario: usuarioAtual.nome,
+            origem: `Remoção direta de ${qtdRemover} unidades`
         });
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
         registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
-        alert(`Removidas ${qtdRemover} unidades!`);
+        alert(`Removidas ${qtdRemover} unidades de '${p.toUpperCase()}' com sucesso!`);
         filtrarEExibirProdutosVenda();
         renderizarStock();
     };
@@ -3044,7 +3275,7 @@
         if(confirm(`Tem certeza absoluta que deseja apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
-            registarAuditLog('Produto Eliminado', `Produto '${p}' apagado`);
+            registarAuditLog('Produto Eliminado', `Produto '${p}' apagado totalmente do stock`);
             filtrarEExibirProdutosVenda();
             renderizarStock();
         }
@@ -3055,7 +3286,11 @@
         if(!tbody) return;
         tbody.innerHTML = '';
         let filtroTipo = document.getElementById('filtroTipoMovimentacao')?.value || 'todos';
-        let listaFiltrada = movimentacoesStock.filter(m => filtroTipo === 'todos' || m.tipo.includes(filtroTipo));
+
+        let listaFiltrada = movimentacoesStock.filter(m => {
+            if(filtroTipo === 'todos') return true;
+            return m.tipo.includes(filtroTipo);
+        });
 
         let totalPaginas = Math.ceil(listaFiltrada.length / ITENS_POR_PAGINA_MOV) || 1;
         if(paginaAtualMov > totalPaginas) paginaAtualMov = totalPaginas;
@@ -3065,13 +3300,17 @@
         let inicio = (paginaAtualMov - 1) * ITENS_POR_PAGINA_MOV;
         listaFiltrada.slice(inicio, inicio + ITENS_POR_PAGINA_MOV).forEach((m) => {
             let isEntrada = m.tipo.includes('ENTRADA') || m.tipo.includes('DEVOLUÇÃO');
-            let colAdminAcao = (usuarioAtual && usuarioAtual.tipo === 'admin') ? `<td><button class="btn-saida btn-sm" onclick="window.apagarMovimentacaoIndividual('${m.idDoc}')">🗑️ Apagar</button></td>` : `<td>-</td>`;
+            let colAdminAcao = (usuarioAtual && usuarioAtual.tipo === 'admin') 
+                ? `<td><button class="btn-saida btn-sm" onclick="window.apagarMovimentacaoIndividual('${m.idDoc}')">🗑️ Apagar</button></td>`
+                : `<td>-</td>`;
 
             tbody.innerHTML += `<tr>
                 <td><small>${m.data}</small></td>
                 <td><span class="badge ${isEntrada ? 'badge-entrada' : 'badge-saida'}">${m.tipo}</span></td>
                 <td><b>${m.produto.toUpperCase()}</b></td>
-                <td style="font-weight:bold; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">${isEntrada ? '+' : '-'}${m.qtd}</td>
+                <td style="font-weight:bold; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">
+                    ${isEntrada ? '+' : '-'}${m.qtd}
+                </td>
                 <td><b style="text-transform:uppercase;">${m.usuario}</b></td>
                 <td><small>${m.origem || '-'}</small></td>
                 ${colAdminAcao}
@@ -3091,14 +3330,16 @@
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas Administrador!");
         if(confirm("Confirmar a remoção do registo?")) {
             await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
-            registarAuditLog('Movimentação Apagada', `Removido registo #${idDocMov}`);
+            registarAuditLog('Movimentação Apagada', `Removido registo de movimentação #${idDocMov}`);
             alert("Registo removido!");
         }
     };
 
     function verificarAlertasStock() {
         let temCritico = false;
-        for(let p in stock) { if(stock[p].qtd <= (stock[p].min_alerta || 5)) { temCritico = true; break; } }
+        for(let p in stock) {
+            if(stock[p].qtd <= (stock[p].min_alerta || 5)) { temCritico = true; break; }
+        }
         if(temCritico) window.tocarSom('alerta');
         document.getElementById('boxAlertaStockGlobal').style.display = temCritico ? 'block' : 'none';
     }
@@ -3115,7 +3356,11 @@
         if(!tbodyHist) return;
         tbodyHist.innerHTML = '';
         let lista = historicoDashFiltrado;
-        if(lista.length === 0) { tbodyHist.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Sem transações registadas.</td></tr>'; return; }
+
+        if(lista.length === 0) {
+            tbodyHist.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#666;">Sem transações registadas para este período.</td></tr>';
+            return;
+        }
 
         let totalPaginas = Math.ceil(lista.length / ITENS_POR_PAGINA_ADMIN_HIST) || 1;
         if(paginaAtualAdminHist > totalPaginas) paginaAtualAdminHist = totalPaginas;
@@ -3127,6 +3372,7 @@
             let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : (h.detalhes || '-');
             let ehCancelado = h.status === 'cancelado';
             let ehCortesia = h.metodo === 'Cortesia';
+
             if(h.metodo === 'Numerário') resumo += " <b style='color:var(--success);'>[💵 Espécie]</b>";
             else if(ehCortesia) resumo += " <b style='color:#e83e8c;'>[🎁 Cortesia]</b>";
 
@@ -3134,9 +3380,16 @@
                 <td><small>${h.data || '-'}</small></td>
                 <td><b style="text-transform:uppercase;">${h.usuario || '-'}</b></td>
                 <td><small>${resumo}</small></td>
-                <td><span class="badge ${ehCortesia ? 'badge-cortesia' : ''}">${h.metodo || 'Venda'}</span>${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}</td>
-                <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">${(h.totalVenda || 0).toFixed(2)} MT</td>
-                <td>${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc}',${h.id})">🚫 Cancelar</button>` : '-'}</td>
+                <td>
+                    <span class="badge ${ehCortesia ? 'badge-cortesia' : ''}">${h.metodo || 'Venda'}</span>
+                    ${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}
+                </td>
+                <td style="font-weight:bold; color:${ehCancelado?'#6c757d':'var(--success)'}; text-decoration:${ehCancelado?'line-through':'none'};">
+                    ${(h.totalVenda || 0).toFixed(2)} MT
+                </td>
+                <td>
+                    ${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc}',${h.id})">🚫 Cancelar</button>` : '-'}
+                </td>
             </tr>`;
         });
     };
@@ -3144,7 +3397,10 @@
     window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
         let senhaAdmin = prompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para cancelar esta venda:");
         let autorizacao = false;
-        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; } }
+        for (let u in usuarios) {
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
+        }
+
         if (!autorizacao) return alert("❌ Senha incorreta!");
 
         let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
@@ -3157,8 +3413,14 @@
                     stock[item.produto].preco_total += (item.qtd * item.custoUnit);
                 }
                 await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                    id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                    tipo: 'DEVOLUÇÃO (CANCELAMENTO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Cancelamento Venda #${vendaObj.id}`
+                    id: Date.now() + Math.random(),
+                    data: new Date().toLocaleString('pt-MZ'),
+                    timestamp: Date.now(),
+                    tipo: 'DEVOLUÇÃO (CANCELAMENTO)',
+                    produto: item.produto,
+                    qtd: item.qtd,
+                    usuario: usuarioAtual.nome,
+                    origem: `Cancelamento Venda #${vendaObj.id}`
                 });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
@@ -3171,34 +3433,50 @@
     };
 
     window.apagarTodoHistoricoApp = async function() {
-        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas o Administrador!");
-        let senha = prompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador para apagar todo o histórico:");
+        if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return alert("Apenas o Administrador pode apagar todo o histórico da aplicação!");
+        let senha = prompt("⚠️ ZONA DE PERIGO\nPara apagar todo o histórico de vendas, turnos, movimentações e auditoria, insira a palavra-passe do Administrador:");
         let autorizado = false;
-        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
-        if(!autorizado) return alert("❌ Senha incorreta!");
-        if(!confirm("⚠️ TEM CERTEZA ABSOLUTA? Irá apagar permanentemente todas as vendas, turnos e logs.")) return;
+        for (let u in usuarios) {
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
+        }
+        if(!autorizado) return alert("❌ Senha incorreta! Operação cancelada.");
+
+        if(!confirm("⚠️ TEM CERTEZA ABSOLUTA?\n\nEsta ação irá apagar permanentemente todas as vendas, turnos, movimentações e registos de auditoria do banco de dados da empresa.")) return;
 
         try {
+            // Apaga documentos da coleção de vendas
             let snapshotVendas = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
             let promessas = snapshotVendas.docs.map(d => deleteDoc(d.ref));
+
             let snapshotMov = await getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes"));
             snapshotMov.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
+
             let snapshotTurnos = await getDocs(collection(db, "empresas", codigoEmpresa, "turnos"));
             snapshotTurnos.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
+
             let snapshotAudit = await getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"));
             snapshotAudit.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
 
             await Promise.all(promessas);
-            historico = []; movimentacoesStock = []; turnosCaixa = []; auditLogs = [];
-            registarAuditLog('Histórico Apagado', `Todo o histórico limpo por ${usuarioAtual.nome}`);
+
+            historico = [];
+            movimentacoesStock = [];
+            turnosCaixa = [];
+            auditLogs = [];
+
+            registarAuditLog('Histórico Apagado', `Todo o histórico da app foi limpo por ${usuarioAtual.nome}`);
             window.tocarSom('sucesso');
-            alert("✅ Todo o histórico foi apagado!");
+            alert("✅ Todo o histórico da aplicação foi apagado com sucesso!");
             window.atualizarDashboard();
-        } catch(err) { alert("Erro ao apagar: " + err.message); }
+        } catch(err) {
+            console.error("Erro ao apagar histórico:", err);
+            alert("Erro ao apagar histórico: " + err.message);
+        }
     };
 
     window.atualizarDashboard = function() {
         if(!usuarioAtual || usuarioAtual.tipo !== 'admin') return;
+
         let filtro = document.getElementById('filtroDataTipo') ? document.getElementById('filtroDataTipo').value : 'todos';
         let agora = new Date();
         
@@ -3207,7 +3485,9 @@
             let d = new Date(h.timestamp || Date.now());
             if(filtro === 'hoje') return d.toDateString() === agora.toDateString();
             if(filtro === 'ontem') {
-                let ontem = new Date(); ontem.setDate(agora.getDate() - 1); return d.toDateString() === ontem.toDateString();
+                let ontem = new Date();
+                ontem.setDate(agora.getDate() - 1);
+                return d.toDateString() === ontem.toDateString();
             }
             if(filtro === 'mes') return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
             return true;
@@ -3216,6 +3496,7 @@
         let totalVendas = 0, totalCOGS = 0;
         let canais = { 'M-Pesa': 0, 'e-Mola': 0, 'POS': 0, 'Numerário': 0, 'Fiado': 0, 'Cortesia': 0 };
         let topProds = {};
+
         let tAbertura = caixaEstado.timestampAbertura || 0;
         let cancelamentosNoTurno = historico.filter(h => h.status === 'cancelado' && (h.timestamp || 0) >= tAbertura).length;
         
@@ -3224,24 +3505,33 @@
             if(caixaEstado.aberto && cancelamentosNoTurno >= 3) {
                 boxAlertaCanc.style.display = 'block';
                 document.getElementById('numCancelamentosDetetados').innerText = cancelamentosNoTurno;
-            } else boxAlertaCanc.style.display = 'none';
+            } else {
+                boxAlertaCanc.style.display = 'none';
+            }
         }
 
         historicoDashFiltrado.forEach(h => {
             if(h.tipo === 'venda' && h.status !== 'cancelado') {
                 totalVendas += (h.totalVenda || 0);
                 totalCOGS += (h.totalCusto || 0);
+                
                 if(h.desdobramentoInfo) {
                     canais['Numerário'] = (canais['Numerário'] || 0) + (h.desdobramentoInfo.din || 0);
                     canais['M-Pesa'] = (canais['M-Pesa'] || 0) + (h.desdobramentoInfo.mpe || 0);
                     canais['e-Mola'] = (canais['e-Mola'] || 0) + (h.desdobramentoInfo.emo || 0);
                     canais['POS'] = (canais['POS'] || 0) + (h.desdobramentoInfo.pos || 0);
-                } else if(h.metodo) canais[h.metodo] = (canais[h.metodo] || 0) + h.totalVenda;
-                if(h.itens) h.itens.forEach(i => topProds[i.produto] = (topProds[i.produto] || 0) + i.qtd);
+                } else if(h.metodo) {
+                    canais[h.metodo] = (canais[h.metodo] || 0) + h.totalVenda;
+                }
+
+                if(h.itens) {
+                    h.itens.forEach(i => topProds[i.produto] = (topProds[i.produto] || 0) + i.qtd);
+                }
             }
         });
 
         let totalDesp = despesas.reduce((acc, i) => acc + i.valor, 0);
+
         document.getElementById('dashValMpesa').innerText = (canais['M-Pesa'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValEmola').innerText = (canais['e-Mola'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValPOS').innerText = (canais['POS'] || 0).toFixed(2) + " MT";
@@ -3258,7 +3548,10 @@
         if(divTop) {
             divTop.innerHTML = '';
             topSorted.forEach(([p, q], idx) => {
-                divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span><b>${idx+1}. ${p.toUpperCase()}</b></span><span class="badge">${q} unid</span></div>`;
+                divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span><b>${idx+1}. ${p.toUpperCase()}</b></span>
+                    <span class="badge">${q} unid</span>
+                </div>`;
             });
         }
 
@@ -3289,11 +3582,23 @@
     window.fazerBackup = function() {
         let usuariosSemSenhas = {};
         for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
+
         let backupData = {
-            codigoEmpresa, usuarios: usuariosSemSenhas, stock, movimentacoesStock, historico, clientes, despesas, turnosCaixa, auditLogs,
-            dadosEmpresa: { nome: dadosEmpresa.nome, nuit: dadosEmpresa.nuit, endereco: dadosEmpresa.endereco, telefone: dadosEmpresa.telefone, slogan: dadosEmpresa.slogan },
+            codigoEmpresa,
+            usuarios: usuariosSemSenhas,
+            stock,
+            movimentacoesStock,
+            historico,
+            clientes,
+            despesas,
+            turnosCaixa,
+            auditLogs,
+            dadosEmpresa: {
+                nome: dadosEmpresa.nome, nuit: dadosEmpresa.nuit, endereco: dadosEmpresa.endereco, telefone: dadosEmpresa.telefone, slogan: dadosEmpresa.slogan
+            },
             dataBackup: new Date().toLocaleString('pt-MZ')
         };
+
         let blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
         let a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -3304,7 +3609,13 @@
 
     window.exportarVendasExcel = function() {
         let dadosExcel = historico.map(item => ({
-            "Empresa": codigoEmpresa, "Data": item.data, "Estado": item.status || "concluido", "Utilizador": item.usuario, "Mesa": item.mesa || "Balcão", "Método": item.metodo, "Total Venda (MT)": item.totalVenda || 0
+            "Empresa": codigoEmpresa,
+            "Data": item.data,
+            "Estado": item.status || "concluido",
+            "Utilizador": item.usuario,
+            "Mesa": item.mesa || "Balcão",
+            "Método": item.metodo,
+            "Total Venda (MT)": item.totalVenda || 0
         }));
         let ws = XLSX.utils.json_to_sheet(dadosExcel);
         let wb = XLSX.utils.book_new();
@@ -3317,7 +3628,14 @@
         for(let p in stock) {
             let item = stock[p];
             let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-            dadosStock.push({ "Empresa": codigoEmpresa, "Produto": p.toUpperCase(), "Categoria": (item.categoria||'outros').toUpperCase(), "Stock": item.qtd, "Custo Unit. (MT)": custoMedio.toFixed(2), "Preço Venda (MT)": (item.preco_venda||0).toFixed(2) });
+            dadosStock.push({
+                "Empresa": codigoEmpresa,
+                "Produto": p.toUpperCase(),
+                "Categoria": (item.categoria||'outros').toUpperCase(),
+                "Stock": item.qtd,
+                "Custo Unit. (MT)": custoMedio.toFixed(2),
+                "Preço Venda (MT)": (item.preco_venda||0).toFixed(2)
+            });
         }
         let ws = XLSX.utils.json_to_sheet(dadosStock);
         let wb = XLSX.utils.book_new();
@@ -3353,14 +3671,24 @@
     window.revelarLicencaAdmin = function() {
         let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para visualizar o Código de Licença:");
         let autorizado = false;
-        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
+        for (let u in usuarios) {
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) {
+                autorizado = true;
+                break;
+            }
+        }
         if (autorizado) {
             let inputLicenca = document.getElementById('cfgCodigoLicencaOculto');
             inputLicenca.type = "text";
             inputLicenca.value = codigoEmpresa;
             alert(`🔑 Código de Licença Ativo: ${codigoEmpresa}`);
-            setTimeout(() => { inputLicenca.type = "password"; inputLicenca.value = "••••••••"; }, 8000);
-        } else alert("❌ Acesso Negado!");
+            setTimeout(() => {
+                inputLicenca.type = "password";
+                inputLicenca.value = "••••••••";
+            }, 8000);
+        } else {
+            alert("❌ Acesso Negado: Palavra-passe de Administrador incorreta!");
+        }
     };
 
     window.abrirModalDefinicoes = function() {
@@ -3370,7 +3698,9 @@
             if (usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente')) {
                 secEmpresaAdmin.style.display = 'block';
                 preencherCamposEmpresaModal();
-            } else secEmpresaAdmin.style.display = 'none';
+            } else {
+                secEmpresaAdmin.style.display = 'none';
+            }
         }
     };
 
@@ -3388,7 +3718,7 @@
             taxaIva: parseFloat(document.getElementById('cfgTaxaIva').value) || 16
         };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
-        registarAuditLog('Empresa Atualizada', 'Dados e Chave Mestra alterados');
+        registarAuditLog('Empresa Atualizada', 'Dados da empresa e Chave Mestra alterados');
         alert("Dados salvos com sucesso!");
     };
 
@@ -3396,12 +3726,13 @@
         let p = document.getElementById('inputNovaSenha').value;
         if(!p) return alert("Digite a nova palavra-passe.");
         usuarios[usuarioAtual.nome].senha = p;
+
         let listaArrayFirestore = [];
         for (let nomeKey in usuarios) {
             listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-        registarAuditLog('Senha Pessoal Alterada', `Alterada por ${usuarioAtual.nome}`);
+        registarAuditLog('Senha Pessoal Alterada', `Palavra-passe pessoal alterada por ${usuarioAtual.nome}`);
         alert("Palavra-passe alterada!");
     };
 </script>
