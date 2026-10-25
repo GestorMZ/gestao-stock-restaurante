@@ -3,7 +3,7 @@
   "short_name": "RestaurantePro",
   "description": "Sistema de Gestão de Caixa, Stock e Vendas para Restaurantes e Bares em Moçambique",
   "start_url": "./index.html",
-  "display": "fullscreen",
+  "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
   "orientation": "portrait-primary",
