@@ -374,9 +374,9 @@
             <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
         </div>
 
-        <!-- MENU DE ABAS ISOLADAS (COM ABA DE CONTROLOS DE LOGIN/LOGOUT) -->
+      <!-- MENU DE ABAS ISOLADAS -->
         <div class="tabs-nav">
-            <button class="tab-btn" onclick="window.mudarAba('abaLoginLogoutControlo')">🔐 Login & Sessão</button>
+            <button class="tab-btn" onclick="window.mudarAba('abaLoginLogoutControlo')">🔐 Sessão & Conta</button>
             <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
             <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
             <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado')">👥 Clientes & Fiado</button>
@@ -385,6 +385,23 @@
             <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Carteiras</button>
         </div>
 
+        <!-- ABA 0: CONTROLOS DE LOGIN, SESSÃO E LOGOUT ISOLADA -->
+        <div id="abaLoginLogoutControlo" class="tab-content">
+            <div style="max-width: 500px; margin: 0 auto; background: #f8fafc; padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0;">
+                <h3 style="margin-top: 0; color: var(--primary);">🔐 Gestão da Sessão Atual</h3>
+                <p style="font-size: 0.9em; color: #666;">Gerencie o estado da sua sessão, bloqueie o ecrã ou termine o turno com segurança.</p>
+                
+                <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 15px;">
+                    <p style="margin: 5px 0;"><b>Utilizador Ativo:</b> <span id="sessaoUserDisplay" style="color: var(--primary); text-transform: uppercase;"></span></p>
+                    <p style="margin: 5px 0;"><b>Licença / Empresa:</b> <span id="sessaoEmpresaDisplay" style="color: var(--purple); text-transform: uppercase;"></span></p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn-warning" onclick="window.bloquearEcra()">🔒 Bloquear Ecrã Temporariamente</button>
+                    <button class="btn-saida" onclick="window.fazerLogout()">🚪 Terminar Sessão (Logout)</button>
+                </div>
+            </div>
+        </div>
         <!-- ABA 1: VENDAS (ISOLADA) -->
         <div id="abaVendas" class="tab-content active">
             <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
@@ -1958,15 +1975,29 @@
         }
     }
 
-    window.mudarAba = function(abaId) {
+   window.mudarAba = function(abaId) {
         window.tocarSom('click');
+        
+        // Remove a classe active de todas as abas e conteúdos
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-        if (event && event.target) event.target.classList.add('active');
-        document.getElementById(abaId).classList.add('active');
-        if(abaId === 'abaDashboard') window.atualizarDashboard();
-        if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+        // Ativa o conteúdo da aba correspondente
+        let targetContent = document.getElementById(abaId);
+        if (targetContent) {
+            targetContent.classList.add('active');
+        }
+
+        // Encontra o botão correspondente na barra de navegação e ativa-o
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            let onclickAttr = btn.getAttribute('onclick') || '';
+            if (onclickAttr.includes(abaId)) {
+                btn.classList.add('active');
+            }
+        });
+
+        if (abaId === 'abaDashboard') window.atualizarDashboard();
+        if (abaId === 'abaUsuarios' && usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
     };
 
     function processarFotoAvatar(file, callback) {
