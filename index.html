@@ -271,97 +271,99 @@
 
 <div class="container">
 
-    <!-- ECRÃ DE BLOQUEIO -->
-    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
-        <div class="modal-content" style="max-width:350px; text-align:center; background:#fff; padding:25px; border-radius:12px;">
-            <h3 style="margin-top:0;">🔒 Ecrã Bloqueado</h3>
-            <p style="font-size:0.85em; color:#666;">Insira a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
-            <div class="form-group">
-                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
-            </div>
-            <button class="btn-primary" onclick="window.desbloquearEcra()">🔓 Desbloquear Sistema</button>
-        </div>
-    </div>
-
-    <!-- ECRÃ DE LOGIN -->
-    <div id="telaLogin" style="max-width:480px; margin:20px auto;">
-        <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
-        <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
-
-        <div style="background:#f8fafc; padding:15px; border-radius:10px; border:2px solid #e2e8f0; margin-bottom:15px;">
-            <div class="form-group">
-                <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
-                <div style="display:flex; gap:6px;">
-                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:2px;" onchange="window.carregarPerfisEmpresa()">
-                    <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar Código</button>
+    <!-- ABA ISOLADA DE CONTROLOS DE LOGIN E LOGOUT / ECRÃ DE BLOQUEIO -->
+    <div id="abaLoginLogoutControlo" class="tab-content active" style="display:block;">
+        <div id="telaBloqueio" class="modal" style="display:none; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center;">
+            <div class="modal-content" style="max-width:350px; text-align:center; background:#fff; padding:25px; border-radius:12px;">
+                <h3 style="margin-top:0;">🔒 Ecrã Bloqueado</h3>
+                <p style="font-size:0.85em; color:#666;">Insira a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
+                <div class="form-group">
+                    <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
                 </div>
+                <button class="btn-primary" onclick="window.desbloquearEcra()">🔓 Desbloquear Sistema</button>
             </div>
-            <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
 
-        <div id="boxContaBloqueada" style="display:none; background:#fff5f5; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
-            <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
-            <p id="textoMotivoBloqueio" style="font-size:0.9em; color:#333; margin-bottom:10px;"></p>
-            
-            <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
-                <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
-                <div style="font-size:0.9em; line-height:1.6; color:#222;">
-                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>Valor da Mensalidade:</b> 1.500 MT
+        <!-- ECRÃ DE LOGIN -->
+        <div id="telaLogin" style="max-width:480px; margin:20px auto;">
+            <h2 style="text-align:center; margin-bottom:5px;">Entrar no Sistema</h2>
+            <p style="text-align:center; font-size:0.85em; color:#666; margin-top:0;">Introduza o Código da Empresa e as suas credenciais:</p>
+
+            <div style="background:#f8fafc; padding:15px; border-radius:10px; border:2px solid #e2e8f0; margin-bottom:15px;">
+                <div class="form-group">
+                    <label style="color:var(--primary); font-weight:bold;">🏢 Código do Restaurante / Licença</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:2px;" onchange="window.carregarPerfisEmpresa()">
+                        <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar Código</button>
+                    </div>
                 </div>
+                <button class="btn-primary btn-sm" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
             </div>
-            
-            <p style="font-size:0.85em; color:#555; margin-bottom:0;">
-                Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema.
-            </p>
-        </div>
 
-        <div id="seccaoPerfisEForm" style="display:none;">
-            <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.85em; font-weight:bold; color:var(--purple);">🔑 Início de Turno: Selecione o Utilizador:</p>
-            <div id="gridPerfisLogin" class="grid-perfis-login"></div>
+            <div id="boxContaBloqueada" style="display:none; background:#fff5f5; border:2px solid #dc3545; padding:18px; border-radius:10px; margin-bottom:15px; text-align:center;">
+                <h3 style="color:#dc3545; margin-top:0;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
+                <p id="textoMotivoBloqueio" style="font-size:0.9em; color:#333; margin-bottom:10px;"></p>
+                
+                <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
+                    <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
+                    <div style="font-size:0.9em; line-height:1.6; color:#222;">
+                        • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
+                        • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
+                        • <b>Valor da Mensalidade:</b> 1.500 MT
+                    </div>
+                </div>
+                
+                <p style="font-size:0.85em; color:#555; margin-bottom:0;">
+                    Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema.
+                </p>
+            </div>
 
-            <div class="form-group">
-                <label>Utilizador Selecionado</label>
-                <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
+            <div id="seccaoPerfisEForm" style="display:none;">
+                <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.85em; font-weight:bold; color:var(--purple);">🔑 Início de Turno: Selecione o Utilizador:</p>
+                <div id="gridPerfisLogin" class="grid-perfis-login"></div>
+
+                <div class="form-group">
+                    <label>Utilizador Selecionado</label>
+                    <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
+                </div>
+                <div class="form-group">
+                    <label>Palavra-passe</label>
+                    <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
+                </div>
+                <button onclick="window.fazerLogin()" style="margin-top:10px;">Entrar no Sistema</button>
+                
+                <p style="text-align:center; margin-top:20px;">
+                    <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
+                </p>
             </div>
-            <div class="form-group">
-                <label>Palavra-passe</label>
-                <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
-            </div>
-            <button onclick="window.fazerLogin()" style="margin-top:10px;">Entrar no Sistema</button>
-            
-            <p style="text-align:center; margin-top:20px;">
-                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
-            </p>
         </div>
     </div>
     <!-- ECRÃ PRINCIPAL -->
-    <div id="telaSistema" style="display:none;">
-        
-    <div class="header-usuario">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <div id="headerAvatarBox"></div>
-        <div>
-            <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
-            Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
-            <small id="cargoUsuarioLogado" style="color:#666;"></small>
-        </div>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-        
-        <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
-        <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
-            ⏳ A verificar rede...
-        </span>
+        <div id="telaSistema" style="display:none;">
+            
+        <div class="header-usuario">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div id="headerAvatarBox"></div>
+                <div>
+                    <strong>Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></strong> | 
+                    Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase;"></span><br>
+                    <small id="cargoUsuarioLogado" style="color:#666;"></small>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                
+                <!-- 🟢/🟡/🔴 ÍCONE DE ESTADO DE REDE NA TELA -->
+                <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; background: #e9ecef; color: #333; border: 1px solid #ced4da;">
+                    ⏳ A verificar rede...
+                </span>
 
-        <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
-        <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
-        <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
-        <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
-        <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
-    </div>
-</div>
+                <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
+                <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
+                <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
+                <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições & Bluetooth</button>
+                <button class="btn-dark btn-sm" onclick="window.fazerLogout()">Sair</button>
+            </div>
+        </div>
 
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
@@ -372,7 +374,9 @@
             <strong>⚠️ Alerta de Stock Crítico:</strong> Existem produtos com quantidade abaixo do limite mínimo!
         </div>
 
+        <!-- MENU DE ABAS ISOLADAS (COM ABA DE CONTROLOS DE LOGIN/LOGOUT) -->
         <div class="tabs-nav">
+            <button class="tab-btn" onclick="window.mudarAba('abaLoginLogoutControlo')">🔐 Login & Sessão</button>
             <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
             <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
             <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado')">👥 Clientes & Fiado</button>
@@ -381,7 +385,7 @@
             <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Carteiras</button>
         </div>
 
-        <!-- ABA 1: VENDAS -->
+        <!-- ABA 1: VENDAS (ISOLADA) -->
         <div id="abaVendas" class="tab-content active">
             <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio">
                 ⚠️ O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
@@ -557,7 +561,7 @@
                 </div>
             </div>
         </div>
-        <!-- ABA 2: CAIXA -->
+        <!-- ABA 2: CAIXA (ISOLADA) -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
@@ -637,7 +641,7 @@
             </div>
         </div>
 
-        <!-- ABA 3: FIADO -->
+        <!-- ABA 3: FIADO (ISOLADA) -->
         <div id="abaFiado" class="tab-content col-gerente">
             <h2>Gestão de Clientes & Contas a Fiado</h2>
             
@@ -668,7 +672,7 @@
                 </table>
             </div>
         </div>
-        <!-- ABA 4: STOCK -->
+        <!-- ABA 4: STOCK (ISOLADA) -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
                 <h2>Gestão de Stock na Despensa</h2>
@@ -828,7 +832,8 @@
                 </div>
             </div>
         </div>
-        <!-- ABA 5: USUÁRIOS -->
+
+        <!-- ABA 5: USUÁRIOS (ISOLADA) -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
 
@@ -902,7 +907,7 @@
             </div>
         </div>
 
-        <!-- ABA 6: DASHBOARD -->
+        <!-- ABA 6: DASHBOARD (ISOLADA) -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
 
@@ -1016,7 +1021,6 @@
 
     </div>
 </div>
-
 <!-- MODAIS -->
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:420px;">
@@ -1205,6 +1209,7 @@
         </div>
     </div>
 </div>
+
 <!-- ÁREA DE IMPRESSÃO -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
@@ -1404,7 +1409,6 @@
             }
         }
     }
-
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
@@ -1685,6 +1689,7 @@
             alert("Erro ao ligar ao servidor. Verifique a internet.");
         }
     };
+
     function iniciarEscutadoresCompletosEmpresa() {
         if(!codigoEmpresa) return;
 
@@ -3444,7 +3449,6 @@
         if(!confirm("⚠️ TEM CERTEZA ABSOLUTA?\n\nEsta ação irá apagar permanentemente todas as vendas, turnos, movimentações e registos de auditoria do banco de dados da empresa.")) return;
 
         try {
-            // Apaga documentos da coleção de vendas
             let snapshotVendas = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
             let promessas = snapshotVendas.docs.map(d => deleteDoc(d.ref));
 
