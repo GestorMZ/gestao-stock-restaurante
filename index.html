@@ -12,7 +12,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GS Point POS">
-    <link rel="apple-touch-icon" href="icon-192.png">
 
     <!-- Bibliotecas Externas -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -22,13 +21,13 @@
 
     <style>
         :root {
-            --primary: #0066ff;
-            --primary-dark: #0052cc;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --purple: #8b5cf6;
-            --teal: #14b8a6;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --purple: #7c3aed;
+            --teal: #0d9488;
             --dark: #0f172a;
             --card-bg: #ffffff;
             --light: #f8fafc;
@@ -80,7 +79,7 @@
             font-size: 14px;
             cursor: pointer; 
             white-space: nowrap; 
-            transition: all 0.2s ease; 
+            transition: all 0.15s ease; 
             min-height: 46px;
         }
 
@@ -92,14 +91,14 @@
         .tab-btn.active { 
             background: var(--primary); 
             color: white; 
-            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
 
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content { display: none; animation: fadeIn 0.15s ease; }
         .tab-content.active { display: block; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
+            from { opacity: 0; transform: translateY(2px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -117,12 +116,12 @@
             font-weight: 600;
             background: #fff;
             color: var(--text-main);
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
         
         input:focus, select:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
             outline: none;
         }
 
@@ -145,14 +144,14 @@
         button:active { transform: scale(0.98); }
 
         .btn-saida { background-color: var(--danger); }
-        .btn-saida:hover { background-color: #dc2626; }
+        .btn-saida:hover { background-color: #b91c1c; }
         .btn-success { background-color: var(--success); }
-        .btn-success:hover { background-color: #059669; }
+        .btn-success:hover { background-color: #047857; }
         .btn-warning { background-color: var(--warning); color: white; }
-        .btn-warning:hover { background-color: #d97706; }
+        .btn-warning:hover { background-color: #b45309; }
         .btn-excel { background-color: #059669; color: white; }
         .btn-purple { background-color: var(--purple); color: white; }
-        .btn-purple:hover { background-color: #7c3aed; }
+        .btn-purple:hover { background-color: #6d28d9; }
         .btn-dark { background-color: #334155; }
         .btn-dark:hover { background-color: #1e293b; }
         .btn-sm { padding: 8px 14px; font-size: 13px; min-height: 38px; width: auto; margin: 0; border-radius: 8px; }
@@ -167,17 +166,17 @@
             padding: 10px;
             min-height: 42px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s;
         }
         .btn-atacho-fast:hover { background: #dbeafe; border-color: var(--primary); }
 
         .grid-perfis-login { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; justify-content: center; margin-bottom: 20px; }
-        .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 16px 12px; border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #eff6ff; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0, 102, 255, 0.15); }
+        .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 16px 12px; border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #eff6ff; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.15); }
         .avatar-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 8px; background: #cbd5e1; }
-        .avatar-placeholder { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 8px auto; box-shadow: 0 4px 10px rgba(0, 102, 255, 0.3); }
+        .avatar-placeholder { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 8px auto; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
         
-        .btn-mais-perfis { background: #f1f5f9; border: 2px dashed var(--border); padding: 12px; border-radius: 14px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-main); font-weight: bold; min-height: 100px; transition: 0.2s; }
+        .btn-mais-perfis { background: #f1f5f9; border: 2px dashed var(--border); padding: 12px; border-radius: 14px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-main); font-weight: bold; min-height: 100px; transition: 0.15s; }
         .btn-mais-perfis:hover { background: #e2e8f0; border-color: var(--primary); }
 
         .grid-produtos-pos { 
@@ -205,10 +204,10 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 85px;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
         }
 
-        .card-produto-pos:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(0, 102, 255, 0.12); }
+        .card-produto-pos:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12); }
         .card-produto-pos:active { transform: scale(0.96); }
 
         .cat-btn { 
@@ -222,10 +221,10 @@
             cursor: pointer; 
             white-space: nowrap;
             min-height: 38px;
-            transition: 0.2s;
+            transition: 0.15s;
         }
         .cat-btn:hover { background: #e2e8f0; }
-        .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 6px rgba(0, 102, 255, 0.3); }
+        .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3); }
 
         .status-caixa-banner { padding: 14px 18px; border-radius: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .caixa-aberto { background: #ecfdf5; color: #065f46; border: 2px solid #a7f3d0; }
@@ -259,35 +258,62 @@
         .badge-cortesia { background: #f43f5e; color: white; }
 
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; margin-bottom: 18px; }
-        .card-mesa { background: #f8fafc; border: 2px solid var(--border); padding: 14px 8px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; min-height: 65px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card-mesa { background: #f8fafc; border: 2px solid var(--border); padding: 14px 8px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; min-height: 65px; transition: 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .card-mesa:hover { border-color: var(--primary); background: #eff6ff; }
         .card-mesa.ocupada { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
         .card-mesa.bloqueada { background: #fffbeb; border-color: #fde68a; color: #b45309; opacity: 0.9; }
-        .card-mesa.selecionada { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 3px rgba(0,102,255,0.2); }
+        .card-mesa.selecionada { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); overflow-y: auto; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); overflow-y: auto; }
         .modal-content { background: white; max-width: 580px; margin: 4% auto; padding: 24px; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; }
-        .close-modal { position: absolute; right: 20px; top: 16px; font-size: 28px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: color 0.2s; }
+        .close-modal { position: absolute; right: 20px; top: 16px; font-size: 28px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: color 0.15s; }
         .close-modal:hover { color: var(--danger); }
 
-        body.dark-mode { --light: #090d16; --card-bg: #111827; --border: #374151; --text-main: #f9fafb; --text-muted: #9ca3af; background-color: var(--light); color: var(--text-main); }
-        body.dark-mode .container { background: var(--card-bg); border-color: var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        /* MODO ESCURO PROFISSIONAL (OLED & DARK THEME REFINADO) */
+        body.dark-mode { 
+            --light: #0b0f19; 
+            --card-bg: #131b2e; 
+            --border: #23324a; 
+            --text-main: #f1f5f9; 
+            --text-muted: #94a3b8; 
+            background-color: var(--light); 
+            color: var(--text-main); 
+        }
+        body.dark-mode .container { background: var(--card-bg); border-color: var(--border); box-shadow: 0 20px 35px rgba(0,0,0,0.6); }
         body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label { color: var(--text-main); }
-        body.dark-mode input, body.dark-mode select { background: #1f2937; color: #fff; border-color: var(--border); }
-        body.dark-mode th { background-color: #1f2937; color: #e5e7eb; border-bottom-color: var(--border); }
-        body.dark-mode td { border-bottom-color: var(--border); color: #d1d5db; }
-        body.dark-mode tr:hover td { background-color: #1f2937; }
-        body.dark-mode .card-stat, body.dark-mode .card-perfil-login, body.dark-mode .card-produto-pos, body.dark-mode .card-mesa { background: #1f2937; border-color: var(--border); color: #fff; }
-        body.dark-mode .header-usuario { background: #1f2937; border-color: var(--border); color: #fff; }
+        body.dark-mode input, body.dark-mode select { background: #1a253c; color: #f8fafc; border-color: var(--border); }
+        body.dark-mode input::placeholder, body.dark-mode select::placeholder { color: #64748b; }
+        body.dark-mode th { background-color: #1a253c; color: #94a3b8; border-bottom-color: var(--border); }
+        body.dark-mode td { border-bottom-color: var(--border); color: #e2e8f0; }
+        body.dark-mode tr:hover td { background-color: #1a253c; }
+        body.dark-mode .card-stat, body.dark-mode .card-perfil-login, body.dark-mode .card-produto-pos, body.dark-mode .card-mesa { background: #1a253c; border-color: var(--border); color: #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        body.dark-mode .card-stat.verde { border-left-color: #10b981; }
+        body.dark-mode .card-stat.laranja { border-left-color: #f59e0b; }
+        body.dark-mode .card-stat.vermelho { border-left-color: #ef4444; }
+        body.dark-mode .card-stat.roxo { border-left-color: #8b5cf6; }
+        body.dark-mode .card-mesa.ocupada { background: #2b1619; border-color: #7f1d1d; color: #fca5a5; }
+        body.dark-mode .card-mesa.bloqueada { background: #2b2313; border-color: #78350f; color: #fde68a; }
+        body.dark-mode .card-mesa.selecionada { background: #172554; border-color: var(--primary); color: #93c5fd; }
+        body.dark-mode .header-usuario { background: #1a253c; border-color: var(--border); color: #f1f5f9; }
         body.dark-mode .tabs-nav { border-bottom-color: var(--border); }
-        body.dark-mode .tab-btn { background: #1f2937; color: #9ca3af; }
-        body.dark-mode .tab-btn.active { background: var(--primary); color: #fff; }
-        body.dark-mode .modal-content { background: #1f2937; border-color: var(--border); color: #fff; }
-        body.dark-mode .grid-produtos-pos { background: #1f2937; border-color: var(--border); }
-        body.dark-mode .cat-btn { background: #1f2937; color: #d1d5db; border-color: var(--border); }
-        body.dark-mode .cat-btn.active { background: var(--primary); color: #fff; }
+        body.dark-mode .tab-btn { background: #1a253c; color: #94a3b8; border: 1px solid var(--border); border-bottom: none; }
+        body.dark-mode .tab-btn:hover { background: #23324a; color: #fff; }
+        body.dark-mode .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        body.dark-mode .modal-content { background: #131b2e; border-color: var(--border); color: #f1f5f9; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
+        body.dark-mode .grid-produtos-pos { background: #1a253c; border-color: var(--border); }
+        body.dark-mode .cat-btn { background: #1a253c; color: #cbd5e1; border-color: var(--border); }
+        body.dark-mode .cat-btn:hover { background: #23324a; }
+        body.dark-mode .cat-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
         body.dark-mode .table-responsive { border-color: var(--border); }
-        body.dark-mode table { background: #111827; }
+        body.dark-mode table { background: #131b2e; }
+        body.dark-mode .caixa_aberto, body.dark-mode .caixa-aberto { background: #064e3b !important; color: #a7f3d0 !important; border-color: #047857 !important; }
+        body.dark-mode .caixa_fechado, body.dark-mode .caixa-fechado { background: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
+        body.dark-mode .alerta-stock-box { background: #78350f !important; color: #fde68a !important; border-color: #b45309 !important; }
+        body.dark-mode .alerta-caixa-bloqueio { background: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
+        body.dark-mode .box-calculo-lucro { background: #172554 !important; border-color: #1e40af !important; color: #bfdbfe !important; }
+        body.dark-mode #boxPagamentoDesdobradoArea { background: #1a253c !important; border-color: var(--purple) !important; }
+        body.dark-mode .btn-atacho-fast { background: #1a253c; color: #93c5fd; border-color: #1e3a8a; }
+        body.dark-mode .btn-atacho-fast:hover { background: #1e3a8a; color: #fff; }
 
         #areaImpressao { display: none; }
         @media print {
@@ -308,7 +334,7 @@
 <div class="container">
 
     <!-- ECRÃ DE BLOQUEIO -->
-    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(15, 23, 42, 0.85); z-index:9999; align-items:center; justify-content:center;">
+    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(11, 15, 25, 0.9); z-index:9999; align-items:center; justify-content:center;">
         <div class="modal-content" style="max-width:380px; text-align:center; padding:30px;">
             <div style="font-size:42px; margin-bottom:10px;">🔒</div>
             <h3 style="margin-top:0; font-size:1.4em;">Ecrã Bloqueado</h3>
@@ -322,13 +348,13 @@
 
     <!-- ECRÃ DE LOGIN -->
     <div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px;">
-     <div style="text-align:center; margin-bottom:24px;">
+        <div style="text-align:center; margin-bottom:24px;">
             <img src="icon-192.png" alt="Logo GS Point" style="width: 68px; height: 68px; border-radius: 16px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(0,102,255,0.3);">
             <h2 style="margin-bottom:6px; font-size:1.8em;">Entrar no GS Point</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Introduza o Código da Empresa e selecione as suas credenciais:</p>
         </div>
 
-        <div style="background:var(--light); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+        <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <div class="form-group" style="margin-bottom:12px;">
                 <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
                 <div style="display:flex; gap:8px;">
@@ -339,20 +365,20 @@
             <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
 
-        <div id="boxContaBloqueada" style="display:none; background:#fef2f2; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center;">
-            <h3 style="color:var(--danger); margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
-            <p id="textoMotivoBloqueio" style="font-size:0.9em; color:var(--text-main); margin-bottom:14px;"></p>
+        <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
+            <h3 style="color:#fecaca; margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
+            <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:14px;"></p>
             
-            <div style="background:#fff; border:1px dashed var(--danger); padding:14px; border-radius:10px; margin:14px 0; text-align:left;">
-                <strong style="color:var(--primary); display:block; margin-bottom:8px; font-size:0.95em;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
-                <div style="font-size:0.9em; line-height:1.6; color:var(--text-main);">
+            <div style="background:rgba(0,0,0,0.2); border:1px dashed var(--danger); padding:14px; border-radius:10px; margin:14px 0; text-align:left;">
+                <strong style="color:#93c5fd; display:block; margin-bottom:8px; font-size:0.95em;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
+                <div style="font-size:0.9em; line-height:1.6;">
                     • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>e-Mola:</b> 84 903 0686 (Valter Lopes)<br>
                     • <b>Valor da Mensalidade:</b> 1.500 MT
                 </div>
             </div>
             
-            <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:0;">
+            <p style="font-size:0.85em; margin-bottom:0;">
                 Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema instantaneamente.
             </p>
         </div>
@@ -361,7 +387,7 @@
             <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.9em; font-weight:800; color:var(--purple); margin-bottom:12px;">🔑 Início de Turno: Selecione o Utilizador</p>
             <div id="gridPerfisLogin" class="grid-perfis-login"></div>
 
-            <div style="background:var(--light); padding:18px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
                 <div class="form-group">
                     <label>Utilizador Selecionado</label>
                     <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
@@ -386,7 +412,7 @@
             <div style="display:flex; align-items:center; gap:12px;">
                 <div id="headerAvatarBox"></div>
                 <div>
-                    <div style="font-size:0.95em; font-weight:800;">Empresa: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></div>
+                    <div style="font-size:0.95em; font-weight:800;">Restaurante: <span id="nomeEmpresaHeader" style="color:var(--purple); text-transform:uppercase;"></span></div>
                     <div style="font-size:0.9em; color:var(--text-main);">Sessão: <span id="nomeUsuarioLogado" style="color:var(--primary); text-transform:uppercase; font-weight:800;"></span></div>
                     <small id="cargoUsuarioLogado" style="color:var(--text-muted); font-weight:600;"></small>
                 </div>
@@ -405,7 +431,8 @@
                 <button class="btn-saida btn-sm" onclick="window.fazerLogout()">Sair</button>
             </div>
         </div>
-<div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
+
+        <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
             <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa')">Abrir Caixa</button>
         </div>
@@ -432,7 +459,7 @@
             <h4 style="margin-bottom:10px;">Selecionar Mesa / Comanda (10 Mesas Disponíveis)</h4>
             <div class="mesas-grid" id="gridMesas"></div>
 
-            <div style="background:#f8fafc; border:2px solid #e2e8f0; padding:18px; border-radius:14px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <div style="background:var(--card-bg); border:2px solid var(--border); padding:18px; border-radius:14px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
                     <h4 style="margin:0;">Atendimento: <span id="labelMesaAtual" style="color:var(--primary);">Balcão (Venda Direta)</span></h4>
                     <div style="display:flex; gap:8px;">
@@ -533,7 +560,7 @@
                     </div>
                 </div>
 
-                <div id="boxPagamentoDesdobradoArea" style="display:none; background:#fff; border:2px dashed var(--purple); padding:16px; border-radius:12px; margin-bottom:14px;">
+                <div id="boxPagamentoDesdobradoArea" style="display:none; border:2px dashed var(--purple); padding:16px; border-radius:12px; margin-bottom:14px;">
                     <h5 style="margin-top:0; color:var(--purple); font-size:1.05em;">🔀 Desdobrar Pagamento em Múltiplos Métodos:</h5>
                     <div class="form-row">
                         <div class="form-group">
@@ -560,7 +587,7 @@
                 </div>
 
                 <!-- TECLADO DE ATALHOS RÁPIDOS PARA VALORES ENTREGUES -->
-                <div style="background:#fff; border:1px solid var(--border); padding:14px; border-radius:12px; margin-bottom:16px;">
+                <div style="border:1px solid var(--border); padding:14px; border-radius:12px; margin-bottom:16px;">
                     <label style="font-weight:800; color:var(--primary); margin-bottom:8px; display:block;">⚡ Atalhos de Valor Entregue Rápidos (1-Toque):</label>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap:8px;">
                         <button type="button" class="btn-atacho-fast" onclick="window.setValorEntregueRapido('exato')">Exacto</button>
@@ -583,7 +610,7 @@
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:12px; background:#fff; padding:16px; border-radius:12px; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:12px; border:1px solid var(--border); padding:16px; border-radius:12px;">
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
                         <button class="btn-warning btn-sm" onclick="window.imprimirGuiaCozinha()">🍳 Pedido Cozinha (F4)</button>
                         <button class="btn-purple btn-sm" onclick="window.imprimirPreRecibo()">📄 Pré-Recibo (F2)</button>
@@ -599,7 +626,8 @@
                 </div>
             </div>
         </div>
-<!-- ABA 2: CAIXA -->
+
+        <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
             
@@ -620,7 +648,7 @@
                     <div class="card-stat roxo col-gerente"><h4>Saldo em Gaveta</h4><div class="valor-card" id="cxValSaldoGaveta">***</div></div>
                 </div>
 
-                <div style="background:var(--light); padding:18px; border-radius:12px; margin-top:18px; border:1px solid var(--border);">
+                <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-top:18px; border:1px solid var(--border);">
                     <h4 style="margin-top:0;">💸 Registar Saída / Despesa do Turno</h4>
                     <div class="form-row">
                         <div class="form-group">
@@ -671,7 +699,7 @@
                     </table>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:var(--light); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualTurnos">1</span> de <span id="pagTotalTurnos">1</span></span>
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(1)">Próxima ➡️</button>
@@ -683,7 +711,7 @@
         <div id="abaFiado" class="tab-content col-gerente">
             <h2>Gestão de Clientes & Contas a Fiado</h2>
             
-            <div style="background:var(--light); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
+            <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">Cadastrar Novo Cliente</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -721,7 +749,7 @@
                 </div>
             </div>
 
-            <div style="background:var(--light); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
+            <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">📥 Entrada de Produtos (Compras)</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -829,7 +857,7 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--light); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualStock">1</span> de <span id="pagTotalStock">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(1, true)">Próxima ➡️</button>
@@ -862,7 +890,7 @@
                     </table>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:var(--light); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(1, true)">Próxima ➡️</button>
@@ -874,7 +902,7 @@
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
 
-            <div style="background:var(--light); padding:18px; border-radius:12px; margin-bottom:20px; border:1px solid var(--border);">
+            <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:20px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">Criar Novo Perfil com Foto</h4>
                 <div class="form-row">
                     <div class="form-group">
@@ -922,15 +950,15 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--light); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfisAdmin(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualPerfisAdmin">1</span> de <span id="pagTotalPerfisAdmin">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaPerfisAdmin(1)">Próxima ➡️</button>
             </div>
 
-            <div id="seccaoDetalhesPerfil" style="display:none; background:#eff6ff; padding:18px; border-radius:12px; border:2px solid #bfdbfe;">
+            <div id="seccaoDetalhesPerfil" style="display:none; background:#172554; padding:18px; border-radius:12px; border:2px solid #1e40af; color:#bfdbfe;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h4 style="margin:0; color:var(--primary);">Histórico Detalhado: <span id="nomePerfilSelecionado" style="text-transform:uppercase;"></span></h4>
+                    <h4 style="margin:0; color:#93c5fd;">Histórico Detalhado: <span id="nomePerfilSelecionado" style="text-transform:uppercase;"></span></h4>
                     <button class="btn-dark btn-sm" onclick="window.fecharDetalhesPerfil()">Fechar</button>
                 </div>
                 <div class="table-responsive" style="margin-top:12px;">
@@ -943,15 +971,16 @@
                 </div>
             </div>
         </div>
-<!-- ABA 6: DASHBOARD -->
+
+        <!-- ABA 6: DASHBOARD -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
 
-            <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none; background:#fffbeb; border-color:#fde68a; color:#b45309;">
+            <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none;">
                 ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
             </div>
 
-            <div class="form-row" style="background:var(--light); padding:14px; border-radius:12px; align-items:center; border:1px solid var(--border);">
+            <div class="form-row" style="background:var(--card-bg); padding:14px; border-radius:12px; align-items:center; border:1px solid var(--border);">
                 <div class="form-group" style="margin:0;">
                     <label>Período de Análise:</label>
                     <select id="filtroDataTipo" onchange="window.atualizarDashboard()">
@@ -1030,7 +1059,7 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:var(--light); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualAdminHist">1</span> de <span id="pagTotalAdminHist">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAdminHist(1)">Próxima ➡️</button>
@@ -1044,7 +1073,7 @@
                 </table>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:var(--light); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(1)">Próxima ➡️</button>
@@ -1065,7 +1094,7 @@
         <h3 style="margin-top:0;">👥 Dividir Conta por Pessoas</h3>
         <p style="font-size:0.9em; color:var(--text-muted);">Calcule o valor exato a pagar por pessoa na mesa atual:</p>
         
-        <div style="background:#eff6ff; padding:14px; border-radius:10px; border:1px solid #bfdbfe; margin-bottom:16px;">
+        <div style="background:var(--light); padding:14px; border-radius:10px; border:1px solid var(--border); margin-bottom:16px;">
             <div style="font-weight:800; font-size:1.15em; color:var(--primary);">
                 Total da Mesa: <span id="lblTotalMesaDivisao">0.00 MT</span>
             </div>
@@ -1104,6 +1133,7 @@
         <button class="btn-dark btn-sm" onclick="window.fecharModalMaisPerfis()">Fechar</button>
     </div>
 </div>
+
 <div id="modalResetSenha" class="modal">
     <div class="modal-content" style="max-width:440px;">
         <span class="close-modal" onclick="window.fecharModalResetSenha()">&times;</span>
@@ -1176,7 +1206,7 @@
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
         <h3 style="margin-top:0;">⚙️ Definições & Impressora Bluetooth</h3>
         
-        <div style="background:var(--light); border:2px dashed var(--primary); padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
+        <div style="border:2px dashed var(--primary); padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
             <h4 style="margin-top:0; color:var(--primary);">🖨️ Impressora Térmica Bluetooth (ESC/POS)</h4>
             <p id="statusBtPrinter" style="font-weight:700; color:var(--danger); margin-bottom:12px;">Status: Desconectado 🔴</p>
             <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
@@ -1185,13 +1215,13 @@
             </div>
         </div>
 
-        <div id="seccaoEmpresaAdmin" style="background:#eff6ff; padding:16px; border-radius:12px; margin-bottom:18px; border:1px solid #bfdbfe;">
+        <div id="seccaoEmpresaAdmin" style="padding:16px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
             <h4 style="margin-top:0; color:var(--primary);">🏢 Dados do Restaurante & Chave Mestra</h4>
             
             <div class="form-group">
                 <label style="color:var(--danger); font-weight:800;">🏢 Código de Licença / Empresa</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="password" id="cfgCodigoLicencaOculto" value="••••••••" readonly style="font-weight:bold; letter-spacing:2px; background:#e2e8f0;">
+                    <input type="password" id="cfgCodigoLicencaOculto" value="••••••••" readonly style="font-weight:bold; letter-spacing:2px;">
                     <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarLicencaAdmin()">👁️ Ver Licença</button>
                 </div>
             </div>
@@ -1238,7 +1268,7 @@
             <button class="btn-primary btn-sm" onclick="window.guardarDadosEmpresa()" style="margin-top:6px;">💾 Guardar Dados</button>
         </div>
 
-        <div style="background:var(--light); padding:16px; border-radius:12px; border:1px solid var(--border);">
+        <div style="padding:16px; border-radius:12px; border:1px solid var(--border);">
             <h4 style="margin-top:0;">Alterar Minha Palavra-Passe</h4>
             <input type="password" id="inputNovaSenha" placeholder="Nova palavra-passe" style="margin-bottom:10px;">
             <button class="btn-success btn-sm" onclick="window.mudarMinhaSenha()">Guardar Nova Senha</button>
@@ -1288,7 +1318,7 @@
     </div>
 </div>
 
-<!-- MOTOR JAVASCRIPT -->
+<!-- MOTOR JAVASCRIPT OTIMIZADO ULTRA-RÁPIDO HÍBRIDO -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -1310,6 +1340,8 @@
     const auth = getAuth(app);
 
     signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
+    
+    // Ativação agressiva de cache offline local IndexedDB para velocidade instantânea
     enableIndexedDbPersistence(db).catch(() => {});
 
     window.tocarSom = function(tipo) {
@@ -1323,19 +1355,19 @@
             if (tipo === 'sucesso') {
                 osc.frequency.setValueAtTime(523.25, ctx.currentTime);
                 osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                osc.start(); osc.stop(ctx.currentTime + 0.2);
+            } else if (tipo === 'click') {
+                osc.frequency.setValueAtTime(440, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
+                osc.start(); osc.stop(ctx.currentTime + 0.03);
+            } else if (tipo === 'alerta') {
+                osc.frequency.setValueAtTime(220, ctx.currentTime);
                 gain.gain.setValueAtTime(0.2, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
                 osc.start(); osc.stop(ctx.currentTime + 0.25);
-            } else if (tipo === 'click') {
-                osc.frequency.setValueAtTime(440, ctx.currentTime);
-                gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
-                osc.start(); osc.stop(ctx.currentTime + 0.04);
-            } else if (tipo === 'alerta') {
-                osc.frequency.setValueAtTime(220, ctx.currentTime);
-                gain.gain.setValueAtTime(0.25, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.start(); osc.stop(ctx.currentTime + 0.3);
             }
         } catch(e) {}
     };
@@ -1346,7 +1378,7 @@
 
         if (!navigator.onLine) {
             badge.className = 'btn btn-sm btn-danger';
-            badge.innerHTML = '🔴 Offline (Modo Local)';
+            badge.innerHTML = '🔴 Offline (Modo Local Rápido)';
             return;
         }
 
@@ -1364,7 +1396,7 @@
             badge.innerHTML = '🟡 Conexão Lenta';
         } else {
             badge.className = 'btn btn-sm btn-success';
-            badge.innerHTML = '🟢 Online';
+            badge.innerHTML = '🟢 Online (Ultra-Rápido)';
         }
     };
 
@@ -1407,6 +1439,7 @@
     let html5QrCodeScanner = null;
 
     window.addEventListener('DOMContentLoaded', () => {
+        window.atualizarEstadoConexao();
         const urlParams = new URLSearchParams(window.location.search);
         let empUrl = urlParams.get('empresa');
         if (empUrl) {
@@ -1719,6 +1752,9 @@
             if (docSnap.exists()) {
                 dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
                 preencherCamposEmpresaModal();
+                if (document.getElementById('nomeEmpresaHeader')) {
+                    document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
+                }
             }
         }));
     }
@@ -1764,7 +1800,7 @@
             let uObj = usuarios[u];
             let avatarHtml = uObj.foto ? `<img src="${uObj.foto}" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">` : `<span style="display:inline-block; width:34px; height:34px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:34px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
             modalLista.innerHTML += `
-                <button class="btn-perfil" style="display:flex; align-items:center; gap:12px; background:var(--light); border:1px solid var(--border); color:var(--text-main); padding:10px; text-align:left; border-radius:10px; font-weight:700;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
+                <button class="btn-perfil" style="display:flex; align-items:center; gap:12px; background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); padding:10px; text-align:left; border-radius:10px; font-weight:700;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
                     ${avatarHtml}
                     <span style="text-transform:uppercase;">${u}</span> (${uObj.tipo})
                 </button>
@@ -1794,7 +1830,7 @@
             window.tocarSom('sucesso');
             usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
             
-            document.getElementById('nomeEmpresaHeader').innerText = codigoEmpresa;
+            document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
             document.getElementById('nomeUsuarioLogado').innerText = u;
             document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : usuarios[u].tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
             
@@ -2505,6 +2541,7 @@
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
+        // ATUALIZAÇÃO: Nome do Restaurante configurado e não o código de licença
         document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
         document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
@@ -2652,6 +2689,7 @@
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
+        // ATUALIZAÇÃO: Nome do Restaurante configurado nos recibos
         document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
         document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
@@ -3247,7 +3285,7 @@
                 labels: ['M-Pesa', 'e-Mola', 'POS', 'Numerário', 'Fiado'],
                 datasets: [{
                     data: [canais['M-Pesa']||0, canais['e-Mola']||0, canais['POS']||0, canais['Numerário']||0, canais['Fiado']||0],
-                    backgroundColor: ['#8b5cf6', '#f59e0b', '#0066ff', '#10b981', '#ef4444']
+                    backgroundColor: ['#8b5cf6', '#f59e0b', '#2563eb', '#10b981', '#ef4444']
                 }]
             },
             options: { responsive: true, maintainAspectRatio: false }
@@ -3365,6 +3403,11 @@
         };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
         registarAuditLog('Empresa Atualizada', 'Dados da empresa e Chave Mestra alterados');
+        
+        if (document.getElementById('nomeEmpresaHeader')) {
+            document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome;
+        }
+
         alert("Dados salvos com sucesso!");
     };
 
