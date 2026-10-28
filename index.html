@@ -346,26 +346,97 @@
         </div>
     </div>
 
-    <!-- ECRÃ DE LOGIN -->
-    <div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px;">
-        <div style="text-align:center; margin-bottom:24px;">
-            <img src="icon-192.png" alt="Logo GS Point" style="width: 68px; height: 68px; border-radius: 16px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 8px 20px rgba(0,102,255,0.3);">
-            <h2 style="margin-bottom:6px; font-size:1.8em;">Entrar no GS Point</h2>
-            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Introduza o Código da Empresa e selecione as suas credenciais:</p>
-        </div>
+<!-- ECRÃ DE LOGIN COM ANIMAÇÃO DE ENTRADA INTRODUÇÃO -->
+<div id="telaLogin" style="max-width:480px; margin:20px auto; padding:10px;">
+    
+    <style>
+        /* Contenedor da Animação Estilo Vídeo */
+        .intro-logo-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 16px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
-            <div class="form-group" style="margin-bottom:12px;">
-                <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" onchange="window.carregarPerfisEmpresa()">
-                    <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar</button>
-                </div>
+        /* Efeito de brilho de fundo circular expansivo */
+        .intro-logo-container::before {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(13,148,136,0.4) 0%, rgba(37,99,235,0) 70%);
+            border-radius: 50%;
+            animation: expandirBrilho 2.5s ease-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes expandirBrilho {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            50% { transform: scale(2.2); opacity: 0.3; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* Animação de entrada do Logo (fade in + zoom suave) */
+        .logo-video-animado {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
+            animation: entradaLogoVideo 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, flutuarContinuo 3s ease-in-out 1.2s infinite;
+        }
+
+        @keyframes entradaLogoVideo {
+            0% { transform: scale(0.2) translateY(30px); opacity: 0; filter: brightness(2); }
+            60% { transform: scale(1.1) translateY(-5px); opacity: 1; filter: brightness(1.2); }
+            100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
+        }
+
+        @keyframes flutuarContinuo {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Animação do texto do título */
+        .titulo-animado-intro {
+            animation: fadeInTitulo 1s ease 0.5s both;
+        }
+        @keyframes fadeInTitulo {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <div style="text-align:center; margin-bottom:24px;">
+        <!-- LOGO ANIMADO IDÊNTICO AO VÍDEO -->
+        <div class="intro-logo-container">
+            <img src="icon-192.png" alt="Logo GS Point" class="logo-video-animado">
+        </div>
+        
+        <div class="titulo-animado-intro">
+            <h2 style="margin-bottom:4px; font-size:1.9em; font-weight:800; letter-spacing:-0.5px;">GS Point</h2>
+            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Sistema de Gestão & POS Profissional</p>
+        </div>
+    </div>
+
+    <!-- Restante do formulário de login -->
+    <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+        <div class="form-group" style="margin-bottom:12px;">
+            <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
+            <div style="display:flex; gap:8px;">
+                <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" onchange="window.carregarPerfisEmpresa()">
+                <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar</button>
             </div>
-            <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
-
-        <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
+        <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
+    </div>  
+ <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
             <h3 style="color:#fecaca; margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:14px;"></p>
             
