@@ -316,12 +316,26 @@
         body.dark-mode .btn-atacho-fast:hover { background: #1e3a8a; color: #fff; }
 
         #areaImpressao { display: none; }
-        @media print {
-            body * { visibility: hidden; }
-            #areaImpressao, #areaImpressao * { visibility: visible; }
-            #areaImpressao { display: block; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; color: #000; background: #fff; }
-        }
-
+       @media print {
+    @page {
+        size: 80mm auto; /* Largura de 80mm e altura infinita/automática para o recibo não cortar */
+        margin: 0;       /* Remove as margens padrão do A4 (como data e nome do site em cima/embaixo) */
+    }
+    body * { visibility: hidden; }
+    #areaImpressao, #areaImpressao * { visibility: visible; }
+    #areaImpressao { 
+        display: block; 
+        position: absolute; 
+        left: 0; 
+        top: 0; 
+        width: 80mm; 
+        font-family: 'Courier New', Courier, monospace; 
+        font-size: 11px; 
+        padding: 5px; 
+        color: #000; 
+        background: #fff; 
+    }
+}
         @media (max-width: 768px) {
             .form-row { flex-direction: column; gap: 0; }
             .header-usuario { flex-direction: column; align-items: stretch; }
