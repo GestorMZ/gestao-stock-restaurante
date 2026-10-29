@@ -269,7 +269,7 @@
         .close-modal { position: absolute; right: 20px; top: 16px; font-size: 28px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: color 0.15s; }
         .close-modal:hover { color: var(--danger); }
 
-        /* MODO ESCURO PROFISSIONAL (OLED & DARK THEME REFINADO) */
+        /* MODO ESCURO PROFISSIONAL */
         body.dark-mode { 
             --light: #0b0f19; 
             --card-bg: #131b2e; 
@@ -317,25 +317,11 @@
 
         #areaImpressao { display: none; }
        @media print {
-    @page {
-        size: 80mm auto; /* Largura de 80mm e altura infinita/automática para o recibo não cortar */
-        margin: 0;       /* Remove as margens padrão do A4 (como data e nome do site em cima/embaixo) */
-    }
-    body * { visibility: hidden; }
-    #areaImpressao, #areaImpressao * { visibility: visible; }
-    #areaImpressao { 
-        display: block; 
-        position: absolute; 
-        left: 0; 
-        top: 0; 
-        width: 80mm; 
-        font-family: 'Courier New', Courier, monospace; 
-        font-size: 11px; 
-        padding: 5px; 
-        color: #000; 
-        background: #fff; 
-    }
-}
+            @page { size: 80mm auto; margin: 0; }
+            body * { visibility: hidden; }
+            #areaImpressao, #areaImpressao * { visibility: visible; }
+            #areaImpressao { display: block; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; color: #000; background: #fff; }
+        }
         @media (max-width: 768px) {
             .form-row { flex-direction: column; gap: 0; }
             .header-usuario { flex-direction: column; align-items: stretch; }
@@ -344,6 +330,19 @@
     </style>
 </head>
 <body>
+
+<!-- MODAL DE SISTEMA CUSTOMIZADO PARA ALERTS E PROMPTS -->
+<div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
+    <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
+        <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Mensagem</h3>
+        <p id="customModalText" style="margin-bottom:20px; font-weight:600;"></p>
+        <input type="password" id="customModalInput" style="display:none; margin-bottom:20px; text-align:center; font-size: 1.1em;">
+        <div style="display:flex; justify-content:center; gap:10px;">
+            <button id="customModalBtnCancel" class="btn-dark" style="display:none;">Cancelar</button>
+            <button id="customModalBtnOK" class="btn-primary">OK</button>
+        </div>
+    </div>
+</div>
 
 <div class="container">
 
@@ -365,72 +364,20 @@
     
     <style>
         /* Contenedor da Animação Estilo Vídeo */
-        .intro-logo-container {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 16px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Efeito de brilho de fundo circular expansivo */
-        .intro-logo-container::before {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, rgba(13,148,136,0.4) 0%, rgba(37,99,235,0) 70%);
-            border-radius: 50%;
-            animation: expandirBrilho 2.5s ease-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes expandirBrilho {
-            0% { transform: scale(0.5); opacity: 0.8; }
-            50% { transform: scale(2.2); opacity: 0.3; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-
-        /* Animação de entrada do Logo (fade in + zoom suave) */
-        .logo-video-animado {
-            width: 90px;
-            height: 90px;
-            border-radius: 20px;
-            object-fit: cover;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
-            animation: entradaLogoVideo 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, flutuarContinuo 3s ease-in-out 1.2s infinite;
-        }
-
-        @keyframes entradaLogoVideo {
-            0% { transform: scale(0.2) translateY(30px); opacity: 0; filter: brightness(2); }
-            60% { transform: scale(1.1) translateY(-5px); opacity: 1; filter: brightness(1.2); }
-            100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
-        }
-
-        @keyframes flutuarContinuo {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Animação do texto do título */
-        .titulo-animado-intro {
-            animation: fadeInTitulo 1s ease 0.5s both;
-        }
-        @keyframes fadeInTitulo {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .intro-logo-container { position: relative; width: 140px; height: 140px; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; }
+        .intro-logo-container::before { content: ''; position: absolute; width: 80px; height: 80px; background: radial-gradient(circle, rgba(13,148,136,0.4) 0%, rgba(37,99,235,0) 70%); border-radius: 50%; animation: expandirBrilho 2.5s ease-out infinite; z-index: 1; }
+        @keyframes expandirBrilho { 0% { transform: scale(0.5); opacity: 0.8; } 50% { transform: scale(2.2); opacity: 0.3; } 100% { transform: scale(3); opacity: 0; } }
+        .logo-video-animado { width: 90px; height: 90px; border-radius: 20px; object-fit: cover; position: relative; z-index: 2; box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4); animation: entradaLogoVideo 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, flutuarContinuo 3s ease-in-out 1.2s infinite; }
+        @keyframes entradaLogoVideo { 0% { transform: scale(0.2) translateY(30px); opacity: 0; filter: brightness(2); } 60% { transform: scale(1.1) translateY(-5px); opacity: 1; filter: brightness(1.2); } 100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); } }
+        @keyframes flutuarContinuo { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
+        .titulo-animado-intro { animation: fadeInTitulo 1s ease 0.5s both; }
+        @keyframes fadeInTitulo { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 
     <div style="text-align:center; margin-bottom:24px;">
-        <!-- LOGO ANIMADO IDÊNTICO AO VÍDEO -->
         <div class="intro-logo-container">
-            <img src="icon-192.png" alt="Logo GS Point" class="logo-video-animado">
+            <!-- Placeholder para o logo real -->
+            <img src="https://placehold.co/192x192/2563eb/ffffff?text=GS+Point" alt="Logo GS Point" class="logo-video-animado">
         </div>
         
         <div class="titulo-animado-intro">
@@ -450,7 +397,16 @@
         </div>
         <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
     </div>  
- <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
+
+    <!-- NOVO BLOCO: CRIAR CONTA DE TESTE -->
+    <div id="seccaoCriarTrial" style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px dashed var(--primary); margin-bottom:20px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+        <h4 style="margin-top:0; color:var(--primary); margin-bottom: 8px;">Ainda não tem o sistema?</h4>
+        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom: 12px;">Experimente grátis. Apenas 1 teste permitido por dispositivo.</p>
+        <button class="btn-success" onclick="window.criarEmpresaTeste()" style="width: 100%;">+ Criar Conta de Teste (2 Dias)</button>
+    </div>
+    <!-- FIM DO NOVO BLOCO -->
+
+    <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
             <h3 style="color:#fecaca; margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:14px;"></p>
             
@@ -1425,9 +1381,65 @@
     const auth = getAuth(app);
 
     signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
-    
-    // Ativação agressiva de cache offline local IndexedDB para velocidade instantânea
     enableIndexedDbPersistence(db).catch(() => {});
+
+    // ----- SISTEMA MODAL CUSTOMIZADO PARA SUBSTITUIR ALERT/PROMPT/CONFIRM -----
+    window.customAlert = function(msg) {
+        return new Promise(resolve => {
+            document.getElementById('customModalOverlay').style.display = 'flex';
+            document.getElementById('customModalTitle').innerText = 'Aviso do Sistema';
+            document.getElementById('customModalText').innerText = msg;
+            document.getElementById('customModalInput').style.display = 'none';
+            document.getElementById('customModalBtnCancel').style.display = 'none';
+            let btnOK = document.getElementById('customModalBtnOK');
+            btnOK.onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve();
+            };
+        });
+    };
+
+    window.customConfirm = function(msg) {
+        return new Promise(resolve => {
+            document.getElementById('customModalOverlay').style.display = 'flex';
+            document.getElementById('customModalTitle').innerText = 'Confirmação';
+            document.getElementById('customModalText').innerText = msg;
+            document.getElementById('customModalInput').style.display = 'none';
+            document.getElementById('customModalBtnCancel').style.display = 'block';
+            document.getElementById('customModalBtnOK').onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve(true);
+            };
+            document.getElementById('customModalBtnCancel').onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve(false);
+            };
+        });
+    };
+
+    window.customPrompt = function(msg, defaultVal = '', isPassword = false) {
+        return new Promise(resolve => {
+            document.getElementById('customModalOverlay').style.display = 'flex';
+            document.getElementById('customModalTitle').innerText = 'Entrada de Dados';
+            document.getElementById('customModalText').innerText = msg;
+            let input = document.getElementById('customModalInput');
+            input.style.display = 'block';
+            input.type = isPassword ? 'password' : 'text';
+            input.value = defaultVal;
+            input.focus();
+            document.getElementById('customModalBtnCancel').style.display = 'block';
+            
+            document.getElementById('customModalBtnOK').onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve(input.value);
+            };
+            document.getElementById('customModalBtnCancel').onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve(null);
+            };
+        });
+    };
+    // ---------------------------------------------------------------------------
 
     window.tocarSom = function(tipo) {
         try {
@@ -1542,10 +1554,61 @@
         }
     });
 
+    window.criarEmpresaTeste = async function() {
+        if (localStorage.getItem('trialCriado')) {
+            window.tocarSom('alerta');
+            await customAlert("⚠️ Acesso Recusado: Apenas é permitido criar uma conta de teste por dispositivo. O seu aparelho já registou um teste.");
+            return;
+        }
+
+        let nomeRestaurante = await customPrompt("Bem-vindo! Qual é o nome do seu restaurante/negócio?", "", false);
+        if (!nomeRestaurante || nomeRestaurante.trim() === "") return;
+        
+        let randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+        let prefixo = nomeRestaurante.replace(/\s+/g, '').substring(0, 4).toUpperCase();
+        let codigoTrial = "TRIAL-" + prefixo + "-" + randomStr;
+
+        let dataValidade = new Date();
+        dataValidade.setDate(dataValidade.getDate() + 2); 
+        let validadeFormatada = dataValidade.toISOString().split('T')[0];
+
+        try {
+            await setDoc(doc(db, "licencas", codigoTrial), {
+                status: "ativo",
+                validade: validadeFormatada,
+                tipo: "trial",
+                criadoEm: new Date().toISOString()
+            });
+
+            await setDoc(doc(db, "empresas", codigoTrial), {
+                usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "" }]
+            });
+
+            await setDoc(doc(db, "empresas", codigoTrial, "dados", "empresa"), {
+                nome: nomeRestaurante,
+                chaveMestra: "1234",
+                aplicarIva: "nao",
+                taxaIva: 0
+            });
+
+            localStorage.setItem('trialCriado', codigoTrial);
+
+            window.tocarSom('sucesso');
+            await customAlert(`✅ CONTA DE TESTE CRIADA!\n\n🏢 CÓDIGO DO RESTAURANTE: ${codigoTrial}\n👤 UTILIZADOR: admin\n🔑 SENHA: 123\n\nVálido até: ${validadeFormatada}\n\nGuarde este código ou tire uma captura de ecrã!`);
+            
+            let inputCod = document.getElementById('loginCodigoEmpresa');
+            if(inputCod) inputCod.value = codigoTrial;
+            window.carregarPerfisEmpresa();
+
+        } catch (erro) {
+            await customAlert("⚠️ Erro de rede ao tentar criar a conta de teste: " + erro.message);
+        }
+    };
+
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
-        let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para ver o código:");
+        let senha = await customPrompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para ver o código:", "", true);
         if (!senha) return;
 
         let autorizado = false;
@@ -1556,10 +1619,10 @@
 
         if (autorizado) {
             elInput.type = "text";
-            alert(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`);
+            await customAlert(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`);
             setTimeout(() => { elInput.type = "password"; }, 8000);
         } else {
-            alert("❌ Acesso Negado: Palavra-passe incorreta!");
+            await customAlert("❌ Acesso Negado: Palavra-passe incorreta!");
         }
     };
 
@@ -1608,7 +1671,7 @@
                 { fps: 10, qrbox: { width: 250, height: 150 } },
                 (decodedText) => { window.processarCodigoBarrasLido(decodedText); window.fecharModalScannerBarcode(); },
                 () => {}
-            ).catch(() => alert("Não foi possível aceder à câmara."));
+            ).catch(() => customAlert("Não foi possível aceder à câmara."));
         }, 300);
     };
 
@@ -1628,7 +1691,7 @@
                     window.fecharModalScannerBarcode();
                 },
                 () => {}
-            ).catch(() => alert("Não foi possível aceder à câmara."));
+            ).catch(() => customAlert("Não foi possível aceder à câmara."));
         }, 300);
     };
 
@@ -1638,7 +1701,7 @@
         if (html5QrCodeScanner) html5QrCodeScanner.stop().catch(() => {});
     };
 
-    window.processarCodigoBarrasLido = function(codigo) {
+    window.processarCodigoBarrasLido = async function(codigo) {
         let codLimpo = codigo.trim().toLowerCase();
         let encontrado = null;
         for (let p in stock) {
@@ -1647,7 +1710,7 @@
             }
         }
         if (encontrado) { window.tocarSom('sucesso'); window.selecionarProdutoCardPOS(encontrado); }
-        else { window.tocarSom('alerta'); alert(`⚠️ Produto '${codigo}' não encontrado no stock.`); }
+        else { window.tocarSom('alerta'); await customAlert(`⚠️ Produto '${codigo}' não encontrado no stock.`); }
     };
 
     window.alternarModoNoturno = function() {
@@ -1667,7 +1730,7 @@
         if (timerInatividade) clearTimeout(timerInatividade);
     };
 
-    window.desbloquearEcra = function() {
+    window.desbloquearEcra = async function() {
         let pwd = document.getElementById('inputSenhaDesbloqueio').value;
         if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
             window.tocarSom('sucesso');
@@ -1675,7 +1738,7 @@
             registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
             resetarTimerInatividade();
         } else {
-            window.tocarSom('alerta'); alert("Palavra-passe incorreta!");
+            window.tocarSom('alerta'); await customAlert("Palavra-passe incorreta!");
         }
     };
 
@@ -1720,7 +1783,10 @@
     window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
         let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
-        if(!codeInput) return alert("Por favor, introduza o Código do Restaurante!");
+        if(!codeInput) {
+             await customAlert("Por favor, introduza o Código do Restaurante!");
+             return;
+        }
 
         codigoEmpresa = codeInput;
         localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
@@ -1732,16 +1798,18 @@
                 let hoje = new Date().toISOString().split('T')[0];
                 if (dadosLicenca.status === "suspenso" || (dadosLicenca.validade && dadosLicenca.validade < hoje)) {
                     document.getElementById('seccaoPerfisEForm').style.display = 'none';
+                    document.getElementById('seccaoCriarTrial').style.display = 'none';
                     document.getElementById('boxContaBloqueada').style.display = 'block';
-                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso.';
+                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso ou Período de Teste Expirado.';
                     return;
                 }
             } else {
-                alert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado. Contacte Valter Lopes (+258 84 903 0686).");
+                await customAlert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado.");
                 return;
             }
 
             document.getElementById('boxContaBloqueada').style.display = 'none';
+            document.getElementById('seccaoCriarTrial').style.display = 'none';
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
 
@@ -1760,7 +1828,7 @@
             });
             unsubscribes.push(unsubUser);
         } catch (erro) {
-            alert("Erro ao ligar ao servidor. Verifique a internet.");
+            await customAlert("Erro ao ligar ao servidor. Verifique a internet.");
         }
     };
 
@@ -1906,10 +1974,10 @@
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
     };
 
-    window.fazerLogin = function() {
+    window.fazerLogin = async function() {
         let u = document.getElementById('loginUser').value.trim().toLowerCase();
         let p = document.getElementById('loginPass').value;
-        if(!codigoEmpresa) return alert("Insira primeiro o Código do Restaurante.");
+        if(!codigoEmpresa) { await customAlert("Insira primeiro o Código do Restaurante."); return; }
 
         if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
             window.tocarSom('sucesso');
@@ -1941,7 +2009,7 @@
             registarAuditLog('Login', `Sessão iniciada por ${u}`);
             resetarTimerInatividade();
         } else {
-            window.tocarSom('alerta'); alert("Credenciais inválidas!");
+            window.tocarSom('alerta'); await customAlert("Credenciais inválidas!");
         }
     };
 
@@ -1963,18 +2031,18 @@
         let chaveEntrada = document.getElementById('resetChaveMestraInput').value.trim();
         let novaP = document.getElementById('resetNovaSenha').value;
 
-        if (!u || !chaveEntrada || !novaP) return alert("Preencha todos os campos.");
-        if (!usuarios[u]) return alert("Utilizador não encontrado.");
+        if (!u || !chaveEntrada || !novaP) { await customAlert("Preencha todos os campos."); return; }
+        if (!usuarios[u]) { await customAlert("Utilizador não encontrado."); return; }
 
         if (chaveEntrada === (dadosEmpresa.chaveMestra || "1234").trim()) {
             usuarios[u].senha = novaP;
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            alert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
+            await customAlert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
             registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
             window.fecharModalResetSenha();
-        } else { alert("Chave Mestra Incorreta!"); }
+        } else { await customAlert("Chave Mestra Incorreta!"); }
     };
 
     function configurarPerfilPermissoes() {
@@ -2014,14 +2082,14 @@
         reader.readAsDataURL(file);
     }
 
-    window.cadastrarUsuario = function() {
+    window.cadastrarUsuario = async function() {
         let u = document.getElementById('novoUserNome').value.trim().toLowerCase();
         let p = document.getElementById('novoUserSenha').value;
         let t = document.getElementById('novoUserTipo').value;
         let fileInput = document.getElementById('novoUserFoto').files[0];
 
-        if(!u || !p) return alert("Preencha utilizador e palavra-passe!");
-        if(usuarios[u]) return alert("Utilizador já existe!");
+        if(!u || !p) { await customAlert("Preencha utilizador e palavra-passe!"); return; }
+        if(usuarios[u]) { await customAlert("Utilizador já existe!"); return; }
 
         processarFotoAvatar(fileInput, async function(fotoBase64) {
             usuarios[u] = { senha: p, tipo: t, foto: fotoBase64 };
@@ -2032,31 +2100,31 @@
             document.getElementById('novoUserSenha').value = '';
             document.getElementById('novoUserFoto').value = '';
             registarAuditLog('Perfil Criado', `Perfil '${u}' (${t}) criado`);
-            alert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`);
+            await customAlert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`);
         });
     };
 
     window.apagarUsuario = async function(u) {
-        if(u === usuarioAtual.nome) return alert("Não pode apagar o seu próprio perfil!");
-        if(confirm(`Eliminar o perfil '${u.toUpperCase()}'?`)) {
+        if(u === usuarioAtual.nome) { await customAlert("Não pode apagar o seu próprio perfil!"); return; }
+        if(await customConfirm(`Eliminar o perfil '${u.toUpperCase()}'?`)) {
             delete usuarios[u];
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
-            alert(`Perfil '${u.toUpperCase()}' removido.`);
+            await customAlert(`Perfil '${u.toUpperCase()}' removido.`);
         }
     };
 
     window.redefinirSenhaDiretaAdmin = async function(u) {
-        let novaS = prompt(`ADMINISTRADOR: Nova palavra-passe para '${u.toUpperCase()}':`);
+        let novaS = await customPrompt(`ADMINISTRADOR: Nova palavra-passe para '${u.toUpperCase()}':`, "", true);
         if(novaS && novaS.trim() !== "") {
             usuarios[u].senha = novaS.trim();
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Senha Alterada', `Palavra-passe de '${u}' alterada por Admin`);
-            alert(`Palavra-passe alterada!`);
+            await customAlert(`Palavra-passe alterada!`);
         }
     };
 
@@ -2071,7 +2139,7 @@
                     let listaArrayFirestore = [];
                     for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
                     await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-                    alert(`Foto atualizada!`);
+                    await customAlert(`Foto atualizada!`);
                 }
             });
         };
@@ -2189,7 +2257,7 @@
         caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), dataAbertura: new Date().toLocaleString('pt-MZ'), usuarioAbertura: usuarioAtual.nome };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
         registarAuditLog('Caixa Aberto', `Caixa aberto com fundo inicial de ${fundo} MT`);
-        alert("Caixa aberto com sucesso!");
+        await customAlert("Caixa aberto com sucesso!");
     };
 
     window.fecharCaixaTurnoCEGO = async function() {
@@ -2197,12 +2265,12 @@
         for(let m in mesas) { if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
         if(mesasComItens.length > 0) {
             window.tocarSom('alerta');
-            alert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas com consumos ativos por liquidar: ${mesasComItens.join(', ')}.`);
+            await customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas com consumos ativos por liquidar: ${mesasComItens.join(', ')}.`);
             return;
         }
 
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
-        if(isNaN(valContado) || valContado < 0) return alert("Introduza o valor contado na gaveta.");
+        if(isNaN(valContado) || valContado < 0) return customAlert("Introduza o valor contado na gaveta.");
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
         let tAbertura = caixaEstado.timestampAbertura || 0;
@@ -2224,7 +2292,7 @@
 
         document.getElementById('inputFechoValorContado').value = '';
         window.tocarSom('sucesso');
-        alert(`🔒 Turno Encerrado!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
+        await customAlert(`🔒 Turno Encerrado!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
     };
 
     function renderizarHistoricoTurnos() {
@@ -2265,17 +2333,17 @@
     };
 
     window.registarDespesa = async function() {
-        if (!caixaEstado.aberto) return alert("🔴 Caixa Encerrado!");
+        if (!caixaEstado.aberto) return customAlert("🔴 Caixa Encerrado!");
         let desc = document.getElementById('despesaDesc').value.trim();
         let val = parseFloat(document.getElementById('despesaValor').value) || 0;
-        if(!desc || val <= 0) return alert("Preencha a descrição e valor.");
+        if(!desc || val <= 0) return customAlert("Preencha a descrição e valor.");
 
         despesas.push({ id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') });
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: despesas });
         registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
-        alert("Despesa registada!");
+        await customAlert("Despesa registada!");
     };
 
     function renderizarMesasGrid() {
@@ -2314,7 +2382,7 @@
 
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         if (itensDaMesa.length > 0 && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            alert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
+            await customAlert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
@@ -2397,7 +2465,7 @@
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
-            alert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
+            await customAlert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
             window.mudarAba('abaCaixa');
             return;
         }
@@ -2413,7 +2481,7 @@
 
         if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}.`);
+            await customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}.`);
             return;
         }
 
@@ -2421,11 +2489,11 @@
         let qtd = parseFloat(document.getElementById('cartQtd').value);
         let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
 
-        if(!prod) return alert("Selecione um produto.");
-        if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
+        if(!prod) return customAlert("Selecione um produto.");
+        if(qtd <= 0 || isNaN(qtd)) return customAlert("Quantidade inválida.");
 
         if (stock[prod]) {
-            if(stock[prod].qtd < qtd) { window.tocarSom('alerta'); return alert("Stock insuficiente!"); }
+            if(stock[prod].qtd < qtd) { window.tocarSom('alerta'); return customAlert("Stock insuficiente!"); }
         } else {
             stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
         }
@@ -2578,7 +2646,7 @@
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
             window.tocarSom('alerta');
-            alert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`);
+            await customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`);
             return;
         }
 
@@ -2611,9 +2679,9 @@
         window.tocarSom('click');
     };
 
-    window.imprimirPreRecibo = function() {
+    window.imprimirPreRecibo = async function() {
         let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("O carrinho/mesa está vazio.");
+        if(itens.length === 0) return customAlert("O carrinho/mesa está vazio.");
 
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
         let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
@@ -2626,7 +2694,6 @@
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
-        // ATUALIZAÇÃO: Nome do Restaurante configurado e não o código de licença
         document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
         document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
@@ -2662,11 +2729,11 @@
     window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) {
             window.tocarSom('alerta');
-            return alert("🔴 Caixa Fechado!");
+            return customAlert("🔴 Caixa Fechado!");
         }
 
         let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("O carrinho está vazio.");
+        if(itens.length === 0) return customAlert("O carrinho está vazio.");
 
         try {
             let modoPag = document.getElementById('cartModoPagamentoTipo').value;
@@ -2682,7 +2749,7 @@
                 let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
                 let somaDesd = dDin + dMpe + dEmo + dPos;
 
-                if(Math.abs(somaDesd - totalVenda) > 0.1) return alert(`⚠️ A soma dos pagamentos desdobrados (${somaDesd.toFixed(2)} MT) deve ser igual ao Total Final (${totalVenda.toFixed(2)} MT)!`);
+                if(Math.abs(somaDesd - totalVenda) > 0.1) return customAlert(`⚠️ A soma dos pagamentos desdobrados (${somaDesd.toFixed(2)} MT) deve ser igual ao Total Final (${totalVenda.toFixed(2)} MT)!`);
                 metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
                 desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
             } else {
@@ -2694,14 +2761,14 @@
             let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
             if (metodo === 'Numerário' && valorEntregue <= 0) {
                 window.tocarSom('alerta');
-                alert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
+                await customAlert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
                 document.getElementById('cartValorEntregue').focus();
                 return;
             }
 
             if (valorEntregue > 0 && valorEntregue < totalVenda && metodo !== 'Fiado' && metodo !== 'Cortesia') {
                 window.tocarSom('alerta');
-                alert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
+                await customAlert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
                 document.getElementById('cartValorEntregue').focus();
                 return;
             }
@@ -2716,7 +2783,7 @@
             let clienteFiado = null;
             if(metodo === 'Fiado') {
                 clienteFiado = document.getElementById('cartSelectClienteFiado').value;
-                if(!clienteFiado) return alert("Selecione o cliente para o fiado.");
+                if(!clienteFiado) return customAlert("Selecione o cliente para o fiado.");
             }
 
             let registoVenda = {
@@ -2766,7 +2833,7 @@
             else imprimirTalão(registoVenda);
 
         } catch (erro) {
-            alert("⚠️ Falha ao registar venda: " + erro.message);
+            await customAlert("⚠️ Falha ao registar venda: " + erro.message);
         }
     };
 
@@ -2774,7 +2841,6 @@
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
-        // ATUALIZAÇÃO: Nome do Restaurante configurado nos recibos
         document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
         document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
@@ -2807,9 +2873,9 @@
         setTimeout(() => { window.print(); }, 300);
     }
 
-    window.imprimirGuiaCozinha = function() {
+    window.imprimirGuiaCozinha = async function() {
         let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return alert("Carrinho vazio.");
+        if(itens.length === 0) return customAlert("Carrinho vazio.");
 
         document.getElementById('conteudoReciboFiscal').style.display = 'none';
         document.getElementById('conteudoGuiaCozinha').style.display = 'block';
@@ -2823,7 +2889,7 @@
     };
 
     window.conectarImpressoraBluetooth = async function() {
-        if (!navigator.bluetooth) return alert("Navegador não suporta Bluetooth API.");
+        if (!navigator.bluetooth) return customAlert("Navegador não suporta Bluetooth API.");
         try {
             document.getElementById('statusBtPrinter').innerText = "Procurando... 🟡";
             bluetoothDevice = await navigator.bluetooth.requestDevice({
@@ -2835,15 +2901,15 @@
             const characteristics = await services[0].getCharacteristics();
             bluetoothCharacteristic = characteristics[0];
             document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
-            alert("✅ Bluetooth Conectado!");
+            await customAlert("✅ Bluetooth Conectado!");
         } catch (erro) {
             document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
-            alert("Falha na ligação Bluetooth.");
+            await customAlert("Falha na ligação Bluetooth.");
         }
     };
 
     window.testarImpressaoBluetooth = async function() {
-        if (!bluetoothCharacteristic) return alert("Conecte a impressora primeiro.");
+        if (!bluetoothCharacteristic) return customAlert("Conecte a impressora primeiro.");
         let encoder = new TextEncoder();
         let texto = "\x1B\x40\x1B\x61\x01TESTE IMPRESSAO\nGS POINT POS\n--------------------------------\n\n\n\n";
         await bluetoothCharacteristic.writeValue(encoder.encode(texto));
@@ -2876,7 +2942,7 @@
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
-        if(!nome) return alert("Introduza o nome do cliente.");
+        if(!nome) return customAlert("Introduza o nome do cliente.");
 
         clientes.push({ id: Date.now(), nome, telefone: tel, divida: 0 });
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
@@ -2904,23 +2970,24 @@
 
     window.liquidarDividaCliente = async function(idx) {
         let c = clientes[idx];
-        let val = parseFloat(prompt(`Liquidar quanto da dívida de ${c.nome}? (Total: ${c.divida} MT)`, c.divida));
+        let valStr = await customPrompt(`Liquidar quanto da dívida de ${c.nome}? (Total: ${c.divida} MT)`, c.divida.toString());
+        let val = parseFloat(valStr);
         if(val > 0) {
             c.divida = Math.max(0, c.divida - val);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
             registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
-            alert("Pagamento registado!");
+            await customAlert("Pagamento registado!");
         }
     };
 
     window.eliminarClienteFiado = async function(idx) {
         let c = clientes[idx];
         if(!c) return;
-        if(c.divida > 0 && !confirm(`⚠️ ATENÇÃO: O cliente ${c.nome} tem dívida de ${c.divida} MT. Deseja eliminar?`)) return;
+        if(c.divida > 0 && !(await customConfirm(`⚠️ ATENÇÃO: O cliente ${c.nome} tem dívida de ${c.divida} MT. Deseja eliminar?`))) return;
         clientes.splice(idx, 1);
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
         registarAuditLog('Cliente Removido', `Cliente '${c.nome}' eliminado`);
-        alert("Cliente eliminado!");
+        await customAlert("Cliente eliminado!");
     };
 
     function atualizarDropdownClientesFiado() {
@@ -2955,9 +3022,9 @@
         let numShotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
-        if(!garrafa) return alert("Selecione a garrafa.");
-        if(!nomeShot) return alert("Introduza o nome do shot de destino.");
-        if(stock[garrafa].qtd < qtdGarrafasAbrir) return alert("Stock insuficiente da garrafa.");
+        if(!garrafa) return customAlert("Selecione a garrafa.");
+        if(!nomeShot) return customAlert("Introduza o nome do shot de destino.");
+        if(stock[garrafa].qtd < qtdGarrafasAbrir) return customAlert("Stock insuficiente da garrafa.");
 
         let custoUnitGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
         let custoTotalGarrafas = qtdGarrafasAbrir * custoUnitGarrafa;
@@ -2986,7 +3053,7 @@
         registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
-        alert(`✅ Conversão concluída com sucesso!\n\n• -${qtdGarrafasAbrir} ${garrafa.toUpperCase()}\n• +${totalShotsGerados} ${nomeShot.toUpperCase()}`);
+        await customAlert(`✅ Conversão concluída com sucesso!\n\n• -${qtdGarrafasAbrir} ${garrafa.toUpperCase()}\n• +${totalShotsGerados} ${nomeShot.toUpperCase()}`);
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
         renderizarStock();
@@ -3023,7 +3090,7 @@
 
     window.salvarEntradaStock = async function() {
         let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-        if(!prod) return alert("Digite o nome do produto.");
+        if(!prod) return customAlert("Digite o nome do produto.");
 
         let barcodeInput = document.getElementById('simplesBarcode').value.trim();
         let cat = document.getElementById('simplesCategoria').value || 'outros';
@@ -3063,7 +3130,7 @@
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
         filtrarEExibirProdutosVenda();
-        alert("Stock atualizado com sucesso!");
+        await customAlert("Stock atualizado com sucesso!");
     };
 
     function renderizarStock() {
@@ -3111,8 +3178,9 @@
     window.apagarQuantidadeProduto = async function(p) {
         let item = stock[p];
         if(!item) return;
-        let qtdRemover = parseFloat(prompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1"));
-        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return alert("Quantidade inválida.");
+        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
+        let qtdRemover = parseFloat(valStr);
+        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return customAlert("Quantidade inválida.");
 
         let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
         item.qtd -= qtdRemover;
@@ -3126,13 +3194,13 @@
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
         registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
-        alert("Stock atualizado!");
+        await customAlert("Stock atualizado!");
         filtrarEExibirProdutosVenda();
         renderizarStock();
     };
 
     window.apagarProdutoTotal = async function(p) {
-        if(confirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
+        if(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
             delete stock[p];
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
             registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
@@ -3179,9 +3247,9 @@
     };
 
     window.apagarMovimentacaoIndividual = async function(idDocMov) {
-        if(confirm("Confirmar remoção?")) {
+        if(await customConfirm("Confirmar remoção?")) {
             await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
-            alert("Removido!");
+            await customAlert("Removido!");
         }
     };
 
@@ -3238,15 +3306,15 @@
     };
 
     window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
-        let senhaAdmin = prompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para cancelar esta venda:");
+        let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para cancelar esta venda:", "", true);
         let autorizacao = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
         }
-        if (!autorizacao) return alert("❌ Senha incorreta!");
+        if (!autorizacao) return customAlert("❌ Senha incorreta!");
 
         let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
-        if(!vendaObj) return alert("Venda não encontrada.");
+        if(!vendaObj) return customAlert("Venda não encontrada.");
 
         if(vendaObj.itens) {
             for(let item of vendaObj.itens) {
@@ -3265,16 +3333,16 @@
         vendaObj.status = 'cancelado';
         await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
         registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
-        alert("Venda cancelada e stock revertido!");
+        await customAlert("Venda cancelada e stock revertido!");
     };
 
     window.apagarTodoHistoricoApp = async function() {
-        let senha = prompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador para apagar todo o histórico:");
+        let senha = await customPrompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador para apagar todo o histórico:", "", true);
         let autorizado = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
         }
-        if(!autorizado || !confirm("⚠️ TEM CERTEZA ABSOLUTA?")) return;
+        if(!autorizado || !(await customConfirm("⚠️ TEM CERTEZA ABSOLUTA?"))) return;
 
         try {
             let p = [getDocs(collection(db, "empresas", codigoEmpresa, "vendas")), getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes")), getDocs(collection(db, "empresas", codigoEmpresa, "turnos")), getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"))];
@@ -3282,9 +3350,9 @@
             let promessasDel = [];
             res.forEach(snap => snap.docs.forEach(d => promessasDel.push(deleteDoc(d.ref))));
             await Promise.all(promessasDel);
-            alert("✅ Histórico apagado!");
+            await customAlert("✅ Histórico apagado!");
             window.atualizarDashboard();
-        } catch(err) { alert("Erro: " + err.message); }
+        } catch(err) { await customAlert("Erro: " + err.message); }
     };
 
     window.atualizarDashboard = function() {
@@ -3447,8 +3515,8 @@
         }
     }
 
-    window.revelarLicencaAdmin = function() {
-        let senha = prompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe para visualizar o Código de Licença:");
+    window.revelarLicencaAdmin = async function() {
+        let senha = await customPrompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe para visualizar o Código de Licença:", "", true);
         let autorizado = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
@@ -3457,9 +3525,9 @@
             let inputLicenca = document.getElementById('cfgCodigoLicencaOculto');
             inputLicenca.type = "text";
             inputLicenca.value = codigoEmpresa;
-            alert(`🔑 Código de Licença Ativo: ${codigoEmpresa}`);
+            await customAlert(`🔑 Código de Licença Ativo: ${codigoEmpresa}`);
             setTimeout(() => { inputLicenca.type = "password"; inputLicenca.value = "••••••••"; }, 8000);
-        } else { alert("❌ Acesso Negado!"); }
+        } else { await customAlert("❌ Acesso Negado!"); }
     };
 
     window.abrirModalDefinicoes = function() {
@@ -3493,19 +3561,19 @@
             document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome;
         }
 
-        alert("Dados salvos com sucesso!");
+        await customAlert("Dados salvos com sucesso!");
     };
 
     window.mudarMinhaSenha = async function() {
         let p = document.getElementById('inputNovaSenha').value;
-        if(!p) return alert("Digite a nova palavra-passe.");
+        if(!p) return customAlert("Digite a nova palavra-passe.");
         usuarios[usuarioAtual.nome].senha = p;
 
         let listaArrayFirestore = [];
         for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
         registarAuditLog('Senha Pessoal Alterada', `Palavra-passe alterada por ${usuarioAtual.nome}`);
-        alert("Palavra-passe alterada!");
+        await customAlert("Palavra-passe alterada!");
     };
 </script>
 
