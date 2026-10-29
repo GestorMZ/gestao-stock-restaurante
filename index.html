@@ -316,9 +316,10 @@
         body.dark-mode .btn-atacho-fast:hover { background: #1e3a8a; color: #fff; }
 
         #areaImpressao { display: none; }
-       @media print {
+        @media print {
             @page { size: 80mm auto; margin: 0; }
             body * { visibility: hidden; }
+            .container { display: none !important; }
             #areaImpressao, #areaImpressao * { visibility: visible; }
             #areaImpressao { display: block; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; color: #000; background: #fff; }
         }
@@ -346,7 +347,20 @@
 
 <div class="container">
 
-<!-- ECRÃ DE LOGIN -->
+    <!-- ECRÃ DE BLOQUEIO -->
+    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(11, 15, 25, 0.9); z-index:9999; align-items:center; justify-content:center;">
+        <div class="modal-content" style="max-width:380px; text-align:center; padding:30px;">
+            <div style="font-size:42px; margin-bottom:10px;">🔒</div>
+            <h3 style="margin-top:0; font-size:1.4em;">Ecrã Bloqueado</h3>
+            <p style="font-size:0.9em; color:var(--text-muted); margin-bottom:20px;">Introduza a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
+            <div class="form-group">
+                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
+            </div>
+            <button class="btn-primary" onclick="window.desbloquearEcra()" style="margin-top:10px;">🔓 Desbloquear Sistema</button>
+        </div>
+    </div>
+
+   <!-- ECRÃ DE LOGIN -->
 <div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px;">
     
     <style>
@@ -378,17 +392,15 @@
         </div>
         <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
     </div>
-</div>
+ 
 
-    <!-- NOVO BLOCO: CRIAR CONTA DE TESTE -->
-    <div id="seccaoCriarTrial" style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px dashed var(--primary); margin-bottom:20px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
-        <h4 style="margin-top:0; color:var(--primary); margin-bottom: 8px;">Ainda não tem o sistema?</h4>
-        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom: 12px;">Experimente grátis. Apenas 1 teste permitido por dispositivo.</p>
-        <button class="btn-success" onclick="window.criarEmpresaTeste()" style="width: 100%;">+ Criar Conta de Teste (2 Dias)</button>
-    </div>
-    <!-- FIM DO NOVO BLOCO -->
+        <div id="seccaoCriarTrial" style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px dashed var(--primary); margin-bottom:20px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <h4 style="margin-top:0; color:var(--primary); margin-bottom: 8px;">Ainda não tem o sistema?</h4>
+            <p style="font-size:0.85em; color:var(--text-muted); margin-bottom: 12px;">Experimente grátis. Apenas 1 teste permitido por dispositivo.</p>
+            <button class="btn-success" onclick="window.criarEmpresaTeste()" style="width: 100%;">+ Criar Conta de Teste (2 Dias)</button>
+        </div>
 
-    <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
+        <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
             <h3 style="color:#fecaca; margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:14px;"></p>
             
@@ -417,7 +429,7 @@
                 </div>
                 <div class="form-group">
                     <label>Palavra-passe</label>
-                    <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
+                    <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe" onkeyup="if(event.key==='Enter') window.fazerLogin()">
                 </div>
                 <button onclick="window.fazerLogin()" style="margin-top:6px; font-size:1.05em; padding:14px;">Entrar no Sistema 🚀</button>
             </div>
@@ -426,6 +438,7 @@
                 <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none; font-weight:700;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
             </p>
         </div>
+
     </div>
 
     <!-- ECRÃ PRINCIPAL DO SISTEMA -->
@@ -441,8 +454,6 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                
-                <!-- ÍCONE DE ESTADO DE REDE -->
                 <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;">
                     ⏳ A verificar rede...
                 </span>
@@ -457,7 +468,7 @@
 
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
-            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa')">Abrir Caixa</button>
+            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa', event)">Abrir Caixa</button>
         </div>
 
         <div id="boxAlertaStockGlobal" class="alerta-stock-box">
@@ -465,12 +476,12 @@
         </div>
 
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="window.mudarAba('abaVendas')">🛒 Balcão / Mesas</button>
-            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa')">💵 Caixa & Turnos</button>
-            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado')">👥 Clientes & Fiado</button>
-            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaStock')">📦 Gestão de Stock</button>
-            <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios')">👤 Gestão de Perfis</button>
-            <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard')">📊 Dashboard & Carteiras</button>
+            <button class="tab-btn active" onclick="window.mudarAba('abaVendas', event)">🛒 Balcão / Mesas</button>
+            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa', event)">💵 Caixa & Turnos</button>
+            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado', event)">👥 Clientes & Fiado</button>
+            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaStock', event)">📦 Gestão de Stock</button>
+            <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios', event)">👤 Gestão de Perfis</button>
+            <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard', event)">📊 Dashboard & Carteiras</button>
         </div>
 
         <!-- ABA 1: VENDAS -->
@@ -503,7 +514,6 @@
                         </div>
                     </div>
 
-                    <!-- LEITOR DE CÓDIGO DE BARRAS VIA CÂMARA & PESQUISA -->
                     <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
                         <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar produto rápido..." oninput="window.filtrarEExibirProdutosVenda()" style="flex: 1; min-width: 200px;">
                         <button type="button" class="btn-purple" style="width: auto; padding: 0 18px;" onclick="window.abrirModalScannerBarcode()">📷 Ler Código de Barras</button>
@@ -522,7 +532,6 @@
                         <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
                     </div>
                     
-                    <!-- ATALHOS DE QUANTIDADE RÁPIDA (+1, +5, +10) -->
                     <div class="form-group" style="max-width: 170px;">
                         <label style="font-size: 0.75em; margin-bottom: 6px;">Atalhos Qtd</label>
                         <div style="display: flex; gap: 4px;">
@@ -609,7 +618,6 @@
                     </div>
                 </div>
 
-                <!-- TECLADO DE ATALHOS RÁPIDOS PARA VALORES ENTREGUES -->
                 <div style="border:1px solid var(--border); padding:14px; border-radius:12px; margin-bottom:16px;">
                     <label style="font-weight:800; color:var(--primary); margin-bottom:8px; display:block;">⚡ Atalhos de Valor Entregue Rápidos (1-Toque):</label>
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap:8px;">
@@ -1365,7 +1373,7 @@
     signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
     enableIndexedDbPersistence(db).catch(() => {});
 
-    // ----- SISTEMA MODAL CUSTOMIZADO PARA SUBSTITUIR ALERT/PROMPT/CONFIRM -----
+    // ----- SISTEMA MODAL CUSTOMIZADO -----
     window.customAlert = function(msg) {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
@@ -1409,8 +1417,15 @@
             input.type = isPassword ? 'password' : 'text';
             input.value = defaultVal;
             input.focus();
+
+            input.onkeyup = (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('customModalOverlay').style.display = 'none';
+                    resolve(input.value);
+                }
+            };
+
             document.getElementById('customModalBtnCancel').style.display = 'block';
-            
             document.getElementById('customModalBtnOK').onclick = () => {
                 document.getElementById('customModalOverlay').style.display = 'none';
                 resolve(input.value);
@@ -1421,7 +1436,6 @@
             };
         });
     };
-    // ---------------------------------------------------------------------------
 
     window.tocarSom = function(tipo) {
         try {
@@ -1516,6 +1530,7 @@
     let bluetoothCharacteristic = null;
     let timerInatividade = null;
     let html5QrCodeScanner = null;
+    let isScannerOpen = false;
 
     window.addEventListener('DOMContentLoaded', () => {
         window.atualizarEstadoConexao();
@@ -1597,7 +1612,7 @@
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
         }
-        if (!autorizado && (senha.trim() === "1234" || senha.trim() === (dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
+        if (!autorizado && (senha.trim() === "1234" || senha.trim() === String(dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
 
         if (autorizado) {
             elInput.type = "text";
@@ -1646,16 +1661,24 @@
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
+        isScannerOpen = true;
         setTimeout(() => {
             if (!html5QrCodeScanner) html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
             html5QrCodeScanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText) => { window.processarCodigoBarrasLido(decodedText); window.fecharModalScannerBarcode(); },
+                (decodedText) => { 
+                    if (isScannerOpen) {
+                        window.processarCodigoBarrasLido(decodedText); 
+                        window.fecharModalScannerBarcode(); 
+                    }
+                },
                 () => {}
             ).catch((err) => { 
-                customAlert("Erro ao aceder à câmara: verifique as permissões."); 
-                window.fecharModalScannerBarcode(); 
+                if (isScannerOpen) {
+                    customAlert("Erro ao aceder à câmara: verifique as permissões."); 
+                    window.fecharModalScannerBarcode(); 
+                }
             });
         }, 300);
     };
@@ -1664,29 +1687,40 @@
         let modal = document.getElementById('modalScannerBarcode');
         if (!modal) return;
         modal.style.display = 'block';
+        isScannerOpen = true;
         setTimeout(() => {
             if (!html5QrCodeScanner) html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
             html5QrCodeScanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 150 } },
                 (decodedText) => {
-                    let inputBarcode = document.getElementById('simplesBarcode');
-                    if (inputBarcode) inputBarcode.value = decodedText.trim();
-                    window.tocarSom('sucesso');
-                    window.fecharModalScannerBarcode();
+                    if (isScannerOpen) {
+                        let inputBarcode = document.getElementById('simplesBarcode');
+                        if (inputBarcode) inputBarcode.value = decodedText.trim();
+                        window.tocarSom('sucesso');
+                        window.fecharModalScannerBarcode();
+                    }
                 },
                 () => {}
             ).catch((err) => { 
-                customAlert("Erro ao aceder à câmara: verifique as permissões."); 
-                window.fecharModalScannerBarcode(); 
+                if (isScannerOpen) {
+                    customAlert("Erro ao aceder à câmara: verifique as permissões."); 
+                    window.fecharModalScannerBarcode(); 
+                }
             });
         }, 300);
     };
 
     window.fecharModalScannerBarcode = function() {
+        isScannerOpen = false;
         let modal = document.getElementById('modalScannerBarcode');
         if (modal) modal.style.display = 'none';
-        if (html5QrCodeScanner) html5QrCodeScanner.stop().catch(() => {});
+        if (html5QrCodeScanner) {
+            html5QrCodeScanner.stop().catch(() => {}).finally(() => {
+                try { html5QrCodeScanner.clear(); } catch(e) {}
+                html5QrCodeScanner = null;
+            });
+        }
     };
 
     window.processarCodigoBarrasLido = async function(codigo) {
@@ -1737,6 +1771,15 @@
                 timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ'), usuario: usuarioAtual.nome, evento, detalhes
             });
         } catch(e) {}
+    }
+
+    async function salvarStockFirestore(mapaProdutos) {
+        if (!codigoEmpresa || !mapaProdutos) return;
+        try {
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), mapaProdutos, { merge: true });
+        } catch(e) {
+            console.error("Erro ao sincronizar stock:", e);
+        }
     }
 
     window.mudarPaginaAuditLogs = function(dir) {
@@ -2022,7 +2065,7 @@
         if (!u || !chaveEntrada || !novaP) { await customAlert("Preencha todos os campos."); return; }
         if (!usuarios[u]) { await customAlert("Utilizador não encontrado."); return; }
 
-        if (chaveEntrada === (dadosEmpresa.chaveMestra || "1234").trim()) {
+        if (chaveEntrada === String(dadosEmpresa.chaveMestra || "1234").trim()) {
             usuarios[u].senha = novaP;
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
@@ -2043,14 +2086,18 @@
         if (isVendedor) window.mudarAba('abaVendas');
     }
 
-    window.mudarAba = function(abaId) {
+    window.mudarAba = function(abaId, evt) {
         window.tocarSom('click');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        if (event && event.target) event.target.classList.add('active');
-        document.getElementById(abaId).classList.add('active');
+        
+        let navBtn = document.querySelector(`.tab-btn[onclick*="'${abaId}'"]`);
+        if (navBtn) navBtn.classList.add('active');
+
+        let abaElement = document.getElementById(abaId);
+        if (abaElement) abaElement.classList.add('active');
         if(abaId === 'abaDashboard') window.atualizarDashboard();
-        if(abaId === 'abaUsuarios' && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+        if(abaId === 'abaUsuarios' && usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
     };
 
     function processarFotoAvatar(file, callback) {
@@ -2223,7 +2270,9 @@
             if(alertaCaixaFechado) alertaCaixaFechado.style.display = 'none';
 
             let tAbertura = caixaEstado.timestampAbertura || 0;
-            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+            let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura)
+                .reduce((acc, i) => acc + (i.desdobramentoInfo ? (i.desdobramentoInfo.din || 0) : (i.totalVenda || 0)), 0);
+            
             let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.valor || 0), 0);
             let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
 
@@ -2264,7 +2313,9 @@
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
         let tAbertura = caixaEstado.timestampAbertura || 0;
-        let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.totalVenda || 0), 0);
+        let vendasNum = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.metodo === 'Numerário' || (h.metodo && h.metodo.includes('Desdobrado'))) && (h.timestamp || 0) >= tAbertura)
+            .reduce((acc, i) => acc + (i.desdobramentoInfo ? (i.desdobramentoInfo.din || 0) : (i.totalVenda || 0)), 0);
+
         let totalDesp = despesas.filter(d => (d.timestamp || 0) >= tAbertura).reduce((acc, i) => acc + (i.valor || 0), 0);
         let saldoEsperado = (caixaEstado.fundo || 0) + vendasNum - totalDesp;
         let diferenca = valContado - saldoEsperado;
@@ -2495,16 +2546,11 @@
         let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
 
         stock[prod].qtd -= qtd;
-        stock[prod].preco_total -= (qtd * custoUnit);
+        stock[prod].preco_total = Math.max(0, stock[prod].preco_total - (qtd * custoUnit));
         if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
 
         if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
         mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
-
-        try {
-            localStorage.setItem(`mesa_carrinho_${mesaSelecionada}`, JSON.stringify(mesas[mesaSelecionada]));
-            localStorage.setItem(`stock_local_backup`, JSON.stringify(stock));
-        } catch(e) {}
 
         try {
             if (mesaSelecionada !== "Balcão") {
@@ -2515,7 +2561,7 @@
             if (mesaSelecionada !== "Balcão") {
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
             }
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [prod]: stock[prod] }, { merge: true });
+            await salvarStockFirestore({ [prod]: stock[prod] });
         } catch (err) {}
 
         window.tocarSom('sucesso');
@@ -2656,7 +2702,7 @@
             tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Removido da ${mesaSelecionada}`
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [item.produto]: stock[item.produto] }, { merge: true });
+        await salvarStockFirestore({ [item.produto]: stock[item.produto] });
         mesas[mesaSelecionada].splice(idx, 1);
 
         if (mesaSelecionada !== "Balcão") {
@@ -2963,6 +3009,7 @@
     window.liquidarDividaCliente = async function(idx) {
         let c = clientes[idx];
         let valStr = await customPrompt(`Liquidar quanto da dívida de ${c.nome}? (Total: ${c.divida} MT)`, c.divida.toString());
+        if (!valStr) return;
         let val = parseFloat(valStr);
         if(val > 0) {
             c.divida = Math.max(0, c.divida - val);
@@ -3023,7 +3070,7 @@
         let totalShotsGerados = qtdGarrafasAbrir * numShotsPorGarrafa;
 
         stock[garrafa].qtd -= qtdGarrafasAbrir;
-        stock[garrafa].preco_total -= custoTotalGarrafas;
+        stock[garrafa].preco_total = Math.max(0, stock[garrafa].preco_total - custoTotalGarrafas);
         if(stock[garrafa].qtd < 0.01) { stock[garrafa].qtd = 0; stock[garrafa].preco_total = 0; }
 
         if(!stock[nomeShot]) stock[nomeShot] = { qtd: 0, preco_total: 0, preco_venda: precoShot, min_alerta: 10, categoria: 'bebidas' };
@@ -3041,7 +3088,7 @@
             tipo: 'ENTRADA (CONVERSÃO SHOTS)', produto: nomeShot, qtd: totalShotsGerados, usuario: usuarioAtual.nome, origem: `Origem: ${qtdGarrafasAbrir}x ${garrafa}`
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [garrafa]: stock[garrafa], [nomeShot]: stock[nomeShot] }, { merge: true });
+        await salvarStockFirestore({ [garrafa]: stock[garrafa], [nomeShot]: stock[nomeShot] });
         registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
@@ -3117,7 +3164,7 @@
             tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [prod]: stock[prod] }, { merge: true });
+        await salvarStockFirestore({ [prod]: stock[prod] });
         registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
@@ -3171,12 +3218,13 @@
         let item = stock[p];
         if(!item) return;
         let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
+        if (!valStr) return;
         let qtdRemover = parseFloat(valStr);
         if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return customAlert("Quantidade inválida.");
 
         let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
         item.qtd -= qtdRemover;
-        item.preco_total -= (qtdRemover * custoUnit);
+        item.preco_total = Math.max(0, item.preco_total - (qtdRemover * custoUnit));
         if(item.qtd < 0.01) { item.qtd = 0; item.preco_total = 0; }
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3184,7 +3232,7 @@
             tipo: 'REMOÇÃO MANUAL', produto: p, qtd: qtdRemover, usuario: usuarioAtual.nome, origem: 'Remoção direta'
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: stock[p] }, { merge: true });
+        await salvarStockFirestore({ [p]: stock[p] });
         registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
         await customAlert("Stock atualizado!");
         filtrarEExibirProdutosVenda();
@@ -3194,7 +3242,7 @@
     window.apagarProdutoTotal = async function(p) {
         if(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
             delete stock[p];
-            await updateDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() });
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
             registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
             filtrarEExibirProdutosVenda();
             renderizarStock();
@@ -3299,6 +3347,7 @@
 
     window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
         let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para cancelar esta venda:", "", true);
+        if (!senhaAdmin) return;
         let autorizacao = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
@@ -3313,7 +3362,8 @@
             for(let item of vendaObj.itens) {
                 if(stock[item.produto]) {
                     stock[item.produto].qtd += item.qtd;
-                    stock[item.produto].preco_total += (item.qtd * item.custoUnit);
+                    let custo = item.custoUnit || (stock[item.produto].qtd > 0 ? stock[item.produto].preco_total / stock[item.produto].qtd : 0);
+                    stock[item.produto].preco_total += (item.qtd * custo);
                     stockUpdates[item.produto] = stock[item.produto];
                 }
                 await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
@@ -3322,7 +3372,7 @@
                 });
             }
             if (Object.keys(stockUpdates).length > 0) {
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stockUpdates, { merge: true });
+                await salvarStockFirestore(stockUpdates);
             }
         }
 
@@ -3334,6 +3384,7 @@
 
     window.apagarTodoHistoricoApp = async function() {
         let senha = await customPrompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador para apagar todo o histórico:", "", true);
+        if (!senha) return;
         let autorizado = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
@@ -3513,6 +3564,7 @@
 
     window.revelarLicencaAdmin = async function() {
         let senha = await customPrompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe para visualizar o Código de Licença:", "", true);
+        if (!senha) return;
         let autorizado = false;
         for (let u in usuarios) {
             if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
