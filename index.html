@@ -357,18 +357,18 @@
     <!-- ECRÃ 1: AUTENTICAÇÃO FIREBASE (E-MAIL E SENHA) -->
     <div id="telaFirebaseAuth" style="max-width:480px; margin:30px auto; padding:10px;">
         <style>
-            @keyframes flutuarLogo {
-                0% { transform: translateY(0px) scale(1); }
-                50% { transform: translateY(-6px) scale(1.03); filter: brightness(1.05); }
-                100% { transform: translateY(0px) scale(1); }
+           @keyframes flutuarLogo {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.03); filter: brightness(1.05); }
+            100% { transform: translateY(0px) scale(1); }
             }
-            .logo-animado { animation: flutuarLogo 3s ease-in-out infinite; }
-        </style>
-
+            .logo-animado {
+            animation: flutuarLogo 3s ease-in-out infinite;
+        }
+    </style>
         <div style="text-align:center; margin-bottom:24px;">
-            <!-- LOGO EM IMAGEM COM ANIMAÇÃO CSS -->
-            <img src="icon-512.png.jpg" alt="Logo GS Point" class="logo-animado" style="width: 100px; height: 100px; border-radius: 24px; object-fit: cover; margin: 0 auto 16px auto; display: block; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
-            
+        <!-- Logo real animado -->
+        <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
             <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
         </div>
@@ -378,7 +378,7 @@
                 <label style="color:var(--primary); font-weight:800;">📧 E-mail do Administrador / Gestor</label>
                 <input type="email" id="authEmailInput" placeholder="exemplo@restaurante.com">
             </div>
-            <!-- ... o resto do formulário continua igual ... -->
+            
     
             </div>
             <div class="form-group" style="margin-bottom:20px;">
