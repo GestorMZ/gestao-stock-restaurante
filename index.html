@@ -147,6 +147,8 @@
         .btn-dark { background-color: #334155; }
         .btn-dark:hover { background-color: #1e293b; }
         .btn-sm { padding: 8px 14px; font-size: 13px; min-height: 38px; width: auto; margin: 0; border-radius: 8px; }
+        .btn-outline { background-color: transparent; border: 2px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background-color: #eff6ff; }
 
         .btn-atacho-fast {
             background: #eff6ff;
@@ -375,16 +377,50 @@
                 <input type="email" id="authEmailInput" placeholder="exemplo@restaurante.com">
             </div>
             <div class="form-group" style="margin-bottom:20px;">
-                <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe Segura</label>
-                <input type="password" id="authPasswordInput" placeholder="Sua palavra-passe" onkeyup="if(event.key==='Enter') window.fazerLoginFirebase()">
+                <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe (6 Dígitos)</label>
+                <input type="password" id="authPasswordInput" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'');" onkeyup="if(event.key==='Enter') window.fazerLoginFirebase()">
             </div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn-primary" onclick="window.fazerLoginFirebase()" style="flex:1;">Entrar</button>
-                <button class="btn-success" onclick="window.criarContaFirebase()" style="flex:1;">Criar Conta</button>
+            <div style="display:flex; flex-direction: column; gap:10px;">
+                <button class="btn-primary" onclick="window.fazerLoginFirebase()">Entrar</button>
+                <button class="btn-outline" onclick="window.mostrarRegisto()">Não tenho conta</button>
             </div>
             <p style="text-align:center; margin-top:16px;">
-                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none; font-weight:700;" onclick="window.recuperarSenhaFirebase()">Esqueceu-se da senha de e-mail?</a>
+                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none; font-weight:700;" onclick="window.recuperarSenhaFirebase()">Esqueceu-se da senha?</a>
             </p>
+        </div>
+    </div>
+
+    <!-- ECRÃ 1.5: REGISTO DE NOVA CONTA -->
+    <div id="telaRegisto" style="max-width:480px; margin:30px auto; padding:10px; display:none;">
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="width: 76px; height: 76px; border-radius: 18px; background:var(--success); color:white; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 12px auto; box-shadow: 0 10px 25px rgba(5,150,105,0.35);">📝</div>
+            <h2 style="margin-bottom:6px; font-size:1.8em;">Criar Nova Conta</h2>
+            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Preencha os dados abaixo para se registar</p>
+        </div>
+
+        <div style="background:var(--card-bg); padding:22px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="color:var(--primary); font-weight:800;">📅 Data de Nascimento</label>
+                <input type="date" id="regDataNasc">
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="color:var(--primary); font-weight:800;">📱 Contacto Telefónico</label>
+                <input type="tel" id="regContacto" placeholder="Ex: 840000000">
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="color:var(--primary); font-weight:800;">📧 E-mail</label>
+                <input type="email" id="regEmail" placeholder="exemplo@dominio.com">
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+                <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe (Exatamente 6 dígitos)</label>
+                <!-- Validação estrita: Aceita apenas números, limite de 6 caracteres -->
+                <input type="password" id="regPassword" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                <small style="color:var(--danger); font-size: 0.75em;">* Apenas números são permitidos.</small>
+            </div>
+            <div style="display:flex; flex-direction: column; gap:10px;">
+                <button class="btn-success" onclick="window.submeterRegisto()">Concluir Registo</button>
+                <button class="btn-outline" onclick="window.ocultarRegisto()">Voltar ao Login</button>
+            </div>
         </div>
     </div>
 
@@ -1116,15 +1152,19 @@
 
 <!-- MOTOR JAVASCRIPT OTIMIZADO ULTRA-RÁPIDO HÍBRIDO COM FIREBASE AUTH -->
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence, getDocs, updateDoc, arrayUnion, deleteField
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, getDocs, updateDoc, arrayUnion, deleteField
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { 
         getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    const firebaseConfig = {
+    // Setup of Firebase Environment Rules
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    
+    // Utilize existing config or the platform provided one if available
+    let fbConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
         authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
         projectId: "gestao-restaurante-a74e4",
@@ -1133,11 +1173,13 @@
         appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
     };
 
-    const app = initializeApp(firebaseConfig);
+    if (typeof __firebase_config !== 'undefined') {
+        try { fbConfig = JSON.parse(__firebase_config); } catch(e) {}
+    }
+
+    const app = initializeApp(fbConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-    enableIndexedDbPersistence(db).catch(() => {});
 
     // ----- SISTEMA MODAL CUSTOMIZADO -----
     window.customAlert = function(msg) {
@@ -1283,16 +1325,55 @@
     let html5QrCodeScanner = null;
     let isScannerOpen = false;
 
-    // ----- GESTÃO DE AUTENTICAÇÃO FIREBASE AUTH (EXPLICITAMENTE ATRIBUÍDAS AO WINDOW) -----
-    window.criarContaFirebase = async function() {
-        let email = document.getElementById('authEmailInput').value.trim();
-        let senha = document.getElementById('authPasswordInput').value;
-        if (!email || !senha) return customAlert("Preencha o e-mail e a palavra-passe!");
+    // ----- GESTÃO DE AUTENTICAÇÃO E REGISTO -----
+
+    window.mostrarRegisto = function() {
+        document.getElementById('telaFirebaseAuth').style.display = 'none';
+        document.getElementById('telaRegisto').style.display = 'block';
+    };
+
+    window.ocultarRegisto = function() {
+        document.getElementById('telaRegisto').style.display = 'none';
+        document.getElementById('telaFirebaseAuth').style.display = 'block';
+    };
+
+    window.submeterRegisto = async function() {
+        let dataNasc = document.getElementById('regDataNasc').value;
+        let contacto = document.getElementById('regContacto').value.trim();
+        let email = document.getElementById('regEmail').value.trim();
+        let senha = document.getElementById('regPassword').value;
+
+        if (!dataNasc || !contacto || !email || !senha) {
+            return customAlert("Por favor, preencha todos os campos obrigatórios!");
+        }
+
+        // Validação estrita de 6 dígitos numéricos
+        if (!/^\d{6}$/.test(senha)) {
+            return customAlert("A palavra-passe deve conter exatamente 6 dígitos numéricos, sem letras ou símbolos.");
+        }
 
         try {
-            await createUserWithEmailAndPassword(auth, email, senha);
+            // Criação no Firebase Auth
+            let cred = await createUserWithEmailAndPassword(auth, email, senha);
+            let uid = cred.user.uid;
+
+            // Gravação na coleção "usuarios_admin" conforme regras (usando o caminho artifact se em modo restrito, ou caminho direto simulado)
+            let adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'usuarios_admin', uid);
+            
+            await setDoc(adminDocRef, {
+                dataNascimento: dataNasc,
+                contacto: contacto,
+                email: email,
+                role: 'admin',
+                criadoEm: new Date().toISOString()
+            });
+
             window.tocarSom('sucesso');
-            await customAlert("✅ Conta criada e autenticada com sucesso!");
+            await customAlert("✅ Conta criada e registada com sucesso na coleção usuarios_admin!");
+            
+            // Oculta egristo, fluxo authStateChanged vai capturar o login
+            document.getElementById('telaRegisto').style.display = 'none';
+
         } catch (error) {
             window.tocarSom('alerta');
             await customAlert("⚠️ Erro ao criar conta: " + error.message);
@@ -1302,6 +1383,7 @@
     window.fazerLoginFirebase = async function() {
         let email = document.getElementById('authEmailInput').value.trim();
         let senha = document.getElementById('authPasswordInput').value;
+        
         if (!email || !senha) return customAlert("Preencha o e-mail e a palavra-passe!");
 
         try {
@@ -1336,6 +1418,7 @@
             authUserFirebase = user;
             document.getElementById('lblEmailLogado').innerText = user.email;
             document.getElementById('telaFirebaseAuth').style.display = 'none';
+            document.getElementById('telaRegisto').style.display = 'none';
             document.getElementById('telaLogin').style.display = 'block';
             
             let empSalva = localStorage.getItem('codigoEmpresaRestaurante');
@@ -1346,6 +1429,7 @@
         } else {
             authUserFirebase = null;
             document.getElementById('telaFirebaseAuth').style.display = 'block';
+            document.getElementById('telaRegisto').style.display = 'none';
             document.getElementById('telaLogin').style.display = 'none';
             document.getElementById('telaSistema').style.display = 'none';
         }
