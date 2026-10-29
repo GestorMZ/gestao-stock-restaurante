@@ -7,7 +7,7 @@
 
     <!-- Meta Tags PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0066ff">
+    <meta name="theme-color" content="#2563eb">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -83,16 +83,8 @@
             min-height: 46px;
         }
 
-        .tab-btn:hover {
-            background: #e2e8f0;
-            color: var(--text-main);
-        }
-
-        .tab-btn.active { 
-            background: var(--primary); 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-        }
+        .tab-btn:hover { background: #e2e8f0; color: var(--text-main); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
 
         .tab-content { display: none; animation: fadeIn 0.15s ease; }
         .tab-content.active { display: block; }
@@ -360,39 +352,59 @@
         </div>
     </div>
 
-   <!-- ECRÃ DE LOGIN -->
-<div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px;">
-    
-    <style>
-        @keyframes flutuarLogo {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-6px) scale(1.03); filter: brightness(1.05); }
-            100% { transform: translateY(0px) scale(1); }
-        }
-        .logo-animado {
-            animation: flutuarLogo 3s ease-in-out infinite;
-        }
-    </style>
+    <!-- ECRÃ 1: AUTENTICAÇÃO FIREBASE (E-MAIL E SENHA) -->
+    <div id="telaFirebaseAuth" style="max-width:480px; margin:30px auto; padding:10px;">
+        <style>
+            @keyframes flutuarLogo {
+                0% { transform: translateY(0px) scale(1); }
+                50% { transform: translateY(-6px) scale(1.03); filter: brightness(1.05); }
+                100% { transform: translateY(0px) scale(1); }
+            }
+            .logo-animado { animation: flutuarLogo 3s ease-in-out infinite; }
+        </style>
 
-    <div style="text-align:center; margin-bottom:24px;">
-        <!-- Logo real animado -->
-        <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
-        
-        <h2 style="margin-bottom:6px; font-size:1.8em;">Entrar no GS Point</h2>
-        <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Introduza o Código da Empresa e selecione as suas credenciais:</p>
-    </div>
-
-    <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
-        <div class="form-group" style="margin-bottom:12px;">
-            <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
-            <div style="display:flex; gap:8px;">
-                <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" onchange="window.carregarPerfisEmpresa()">
-                <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar</button>
-            </div>
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="width: 76px; height: 76px; border-radius: 18px; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-size:32px; margin:0 auto 12px auto; box-shadow: 0 10px 25px rgba(37,99,235,0.35);" class="logo-animado">🛡️</div>
+            <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
+            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
         </div>
-        <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
+
+        <div style="background:var(--card-bg); padding:22px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <div class="form-group" style="margin-bottom:14px;">
+                <label style="color:var(--primary); font-weight:800;">📧 E-mail do Administrador / Gestor</label>
+                <input type="email" id="authEmailInput" placeholder="exemplo@restaurante.com">
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+                <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe Segura</label>
+                <input type="password" id="authPasswordInput" placeholder="Sua palavra-passe" onkeyup="if(event.key==='Enter') window.fazerLoginFirebase()">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-primary" onclick="window.fazerLoginFirebase()" style="flex:1;">Entrar</button>
+                <button class="btn-success" onclick="window.criarContaFirebase()" style="flex:1;">Criar Conta</button>
+            </div>
+            <p style="text-align:center; margin-top:16px;">
+                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none; font-weight:700;" onclick="window.recuperarSenhaFirebase()">Esqueceu-se da senha de e-mail?</a>
+            </p>
+        </div>
     </div>
- 
+
+    <!-- ECRÃ 2: CÓDIGO DA EMPRESA / LICENÇA -->
+    <div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px; display:none;">
+        <div style="text-align:center; margin-bottom:24px;">
+            <h2 style="margin-bottom:6px; font-size:1.8em;">Vincular Restaurante</h2>
+            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Utilizador autenticado: <b id="lblEmailLogado" style="color:var(--success);"></b></p>
+        </div>
+
+        <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <div class="form-group" style="margin-bottom:12px;">
+                <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" onchange="window.carregarPerfisEmpresa()">
+                    <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar</button>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
+        </div>
 
         <div id="seccaoCriarTrial" style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px dashed var(--primary); margin-bottom:20px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <h4 style="margin-top:0; color:var(--primary); margin-bottom: 8px;">Ainda não tem o sistema?</h4>
@@ -403,23 +415,11 @@
         <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
             <h3 style="color:#fecaca; margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:14px;"></p>
-            
-            <div style="background:rgba(0,0,0,0.2); border:1px dashed var(--danger); padding:14px; border-radius:10px; margin:14px 0; text-align:left;">
-                <strong style="color:#93c5fd; display:block; margin-bottom:8px; font-size:0.95em;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
-                <div style="font-size:0.9em; line-height:1.6;">
-                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
-                    • <b>e-Mola:</b> 87 406 3572 (Valter Lopes)<br>
-                    • <b>Valor da Mensalidade:</b> 1.500 MT
-                </div>
-            </div>
-            
-            <p style="font-size:0.85em; margin-bottom:0;">
-                Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema instantaneamente.
-            </p>
+            <p style="font-size:0.85em; margin-bottom:0;">Envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar.</p>
         </div>
 
         <div id="seccaoPerfisEForm" style="display:none;">
-            <p id="labelTituloSeccaoPerfis" style="text-align:center; font-size:0.9em; font-weight:800; color:var(--purple); margin-bottom:12px;">🔑 Início de Turno: Selecione o Utilizador</p>
+            <p style="text-align:center; font-size:0.9em; font-weight:800; color:var(--purple); margin-bottom:12px;">🔑 Início de Turno: Selecione o Utilizador</p>
             <div id="gridPerfisLogin" class="grid-perfis-login"></div>
 
             <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
@@ -428,22 +428,16 @@
                     <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
                 </div>
                 <div class="form-group">
-                    <label>Palavra-passe</label>
-                    <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe" onkeyup="if(event.key==='Enter') window.fazerLogin()">
+                    <label>Palavra-passe do Perfil</label>
+                    <input type="password" id="loginPass" placeholder="Digite a palavra-passe do perfil" onkeyup="if(event.key==='Enter') window.fazerLogin()">
                 </div>
                 <button onclick="window.fazerLogin()" style="margin-top:6px; font-size:1.05em; padding:14px;">Entrar no Sistema 🚀</button>
             </div>
-            
-            <p style="text-align:center; margin-top:20px;">
-                <a href="#" style="color:var(--primary); font-size:0.85em; text-decoration:none; font-weight:700;" onclick="window.abrirModalResetSenha()">Esqueceu-se da palavra-passe? (Apenas Chave Mestra)</a>
-            </p>
         </div>
-
     </div>
 
     <!-- ECRÃ PRINCIPAL DO SISTEMA -->
     <div id="telaSistema" style="display:none;">
-        
         <div class="header-usuario">
             <div style="display:flex; align-items:center; gap:12px;">
                 <div id="headerAvatarBox"></div>
@@ -454,10 +448,7 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;">
-                    ⏳ A verificar rede...
-                </span>
-
+                <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;">⏳ A verificar rede...</span>
                 <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
                 <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
                 <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
@@ -531,7 +522,6 @@
                         <label>Qtd</label>
                         <input type="number" id="cartQtd" value="1" min="0.1" step="0.1">
                     </div>
-                    
                     <div class="form-group" style="max-width: 170px;">
                         <label style="font-size: 0.75em; margin-bottom: 6px;">Atalhos Qtd</label>
                         <div style="display: flex; gap: 4px;">
@@ -540,7 +530,6 @@
                             <button type="button" class="btn-sm btn-dark" style="flex:1;" onclick="window.adicionarQtdRapida(10)">+10</button>
                         </div>
                     </div>
-
                     <div class="form-group" style="max-width:140px;">
                         <label>Preço Unit. (MT)</label>
                         <input type="number" id="cartPrecoUnit" step="0.5">
@@ -595,22 +584,10 @@
                 <div id="boxPagamentoDesdobradoArea" style="display:none; border:2px dashed var(--purple); padding:16px; border-radius:12px; margin-bottom:14px;">
                     <h5 style="margin-top:0; color:var(--purple); font-size:1.05em;">🔀 Desdobrar Pagamento em Múltiplos Métodos:</h5>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>💵 Dinheiro (MT)</label>
-                            <input type="number" id="payDesdDinheiro" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                        </div>
-                        <div class="form-group">
-                            <label>📱 M-Pesa (MT)</label>
-                            <input type="number" id="payDesdMpesa" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                        </div>
-                        <div class="form-group">
-                            <label>📱 e-Mola (MT)</label>
-                            <input type="number" id="payDesdEmola" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                        </div>
-                        <div class="form-group">
-                            <label>💳 POS (MT)</label>
-                            <input type="number" id="payDesdPOS" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()">
-                        </div>
+                        <div class="form-group"><label>💵 Dinheiro (MT)</label><input type="number" id="payDesdDinheiro" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()"></div>
+                        <div class="form-group"><label>📱 M-Pesa (MT)</label><input type="number" id="payDesdMpesa" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()"></div>
+                        <div class="form-group"><label>📱 e-Mola (MT)</label><input type="number" id="payDesdEmola" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()"></div>
+                        <div class="form-group"><label>💳 POS (MT)</label><input type="number" id="payDesdPOS" value="0" min="0" step="0.5" oninput="window.calcularTotaisDesdobrados()"></div>
                     </div>
                     <div style="font-size:0.95em; font-weight:700;">
                         Soma dos Pagamentos: <span id="lblSomaDesdobrado" style="color:var(--primary);">0.00 MT</span> | 
@@ -661,12 +638,11 @@
         <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
-            
             <div id="seccaoAbrirCaixa" style="display:none; background:#ecfdf5; padding:18px; border-radius:12px; border:2px solid #a7f3d0; margin-bottom:20px;">
                 <h4 style="color:#065f46; margin-top:0;">🔓 Abrir Turno de Caixa</h4>
                 <div class="form-group">
                     <label>Fundo de Maneio na Gaveta (MT)</label>
-                    <input type="number" id="inputFundoManeio" value="0" min="0" step="50">
+                    <input type="number" id="inputFundoManeio" value="1000" min="0" step="50">
                 </div>
                 <button class="btn-success" onclick="window.abrirCaixaTurno()" style="margin-top:8px;">Confirmar Abertura de Caixa</button>
             </div>
@@ -682,17 +658,9 @@
                 <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-top:18px; border:1px solid var(--border);">
                     <h4 style="margin-top:0;">💸 Registar Saída / Despesa do Turno</h4>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Descrição</label>
-                            <input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Carvão">
-                        </div>
-                        <div class="form-group">
-                            <label>Valor (MT)</label>
-                            <input type="number" id="despesaValor" min="1" step="0.5">
-                        </div>
-                        <div class="form-group" style="align-self:flex-end;">
-                            <button class="btn-saida" onclick="window.registarDespesa()">Registar Saída</button>
-                        </div>
+                        <div class="form-group"><label>Descrição</label><input type="text" id="despesaDesc" placeholder="Ex: Compra de Gelo, Carvão"></div>
+                        <div class="form-group"><label>Valor (MT)</label><input type="number" id="despesaValor" min="1" step="0.5"></div>
+                        <div class="form-group" style="align-self:flex-end;"><button class="btn-saida" onclick="window.registarDespesa()">Registar Saída</button></div>
                     </div>
                 </div>
 
@@ -711,25 +679,13 @@
             </div>
 
             <div style="margin-top:30px; background:var(--card-bg); border:1px solid var(--border); padding:18px; border-radius:12px;">
-                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos (5 por página)</h4>
+                <h4 style="margin-top:0;">📋 Histórico de Aberturas e Fechos</h4>
                 <div class="table-responsive">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Abertura</th>
-                                <th>Fecho</th>
-                                <th>Operador</th>
-                                <th>Fundo Inicial</th>
-                                <th>Vendas Dinheiro</th>
-                                <th>Despesas</th>
-                                <th>Valor Contado</th>
-                                <th>Diferença</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Abertura</th><th>Fecho</th><th>Operador</th><th>Fundo Inicial</th><th>Vendas Dinheiro</th><th>Despesas</th><th>Valor Contado</th><th>Diferença</th></tr></thead>
                         <tbody id="corpoHistoricoTurnosCaixa"></tbody>
                     </table>
                 </div>
-
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaTurnos(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualTurnos">1</span> de <span id="pagTotalTurnos">1</span></span>
@@ -741,30 +697,18 @@
         <!-- ABA 3: FIADO -->
         <div id="abaFiado" class="tab-content col-gerente">
             <h2>Gestão de Clientes & Contas a Fiado</h2>
-            
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">Cadastrar Novo Cliente</h4>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome Completo</label>
-                        <input type="text" id="novoClienteNome" placeholder="Nome do cliente">
-                    </div>
-                    <div class="form-group">
-                        <label>Telefone / WhatsApp</label>
-                        <input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87...">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-primary" onclick="window.cadastrarCliente()">+ Cadastrar Cliente</button>
-                    </div>
+                    <div class="form-group"><label>Nome Completo</label><input type="text" id="novoClienteNome" placeholder="Nome do cliente"></div>
+                    <div class="form-group"><label>Telefone / WhatsApp</label><input type="text" id="novoClienteTelefone" placeholder="+258 84/82/86/87..."></div>
+                    <div class="form-group" style="align-self:flex-end;"><button class="btn-primary" onclick="window.cadastrarCliente()">+ Cadastrar Cliente</button></div>
                 </div>
             </div>
-
             <h4>Clientes Cadastrados e Saldo Devedor</h4>
             <div class="table-responsive">
                 <table>
-                    <thead>
-                        <tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr>
-                    </thead>
+                    <thead><tr><th>Nome</th><th>Telefone</th><th>Dívida Atual</th><th>Ações</th></tr></thead>
                     <tbody id="corpoTabelaClientes"></tbody>
                 </table>
             </div>
@@ -783,10 +727,7 @@
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">📥 Entrada de Produtos (Compras)</h4>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Produto / Bebida</label>
-                        <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml">
-                    </div>
+                    <div class="form-group"><label>Produto / Bebida</label><input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml"></div>
                     <div class="form-group">
                         <label>Código de Barras</label>
                         <div style="display: flex; gap: 6px;">
@@ -795,12 +736,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Categoria do Produto</label>
+                        <label>Categoria</label>
                         <select id="simplesCategoria">
                             <option value="bebidas">🍺 Bebidas</option>
-                            <option value="pratos">🍲 Pratos / Refeições</option>
-                            <option value="petiscos">🍟 Petiscos / Acompanhamentos</option>
-                            <option value="outros">🍷 Outros / Diversos</option>
+                            <option value="pratos">🍲 Pratos</option>
+                            <option value="petiscos">🍟 Petiscos</option>
+                            <option value="outros">🍷 Outros</option>
                         </select>
                     </div>
                 </div>
@@ -809,47 +750,26 @@
                     <div class="form-group">
                         <label>Formato de Compra</label>
                         <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
+                            <option value="caixa">📦 Por Caixa / Fardo</option>
                             <option value="unidade">🍺 Por Unidade Avulsa</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-row" id="rowModoCaixa">
-                    <div class="form-group">
-                        <label>Qtd. de Caixas</label>
-                        <input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Unid. por Caixa</label>
-                        <input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Preço Pago por Caixa (MT)</label>
-                        <input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
-                    </div>
+                    <div class="form-group"><label>Qtd. de Caixas</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Unid. por Caixa</label><input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Preço Pago por Caixa (MT)</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row" id="rowModoUnidade" style="display:none;">
-                    <div class="form-group">
-                        <label>Qtd. Total Unidades</label>
-                        <input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Custo por Unidade (MT)</label>
-                        <input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
-                    </div>
+                    <div class="form-group"><label>Qtd. Total Unidades</label><input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Custo por Unidade (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label style="color:var(--success);">Preço Venda Unitário (MT)</label>
-                        <input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()">
-                    </div>
-                    <div class="form-group">
-                        <label>Limite Alerta Mínimo</label>
-                        <input type="number" id="simplesMinAlerta" value="5" min="1">
-                    </div>
+                    <div class="form-group"><label style="color:var(--success);">Preço Venda Unitário (MT)</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Limite Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="5" min="1"></div>
                 </div>
 
                 <div id="boxCalculoLucro" class="box-calculo-lucro">
@@ -865,25 +785,12 @@
 
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:20px;">
                 <h4 style="margin:0;">📦 Stock Atual de Produtos</h4>
-                <div style="max-width:260px; width:100%;">
-                    <input type="text" id="filtroBuscarStock" placeholder="🔍 Pesquisar produto..." oninput="window.mudarPaginaStock(1)" style="padding:8px 12px; font-size:0.9em;">
-                </div>
+                <div style="max-width:260px; width:100%;"><input type="text" id="filtroBuscarStock" placeholder="🔍 Pesquisar produto..." oninput="window.mudarPaginaStock(1)" style="padding:8px 12px; font-size:0.9em;"></div>
             </div>
 
             <div class="table-responsive" style="margin-bottom:12px;">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Categoria</th>
-                            <th>Stock Atual</th>
-                            <th>Mínimo Alerta</th>
-                            <th>Preço Venda Unit.</th>
-                            <th class="col-gerente">Custo Médio Unit.</th>
-                            <th class="col-gerente">Lucro Unit. Est.</th>
-                            <th class="col-gerente">Ações</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Produto</th><th>Categoria</th><th>Stock Atual</th><th>Mínimo</th><th>Preço Venda</th><th class="col-gerente">Custo Médio</th><th class="col-gerente">Lucro Est.</th><th class="col-gerente">Ações</th></tr></thead>
                     <tbody id="corpoStock"></tbody>
                 </table>
             </div>
@@ -896,31 +803,19 @@
 
             <div style="background:var(--card-bg); border:1px solid var(--border); padding:18px; border-radius:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
-                    <h4 style="margin:0;">📋 Histórico de Movimentações (5 por página)</h4>
+                    <h4 style="margin:0;">📋 Histórico de Movimentações</h4>
                     <select id="filtroTipoMovimentacao" onchange="window.mudarPaginaMovimentacao(1)" style="width:auto; padding:8px 12px; font-size:0.9em;">
                         <option value="todos">Todas as Movimentações</option>
                         <option value="ENTRADA">Apenas Entradas</option>
                         <option value="SAÍDA">Apenas Saídas</option>
                     </select>
                 </div>
-
                 <div class="table-responsive">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Data / Hora</th>
-                                <th>Tipo</th>
-                                <th>Produto</th>
-                                <th>Qtd</th>
-                                <th>Utilizador</th>
-                                <th>Origem</th>
-                                <th class="col-gerente">Ação</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Data / Hora</th><th>Tipo</th><th>Produto</th><th>Qtd</th><th>Utilizador</th><th>Origem</th><th class="col-gerente">Ação</th></tr></thead>
                         <tbody id="corpoMovimentacoesStock"></tbody>
                     </table>
                 </div>
-
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                     <button class="btn-dark btn-sm" onclick="window.mudarPaginaMovimentacao(-1)">⬅️ Anterior</button>
                     <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualMov">1</span> de <span id="pagTotalMov">1</span></span>
@@ -932,51 +827,30 @@
         <!-- ABA 5: USUÁRIOS -->
         <div id="abaUsuarios" class="tab-content col-admin">
             <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
-
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:20px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">Criar Novo Perfil com Foto</h4>
                 <div class="form-row">
+                    <div class="form-group"><label>Nome do Utilizador</label><input type="text" id="novoUserNome" placeholder="Ex: joao, maria"></div>
+                    <div class="form-group"><label>Palavra-passe</label><input type="password" id="novoUserSenha" placeholder="Senha"></div>
                     <div class="form-group">
-                        <label>Nome do Utilizador</label>
-                        <input type="text" id="novoUserNome" placeholder="Ex: joao, maria">
-                    </div>
-                    <div class="form-group">
-                        <label>Palavra-passe</label>
-                        <input type="password" id="novoUserSenha" placeholder="Senha do utilizador">
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de Permissão</label>
+                        <label>Permissão</label>
                         <select id="novoUserTipo">
-                            <option value="vendedor">🛒 Operador de Caixa (Mesas e Vendas)</option>
-                            <option value="gerente">🛡️ Gerente (Caixa, Stock, Clientes)</option>
-                            <option value="admin">⚙️ Administrador (Acesso Total)</option>
+                            <option value="vendedor">🛒 Operador de Caixa</option>
+                            <option value="gerente">🛡️ Gerente</option>
+                            <option value="admin">⚙️ Administrador</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Foto do Perfil (Opcional)</label>
-                        <input type="file" id="novoUserFoto" accept="image/*">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button>
-                    </div>
+                    <div class="form-group"><label>Foto do Perfil (Opcional)</label><input type="file" id="novoUserFoto" accept="image/*"></div>
+                    <div class="form-group" style="align-self:flex-end;"><button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button></div>
                 </div>
             </div>
 
-            <h4>📊 Perfis Ativos (3 por página)</h4>
+            <h4>📊 Perfis Ativos</h4>
             <div class="table-responsive" style="margin-bottom:15px;">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Foto</th>
-                            <th>Utilizador</th>
-                            <th>Permissão</th>
-                            <th>Total Vendido (MT)</th>
-                            <th>Nº Vendas</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Foto</th><th>Utilizador</th><th>Permissão</th><th>Total Vendido</th><th>Nº Vendas</th><th>Ações</th></tr></thead>
                     <tbody id="corpoTabelaPerfis"></tbody>
                 </table>
             </div>
@@ -994,9 +868,7 @@
                 </div>
                 <div class="table-responsive" style="margin-top:12px;">
                     <table>
-                        <thead>
-                            <tr><th>Data/Hora</th><th>Mesa</th><th>Método</th><th>Itens</th><th>Total (MT)</th><th>Ação Admin</th></tr>
-                        </thead>
+                        <thead><tr><th>Data/Hora</th><th>Mesa</th><th>Método</th><th>Itens</th><th>Total</th><th>Ação Admin</th></tr></thead>
                         <tbody id="corpoDetalhesVendasPerfil"></tbody>
                     </table>
                 </div>
@@ -1006,9 +878,8 @@
         <!-- ABA 6: DASHBOARD -->
         <div id="abaDashboard" class="tab-content col-admin">
             <h2>Painel Financeiro & Desempenho</h2>
-
             <div id="boxAlertaCancelamentosMuitos" class="alerta-caixa-bloqueio" style="display:none;">
-                ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos de vendas no turno ativo!
+                ⚠️ <b>Aviso de Auditoria:</b> Foram efetuados <span id="numCancelamentosDetetados">0</span> cancelamentos no turno ativo!
             </div>
 
             <div class="form-row" style="background:var(--card-bg); padding:14px; border-radius:12px; align-items:center; border:1px solid var(--border);">
@@ -1029,46 +900,19 @@
 
             <h4 style="margin-top:20px; color:var(--primary);">📲 Saldos Acumulados por Carteiras Digitais e Caixas</h4>
             <div class="cards-grid">
-                <div class="card-stat roxo">
-                    <h4>📱 M-Pesa Total</h4>
-                    <div class="valor-card" id="dashValMpesa">0.00 MT</div>
-                </div>
-                <div class="card-stat laranja">
-                    <h4>📱 e-Mola Total</h4>
-                    <div class="valor-card" id="dashValEmola">0.00 MT</div>
-                </div>
-                <div class="card-stat">
-                    <h4>💳 POS / Cartão Total</h4>
-                    <div class="valor-card" id="dashValPOS">0.00 MT</div>
-                </div>
-                <div class="card-stat verde">
-                    <h4>💵 Dinheiro em Espécie</h4>
-                    <div class="valor-card" id="dashValNumerario">0.00 MT</div>
-                </div>
-                <div class="card-stat vermelho">
-                    <h4>👥 Vendas a Fiado</h4>
-                    <div class="valor-card" id="dashValFiado">0.00 MT</div>
-                </div>
+                <div class="card-stat roxo"><h4>📱 M-Pesa Total</h4><div class="valor-card" id="dashValMpesa">0.00 MT</div></div>
+                <div class="card-stat laranja"><h4>📱 e-Mola Total</h4><div class="valor-card" id="dashValEmola">0.00 MT</div></div>
+                <div class="card-stat"><h4>💳 POS / Cartão Total</h4><div class="valor-card" id="dashValPOS">0.00 MT</div></div>
+                <div class="card-stat verde"><h4>💵 Dinheiro em Espécie</h4><div class="valor-card" id="dashValNumerario">0.00 MT</div></div>
+                <div class="card-stat vermelho"><h4>👥 Vendas a Fiado</h4><div class="valor-card" id="dashValFiado">0.00 MT</div></div>
             </div>
 
             <h4 style="margin-top:22px;">📊 Balanço Geral do Período</h4>
             <div class="cards-grid">
-                <div class="card-stat verde">
-                    <h4>Vendas Totais</h4>
-                    <div class="valor-card" id="dashTotalVendas">0.00 MT</div>
-                </div>
-                <div class="card-stat laranja">
-                    <h4>Custo Produtos (COGS)</h4>
-                    <div class="valor-card" id="dashCustoVendas">0.00 MT</div>
-                </div>
-                <div class="card-stat vermelho">
-                    <h4>Despesas Gerais</h4>
-                    <div class="valor-card" id="dashDespesasGerais">0.00 MT</div>
-                </div>
-                <div class="card-stat roxo">
-                    <h4>Lucro Líquido Real</h4>
-                    <div class="valor-card" id="dashLucroReal">0.00 MT</div>
-                </div>
+                <div class="card-stat verde"><h4>Vendas Totais</h4><div class="valor-card" id="dashTotalVendas">0.00 MT</div></div>
+                <div class="card-stat laranja"><h4>Custo Produtos (COGS)</h4><div class="valor-card" id="dashCustoVendas">0.00 MT</div></div>
+                <div class="card-stat vermelho"><h4>Despesas Gerais</h4><div class="valor-card" id="dashDespesasGerais">0.00 MT</div></div>
+                <div class="card-stat roxo"><h4>Lucro Líquido Real</h4><div class="valor-card" id="dashLucroReal">0.00 MT</div></div>
             </div>
 
             <div class="form-row" style="margin-top:20px;">
@@ -1103,7 +947,6 @@
                     <tbody id="corpoTabelaAuditLogs"></tbody>
                 </table>
             </div>
-
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaAuditLogs(-1)">⬅️ Anterior</button>
                 <span style="font-size:0.85em; font-weight:800;">Página <span id="pagAtualAuditLogs">1</span> de <span id="pagTotalAuditLogs">1</span></span>
@@ -1114,7 +957,6 @@
                 <button class="btn-dark btn-sm" onclick="window.fazerBackup()">💾 Baixar Backup Geral Seguro</button>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -1123,34 +965,22 @@
     <div class="modal-content" style="max-width:440px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
         <h3 style="margin-top:0;">👥 Dividir Conta por Pessoas</h3>
-        <p style="font-size:0.9em; color:var(--text-muted);">Calcule o valor exato a pagar por pessoa na mesa atual:</p>
-        
         <div style="background:var(--light); padding:14px; border-radius:10px; border:1px solid var(--border); margin-bottom:16px;">
-            <div style="font-weight:800; font-size:1.15em; color:var(--primary);">
-                Total da Mesa: <span id="lblTotalMesaDivisao">0.00 MT</span>
-            </div>
+            <div style="font-weight:800; font-size:1.15em; color:var(--primary);">Total da Mesa: <span id="lblTotalMesaDivisao">0.00 MT</span></div>
         </div>
-
-        <div class="form-group">
-            <label>Número de Pessoas na Mesa</label>
-            <input type="number" id="numPessoasDivisao" value="2" min="1" step="1" oninput="window.calcularValorPorPessoa()">
-        </div>
-
+        <div class="form-group"><label>Número de Pessoas na Mesa</label><input type="number" id="numPessoasDivisao" value="2" min="1" step="1" oninput="window.calcularValorPorPessoa()"></div>
         <div style="background:var(--light); border:2px dashed var(--success); padding:16px; border-radius:12px; text-align:center; margin-top:16px;">
             <span style="font-size:0.85em; color:var(--text-muted); font-weight:800; text-transform:uppercase;">VALOR POR PESSOA:</span><br>
             <span id="lblValorPorPessoa" style="font-size:1.8em; font-weight:800; color:var(--success);">0.00 MT</span>
         </div>
-
         <button class="btn-primary" style="margin-top:18px;" onclick="window.fecharModalDivisaoConta()">Concluído</button>
     </div>
 </div>
 
-<!-- MODAL SCANNER DE CÓDIGO DE BARRAS -->
 <div id="modalScannerBarcode" class="modal">
     <div class="modal-content" style="max-width:460px; text-align:center;">
         <span class="close-modal" onclick="window.fecharModalScannerBarcode()">&times;</span>
         <h3 style="margin-top:0;">📷 Leitor de Código de Barras</h3>
-        <p style="font-size:0.9em; color:var(--text-muted);">Aponte a câmara para o código de barras do produto:</p>
         <div id="readerHtml5Qrcode" style="width:100%; border-radius:10px; overflow:hidden; background:#000; margin-bottom:14px;"></div>
         <button class="btn-saida" onclick="window.fecharModalScannerBarcode()">❌ Fechar Câmara</button>
     </div>
@@ -1169,18 +999,9 @@
     <div class="modal-content" style="max-width:440px;">
         <span class="close-modal" onclick="window.fecharModalResetSenha()">&times;</span>
         <h3 style="margin-top:0;">🔑 Redefinir Senha com Chave Mestra</h3>
-        <div class="form-group">
-            <label>Nome do Utilizador</label>
-            <input type="text" id="resetUsuarioNome">
-        </div>
-        <div class="form-group">
-            <label>Chave Mestra do Administrador</label>
-            <input type="password" id="resetChaveMestraInput">
-        </div>
-        <div class="form-group">
-            <label>Nova Palavra-Passe</label>
-            <input type="password" id="resetNovaSenha">
-        </div>
+        <div class="form-group"><label>Nome do Utilizador</label><input type="text" id="resetUsuarioNome"></div>
+        <div class="form-group"><label>Chave Mestra do Administrador</label><input type="password" id="resetChaveMestraInput"></div>
+        <div class="form-group"><label>Nova Palavra-Passe</label><input type="password" id="resetNovaSenha"></div>
         <button class="btn-success" onclick="window.solicitarRedefinicaoSenhaChaveMestra()" style="margin-top:6px;">🔐 Autorizar e Guardar Nova Senha</button>
     </div>
 </div>
@@ -1194,49 +1015,25 @@
     </div>
 </div>
 
-<!-- MODAL DE CONVERSÃO GARRAFA -> SHOTS -->
 <div id="modalConversaoShots" class="modal">
     <div class="modal-content" style="max-width:460px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
         <h3 style="margin-top:0;">🍷 Converter Garrafa em Shots / Doses</h3>
-        <p style="font-size:0.9em; color:var(--text-muted);">Selecione a garrafa, o número de garrafas a abrir e adicione os respetivos shots:</p>
-        
-        <div class="form-group">
-            <label>Garrafa a Abrir (Stock Fechado)</label>
-            <select id="selectGarrafaConversao"></select>
-        </div>
-
-        <div class="form-group">
-            <label>Número de Garrafas a Abrir</label>
-            <input type="number" id="inputQtdGarrafasAbrir" value="1" min="1" step="1">
-        </div>
-
-        <div class="form-group">
-            <label>Nome do Produto Shot / Dose (Destino)</label>
-            <input type="text" id="inputNomeShotDestino" placeholder="Ex: Shot Red Label">
-        </div>
-
+        <div class="form-group"><label>Garrafa a Abrir</label><select id="selectGarrafaConversao"></select></div>
+        <div class="form-group"><label>Nº de Garrafas a Abrir</label><input type="number" id="inputQtdGarrafasAbrir" value="1" min="1" step="1"></div>
+        <div class="form-group"><label>Nome do Produto Shot Destino</label><input type="text" id="inputNomeShotDestino" placeholder="Ex: Shot Red Label"></div>
         <div class="form-row">
-            <div class="form-group">
-                <label>Nº de Shots por Garrafa</label>
-                <input type="number" id="inputQtdShotsPorGarrafa" value="20" min="1">
-            </div>
-            <div class="form-group">
-                <label>Preço Venda por Shot (MT)</label>
-                <input type="number" id="inputPrecoVendaShot" value="150" min="0" step="0.5">
-            </div>
+            <div class="form-group"><label>Nº de Shots por Garrafa</label><input type="number" id="inputQtdShotsPorGarrafa" value="20" min="1"></div>
+            <div class="form-group"><label>Preço Venda por Shot (MT)</label><input type="number" id="inputPrecoVendaShot" value="150" min="0" step="0.5"></div>
         </div>
-
         <button class="btn-success" style="margin-top:12px;" onclick="window.executarConversaoGarrafaParaShots()">🔄 Confirmar Conversão</button>
     </div>
 </div>
 
-<!-- MODAL DEFINIÇÕES -->
 <div id="modalDefinicoes" class="modal">
     <div class="modal-content" style="max-width:520px;">
         <span class="close-modal" onclick="window.fecharModalDefinicoes()">&times;</span>
         <h3 style="margin-top:0;">⚙️ Definições & Impressora Bluetooth</h3>
-        
         <div style="border:2px dashed var(--primary); padding:16px; border-radius:12px; margin-bottom:18px; text-align:center;">
             <h4 style="margin-top:0; color:var(--primary);">🖨️ Impressora Térmica Bluetooth (ESC/POS)</h4>
             <p id="statusBtPrinter" style="font-weight:700; color:var(--danger); margin-bottom:12px;">Status: Desconectado 🔴</p>
@@ -1245,60 +1042,29 @@
                 <button class="btn-warning btn-sm" onclick="window.testarImpressaoBluetooth()">🧪 Testar Impressão</button>
             </div>
         </div>
-
         <div id="seccaoEmpresaAdmin" style="padding:16px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
             <h4 style="margin-top:0; color:var(--primary);">🏢 Dados do Restaurante & Chave Mestra</h4>
-            
             <div class="form-group">
-                <label style="color:var(--danger); font-weight:800;">🏢 Código de Licença / Empresa</label>
+                <label style="color:var(--danger); font-weight:800;">🏢 Código de Licença</label>
                 <div style="display:flex; gap:8px;">
                     <input type="password" id="cfgCodigoLicencaOculto" value="••••••••" readonly style="font-weight:bold; letter-spacing:2px;">
                     <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarLicencaAdmin()">👁️ Ver Licença</button>
                 </div>
             </div>
-
-            <div class="form-group">
-                <label>Nome do Restaurante</label>
-                <input type="text" id="cfgNomeEmpresa">
-            </div>
+            <div class="form-group"><label>Nome do Restaurante</label><input type="text" id="cfgNomeEmpresa"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>NUIT Empresa</label>
-                    <input type="text" id="cfgNuit">
-                </div>
-                <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="text" id="cfgTelefone">
-                </div>
+                <div class="form-group"><label>NUIT Empresa</label><input type="text" id="cfgNuit"></div>
+                <div class="form-group"><label>Telefone</label><input type="text" id="cfgTelefone"></div>
             </div>
-            <div class="form-group">
-                <label>Endereço</label>
-                <input type="text" id="cfgEndereco">
-            </div>
+            <div class="form-group"><label>Endereço</label><input type="text" id="cfgEndereco"></div>
             <div class="form-row">
-                <div class="form-group">
-                    <label>Aplicar IVA?</label>
-                    <select id="cfgAplicarIva">
-                        <option value="nao">Não</option>
-                        <option value="sim" selected>Sim</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Taxa IVA (%)</label>
-                    <input type="number" id="cfgTaxaIva" value="16">
-                </div>
+                <div class="form-group"><label>Aplicar IVA?</label><select id="cfgAplicarIva"><option value="nao">Não</option><option value="sim" selected>Sim</option></select></div>
+                <div class="form-group"><label>Taxa IVA (%)</label><input type="number" id="cfgTaxaIva" value="16"></div>
             </div>
-            <div class="form-group">
-                <label>Slogan / Mensagem Recibo</label>
-                <input type="text" id="cfgSlogan">
-            </div>
-            <div class="form-group">
-                <label style="color:var(--danger); font-weight:800;">🔑 Chave Mestra Secreta</label>
-                <input type="text" id="cfgChaveMestra">
-            </div>
+            <div class="form-group"><label>Slogan / Mensagem Recibo</label><input type="text" id="cfgSlogan"></div>
+            <div class="form-group"><label style="color:var(--danger); font-weight:800;">🔑 Chave Mestra Secreta</label><input type="text" id="cfgChaveMestra"></div>
             <button class="btn-primary btn-sm" onclick="window.guardarDadosEmpresa()" style="margin-top:6px;">💾 Guardar Dados</button>
         </div>
-
         <div style="padding:16px; border-radius:12px; border:1px solid var(--border);">
             <h4 style="margin-top:0;">Alterar Minha Palavra-Passe</h4>
             <input type="password" id="inputNovaSenha" placeholder="Nova palavra-passe" style="margin-bottom:10px;">
@@ -1336,7 +1102,6 @@
         <p style="margin:5px 0;">--------------------------------</p>
         <p id="reciboSlogan" style="text-align:center; font-size:10px; margin-top:10px;">Obrigado pela preferência!</p>
     </div>
-
     <div id="conteudoGuiaCozinha" style="display:none;">
         <div style="text-align:center;">
             <h3 style="margin:0; font-size:16px;">🍳 PEDIDO DE COZINHA</h3>
@@ -1349,13 +1114,15 @@
     </div>
 </div>
 
-<!-- MOTOR JAVASCRIPT OTIMIZADO ULTRA-RÁPIDO HÍBRIDO -->
+<!-- MOTOR JAVASCRIPT OTIMIZADO ULTRA-RÁPIDO HÍBRIDO COM FIREBASE AUTH -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
         getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence, getDocs, updateDoc, arrayUnion, deleteField
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+        getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
@@ -1370,7 +1137,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    signInAnonymously(auth).catch((error) => console.error("⚠️ Erro na autenticação anónima:", error.message));
     enableIndexedDbPersistence(db).catch(() => {});
 
     // ----- SISTEMA MODAL CUSTOMIZADO -----
@@ -1468,45 +1234,30 @@
     window.atualizarEstadoConexao = function() {
         const badge = document.getElementById('statusRedeBadge');
         if (!badge) return;
-
         if (!navigator.onLine) {
             badge.className = 'btn btn-sm btn-danger';
             badge.innerHTML = '🔴 Offline (Modo Local Rápido)';
             return;
         }
-
-        const conexao = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        let conexaoLenta = false;
-
-        if (conexao) {
-            if (['slow-2g', '2g', '3g'].includes(conexao.effectiveType) || conexao.rtt > 500 || conexao.downlink < 1) {
-                conexaoLenta = true;
-            }
-        }
-
-        if (conexaoLenta) {
-            badge.className = 'btn btn-sm btn-warning';
-            badge.innerHTML = '🟡 Conexão Lenta';
-        } else {
-            badge.className = 'btn btn-sm btn-success';
-            badge.innerHTML = '🟢 Online (Ultra-Rápido)';
-        }
+        badge.className = 'btn btn-sm btn-success';
+        badge.innerHTML = '🟢 Online (Ultra-Rápido)';
     };
 
     window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); });
     window.addEventListener('offline', () => { window.atualizarEstadoConexao(); window.tocarSom('alerta'); });
 
+    // ----- VARIÁVEIS DE ESTADO DO SISTEMA -----
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
     let bloqueiosMesas = {}; 
-    
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
     let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16 };
 
     let usuarioAtual = null;
+    let authUserFirebase = null;
     let mesaSelecionada = "Balcão";
     let categoriaPOSSelecionada = "todos";
     let chartInstance = null;
@@ -1532,6 +1283,74 @@
     let html5QrCodeScanner = null;
     let isScannerOpen = false;
 
+    // ----- GESTÃO DE AUTENTICAÇÃO FIREBASE AUTH (EXPLICITAMENTE ATRIBUÍDAS AO WINDOW) -----
+    window.criarContaFirebase = async function() {
+        let email = document.getElementById('authEmailInput').value.trim();
+        let senha = document.getElementById('authPasswordInput').value;
+        if (!email || !senha) return customAlert("Preencha o e-mail e a palavra-passe!");
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, senha);
+            window.tocarSom('sucesso');
+            await customAlert("✅ Conta criada e autenticada com sucesso!");
+        } catch (error) {
+            window.tocarSom('alerta');
+            await customAlert("⚠️ Erro ao criar conta: " + error.message);
+        }
+    };
+
+    window.fazerLoginFirebase = async function() {
+        let email = document.getElementById('authEmailInput').value.trim();
+        let senha = document.getElementById('authPasswordInput').value;
+        if (!email || !senha) return customAlert("Preencha o e-mail e a palavra-passe!");
+
+        try {
+            await signInWithEmailAndPassword(auth, email, senha);
+            window.tocarSom('sucesso');
+        } catch (error) {
+            window.tocarSom('alerta');
+            await customAlert("⚠️ Credenciais inválidas ou conta não encontrada.");
+        }
+    };
+
+    window.recuperarSenhaFirebase = async function() {
+        let email = document.getElementById('authEmailInput').value.trim();
+        if (!email) return customAlert("Introduza o seu e-mail no campo acima primeiro.");
+        try {
+            await sendPasswordResetEmail(auth, email);
+            await customAlert("📩 E-mail de recuperação enviado com sucesso! Verifique a sua caixa de entrada.");
+        } catch (error) {
+            await customAlert("Erro ao enviar e-mail: " + error.message);
+        }
+    };
+
+    window.fazerLogoutFirebase = async function() {
+        if (await customConfirm("Deseja terminar a sessão do Firebase Auth?")) {
+            await signOut(auth);
+            window.location.reload();
+        }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            authUserFirebase = user;
+            document.getElementById('lblEmailLogado').innerText = user.email;
+            document.getElementById('telaFirebaseAuth').style.display = 'none';
+            document.getElementById('telaLogin').style.display = 'block';
+            
+            let empSalva = localStorage.getItem('codigoEmpresaRestaurante');
+            if (empSalva) {
+                document.getElementById('loginCodigoEmpresa').value = empSalva;
+                window.carregarPerfisEmpresa();
+            }
+        } else {
+            authUserFirebase = null;
+            document.getElementById('telaFirebaseAuth').style.display = 'block';
+            document.getElementById('telaLogin').style.display = 'none';
+            document.getElementById('telaSistema').style.display = 'none';
+        }
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
         window.atualizarEstadoConexao();
         const urlParams = new URLSearchParams(window.location.search);
@@ -1541,20 +1360,13 @@
             localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
             let inputCod = document.getElementById('loginCodigoEmpresa');
             if (inputCod) inputCod.value = codigoEmpresa;
-            window.carregarPerfisEmpresa();
-        } else {
-            let empSalva = localStorage.getItem('codigoEmpresaRestaurante');
-            if (empSalva) {
-                let inputCod = document.getElementById('loginCodigoEmpresa');
-                if (inputCod) inputCod.value = empSalva;
-            }
         }
     });
 
     window.criarEmpresaTeste = async function() {
         if (localStorage.getItem('trialCriado')) {
             window.tocarSom('alerta');
-            await customAlert("⚠️ Acesso Recusado: Apenas é permitido criar uma conta de teste por dispositivo. O seu aparelho já registou um teste.");
+            await customAlert("⚠️ Acesso Recusado: Apenas é permitido criar uma conta de teste por dispositivo.");
             return;
         }
 
@@ -1571,10 +1383,7 @@
 
         try {
             await setDoc(doc(db, "licencas", codigoTrial), {
-                status: "ativo",
-                validade: validadeFormatada,
-                tipo: "trial",
-                criadoEm: new Date().toISOString()
+                status: "ativo", validade: validadeFormatada, tipo: "trial", criadoEm: new Date().toISOString()
             });
 
             await setDoc(doc(db, "empresas", codigoTrial), {
@@ -1582,21 +1391,16 @@
             });
 
             await setDoc(doc(db, "empresas", codigoTrial, "dados", "empresa"), {
-                nome: nomeRestaurante,
-                chaveMestra: "1234",
-                aplicarIva: "nao",
-                taxaIva: 0
+                nome: nomeRestaurante, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0
             });
 
             localStorage.setItem('trialCriado', codigoTrial);
-
             window.tocarSom('sucesso');
-            await customAlert(`✅ CONTA DE TESTE CRIADA!\n\n🏢 CÓDIGO DO RESTAURANTE: ${codigoTrial}\n👤 UTILIZADOR: admin\n🔑 SENHA: 123\n\nVálido até: ${validadeFormatada}\n\nGuarde este código ou tire uma captura de ecrã!`);
+            await customAlert(`✅ CONTA DE TESTE CRIADA!\n\n🏢 CÓDIGO: ${codigoTrial}\n👤 UTILIZADOR: admin\n🔑 SENHA: 123\n\nVálido até: ${validadeFormatada}`);
             
             let inputCod = document.getElementById('loginCodigoEmpresa');
             if(inputCod) inputCod.value = codigoTrial;
             window.carregarPerfisEmpresa();
-
         } catch (erro) {
             await customAlert("⚠️ Erro de rede ao tentar criar a conta de teste: " + erro.message);
         }
@@ -1605,7 +1409,7 @@
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
-        let senha = await customPrompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe do Administrador para ver o código:", "", true);
+        let senha = await customPrompt("🔒 AUTORIZAÇÃO\nInsira a palavra-passe do Administrador para ver o código:", "", true);
         if (!senha) return;
 
         let autorizado = false;
@@ -1645,7 +1449,6 @@
             }
             return;
         }
-
         if (event.key === 'F2') { event.preventDefault(); window.imprimirPreRecibo(); }
         else if (event.key === 'F4') { event.preventDefault(); window.imprimirGuiaCozinha(); }
         else if (event.key === 'F9') { event.preventDefault(); window.finalizarVendaCarrinho(); }
@@ -1675,10 +1478,7 @@
                 },
                 () => {}
             ).catch((err) => { 
-                if (isScannerOpen) {
-                    customAlert("Erro ao aceder à câmara: verifique as permissões."); 
-                    window.fecharModalScannerBarcode(); 
-                }
+                if (isScannerOpen) { customAlert("Erro ao aceder à câmara."); window.fecharModalScannerBarcode(); }
             });
         }, 300);
     };
@@ -1703,10 +1503,7 @@
                 },
                 () => {}
             ).catch((err) => { 
-                if (isScannerOpen) {
-                    customAlert("Erro ao aceder à câmara: verifique as permissões."); 
-                    window.fecharModalScannerBarcode(); 
-                }
+                if (isScannerOpen) { customAlert("Erro ao aceder à câmara."); window.fecharModalScannerBarcode(); }
             });
         }, 300);
     };
@@ -1777,9 +1574,7 @@
         if (!codigoEmpresa || !mapaProdutos) return;
         try {
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), mapaProdutos, { merge: true });
-        } catch(e) {
-            console.error("Erro ao sincronizar stock:", e);
-        }
+        } catch(e) {}
     }
 
     window.mudarPaginaAuditLogs = function(dir) {
@@ -1814,10 +1609,7 @@
     window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
         let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
-        if(!codeInput) {
-             await customAlert("Por favor, introduza o Código do Restaurante!");
-             return;
-        }
+        if(!codeInput) { await customAlert("Introduza o Código do Restaurante!"); return; }
 
         codigoEmpresa = codeInput;
         localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
@@ -1835,7 +1627,7 @@
                     return;
                 }
             } else {
-                await customAlert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe ou não está autorizado.");
+                await customAlert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe.");
                 return;
             }
 
@@ -1859,7 +1651,7 @@
             });
             unsubscribes.push(unsubUser);
         } catch (erro) {
-            await customAlert("Erro ao ligar ao servidor. Verifique a internet.");
+            await customAlert("Erro ao ligar ao servidor.");
         }
     };
 
@@ -2302,13 +2094,12 @@
         for(let m in mesas) { if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
         if(mesasComItens.length > 0) {
             window.tocarSom('alerta');
-            await customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas com consumos ativos por liquidar: ${mesasComItens.join(', ')}.`);
+            await customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas ativas: ${mesasComItens.join(', ')}.`);
             return;
         }
 
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
         if(isNaN(valContado) || valContado < 0) return customAlert("Introduza o valor contado na gaveta.");
-        
         if(!(await customConfirm(`Confirma que contou exatamente ${valContado.toFixed(2)} MT na gaveta?`))) return;
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
@@ -2383,7 +2174,6 @@
         despesas.push(novaDespesa);
         
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: arrayUnion(novaDespesa) }, { merge: true });
-        
         registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
@@ -2426,7 +2216,7 @@
 
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         if (itensDaMesa.length > 0 && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            await customAlert(`⚠️ A mesa ${m} está a ser utilizada no momento por outro operador (${bloqueioUser.toUpperCase()}).`);
+            await customAlert(`⚠️ A mesa ${m} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}).`);
             return;
         }
 
@@ -2525,7 +2315,7 @@
 
         if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
             window.tocarSom('alerta');
-            await customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} está a ser utilizada por ${bloqueioAtual.toUpperCase()}.`);
+            await customAlert(`⚠️ Mesa ocupada por ${bloqueioAtual.toUpperCase()}.`);
             return;
         }
 
@@ -2557,7 +2347,6 @@
                 bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
                 setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
             }
-            
             if (mesaSelecionada !== "Balcão") {
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
             }
@@ -2751,8 +2540,7 @@
         divItens.innerHTML = '';
         itens.forEach(i => {
             divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span>
-                <span>${i.subtotal.toFixed(2)} MT</span>
+                <span>${i.qtd}x ${i.produto}</span><span>${i.subtotal.toFixed(2)} MT</span>
             </div>`;
         });
         document.getElementById('reciboTotal').innerText = totalVenda.toFixed(2);
@@ -2785,7 +2573,7 @@
                 let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
                 let somaDesd = dDin + dMpe + dEmo + dPos;
 
-                if(Math.abs(somaDesd - totalVenda) > 0.1) return customAlert(`⚠️ A soma dos pagamentos desdobrados (${somaDesd.toFixed(2)} MT) deve ser igual ao Total Final (${totalVenda.toFixed(2)} MT)!`);
+                if(Math.abs(somaDesd - totalVenda) > 0.1) return customAlert(`⚠️ A soma dos pagamentos (${somaDesd.toFixed(2)} MT) deve ser igual ao Total (${totalVenda.toFixed(2)} MT)!`);
                 metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
                 desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
             } else {
@@ -2797,14 +2585,7 @@
             let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
             if (metodo === 'Numerário' && valorEntregue <= 0) {
                 window.tocarSom('alerta');
-                await customAlert("⚠️ ATENÇÃO: Tem de introduzir o 'Valor Entregue' pelo cliente!");
-                document.getElementById('cartValorEntregue').focus();
-                return;
-            }
-
-            if (valorEntregue > 0 && valorEntregue < totalVenda && metodo !== 'Fiado' && metodo !== 'Cortesia') {
-                window.tocarSom('alerta');
-                await customAlert(`⚠️ O valor entregue (${valorEntregue.toFixed(2)} MT) é inferior ao total (${totalVenda.toFixed(2)} MT)!`);
+                await customAlert("⚠️ Introduza o 'Valor Entregue' pelo cliente!");
                 document.getElementById('cartValorEntregue').focus();
                 return;
             }
@@ -2840,11 +2621,9 @@
             addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
 
             mesas[mesaSelecionada] = [];
-            
             if (mesaSelecionada !== "Balcão") {
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
             }
-
             if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
                 delete bloqueiosMesas[mesaSelecionada];
                 setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
@@ -2897,8 +2676,7 @@
         divItens.innerHTML = '';
         v.itens.forEach(i => {
             divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span>${i.qtd}x ${i.produto}</span>
-                <span>${i.subtotal.toFixed(2)} MT</span>
+                <span>${i.qtd}x ${i.produto}</span><span>${i.subtotal.toFixed(2)} MT</span>
             </div>`;
         });
         document.getElementById('reciboTotal').innerText = v.totalVenda.toFixed(2);
@@ -2954,22 +2732,9 @@
         if (!bluetoothCharacteristic) return;
         try {
             let encoder = new TextEncoder();
-            let txt = "\x1B\x40\x1B\x61\x01" + 
-                      `${dadosEmpresa.nome || 'RESTAURANTE'}\n` +
-                      `--------------------------------\n` +
-                      `${v.data}\n` +
-                      "\x1B\x61\x00" + 
-                      `Mesa: ${v.mesa} | Op: ${v.usuario}\n` +
-                      `Pagamento: ${v.metodo}\n` +
-                      `--------------------------------\n`;
-
+            let txt = "\x1B\x40\x1B\x61\x01" + `${dadosEmpresa.nome || 'RESTAURANTE'}\n--------------------------------\n${v.data}\n` + "\x1B\x61\x00" + `Mesa: ${v.mesa} | Op: ${v.usuario}\nPagamento: ${v.metodo}\n--------------------------------\n`;
             v.itens.forEach(i => { txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`; });
-
-            txt += `--------------------------------\n` +
-                   `TOTAL: ${v.totalVenda.toFixed(2)} MT\n` +
-                   `Troco: ${v.troco.toFixed(2)} MT\n` +
-                   "\x1B\x61\x01\nObrigado pela preferencia!\n\n\n\n";
-
+            txt += `--------------------------------\nTOTAL: ${v.totalVenda.toFixed(2)} MT\nTroco: ${v.troco.toFixed(2)} MT\n` + "\x1B\x61\x01\nObrigado!\n\n\n\n";
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
         } catch (err) { imprimirTalão(v); }
     };
@@ -2981,9 +2746,7 @@
 
         let novoCliente = { id: Date.now(), nome, telefone: tel, divida: 0 };
         clientes.push(novoCliente);
-        
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: arrayUnion(novoCliente) }, { merge: true });
-        
         document.getElementById('novoClienteNome').value = '';
         document.getElementById('novoClienteTelefone').value = '';
         renderizarClientes();
@@ -3022,7 +2785,7 @@
     window.eliminarClienteFiado = async function(idx) {
         let c = clientes[idx];
         if(!c) return;
-        if(c.divida > 0 && !(await customConfirm(`⚠️ ATENÇÃO: O cliente ${c.nome} tem dívida de ${c.divida} MT. Deseja eliminar?`))) return;
+        if(c.divida > 0 && !(await customConfirm(`⚠️ O cliente ${c.nome} tem dívida. Deseja eliminar?`))) return;
         clientes.splice(idx, 1);
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
         registarAuditLog('Cliente Removido', `Cliente '${c.nome}' eliminado`);
@@ -3092,7 +2855,7 @@
         registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
-        await customAlert(`✅ Conversão concluída com sucesso!\n\n• -${qtdGarrafasAbrir} ${garrafa.toUpperCase()}\n• +${totalShotsGerados} ${nomeShot.toUpperCase()}`);
+        await customAlert(`✅ Conversão concluída!\n\n• -${qtdGarrafasAbrir} ${garrafa.toUpperCase()}\n• +${totalShotsGerados} ${nomeShot.toUpperCase()}`);
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
         renderizarStock();
@@ -3161,7 +2924,7 @@
 
         await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
             id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
+            tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa' : 'Compra Avulsa'
         });
 
         await salvarStockFirestore({ [prod]: stock[prod] });
@@ -3346,13 +3109,13 @@
     };
 
     window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
-        let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador para cancelar esta venda:", "", true);
+        let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador:", "", true);
         if (!senhaAdmin) return;
-        let autorizacao = false;
+        let autorizado = false;
         for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizacao = true; break; }
+            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; }
         }
-        if (!autorizacao) return customAlert("❌ Senha incorreta!");
+        if (!autorizado) return customAlert("❌ Senha incorreta!");
 
         let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
         if(!vendaObj) return customAlert("Venda não encontrada.");
@@ -3383,7 +3146,7 @@
     };
 
     window.apagarTodoHistoricoApp = async function() {
-        let senha = await customPrompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador para apagar todo o histórico:", "", true);
+        let senha = await customPrompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador:", "", true);
         if (!senha) return;
         let autorizado = false;
         for (let u in usuarios) {
@@ -3563,7 +3326,7 @@
     }
 
     window.revelarLicencaAdmin = async function() {
-        let senha = await customPrompt("🔒 AUTORIZAÇÃO DE ADMINISTRADOR\nInsira a palavra-passe para visualizar o Código de Licença:", "", true);
+        let senha = await customPrompt("🔒 AUTORIZAÇÃO\nInsira a palavra-passe para visualizar o Código de Licença:", "", true);
         if (!senha) return;
         let autorizado = false;
         for (let u in usuarios) {
@@ -3608,7 +3371,6 @@
         if (document.getElementById('nomeEmpresaHeader')) {
             document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome;
         }
-
         await customAlert("Dados salvos com sucesso!");
     };
 
