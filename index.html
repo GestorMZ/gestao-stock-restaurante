@@ -346,99 +346,28 @@
 
 <div class="container">
 
-    <!-- ECRÃ DE BLOQUEIO -->
-    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(11, 15, 25, 0.9); z-index:9999; align-items:center; justify-content:center;">
-        <div class="modal-content" style="max-width:380px; text-align:center; padding:30px;">
-            <div style="font-size:42px; margin-bottom:10px;">🔒</div>
-            <h3 style="margin-top:0; font-size:1.4em;">Ecrã Bloqueado</h3>
-            <p style="font-size:0.9em; color:var(--text-muted); margin-bottom:20px;">Introduza a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
-            <div class="form-group">
-                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
-            </div>
-            <button class="btn-primary" onclick="window.desbloquearEcra()" style="margin-top:10px;">🔓 Desbloquear Sistema</button>
-        </div>
-    </div>
-
-  <!-- ECRÃ DE LOGIN COM ANIMAÇÃO DE ENTRADA INTRODUÇÃO -->
-<div id="telaLogin" style="max-width:480px; margin:20px auto; padding:10px;">
+<!-- ECRÃ DE LOGIN -->
+<div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px;">
     
     <style>
-        /* Contenedor da Animação Estilo Vídeo */
-        .intro-logo-container {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 16px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        @keyframes flutuarLogo {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.03); filter: brightness(1.05); }
+            100% { transform: translateY(0px) scale(1); }
         }
-
-        /* Efeito de brilho de fundo circular expansivo */
-        .intro-logo-container::before {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, rgba(13,148,136,0.4) 0%, rgba(37,99,235,0) 70%);
-            border-radius: 50%;
-            animation: expandirBrilho 2.5s ease-out infinite;
-            z-index: 1;
-        }
-
-        @keyframes expandirBrilho {
-            0% { transform: scale(0.5); opacity: 0.8; }
-            50% { transform: scale(2.2); opacity: 0.3; }
-            100% { transform: scale(3); opacity: 0; }
-        }
-
-        /* Animação de entrada do Logo (fade in + zoom suave) */
-        .logo-video-animado {
-            width: 90px;
-            height: 90px;
-            border-radius: 20px;
-            object-fit: cover;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
-            animation: entradaLogoVideo 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, flutuarContinuo 3s ease-in-out 1.2s infinite;
-        }
-
-        @keyframes entradaLogoVideo {
-            0% { transform: scale(0.2) translateY(30px); opacity: 0; filter: brightness(2); }
-            60% { transform: scale(1.1) translateY(-5px); opacity: 1; filter: brightness(1.2); }
-            100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
-        }
-
-        @keyframes flutuarContinuo {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Animação do texto do título */
-        .titulo-animado-intro {
-            animation: fadeInTitulo 1s ease 0.5s both;
-        }
-        @keyframes fadeInTitulo {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .logo-animado {
+            animation: flutuarLogo 3s ease-in-out infinite;
         }
     </style>
 
     <div style="text-align:center; margin-bottom:24px;">
-        <!-- LOGO ANIMADO IDÊNTICO AO VÍDEO -->
-        <div class="intro-logo-container">
-            <img src="icon-192.png" alt="Logo GS Point" class="logo-video-animado">
-        </div>
+        <!-- Logo real animado -->
+        <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
         
-        <div class="titulo-animado-intro">
-            <h2 style="margin-bottom:4px; font-size:1.9em; font-weight:800; letter-spacing:-0.5px;">GS Point</h2>
-            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Sistema de Gestão & POS Profissional</p>
-        </div>
+        <h2 style="margin-bottom:6px; font-size:1.8em;">Entrar no GS Point</h2>
+        <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Introduza o Código da Empresa e selecione as suas credenciais:</p>
     </div>
 
-    <!-- Restante do formulário de login -->
     <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
         <div class="form-group" style="margin-bottom:12px;">
             <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
@@ -449,8 +378,6 @@
         </div>
         <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
     </div>
-    
-    <!-- ... (secção de perfis) ... -->
 </div>
 
     <!-- NOVO BLOCO: CRIAR CONTA DE TESTE -->
@@ -1418,7 +1345,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence, getDocs 
+        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, enableIndexedDbPersistence, getDocs, updateDoc, arrayUnion, deleteField
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
@@ -1726,7 +1653,10 @@
                 { fps: 10, qrbox: { width: 250, height: 150 } },
                 (decodedText) => { window.processarCodigoBarrasLido(decodedText); window.fecharModalScannerBarcode(); },
                 () => {}
-            ).catch(() => customAlert("Não foi possível aceder à câmara."));
+            ).catch((err) => { 
+                customAlert("Erro ao aceder à câmara: verifique as permissões."); 
+                window.fecharModalScannerBarcode(); 
+            });
         }, 300);
     };
 
@@ -1746,7 +1676,10 @@
                     window.fecharModalScannerBarcode();
                 },
                 () => {}
-            ).catch(() => customAlert("Não foi possível aceder à câmara."));
+            ).catch((err) => { 
+                customAlert("Erro ao aceder à câmara: verifique as permissões."); 
+                window.fecharModalScannerBarcode(); 
+            });
         }, 300);
     };
 
@@ -2326,6 +2259,8 @@
 
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
         if(isNaN(valContado) || valContado < 0) return customAlert("Introduza o valor contado na gaveta.");
+        
+        if(!(await customConfirm(`Confirma que contou exatamente ${valContado.toFixed(2)} MT na gaveta?`))) return;
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
         let tAbertura = caixaEstado.timestampAbertura || 0;
@@ -2393,8 +2328,11 @@
         let val = parseFloat(document.getElementById('despesaValor').value) || 0;
         if(!desc || val <= 0) return customAlert("Preencha a descrição e valor.");
 
-        despesas.push({ id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') });
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: despesas });
+        let novaDespesa = { id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') };
+        despesas.push(novaDespesa);
+        
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: arrayUnion(novaDespesa) }, { merge: true });
+        
         registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
@@ -2477,7 +2415,7 @@
 
         let prods = Object.keys(stock).filter(p => {
             let atendeNome = p.toLowerCase().includes(termo);
-            let atendeCat = (categoriaPOSSelecionada === 'todos') || (stock[p].categoria === categoriaPOSSelecionada);
+            let atendeCat = (categoriaPOSSelecionada === 'todos') || ((stock[p].categoria || 'outros').toLowerCase().trim() === categoriaPOSSelecionada);
             return atendeNome && atendeCat;
         });
 
@@ -2573,12 +2511,11 @@
                 bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
                 setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
             }
-            let mesasParaSalvar = {};
-            for(let m in mesas) {
-                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
+            
+            if (mesaSelecionada !== "Balcão") {
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
             }
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock).catch(()=>{});
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [prod]: stock[prod] }, { merge: true });
         } catch (err) {}
 
         window.tocarSom('sucesso');
@@ -2719,14 +2656,12 @@
             tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Removido da ${mesaSelecionada}`
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [item.produto]: stock[item.produto] }, { merge: true });
         mesas[mesaSelecionada].splice(idx, 1);
 
-        let mesasParaSalvar = {};
-        for(let m in mesas) {
-            if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
+        if (mesaSelecionada !== "Balcão") {
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
         }
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar);
 
         renderizarMesasGrid();
         window.renderizarCarrinho();
@@ -2859,11 +2794,10 @@
             addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
 
             mesas[mesaSelecionada] = [];
-            let mesasParaSalvar = {};
-            for(let m in mesas) {
-                if(m !== "Balcão") mesasParaSalvar[m] = { itens: mesas[m], operador: bloqueiosMesas[m] || usuarioAtual.nome };
+            
+            if (mesaSelecionada !== "Balcão") {
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
             }
-            setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), mesasParaSalvar).catch(()=>{});
 
             if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
                 delete bloqueiosMesas[mesaSelecionada];
@@ -2999,8 +2933,11 @@
         let tel = document.getElementById('novoClienteTelefone').value.trim();
         if(!nome) return customAlert("Introduza o nome do cliente.");
 
-        clientes.push({ id: Date.now(), nome, telefone: tel, divida: 0 });
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+        let novoCliente = { id: Date.now(), nome, telefone: tel, divida: 0 };
+        clientes.push(novoCliente);
+        
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: arrayUnion(novoCliente) }, { merge: true });
+        
         document.getElementById('novoClienteNome').value = '';
         document.getElementById('novoClienteTelefone').value = '';
         renderizarClientes();
@@ -3104,7 +3041,7 @@
             tipo: 'ENTRADA (CONVERSÃO SHOTS)', produto: nomeShot, qtd: totalShotsGerados, usuario: usuarioAtual.nome, origem: `Origem: ${qtdGarrafasAbrir}x ${garrafa}`
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [garrafa]: stock[garrafa], [nomeShot]: stock[nomeShot] }, { merge: true });
         registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
         window.tocarSom('sucesso');
@@ -3148,7 +3085,7 @@
         if(!prod) return customAlert("Digite o nome do produto.");
 
         let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-        let cat = document.getElementById('simplesCategoria').value || 'outros';
+        let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
         let modoCompra = document.getElementById('simplesModoCompra').value;
         let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
         let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
@@ -3180,7 +3117,7 @@
             tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [prod]: stock[prod] }, { merge: true });
         registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
@@ -3247,7 +3184,7 @@
             tipo: 'REMOÇÃO MANUAL', produto: p, qtd: qtdRemover, usuario: usuarioAtual.nome, origem: 'Remoção direta'
         });
 
-        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: stock[p] }, { merge: true });
         registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
         await customAlert("Stock atualizado!");
         filtrarEExibirProdutosVenda();
@@ -3257,7 +3194,7 @@
     window.apagarProdutoTotal = async function(p) {
         if(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
             delete stock[p];
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            await updateDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() });
             registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
             filtrarEExibirProdutosVenda();
             renderizarStock();
@@ -3372,17 +3309,21 @@
         if(!vendaObj) return customAlert("Venda não encontrada.");
 
         if(vendaObj.itens) {
+            let stockUpdates = {};
             for(let item of vendaObj.itens) {
                 if(stock[item.produto]) {
                     stock[item.produto].qtd += item.qtd;
                     stock[item.produto].preco_total += (item.qtd * item.custoUnit);
+                    stockUpdates[item.produto] = stock[item.produto];
                 }
                 await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
                     id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
                     tipo: 'DEVOLUÇÃO (CANCELAMENTO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Cancelamento Venda #${vendaObj.id}`
                 });
             }
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stock);
+            if (Object.keys(stockUpdates).length > 0) {
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), stockUpdates, { merge: true });
+            }
         }
 
         vendaObj.status = 'cancelado';
