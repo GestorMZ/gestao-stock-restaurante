@@ -540,12 +540,12 @@
         </div>
 
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="window.mudarAba('abaVendas', event)">🛒 Balcão / Mesas</button>
-            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa', event)">💵 Caixa & Turnos</button>
-            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado', event)">👥 Clientes & Fiado</button>
-            <button class="tab-btn col-gerente" onclick="window.mudarAba('abaStock', event)">📦 Gestão de Stock</button>
-            <button class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios', event)">👤 Gestão de Perfis</button>
-            <button class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard', event)">📊 Dashboard & Carteiras</button>
+            <button id="navTabVendas" class="tab-btn active" onclick="window.mudarAba('abaVendas', event)">🛒 Balcão / Mesas</button>
+            <button id="navTabCaixa" class="tab-btn col-gerente" onclick="window.mudarAba('abaCaixa', event)">💵 Caixa & Turnos</button>
+            <button id="navTabFiado" class="tab-btn col-gerente" onclick="window.mudarAba('abaFiado', event)">👥 Clientes & Fiado</button>
+            <button id="navTabStock" class="tab-btn col-gerente" onclick="window.mudarAba('abaStock', event)">📦 Gestão de Stock</button>
+            <button id="navTabUsuarios" class="tab-btn col-admin" onclick="window.mudarAba('abaUsuarios', event)">👤 Gestão de Perfis</button>
+            <button id="navTabDashboard" class="tab-btn col-admin" onclick="window.mudarAba('abaDashboard', event)">📊 Dashboard & Carteiras</button>
         </div>
 
         <!-- ABA 1: VENDAS -->
@@ -897,16 +897,16 @@
             </div>
         </div>
 
-        <!-- ABA 5: USUÁRIOS -->
+        <!-- ABA 5: USUÁRIOS & PERMISSÕES -->
         <div id="abaUsuarios" class="tab-content col-admin">
-            <h2>Gestão de Perfis & Fotos dos Utilizadores</h2>
+            <h2>Gestão de Perfis & Permissões de Acesso às Abas</h2>
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:20px; border:1px solid var(--border);">
-                <h4 style="margin-top:0;">Criar Novo Perfil com Foto</h4>
+                <h4 style="margin-top:0;">Criar Novo Perfil com Foto & Acessos</h4>
                 <div class="form-row">
                     <div class="form-group"><label>Nome do Utilizador</label><input type="text" id="novoUserNome" placeholder="Ex: joao, maria"></div>
                     <div class="form-group"><label>Palavra-passe</label><input type="password" id="novoUserSenha" placeholder="Senha"></div>
                     <div class="form-group">
-                        <label>Permissão</label>
+                        <label>Cargo / Permissão Base</label>
                         <select id="novoUserTipo">
                             <option value="vendedor">🛒 Operador de Caixa</option>
                             <option value="gerente">🛡️ Gerente</option>
@@ -914,16 +914,41 @@
                         </select>
                     </div>
                 </div>
+                
+                <div style="background:var(--light); padding:14px; border-radius:10px; border:1px solid var(--border); margin-bottom:14px;">
+                    <label style="color:var(--primary); font-weight:800; margin-bottom:8px; display:block;">🔑 Permissões de Acesso às Abas para este Perfil:</label>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">
+                        <label style="font-weight:normal; text-transform:none; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" class="novo-permissao-aba" value="abaVendas" checked> 🛒 Balcão / Mesas
+                        </label>
+                        <label style="font-weight:normal; text-transform:none; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" class="novo-permissao-aba" value="abaCaixa" checked> 💵 Caixa & Turnos
+                        </label>
+                        <label style="font-weight:normal; text-transform:none; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" class="novo-permissao-aba" value="abaFiado" checked> 👥 Clientes & Fiado
+                        </label>
+                        <label style="font-weight:normal; text-transform:none; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" class="novo-permissao-aba" value="abaStock" checked> 📦 Gestão de Stock
+                        </label>
+                        <label style="font-weight:normal; text-transform:none; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" class="novo-permissao-aba" value="abaUsuarios"> 👤 Gestão de Perfis
+                        </label>
+                        <label style="font-weight:normal; text-transform:none; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" class="novo-permissao-aba" value="abaDashboard"> 📊 Dashboard
+                        </label>
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group"><label>Foto do Perfil (Opcional)</label><input type="file" id="novoUserFoto" accept="image/*"></div>
                     <div class="form-group" style="align-self:flex-end;"><button class="btn-success" onclick="window.cadastrarUsuario()">+ Criar Perfil</button></div>
                 </div>
             </div>
 
-            <h4>📊 Perfis Ativos</h4>
+            <h4>📊 Perfis Ativos & Controlo de Acessos</h4>
             <div class="table-responsive" style="margin-bottom:15px;">
                 <table>
-                    <thead><tr><th>Foto</th><th>Utilizador</th><th>Permissão</th><th>Total Vendido</th><th>Nº Vendas</th><th>Ações</th></tr></thead>
+                    <thead><tr><th>Foto</th><th>Utilizador</th><th>Cargo</th><th>Abas Permitidas</th><th>Total Vendido</th><th>Ações</th></tr></thead>
                     <tbody id="corpoTabelaPerfis"></tbody>
                 </table>
             </div>
@@ -1034,6 +1059,40 @@
 </div>
 
 <!-- MODAIS -->
+<div id="modalGerirPermissoes" class="modal">
+    <div class="modal-content" style="max-width:460px;">
+        <span class="close-modal" onclick="window.fecharModalGerirPermissoes()">&times;</span>
+        <h3 style="margin-top:0;">🔑 Gerir Acessos às Abas: <span id="lblPerfilPermissoesNome" style="color:var(--primary); text-transform:uppercase;"></span></h3>
+        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Selecione as abas que este perfil tem permissão para visualizar e aceder:</p>
+        
+        <div style="display:flex; flexDirection:column; gap:12px; margin-bottom:20px; background:var(--light); padding:16px; border-radius:12px; border:1px solid var(--border);">
+            <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="permAbaVendas" value="abaVendas" style="width:18px; height:18px;"> 🛒 Balcão / Mesas (Vendas)
+            </label>
+            <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="permAbaCaixa" value="abaCaixa" style="width:18px; height:18px;"> 💵 Caixa & Turnos
+            </label>
+            <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="permAbaFiado" value="abaFiado" style="width:18px; height:18px;"> 👥 Clientes & Fiado
+            </label>
+            <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="permAbaStock" value="abaStock" style="width:18px; height:18px;"> 📦 Gestão de Stock
+            </label>
+            <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="permAbaUsuarios" value="abaUsuarios" style="width:18px; height:18px;"> 👤 Gestão de Perfis & Permissões
+            </label>
+            <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" id="permAbaDashboard" value="abaDashboard" style="width:18px; height:18px;"> 📊 Dashboard & Carteiras
+            </label>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-success" onclick="window.salvarPermissoesPerfilEditado()">💾 Guardar Permissões</button>
+            <button class="btn-dark" onclick="window.fecharModalGerirPermissoes()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <div id="modalDivisaoConta" class="modal">
     <div class="modal-content" style="max-width:440px;">
         <span class="close-modal" onclick="window.fecharModalDivisaoConta()">&times;</span>
@@ -1544,7 +1603,7 @@
 
         try {
             await setDoc(doc(db, "licencas", codigoTrial), { status: "ativo", validade: validadeFormatada, tipo: "trial", criadoEm: new Date().toISOString() });
-            await setDoc(doc(db, "empresas", codigoTrial), { usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "" }] });
+            await setDoc(doc(db, "empresas", codigoTrial), { usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] }] });
             await setDoc(doc(db, "empresas", codigoTrial, "dados", "empresa"), { nome: nomeRestaurante, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0 });
 
             localStorage.setItem('trialCriado', codigoTrial);
@@ -1750,7 +1809,17 @@
                     let dadosDoc = docSnap.data();
                     usuarios = {};
                     if (Array.isArray(dadosDoc.usuarios)) {
-                        dadosDoc.usuarios.forEach(u => { if (u.nome) usuarios[u.nome.toLowerCase()] = { senha: u.senha || "123", tipo: u.tipo || "vendedor", foto: u.foto || "" }; });
+                        dadosDoc.usuarios.forEach(u => { 
+                            if (u.nome) {
+                                let permissoesPadrao = u.permissoes || (u.tipo === 'admin' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard'] : (u.tipo === 'gerente' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock'] : ['abaVendas']));
+                                usuarios[u.nome.toLowerCase()] = { 
+                                    senha: u.senha || "123", 
+                                    tipo: u.tipo || "vendedor", 
+                                    foto: u.foto || "", 
+                                    permissoes: permissoesPadrao 
+                                }; 
+                            }
+                        });
                     }
                 }
                 renderizarPerfisLogin();
@@ -1899,7 +1968,12 @@
 
         if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
             window.tocarSom('sucesso');
-            usuarioAtual = { nome: u, tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
+            usuarioAtual = { 
+                nome: u, 
+                tipo: usuarios[u].tipo, 
+                foto: usuarios[u].foto || "", 
+                permissoes: usuarios[u].permissoes || ['abaVendas'] 
+            };
             
             document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
             document.getElementById('nomeUsuarioLogado').innerText = u;
@@ -1953,7 +2027,15 @@
         if (chaveEntrada === String(dadosEmpresa.chaveMestra || "1234").trim()) {
             usuarios[u].senha = novaP;
             let listaArrayFirestore = [];
-            for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+            for (let nomeKey in usuarios) {
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "",
+                    permissoes: usuarios[nomeKey].permissoes || []
+                });
+            }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             window.showToast(`A palavra-passe de '${u.toUpperCase()}' foi alterada!`, "success");
             registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
@@ -1962,16 +2044,41 @@
     };
 
     function configurarPerfilPermissoes() {
-        let isAdmin = usuarioAtual.tipo === 'admin';
-        let isGerente = usuarioAtual.tipo === 'gerente';
-        let isVendedor = usuarioAtual.tipo === 'vendedor';
+        let abasDisponiveis = usuarioAtual.permissoes || ['abaVendas'];
+        
+        // Mapeamento de IDs de abas para seus respectivos botões na navegação
+        const mapaAbas = {
+            'abaVendas': 'navTabVendas',
+            'abaCaixa': 'navTabCaixa',
+            'abaFiado': 'navTabFiado',
+            'abaStock': 'navTabStock',
+            'abaUsuarios': 'navTabUsuarios',
+            'abaDashboard': 'navTabDashboard'
+        };
 
-        document.querySelectorAll('.col-admin').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
-        document.querySelectorAll('.col-gerente').forEach(el => el.style.display = (isAdmin || isGerente) ? 'block' : 'none');
-        if (isVendedor) window.mudarAba('abaVendas');
+        for (let abaId in mapaAbas) {
+            let btnNav = document.getElementById(mapaAbas[abaId]);
+            if (btnNav) {
+                if (abasDisponiveis.includes(abaId)) {
+                    btnNav.style.display = 'inline-block';
+                } else {
+                    btnNav.style.display = 'none';
+                }
+            }
+        }
+
+        // Se a aba atual do utilizador não estiver permitida, redireciona para a primeira permitida
+        let abaAtivaEl = document.querySelector('.tab-content.active');
+        if (abaAtivaEl && !abasDisponiveis.includes(abaAtivaEl.id)) {
+            window.mudarAba(abasDisponiveis[0] || 'abaVendas');
+        }
     }
 
     window.mudarAba = function(abaId, evt) {
+        if (usuarioAtual && usuarioAtual.permissoes && !usuarioAtual.permissoes.includes(abaId)) {
+            return window.showToast("⚠️ Acesso restrito a esta aba pelo Administrador.", "error");
+        }
+
         window.tocarSom('click');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -2011,10 +2118,24 @@
         if(!u || !p) return window.showToast("Preencha utilizador e palavra-passe!", "warning");
         if(usuarios[u]) return window.showToast("Utilizador já existe!", "error");
 
+        let permissoesSelecionadas = [];
+        document.querySelectorAll('.novo-permissao-aba:checked').forEach(cb => {
+            permissoesSelecionadas.push(cb.value);
+        });
+        if (permissoesSelecionadas.length === 0) permissoesSelecionadas = ['abaVendas'];
+
         processarFotoAvatar(fileInput, async function(fotoBase64) {
-            usuarios[u] = { senha: p, tipo: t, foto: fotoBase64 };
+            usuarios[u] = { senha: p, tipo: t, foto: fotoBase64, permissoes: permissoesSelecionadas };
             let listaArrayFirestore = [];
-            for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+            for (let nomeKey in usuarios) {
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "",
+                    permissoes: usuarios[nomeKey].permissoes || []
+                });
+            }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             document.getElementById('novoUserNome').value = '';
             document.getElementById('novoUserSenha').value = '';
@@ -2029,7 +2150,15 @@
         if(await customConfirm(`Eliminar o perfil '${u.toUpperCase()}'?`)) {
             delete usuarios[u];
             let listaArrayFirestore = [];
-            for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+            for (let nomeKey in usuarios) {
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "",
+                    permissoes: usuarios[nomeKey].permissoes || []
+                });
+            }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
             window.showToast(`Perfil '${u.toUpperCase()}' removido.`, "success");
@@ -2041,7 +2170,15 @@
         if(novaS && novaS.trim() !== "") {
             usuarios[u].senha = novaS.trim();
             let listaArrayFirestore = [];
-            for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+            for (let nomeKey in usuarios) {
+                listaArrayFirestore.push({ 
+                    nome: nomeKey, 
+                    senha: usuarios[nomeKey].senha, 
+                    tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "",
+                    permissoes: usuarios[nomeKey].permissoes || []
+                });
+            }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Senha Alterada', `Palavra-passe de '${u}' alterada por Admin`);
             window.showToast(`Palavra-passe alterada!`, "success");
@@ -2057,13 +2194,76 @@
                 if(fotoBase64) {
                     usuarios[u].foto = fotoBase64;
                     let listaArrayFirestore = [];
-                    for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+                    for (let nomeKey in usuarios) {
+                        listaArrayFirestore.push({ 
+                            nome: nomeKey, 
+                            senha: usuarios[nomeKey].senha, 
+                            tipo: usuarios[nomeKey].tipo, 
+                            foto: usuarios[nomeKey].foto || "",
+                            permissoes: usuarios[nomeKey].permissoes || []
+                        });
+                    }
                     await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
                     window.showToast(`Foto atualizada!`, "success");
                 }
             });
         };
         input.click();
+    };
+
+    let usuarioEditandoPermissoes = null;
+    window.abrirModalGerirPermissoes = function(u) {
+        usuarioEditandoPermissoes = u;
+        let uObj = usuarios[u];
+        if (!uObj) return;
+
+        document.getElementById('lblPerfilPermissoesNome').innerText = u;
+        let abasPerm = uObj.permissoes || ['abaVendas'];
+
+        document.getElementById('permAbaVendas').checked = abasPerm.includes('abaVendas');
+        document.getElementById('permAbaCaixa').checked = abasPerm.includes('abaCaixa');
+        document.getElementById('permAbaFiado').checked = abasPerm.includes('abaFiado');
+        document.getElementById('permAbaStock').checked = abasPerm.includes('abaStock');
+        document.getElementById('permAbaUsuarios').checked = abasPerm.includes('abaUsuarios');
+        document.getElementById('permAbaDashboard').checked = abasPerm.includes('abaDashboard');
+
+        document.getElementById('modalGerirPermissoes').style.display = 'block';
+    };
+
+    window.fecharModalGerirPermissoes = function() {
+        document.getElementById('modalGerirPermissoes').style.display = 'none';
+        usuarioEditandoPermissoes = null;
+    };
+
+    window.salvarPermissoesPerfilEditado = async function() {
+        if (!usuarioEditandoPermissoes || !usuarios[usuarioEditandoPermissoes]) return;
+        let novasPermissoes = [];
+        if (document.getElementById('permAbaVendas').checked) novasPermissoes.push('abaVendas');
+        if (document.getElementById('permAbaCaixa').checked) novasPermissoes.push('abaCaixa');
+        if (document.getElementById('permAbaFiado').checked) novasPermissoes.push('abaFiado');
+        if (document.getElementById('permAbaStock').checked) novasPermissoes.push('abaStock');
+        if (document.getElementById('permAbaUsuarios').checked) novasPermissoes.push('abaUsuarios');
+        if (document.getElementById('permAbaDashboard').checked) novasPermissoes.push('abaDashboard');
+
+        if (novasPermissoes.length === 0) novasPermissoes.push('abaVendas');
+
+        usuarios[usuarioEditandoPermissoes].permissoes = novasPermissoes;
+
+        let listaArrayFirestore = [];
+        for (let nomeKey in usuarios) {
+            listaArrayFirestore.push({ 
+                nome: nomeKey, 
+                senha: usuarios[nomeKey].senha, 
+                tipo: usuarios[nomeKey].tipo, 
+                foto: usuarios[nomeKey].foto || "",
+                permissoes: usuarios[nomeKey].permissoes || []
+            });
+        }
+        await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
+        registarAuditLog('Permissões Atualizadas', `Acessos de '${usuarioEditandoPermissoes}' modificados pelo Admin`);
+        window.showToast("Permissões de abas atualizadas com sucesso!", "success");
+        window.fecharModalGerirPermissoes();
+        renderizarUsuarios();
     };
 
     function renderizarUsuarios() {
@@ -2081,21 +2281,23 @@
             let userObj = usuarios[u];
             let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u && h.status !== 'cancelado');
             let totalVendido = vendasUser.reduce((acc, i) => acc + (i.totalVenda || 0), 0);
-            let numVendas = vendasUser.length;
 
             let fotoTd = userObj.foto ? `<img src="${userObj.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">` : `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">${u.charAt(0).toUpperCase()}</div>`;
             let tipoBadge = userObj.tipo === 'admin' ? 'Administrador' : userObj.tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
             let badgeBg = userObj.tipo === 'admin' ? 'var(--primary)' : userObj.tipo === 'gerente' ? 'var(--purple)' : '#64748b';
 
+            let abasCont = (userObj.permissoes || []).length;
+            let abasTextoBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1;">${abasCont} abas permitidas</span>`;
+
             tbody.innerHTML += `<tr>
                 <td>${fotoTd}</td>
                 <td><b style="text-transform:uppercase;">${u}</b></td>
                 <td><span class="badge" style="background:${badgeBg}; color:white;">${tipoBadge}</span></td>
+                <td>${abasTextoBadge}</td>
                 <td style="color:var(--success); font-weight:800;">${totalVendido.toFixed(2)} MT</td>
-                <td><b>${numVendas}</b> vendas</td>
                 <td>
+                    <button class="btn-purple btn-sm" onclick="window.abrirModalGerirPermissoes('${u}')">🔑 Acessos</button>
                     <button class="btn-primary btn-sm" onclick="window.verHistoricoPerfil('${u}')">🔍 Vendas</button>
-                    <button class="btn-purple btn-sm" onclick="window.alterarFotoUsuarioAdmin('${u}')">📷 Foto</button>
                     <button class="btn-warning btn-sm" onclick="window.redefinirSenhaDiretaAdmin('${u}')">🔑 Senha</button>
                     ${u !== 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarUsuario('${u}')">Eliminar</button>` : ''}
                 </td>
@@ -3365,7 +3567,7 @@
 
     window.fazerBackup = function() {
         let usuariosSemSenhas = {};
-        for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "" };
+        for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "", permissoes: usuarios[u].permissoes || [] };
 
         let backupData = {
             codigoEmpresa, usuarios: usuariosSemSenhas, stock, movimentacoesStock, historico, clientes, despesas, turnosCaixa, auditLogs,
@@ -3484,7 +3686,15 @@
         usuarios[usuarioAtual.nome].senha = p;
 
         let listaArrayFirestore = [];
-        for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
+        for (let nomeKey in usuarios) {
+            listaArrayFirestore.push({ 
+                nome: nomeKey, 
+                senha: usuarios[nomeKey].senha, 
+                tipo: usuarios[nomeKey].tipo, 
+                foto: usuarios[nomeKey].foto || "",
+                permissoes: usuarios[nomeKey].permissoes || []
+            });
+        }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
         registarAuditLog('Senha Pessoal Alterada', `Palavra-passe alterada por ${usuarioAtual.nome}`);
         window.showToast("Palavra-passe alterada!", "success");
