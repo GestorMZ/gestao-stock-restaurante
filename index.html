@@ -2174,7 +2174,27 @@
         }
     }
 
+    async function solicitarAutorizacaoGestor(acaoNome) {
+        let senhaAuth = await customPrompt(`🔒 AUTORIZAÇÃO DE GESTOR\nInsira a palavra-passe (Admin/Gerente) para ${acaoNome}:`, "", true);
+        if (!senhaAuth) return false;
+        let autorizado = false;
+        for (let u in usuarios) {
+            if ((usuarios[u].tipo === 'admin' || usuarios[u].tipo === 'gerente') && String(usuarios[u].senha).trim() === String(senhaAuth).trim()) {
+                autorizado = true; break;
+            }
+        }
+        if (!autorizado && (String(senhaAuth).trim() === String(dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
+        
+        if (!autorizado) {
+            window.showToast("❌ Autorização Negada: Palavra-passe incorreta ou sem privilégios!", "error");
+            return false;
+        }
+        return true;
+    }
+
     window.abrirCaixaTurno = async function() {
+        if (!(await solicitarAutorizacaoGestor('Abrir o Caixa'))) return;
+
         let fundo = parseFloat(document.getElementById('inputFundoManeio').value) || 0;
         caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), dataAbertura: new Date().toLocaleString('pt-MZ'), usuarioAbertura: usuarioAtual.nome };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
@@ -2188,6 +2208,8 @@
         if(mesasComItens.length > 0) {
             return customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas ativas: ${mesasComItens.join(', ')}.`);
         }
+
+        if (!(await solicitarAutorizacaoGestor('Fechar o Caixa'))) return;
 
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
         if(isNaN(valContado) || valContado < 0) return window.showToast("Introduza o valor contado na gaveta.", "warning");
