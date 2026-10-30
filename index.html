@@ -58,6 +58,39 @@
             border: 1px solid #e2e8f0;
         }
 
+        /* ----- ESTILOS PARA NOTIFICAÇÕES TOAST ----- */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95em;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 1;
+            transform: translateX(0);
+            transition: 0.3s ease;
+        }
+        .toast-success { border-left: 6px solid var(--success); }
+        .toast-warning { border-left: 6px solid var(--warning); }
+        .toast-error { border-left: 6px solid var(--danger); }
+        .toast-info { border-left: 6px solid var(--primary); }
+        .toast.fade-out { opacity: 0; transform: translateX(30px); }
+
         h2, h3, h4 { margin-top: 5px; color: var(--dark); font-weight: 800; letter-spacing: -0.025em; }
         
         .tabs-nav { 
@@ -326,12 +359,15 @@
 </head>
 <body>
 
-<!-- MODAL DE SISTEMA CUSTOMIZADO PARA ALERTS E PROMPTS -->
+<!-- TOAST CONTAINER (Notificações Não-Bloqueantes) -->
+<div id="toast-container"></div>
+
+<!-- MODAL DE SISTEMA CUSTOMIZADO PARA ALERTS CRÍTICOS E PROMPTS -->
 <div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
     <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
         <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Mensagem</h3>
         <p id="customModalText" style="margin-bottom:20px; font-weight:600;"></p>
-        <input type="password" id="customModalInput" style="display:none; margin-bottom:20px; text-align:center; font-size: 1.1em;">
+        <input type="password" id="customModalInput" style="display:none; margin-bottom:20px; text-align:center; font-size: 1.1em;" onkeyup="if(event.key === 'Enter') document.getElementById('customModalBtnOK').click();">
         <div style="display:flex; justify-content:center; gap:10px;">
             <button id="customModalBtnCancel" class="btn-dark" style="display:none;">Cancelar</button>
             <button id="customModalBtnOK" class="btn-primary">OK</button>
@@ -348,7 +384,7 @@
             <h3 style="margin-top:0; font-size:1.4em;">Ecrã Bloqueado</h3>
             <p style="font-size:0.9em; color:var(--text-muted); margin-bottom:20px;">Introduza a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
             <div class="form-group">
-                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" onkeyup="if(event.key==='Enter') window.desbloquearEcra()">
+                <input type="password" id="inputSenhaDesbloqueio" placeholder="Sua palavra-passe" style="text-align:center; font-size:1.1em;" class="enter-trigger" data-action="window.desbloquearEcra()">
             </div>
             <button class="btn-primary" onclick="window.desbloquearEcra()" style="margin-top:10px;">🔓 Desbloquear Sistema</button>
         </div>
@@ -367,8 +403,7 @@
         }
     </style>
         <div style="text-align:center; margin-bottom:24px;">
-        <!-- Logo real animado -->
-        <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
+        <img src="https://placehold.co/192x192/2563eb/ffffff?text=GS" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
             <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Login</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
         </div>
@@ -376,11 +411,11 @@
         <div style="background:var(--card-bg); padding:22px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <div class="form-group" style="margin-bottom:14px;">
                 <label style="color:var(--primary); font-weight:800;">📧 E-mail do Administrador / Gestor</label>
-                <input type="email" id="authEmailInput" placeholder="exemplo@restaurante.com">
+                <input type="email" id="authEmailInput" placeholder="exemplo@restaurante.com" class="enter-trigger" data-action="window.fazerLoginFirebase()">
             </div>
             <div class="form-group" style="margin-bottom:20px;">
                 <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe (6 Dígitos)</label>
-                <input type="password" id="authPasswordInput" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'');" onkeyup="if(event.key==='Enter') window.fazerLoginFirebase()">
+                <input type="password" id="authPasswordInput" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="enter-trigger" data-action="window.fazerLoginFirebase()">
             </div>
             <div style="display:flex; flex-direction: column; gap:10px;">
                 <button class="btn-primary" onclick="window.fazerLoginFirebase()">Entrar</button>
@@ -403,20 +438,20 @@
         <div style="background:var(--card-bg); padding:22px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <div class="form-group" style="margin-bottom:14px;">
                 <label style="color:var(--primary); font-weight:800;">📅 Data de Nascimento</label>
-                <input type="date" id="regDataNasc">
+                <input type="date" id="regDataNasc" class="enter-trigger" data-action="window.submeterRegisto()">
             </div>
             <div class="form-group" style="margin-bottom:14px;">
                 <label style="color:var(--primary); font-weight:800;">📱 Contacto Telefónico</label>
-                <input type="tel" id="regContacto" placeholder="Ex: 840000000">
+                <input type="tel" id="regContacto" placeholder="Ex: 840000000" class="enter-trigger" data-action="window.submeterRegisto()">
             </div>
             <div class="form-group" style="margin-bottom:14px;">
                 <label style="color:var(--primary); font-weight:800;">📧 E-mail</label>
-                <input type="email" id="regEmail" placeholder="exemplo@dominio.com">
+                <input type="email" id="regEmail" placeholder="exemplo@dominio.com" class="enter-trigger" data-action="window.submeterRegisto()">
             </div>
             <div class="form-group" style="margin-bottom:20px;">
                 <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe (Exatamente 6 dígitos)</label>
                 <!-- Validação estrita: Aceita apenas números, limite de 6 caracteres -->
-                <input type="password" id="regPassword" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                <input type="password" id="regPassword" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="enter-trigger" data-action="window.submeterRegisto()">
                 <small style="color:var(--danger); font-size: 0.75em;">* Apenas números são permitidos.</small>
             </div>
             <div style="display:flex; flex-direction: column; gap:10px;">
@@ -437,7 +472,7 @@
             <div class="form-group" style="margin-bottom:12px;">
                 <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" onchange="window.carregarPerfisEmpresa()">
+                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" class="enter-trigger" data-action="window.carregarPerfisEmpresa()">
                     <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar</button>
                 </div>
             </div>
@@ -463,11 +498,11 @@
             <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
                 <div class="form-group">
                     <label>Utilizador Selecionado</label>
-                    <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite">
+                    <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite" class="enter-trigger" data-action="window.fazerLogin()">
                 </div>
                 <div class="form-group">
                     <label>Palavra-passe do Perfil</label>
-                    <input type="password" id="loginPass" placeholder="Digite a palavra-passe do perfil" onkeyup="if(event.key==='Enter') window.fazerLogin()">
+                    <input type="password" id="loginPass" placeholder="Digite a palavra-passe do perfil" class="enter-trigger" data-action="window.fazerLogin()">
                 </div>
                 <button onclick="window.fazerLogin()" style="margin-top:6px; font-size:1.05em; padding:14px;">Entrar no Sistema 🚀</button>
             </div>
@@ -1152,11 +1187,11 @@
     </div>
 </div>
 
-<!-- MOTOR JAVASCRIPT OTIMIZADO ULTRA-RÁPIDO HÍBRIDO COM FIREBASE AUTH -->
+<!-- MOTOR JAVASCRIPT OTIMIZADO -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { 
-        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, getDocs, updateDoc, arrayUnion, deleteField
+        getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, query, orderBy, limit, deleteDoc, getDocs, arrayUnion, deleteField
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { 
         getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut 
@@ -1164,17 +1199,11 @@
 
     // Setup of Firebase Environment Rules
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    
-    // Utilize existing config or the platform provided one if available
     let fbConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
         authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
-        projectId: "gestao-restaurante-a74e4",
-        storageBucket: "gestao-restaurante-a74e4.firebasestorage.app",
-        messagingSenderId: "882707684467",
-        appId: "1:882707684467:web:8c3197794b2c1ba52e1e06"
+        projectId: "gestao-restaurante-a74e4"
     };
-
     if (typeof __firebase_config !== 'undefined') {
         try { fbConfig = JSON.parse(__firebase_config); } catch(e) {}
     }
@@ -1183,7 +1212,79 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ----- SISTEMA MODAL CUSTOMIZADO -----
+    // ----- SISTEMA DE NOTIFICAÇÕES TOAST (NÃO-BLOQUEANTES) -----
+    window.showToast = function(msg, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        
+        let icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : 'ℹ️'));
+        toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+        container.appendChild(toast);
+        
+        if (type === 'success') window.tocarSom('sucesso');
+        else if (type === 'error') window.tocarSom('alerta');
+        else window.tocarSom('click');
+
+        setTimeout(() => {
+            toast.classList.add('fade-out');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    };
+
+    // ----- OFFLINE FIRST (INDEXED DB) PARA VENDAS -----
+    let dbOffline;
+    const requestDB = indexedDB.open("GSPointOfflineDB", 1);
+    requestDB.onupgradeneeded = (e) => {
+        dbOffline = e.target.result;
+        if (!dbOffline.objectStoreNames.contains("vendas_pendentes")) {
+            dbOffline.createObjectStore("vendas_pendentes", { keyPath: "idLocal" });
+        }
+    };
+    requestDB.onsuccess = (e) => {
+        dbOffline = e.target.result;
+        window.sincronizarVendasOffline();
+    };
+
+    window.salvarVendaOffline = function(venda) {
+        if (!dbOffline) return;
+        venda.idLocal = "off_" + Date.now();
+        const tx = dbOffline.transaction("vendas_pendentes", "readwrite");
+        tx.objectStore("vendas_pendentes").add(venda);
+        window.showToast("Internet falhou! Venda guardada localmente para sincronização.", "warning");
+    };
+
+    window.sincronizarVendasOffline = function() {
+        if (!navigator.onLine || !dbOffline || !codigoEmpresa) return;
+        const tx = dbOffline.transaction("vendas_pendentes", "readonly");
+        const req = tx.objectStore("vendas_pendentes").getAll();
+        req.onsuccess = async () => {
+            const vendas = req.result;
+            if (vendas.length > 0) {
+                window.showToast(`Sincronizando ${vendas.length} vendas offline...`, "info");
+                for (let v of vendas) {
+                    try {
+                        let idLocal = v.idLocal;
+                        delete v.idLocal; // remover chave local antes de subir
+                        await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
+                        
+                        const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
+                        txDel.objectStore("vendas_pendentes").delete(idLocal);
+                    } catch(e) {
+                        console.error("Erro ao subir venda offline:", e);
+                    }
+                }
+                window.showToast("Sincronização concluída com sucesso!", "success");
+            }
+        };
+    };
+
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js').catch(() => console.log('SW Registration failed/not found in sandbox.'));
+    }
+
+    // ----- SISTEMA MODAL CUSTOMIZADO (Para blockers/erros críticos) -----
     window.customAlert = function(msg) {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
@@ -1227,13 +1328,6 @@
             input.type = isPassword ? 'password' : 'text';
             input.value = defaultVal;
             input.focus();
-
-            input.onkeyup = (e) => {
-                if (e.key === 'Enter') {
-                    document.getElementById('customModalOverlay').style.display = 'none';
-                    resolve(input.value);
-                }
-            };
 
             document.getElementById('customModalBtnCancel').style.display = 'block';
             document.getElementById('customModalBtnOK').onclick = () => {
@@ -1280,15 +1374,48 @@
         if (!badge) return;
         if (!navigator.onLine) {
             badge.className = 'btn btn-sm btn-danger';
-            badge.innerHTML = '🔴 Offline (Modo Local Rápido)';
+            badge.innerHTML = '🔴 Offline (Modo Local)';
             return;
         }
         badge.className = 'btn btn-sm btn-success';
-        badge.innerHTML = '🟢 Online (Ultra-Rápido)';
+        badge.innerHTML = '🟢 Online (Sincronizado)';
     };
 
-    window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); });
+    window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); window.sincronizarVendasOffline(); });
     window.addEventListener('offline', () => { window.atualizarEstadoConexao(); window.tocarSom('alerta'); });
+
+    // ----- SUPORTE GLOBAL TECLA ENTER -----
+    document.addEventListener('DOMContentLoaded', () => {
+        window.atualizarEstadoConexao();
+        document.body.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                // Para botões genéricos de finalizar venda
+                if (document.activeElement.id === 'cartValorEntregue') {
+                    window.finalizarVendaCarrinho();
+                    e.preventDefault();
+                    return;
+                }
+                // Executa ação definida no data-action se a classe for enter-trigger
+                if (document.activeElement.classList.contains('enter-trigger')) {
+                    let action = document.activeElement.getAttribute('data-action');
+                    if (action) {
+                        try { eval(action); } catch(err) {}
+                    }
+                }
+            }
+        });
+        
+        // Carrega empresa via URL se existir
+        const urlParams = new URLSearchParams(window.location.search);
+        let empUrl = urlParams.get('empresa');
+        if (empUrl) {
+            codigoEmpresa = empUrl.trim().toUpperCase();
+            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
+            let inputCod = document.getElementById('loginCodigoEmpresa');
+            if (inputCod) inputCod.value = codigoEmpresa;
+        }
+    });
+
 
     // ----- VARIÁVEIS DE ESTADO DO SISTEMA -----
     let codigoEmpresa = "";
@@ -1307,25 +1434,20 @@
     let chartInstance = null;
     let unsubscribes = [];
 
-    let paginaAtualStock = 1;
-    const ITENS_POR_PAGINA_STOCK = 8;
-    let paginaAtualMov = 1;
-    const ITENS_POR_PAGINA_MOV = 5;
-    let paginaAtualTurnos = 1;
-    const ITENS_POR_PAGINA_TURNOS = 5;
-    let paginaAtualAdminHist = 1;
-    const ITENS_POR_PAGINA_ADMIN_HIST = 5;
+    let paginaAtualStock = 1, ITENS_POR_PAGINA_STOCK = 8;
+    let paginaAtualMov = 1, ITENS_POR_PAGINA_MOV = 5;
+    let paginaAtualTurnos = 1, ITENS_POR_PAGINA_TURNOS = 5;
+    let paginaAtualAdminHist = 1, ITENS_POR_PAGINA_ADMIN_HIST = 5;
     let historicoDashFiltrado = [];
-    let paginaAtualAuditLogs = 1;
-    const ITENS_POR_PAGINA_AUDIT = 5;
-    let paginaAtualPerfisAdmin = 1;
-    const ITENS_POR_PAGINA_PERFIS = 3;
+    let paginaAtualAuditLogs = 1, ITENS_POR_PAGINA_AUDIT = 5;
+    let paginaAtualPerfisAdmin = 1, ITENS_POR_PAGINA_PERFIS = 3;
 
     let bluetoothDevice = null;
     let bluetoothCharacteristic = null;
     let timerInatividade = null;
     let html5QrCodeScanner = null;
     let isScannerOpen = false;
+
 
     // ----- GESTÃO DE AUTENTICAÇÃO E REGISTO -----
 
@@ -1345,39 +1467,19 @@
         let email = document.getElementById('regEmail').value.trim();
         let senha = document.getElementById('regPassword').value;
 
-        if (!dataNasc || !contacto || !email || !senha) {
-            return customAlert("Por favor, preencha todos os campos obrigatórios!");
-        }
-
-        // Validação estrita de 6 dígitos numéricos
-        if (!/^\d{6}$/.test(senha)) {
-            return customAlert("A palavra-passe deve conter exatamente 6 dígitos numéricos, sem letras ou símbolos.");
-        }
+        if (!dataNasc || !contacto || !email || !senha) return window.showToast("Preencha todos os campos obrigatórios!", "error");
+        if (!/^\d{6}$/.test(senha)) return window.showToast("A palavra-passe deve conter exatamente 6 dígitos numéricos.", "error");
 
         try {
-            // Criação no Firebase Auth
             let cred = await createUserWithEmailAndPassword(auth, email, senha);
             let uid = cred.user.uid;
-
-            // Gravação na coleção "usuarios_admin" conforme regras (usando o caminho artifact se em modo restrito, ou caminho direto simulado)
             let adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'usuarios_admin', uid);
             
-            await setDoc(adminDocRef, {
-                dataNascimento: dataNasc,
-                contacto: contacto,
-                email: email,
-                role: 'admin',
-                criadoEm: new Date().toISOString()
-            });
+            await setDoc(adminDocRef, { dataNascimento: dataNasc, contacto: contacto, email: email, role: 'admin', criadoEm: new Date().toISOString() });
 
-            window.tocarSom('sucesso');
-            await customAlert("✅ Conta criada e registada com sucesso na coleção usuarios_admin!");
-            
-            // Oculta egristo, fluxo authStateChanged vai capturar o login
+            window.showToast("✅ Conta registada com sucesso!", "success");
             document.getElementById('telaRegisto').style.display = 'none';
-
         } catch (error) {
-            window.tocarSom('alerta');
             await customAlert("⚠️ Erro ao criar conta: " + error.message);
         }
     };
@@ -1385,33 +1487,23 @@
     window.fazerLoginFirebase = async function() {
         let email = document.getElementById('authEmailInput').value.trim();
         let senha = document.getElementById('authPasswordInput').value;
-        
-        if (!email || !senha) return customAlert("Preencha o e-mail e a palavra-passe!");
+        if (!email || !senha) return window.showToast("Preencha o e-mail e a palavra-passe!", "warning");
 
         try {
             await signInWithEmailAndPassword(auth, email, senha);
-            window.tocarSom('sucesso');
         } catch (error) {
-            window.tocarSom('alerta');
-            await customAlert("⚠️ Credenciais inválidas ou conta não encontrada.");
+            window.showToast("⚠️ Credenciais inválidas ou conta não encontrada.", "error");
         }
     };
 
     window.recuperarSenhaFirebase = async function() {
         let email = document.getElementById('authEmailInput').value.trim();
-        if (!email) return customAlert("Introduza o seu e-mail no campo acima primeiro.");
+        if (!email) return window.showToast("Introduza o seu e-mail no campo acima primeiro.", "warning");
         try {
             await sendPasswordResetEmail(auth, email);
-            await customAlert("📩 E-mail de recuperação enviado com sucesso! Verifique a sua caixa de entrada.");
+            window.showToast("📩 E-mail de recuperação enviado com sucesso!", "success");
         } catch (error) {
             await customAlert("Erro ao enviar e-mail: " + error.message);
-        }
-    };
-
-    window.fazerLogoutFirebase = async function() {
-        if (await customConfirm("Deseja terminar a sessão do Firebase Auth?")) {
-            await signOut(auth);
-            window.location.reload();
         }
     };
 
@@ -1437,58 +1529,32 @@
         }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-        window.atualizarEstadoConexao();
-        const urlParams = new URLSearchParams(window.location.search);
-        let empUrl = urlParams.get('empresa');
-        if (empUrl) {
-            codigoEmpresa = empUrl.trim().toUpperCase();
-            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
-            let inputCod = document.getElementById('loginCodigoEmpresa');
-            if (inputCod) inputCod.value = codigoEmpresa;
-        }
-    });
-
     window.criarEmpresaTeste = async function() {
         if (localStorage.getItem('trialCriado')) {
-            window.tocarSom('alerta');
-            await customAlert("⚠️ Acesso Recusado: Apenas é permitido criar uma conta de teste por dispositivo.");
-            return;
+            return window.showToast("Acesso Recusado: Apenas 1 conta de teste por dispositivo.", "error");
         }
 
-        let nomeRestaurante = await customPrompt("Bem-vindo! Qual é o nome do seu restaurante/negócio?", "", false);
+        let nomeRestaurante = await customPrompt("Bem-vindo! Qual é o nome do seu restaurante?", "", false);
         if (!nomeRestaurante || nomeRestaurante.trim() === "") return;
         
         let randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
         let prefixo = nomeRestaurante.replace(/\s+/g, '').substring(0, 4).toUpperCase();
         let codigoTrial = "TRIAL-" + prefixo + "-" + randomStr;
-
-        let dataValidade = new Date();
-        dataValidade.setDate(dataValidade.getDate() + 2); 
-        let validadeFormatada = dataValidade.toISOString().split('T')[0];
+        let validadeFormatada = new Date(Date.now() + 2*24*60*60*1000).toISOString().split('T')[0];
 
         try {
-            await setDoc(doc(db, "licencas", codigoTrial), {
-                status: "ativo", validade: validadeFormatada, tipo: "trial", criadoEm: new Date().toISOString()
-            });
-
-            await setDoc(doc(db, "empresas", codigoTrial), {
-                usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "" }]
-            });
-
-            await setDoc(doc(db, "empresas", codigoTrial, "dados", "empresa"), {
-                nome: nomeRestaurante, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0
-            });
+            await setDoc(doc(db, "licencas", codigoTrial), { status: "ativo", validade: validadeFormatada, tipo: "trial", criadoEm: new Date().toISOString() });
+            await setDoc(doc(db, "empresas", codigoTrial), { usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "" }] });
+            await setDoc(doc(db, "empresas", codigoTrial, "dados", "empresa"), { nome: nomeRestaurante, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0 });
 
             localStorage.setItem('trialCriado', codigoTrial);
-            window.tocarSom('sucesso');
             await customAlert(`✅ CONTA DE TESTE CRIADA!\n\n🏢 CÓDIGO: ${codigoTrial}\n👤 UTILIZADOR: admin\n🔑 SENHA: 123\n\nVálido até: ${validadeFormatada}`);
             
             let inputCod = document.getElementById('loginCodigoEmpresa');
             if(inputCod) inputCod.value = codigoTrial;
             window.carregarPerfisEmpresa();
         } catch (erro) {
-            await customAlert("⚠️ Erro de rede ao tentar criar a conta de teste: " + erro.message);
+            await customAlert("⚠️ Erro de rede: " + erro.message);
         }
     };
 
@@ -1499,17 +1565,15 @@
         if (!senha) return;
 
         let autorizado = false;
-        for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
-        }
+        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
         if (!autorizado && (senha.trim() === "1234" || senha.trim() === String(dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
 
         if (autorizado) {
             elInput.type = "text";
-            await customAlert(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`);
+            window.showToast(`🔑 Código do Restaurante: ${elInput.value || codigoEmpresa}`, "info");
             setTimeout(() => { elInput.type = "password"; }, 8000);
         } else {
-            await customAlert("❌ Acesso Negado: Palavra-passe incorreta!");
+            window.showToast("❌ Acesso Negado: Palavra-passe incorreta!", "error");
         }
     };
 
@@ -1523,18 +1587,10 @@
         }
     }
 
-    ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => {
-        document.addEventListener(evt, resetarTimerInatividade, true);
-    });
+    ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetarTimerInatividade, true));
 
     window.addEventListener('keydown', function(event) {
-        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-            if (event.key === 'Enter' && document.activeElement.id === 'cartValorEntregue') {
-                window.finalizarVendaCarrinho();
-                event.preventDefault();
-            }
-            return;
-        }
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName) && document.activeElement.id !== 'cartValorEntregue') return;
         if (event.key === 'F2') { event.preventDefault(); window.imprimirPreRecibo(); }
         else if (event.key === 'F4') { event.preventDefault(); window.imprimirGuiaCozinha(); }
         else if (event.key === 'F9') { event.preventDefault(); window.finalizarVendaCarrinho(); }
@@ -1556,16 +1612,9 @@
             html5QrCodeScanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 150 } },
-                (decodedText) => { 
-                    if (isScannerOpen) {
-                        window.processarCodigoBarrasLido(decodedText); 
-                        window.fecharModalScannerBarcode(); 
-                    }
-                },
+                (decodedText) => { if (isScannerOpen) { window.processarCodigoBarrasLido(decodedText); window.fecharModalScannerBarcode(); } },
                 () => {}
-            ).catch((err) => { 
-                if (isScannerOpen) { customAlert("Erro ao aceder à câmara."); window.fecharModalScannerBarcode(); }
-            });
+            ).catch((err) => { if (isScannerOpen) { window.showToast("Erro ao aceder à câmara.", "error"); window.fecharModalScannerBarcode(); } });
         }, 300);
     };
 
@@ -1588,9 +1637,7 @@
                     }
                 },
                 () => {}
-            ).catch((err) => { 
-                if (isScannerOpen) { customAlert("Erro ao aceder à câmara."); window.fecharModalScannerBarcode(); }
-            });
+            ).catch((err) => { if (isScannerOpen) { window.showToast("Erro ao aceder à câmara.", "error"); window.fecharModalScannerBarcode(); } });
         }, 300);
     };
 
@@ -1598,24 +1645,15 @@
         isScannerOpen = false;
         let modal = document.getElementById('modalScannerBarcode');
         if (modal) modal.style.display = 'none';
-        if (html5QrCodeScanner) {
-            html5QrCodeScanner.stop().catch(() => {}).finally(() => {
-                try { html5QrCodeScanner.clear(); } catch(e) {}
-                html5QrCodeScanner = null;
-            });
-        }
+        if (html5QrCodeScanner) { html5QrCodeScanner.stop().catch(() => {}).finally(() => { html5QrCodeScanner = null; }); }
     };
 
     window.processarCodigoBarrasLido = async function(codigo) {
         let codLimpo = codigo.trim().toLowerCase();
         let encontrado = null;
-        for (let p in stock) {
-            if (p.toLowerCase() === codLimpo || (stock[p].barcode && stock[p].barcode.toLowerCase() === codLimpo)) {
-                encontrado = p; break;
-            }
-        }
-        if (encontrado) { window.tocarSom('sucesso'); window.selecionarProdutoCardPOS(encontrado); }
-        else { window.tocarSom('alerta'); await customAlert(`⚠️ Produto '${codigo}' não encontrado no stock.`); }
+        for (let p in stock) { if (p.toLowerCase() === codLimpo || (stock[p].barcode && stock[p].barcode.toLowerCase() === codLimpo)) { encontrado = p; break; } }
+        if (encontrado) { window.selecionarProdutoCardPOS(encontrado); window.showToast(`Produto '${encontrado}' adicionado.`, "success"); }
+        else { window.showToast(`⚠️ Produto '${codigo}' não encontrado.`, "error"); }
     };
 
     window.alternarModoNoturno = function() {
@@ -1623,12 +1661,10 @@
         document.body.classList.toggle('dark-mode');
         localStorage.setItem('modoNoturno', document.body.classList.contains('dark-mode') ? 'sim' : 'nao');
     };
-
     if(localStorage.getItem('modoNoturno') === 'sim') document.body.classList.add('dark-mode');
 
     window.bloquearEcra = function() {
         if(!usuarioAtual) return;
-        window.tocarSom('alerta');
         document.getElementById('lockUserNomeDisplay').innerText = usuarioAtual.nome;
         document.getElementById('inputSenhaDesbloqueio').value = '';
         document.getElementById('telaBloqueio').style.display = 'flex';
@@ -1638,12 +1674,12 @@
     window.desbloquearEcra = async function() {
         let pwd = document.getElementById('inputSenhaDesbloqueio').value;
         if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
-            window.tocarSom('sucesso');
             document.getElementById('telaBloqueio').style.display = 'none';
             registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
             resetarTimerInatividade();
+            window.tocarSom('sucesso');
         } else {
-            window.tocarSom('alerta'); await customAlert("Palavra-passe incorreta!");
+            window.showToast("Palavra-passe incorreta!", "error");
         }
     };
 
@@ -1658,9 +1694,7 @@
 
     async function salvarStockFirestore(mapaProdutos) {
         if (!codigoEmpresa || !mapaProdutos) return;
-        try {
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), mapaProdutos, { merge: true });
-        } catch(e) {}
+        try { await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), mapaProdutos, { merge: true }); } catch(e) {}
     }
 
     window.mudarPaginaAuditLogs = function(dir) {
@@ -1673,29 +1707,21 @@
         let tbody = document.getElementById('corpoTabelaAuditLogs');
         if(!tbody) return;
         tbody.innerHTML = '';
-        if(auditLogs.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Sem registos de auditoria.</td></tr>';
-            return;
-        }
+        if(auditLogs.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sem registos.</td></tr>'; return; }
         let totalPaginas = Math.ceil(auditLogs.length / ITENS_POR_PAGINA_AUDIT) || 1;
         if(paginaAtualAuditLogs > totalPaginas) paginaAtualAuditLogs = totalPaginas;
         document.getElementById('pagAtualAuditLogs').innerText = paginaAtualAuditLogs;
         document.getElementById('pagTotalAuditLogs').innerText = totalPaginas;
         let inicio = (paginaAtualAuditLogs - 1) * ITENS_POR_PAGINA_AUDIT;
         auditLogs.slice(inicio, inicio + ITENS_POR_PAGINA_AUDIT).forEach(log => {
-            tbody.innerHTML += `<tr>
-                <td><small>${log.data || '-'}</small></td>
-                <td><b style="text-transform:uppercase;">${log.usuario || '-'}</b></td>
-                <td><span class="badge" style="background:var(--purple); color:white;">${log.evento || '-'}</span></td>
-                <td><small>${log.detalhes || '-'}</small></td>
-            </tr>`;
+            tbody.innerHTML += `<tr><td><small>${log.data || '-'}</small></td><td><b>${log.usuario || '-'}</b></td><td><span class="badge" style="background:var(--purple); color:white;">${log.evento || '-'}</span></td><td><small>${log.detalhes || '-'}</small></td></tr>`;
         });
     }
 
     window.carregarPerfisEmpresa = async function() {
         let elCod = document.getElementById('loginCodigoEmpresa');
         let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
-        if(!codeInput) { await customAlert("Introduza o Código do Restaurante!"); return; }
+        if(!codeInput) return window.showToast("Introduza o Código do Restaurante!", "warning");
 
         codigoEmpresa = codeInput;
         localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
@@ -1709,13 +1735,10 @@
                     document.getElementById('seccaoPerfisEForm').style.display = 'none';
                     document.getElementById('seccaoCriarTrial').style.display = 'none';
                     document.getElementById('boxContaBloqueada').style.display = 'block';
-                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso ou Período de Teste Expirado.';
+                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso ou Trial Expirado.';
                     return;
                 }
-            } else {
-                await customAlert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe.");
-                return;
-            }
+            } else { return customAlert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe."); }
 
             document.getElementById('boxContaBloqueada').style.display = 'none';
             document.getElementById('seccaoCriarTrial').style.display = 'none';
@@ -1727,18 +1750,14 @@
                     let dadosDoc = docSnap.data();
                     usuarios = {};
                     if (Array.isArray(dadosDoc.usuarios)) {
-                        dadosDoc.usuarios.forEach(u => {
-                            if (u.nome) usuarios[u.nome.toLowerCase()] = { senha: u.senha || "123", tipo: u.tipo || "vendedor", foto: u.foto || "" };
-                        });
+                        dadosDoc.usuarios.forEach(u => { if (u.nome) usuarios[u.nome.toLowerCase()] = { senha: u.senha || "123", tipo: u.tipo || "vendedor", foto: u.foto || "" }; });
                     }
                 }
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
             });
             unsubscribes.push(unsubUser);
-        } catch (erro) {
-            await customAlert("Erro ao ligar ao servidor.");
-        }
+        } catch (erro) { window.showToast("Erro ao ligar ao servidor.", "error"); }
     };
 
     function iniciarEscutadoresCompletosEmpresa() {
@@ -1814,17 +1833,12 @@
             if (docSnap.exists()) {
                 dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
                 preencherCamposEmpresaModal();
-                if (document.getElementById('nomeEmpresaHeader')) {
-                    document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
-                }
+                if (document.getElementById('nomeEmpresaHeader')) document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
             }
         }));
     }
 
-    function desconectarEscutadores() {
-        unsubscribes.forEach(unsub => unsub());
-        unsubscribes = [];
-    }
+    function desconectarEscutadores() { unsubscribes.forEach(unsub => unsub()); unsubscribes = []; }
 
     function renderizarPerfisLogin() {
         let container = document.getElementById('gridPerfisLogin');
@@ -1861,12 +1875,7 @@
         for (let u in usuarios) {
             let uObj = usuarios[u];
             let avatarHtml = uObj.foto ? `<img src="${uObj.foto}" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">` : `<span style="display:inline-block; width:34px; height:34px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:34px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
-            modalLista.innerHTML += `
-                <button class="btn-perfil" style="display:flex; align-items:center; gap:12px; background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); padding:10px; text-align:left; border-radius:10px; font-weight:700;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
-                    ${avatarHtml}
-                    <span style="text-transform:uppercase;">${u}</span> (${uObj.tipo})
-                </button>
-            `;
+            modalLista.innerHTML += `<button class="btn-perfil" style="display:flex; align-items:center; gap:12px; background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); padding:10px; text-align:left; border-radius:10px; font-weight:700;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">${avatarHtml}<span style="text-transform:uppercase;">${u}</span> (${uObj.tipo})</button>`;
         }
         document.getElementById('modalMaisPerfis').style.display = 'block';
     };
@@ -1886,7 +1895,7 @@
     window.fazerLogin = async function() {
         let u = document.getElementById('loginUser').value.trim().toLowerCase();
         let p = document.getElementById('loginPass').value;
-        if(!codigoEmpresa) { await customAlert("Insira primeiro o Código do Restaurante."); return; }
+        if(!codigoEmpresa) return window.showToast("Insira o Código do Restaurante.", "warning");
 
         if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
             window.tocarSom('sucesso');
@@ -1917,9 +1926,7 @@
 
             registarAuditLog('Login', `Sessão iniciada por ${u}`);
             resetarTimerInatividade();
-        } else {
-            window.tocarSom('alerta'); await customAlert("Credenciais inválidas!");
-        }
+        } else { window.showToast("Credenciais inválidas!", "error"); }
     };
 
     window.fazerLogout = function() {
@@ -1940,18 +1947,18 @@
         let chaveEntrada = document.getElementById('resetChaveMestraInput').value.trim();
         let novaP = document.getElementById('resetNovaSenha').value;
 
-        if (!u || !chaveEntrada || !novaP) { await customAlert("Preencha todos os campos."); return; }
-        if (!usuarios[u]) { await customAlert("Utilizador não encontrado."); return; }
+        if (!u || !chaveEntrada || !novaP) return window.showToast("Preencha todos os campos.", "warning");
+        if (!usuarios[u]) return window.showToast("Utilizador não encontrado.", "error");
 
         if (chaveEntrada === String(dadosEmpresa.chaveMestra || "1234").trim()) {
             usuarios[u].senha = novaP;
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            await customAlert(`A palavra-passe de '${u.toUpperCase()}' foi alterada com sucesso!`);
+            window.showToast(`A palavra-passe de '${u.toUpperCase()}' foi alterada!`, "success");
             registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
             window.fecharModalResetSenha();
-        } else { await customAlert("Chave Mestra Incorreta!"); }
+        } else { window.showToast("Chave Mestra Incorreta!", "error"); }
     };
 
     function configurarPerfilPermissoes() {
@@ -2001,8 +2008,8 @@
         let t = document.getElementById('novoUserTipo').value;
         let fileInput = document.getElementById('novoUserFoto').files[0];
 
-        if(!u || !p) { await customAlert("Preencha utilizador e palavra-passe!"); return; }
-        if(usuarios[u]) { await customAlert("Utilizador já existe!"); return; }
+        if(!u || !p) return window.showToast("Preencha utilizador e palavra-passe!", "warning");
+        if(usuarios[u]) return window.showToast("Utilizador já existe!", "error");
 
         processarFotoAvatar(fileInput, async function(fotoBase64) {
             usuarios[u] = { senha: p, tipo: t, foto: fotoBase64 };
@@ -2013,19 +2020,19 @@
             document.getElementById('novoUserSenha').value = '';
             document.getElementById('novoUserFoto').value = '';
             registarAuditLog('Perfil Criado', `Perfil '${u}' (${t}) criado`);
-            await customAlert(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`);
+            window.showToast(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`, "success");
         });
     };
 
     window.apagarUsuario = async function(u) {
-        if(u === usuarioAtual.nome) { await customAlert("Não pode apagar o seu próprio perfil!"); return; }
+        if(u === usuarioAtual.nome) return window.showToast("Não pode apagar o seu próprio perfil!", "error");
         if(await customConfirm(`Eliminar o perfil '${u.toUpperCase()}'?`)) {
             delete usuarios[u];
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
-            await customAlert(`Perfil '${u.toUpperCase()}' removido.`);
+            window.showToast(`Perfil '${u.toUpperCase()}' removido.`, "success");
         }
     };
 
@@ -2037,7 +2044,7 @@
             for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Senha Alterada', `Palavra-passe de '${u}' alterada por Admin`);
-            await customAlert(`Palavra-passe alterada!`);
+            window.showToast(`Palavra-passe alterada!`, "success");
         }
     };
 
@@ -2052,7 +2059,7 @@
                     let listaArrayFirestore = [];
                     for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
                     await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-                    await customAlert(`Foto atualizada!`);
+                    window.showToast(`Foto atualizada!`, "success");
                 }
             });
         };
@@ -2172,20 +2179,18 @@
         caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), dataAbertura: new Date().toLocaleString('pt-MZ'), usuarioAbertura: usuarioAtual.nome };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
         registarAuditLog('Caixa Aberto', `Caixa aberto com fundo inicial de ${fundo} MT`);
-        await customAlert("Caixa aberto com sucesso!");
+        window.showToast("Caixa aberto com sucesso!", "success");
     };
 
     window.fecharCaixaTurnoCEGO = async function() {
         let mesasComItens = [];
         for(let m in mesas) { if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
         if(mesasComItens.length > 0) {
-            window.tocarSom('alerta');
-            await customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas ativas: ${mesasComItens.join(', ')}.`);
-            return;
+            return customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas ativas: ${mesasComItens.join(', ')}.`);
         }
 
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
-        if(isNaN(valContado) || valContado < 0) return customAlert("Introduza o valor contado na gaveta.");
+        if(isNaN(valContado) || valContado < 0) return window.showToast("Introduza o valor contado na gaveta.", "warning");
         if(!(await customConfirm(`Confirma que contou exatamente ${valContado.toFixed(2)} MT na gaveta?`))) return;
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
@@ -2209,7 +2214,6 @@
         registarAuditLog('Caixa Encerrado', `Fecho Cego - Contado: ${valContado} MT | Diferenca: ${diferenca} MT`);
 
         document.getElementById('inputFechoValorContado').value = '';
-        window.tocarSom('sucesso');
         await customAlert(`🔒 Turno Encerrado!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
     };
 
@@ -2251,10 +2255,10 @@
     };
 
     window.registarDespesa = async function() {
-        if (!caixaEstado.aberto) return customAlert("🔴 Caixa Encerrado!");
+        if (!caixaEstado.aberto) return window.showToast("🔴 Caixa Encerrado!", "error");
         let desc = document.getElementById('despesaDesc').value.trim();
         let val = parseFloat(document.getElementById('despesaValor').value) || 0;
-        if(!desc || val <= 0) return customAlert("Preencha a descrição e valor.");
+        if(!desc || val <= 0) return window.showToast("Preencha a descrição e valor.", "warning");
 
         let novaDespesa = { id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') };
         despesas.push(novaDespesa);
@@ -2263,7 +2267,7 @@
         registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
-        await customAlert("Despesa registada!");
+        window.showToast("Despesa registada!", "success");
     };
 
     function renderizarMesasGrid() {
@@ -2302,8 +2306,7 @@
 
         let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
         if (itensDaMesa.length > 0 && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            await customAlert(`⚠️ A mesa ${m} está a ser utilizada por outro operador (${bloqueioUser.toUpperCase()}).`);
-            return;
+            return window.showToast(`⚠️ A mesa ${m} está a ser utilizada por ${bloqueioUser.toUpperCase()}.`, "warning");
         }
 
         mesaSelecionada = m;
@@ -2384,10 +2387,8 @@
 
     window.adicionarAoCarrinho = async function() {
         if (!caixaEstado.aberto) {
-            window.tocarSom('alerta');
-            await customAlert("🔴 Venda Bloqueada: Abra o caixa primeiro!");
             window.mudarAba('abaCaixa');
-            return;
+            return window.showToast("🔴 Venda Bloqueada: Abra o caixa primeiro!", "error");
         }
 
         let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
@@ -2400,20 +2401,18 @@
         }
 
         if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            window.tocarSom('alerta');
-            await customAlert(`⚠️ Mesa ocupada por ${bloqueioAtual.toUpperCase()}.`);
-            return;
+            return window.showToast(`⚠️ Mesa ocupada por ${bloqueioAtual.toUpperCase()}.`, "warning");
         }
 
         let prod = document.getElementById('cartSelectProduto').value;
         let qtd = parseFloat(document.getElementById('cartQtd').value);
         let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
 
-        if(!prod) return customAlert("Selecione um produto.");
-        if(qtd <= 0 || isNaN(qtd)) return customAlert("Quantidade inválida.");
+        if(!prod) return window.showToast("Selecione um produto.", "warning");
+        if(qtd <= 0 || isNaN(qtd)) return window.showToast("Quantidade inválida.", "error");
 
         if (stock[prod]) {
-            if(stock[prod].qtd < qtd) { window.tocarSom('alerta'); return customAlert("Stock insuficiente!"); }
+            if(stock[prod].qtd < qtd) return window.showToast("Stock insuficiente!", "error");
         } else {
             stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
         }
@@ -2439,7 +2438,7 @@
             await salvarStockFirestore({ [prod]: stock[prod] });
         } catch (err) {}
 
-        window.tocarSom('sucesso');
+        window.showToast(`${qtd}x ${prod.toUpperCase()} adicionado.`, "success");
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
@@ -2558,9 +2557,7 @@
     window.removerItemCarrinho = async function(idx) {
         let bloqueioUser = bloqueiosMesas[mesaSelecionada];
         if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            window.tocarSom('alerta');
-            await customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence ao operador ${bloqueioUser.toUpperCase()}.`);
-            return;
+            return customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence a ${bloqueioUser.toUpperCase()}.`);
         }
 
         let itens = mesas[mesaSelecionada] || [];
@@ -2587,12 +2584,12 @@
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
-        window.tocarSom('click');
+        window.showToast("Item removido e devolvido ao stock.", "info");
     };
 
     window.imprimirPreRecibo = async function() {
         let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return customAlert("O carrinho/mesa está vazio.");
+        if(itens.length === 0) return window.showToast("O carrinho/mesa está vazio.", "warning");
 
         let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
         let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
@@ -2638,12 +2635,11 @@
 
     window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) {
-            window.tocarSom('alerta');
-            return customAlert("🔴 Caixa Fechado!");
+            return window.showToast("🔴 Caixa Fechado!", "error");
         }
 
         let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return customAlert("O carrinho está vazio.");
+        if(itens.length === 0) return window.showToast("O carrinho está vazio.", "warning");
 
         try {
             let modoPag = document.getElementById('cartModoPagamentoTipo').value;
@@ -2659,7 +2655,7 @@
                 let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
                 let somaDesd = dDin + dMpe + dEmo + dPos;
 
-                if(Math.abs(somaDesd - totalVenda) > 0.1) return customAlert(`⚠️ A soma dos pagamentos (${somaDesd.toFixed(2)} MT) deve ser igual ao Total (${totalVenda.toFixed(2)} MT)!`);
+                if(Math.abs(somaDesd - totalVenda) > 0.1) return window.showToast(`⚠️ Soma dos pagamentos (${somaDesd.toFixed(2)} MT) diferente do Total (${totalVenda.toFixed(2)} MT)!`, "error");
                 metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
                 desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
             } else {
@@ -2670,10 +2666,8 @@
 
             let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
             if (metodo === 'Numerário' && valorEntregue <= 0) {
-                window.tocarSom('alerta');
-                await customAlert("⚠️ Introduza o 'Valor Entregue' pelo cliente!");
                 document.getElementById('cartValorEntregue').focus();
-                return;
+                return window.showToast("⚠️ Introduza o 'Valor Entregue' pelo cliente!", "warning");
             }
 
             let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
@@ -2686,7 +2680,7 @@
             let clienteFiado = null;
             if(metodo === 'Fiado') {
                 clienteFiado = document.getElementById('cartSelectClienteFiado').value;
-                if(!clienteFiado) return customAlert("Selecione o cliente para o fiado.");
+                if(!clienteFiado) return window.showToast("Selecione o cliente para o fiado.", "error");
             }
 
             let registoVenda = {
@@ -2704,7 +2698,16 @@
                 }
             }
 
-            addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda).catch(()=>{});
+            // IndexedDB Offline-First Logic para Vendas
+            if (navigator.onLine) {
+                try {
+                    await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
+                } catch(e) {
+                    window.salvarVendaOffline(registoVenda);
+                }
+            } else {
+                window.salvarVendaOffline(registoVenda);
+            }
 
             mesas[mesaSelecionada] = [];
             if (mesaSelecionada !== "Balcão") {
@@ -2715,7 +2718,7 @@
                 setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
             }
 
-            window.tocarSom('sucesso');
+            window.showToast("Venda concluída com sucesso!", "success");
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
             document.getElementById('cartDesconto').value = 0;
@@ -2733,7 +2736,7 @@
             else imprimirTalão(registoVenda);
 
         } catch (erro) {
-            await customAlert("⚠️ Falha ao registar venda: " + erro.message);
+            window.showToast("⚠️ Falha ao registar venda: " + erro.message, "error");
         }
     };
 
@@ -2774,7 +2777,7 @@
 
     window.imprimirGuiaCozinha = async function() {
         let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return customAlert("Carrinho vazio.");
+        if(itens.length === 0) return window.showToast("Carrinho vazio.", "warning");
 
         document.getElementById('conteudoReciboFiscal').style.display = 'none';
         document.getElementById('conteudoGuiaCozinha').style.display = 'block';
@@ -2800,15 +2803,15 @@
             const characteristics = await services[0].getCharacteristics();
             bluetoothCharacteristic = characteristics[0];
             document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
-            await customAlert("✅ Bluetooth Conectado!");
+            window.showToast("✅ Bluetooth Conectado!", "success");
         } catch (erro) {
             document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
-            await customAlert("Falha na ligação Bluetooth.");
+            window.showToast("Falha na ligação Bluetooth.", "error");
         }
     };
 
     window.testarImpressaoBluetooth = async function() {
-        if (!bluetoothCharacteristic) return customAlert("Conecte a impressora primeiro.");
+        if (!bluetoothCharacteristic) return window.showToast("Conecte a impressora primeiro.", "warning");
         let encoder = new TextEncoder();
         let texto = "\x1B\x40\x1B\x61\x01TESTE IMPRESSAO\nGS POINT POS\n--------------------------------\n\n\n\n";
         await bluetoothCharacteristic.writeValue(encoder.encode(texto));
@@ -2828,7 +2831,7 @@
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
-        if(!nome) return customAlert("Introduza o nome do cliente.");
+        if(!nome) return window.showToast("Introduza o nome do cliente.", "error");
 
         let novoCliente = { id: Date.now(), nome, telefone: tel, divida: 0 };
         clientes.push(novoCliente);
@@ -2836,6 +2839,7 @@
         document.getElementById('novoClienteNome').value = '';
         document.getElementById('novoClienteTelefone').value = '';
         renderizarClientes();
+        window.showToast("Cliente registado!", "success");
     };
 
     function renderizarClientes() {
@@ -2864,7 +2868,7 @@
             c.divida = Math.max(0, c.divida - val);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
             registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
-            await customAlert("Pagamento registado!");
+            window.showToast("Pagamento registado!", "success");
         }
     };
 
@@ -2875,7 +2879,7 @@
         clientes.splice(idx, 1);
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
         registarAuditLog('Cliente Removido', `Cliente '${c.nome}' eliminado`);
-        await customAlert("Cliente eliminado!");
+        window.showToast("Cliente eliminado!", "success");
     };
 
     function atualizarDropdownClientesFiado() {
@@ -2910,9 +2914,9 @@
         let numShotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
-        if(!garrafa) return customAlert("Selecione a garrafa.");
-        if(!nomeShot) return customAlert("Introduza o nome do shot de destino.");
-        if(stock[garrafa].qtd < qtdGarrafasAbrir) return customAlert("Stock insuficiente da garrafa.");
+        if(!garrafa) return window.showToast("Selecione a garrafa.", "error");
+        if(!nomeShot) return window.showToast("Introduza o nome do shot de destino.", "error");
+        if(stock[garrafa].qtd < qtdGarrafasAbrir) return window.showToast("Stock insuficiente da garrafa.", "error");
 
         let custoUnitGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
         let custoTotalGarrafas = qtdGarrafasAbrir * custoUnitGarrafa;
@@ -2940,8 +2944,7 @@
         await salvarStockFirestore({ [garrafa]: stock[garrafa], [nomeShot]: stock[nomeShot] });
         registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
 
-        window.tocarSom('sucesso');
-        await customAlert(`✅ Conversão concluída!\n\n• -${qtdGarrafasAbrir} ${garrafa.toUpperCase()}\n• +${totalShotsGerados} ${nomeShot.toUpperCase()}`);
+        window.showToast(`✅ Conversão concluída: +${totalShotsGerados} ${nomeShot.toUpperCase()}`, "success");
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
         renderizarStock();
@@ -2978,7 +2981,7 @@
 
     window.salvarEntradaStock = async function() {
         let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-        if(!prod) return customAlert("Digite o nome do produto.");
+        if(!prod) return window.showToast("Digite o nome do produto.", "warning");
 
         let barcodeInput = document.getElementById('simplesBarcode').value.trim();
         let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
@@ -3018,7 +3021,7 @@
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
         filtrarEExibirProdutosVenda();
-        await customAlert("Stock atualizado com sucesso!");
+        window.showToast("Stock atualizado com sucesso!", "success");
     };
 
     function renderizarStock() {
@@ -3069,7 +3072,7 @@
         let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
         if (!valStr) return;
         let qtdRemover = parseFloat(valStr);
-        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return customAlert("Quantidade inválida.");
+        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return window.showToast("Quantidade inválida.", "error");
 
         let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
         item.qtd -= qtdRemover;
@@ -3083,7 +3086,7 @@
 
         await salvarStockFirestore({ [p]: stock[p] });
         registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
-        await customAlert("Stock atualizado!");
+        window.showToast("Stock atualizado!", "success");
         filtrarEExibirProdutosVenda();
         renderizarStock();
     };
@@ -3095,6 +3098,7 @@
             registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
             filtrarEExibirProdutosVenda();
             renderizarStock();
+            window.showToast("Produto eliminado.", "info");
         }
     };
 
@@ -3138,7 +3142,7 @@
     window.apagarMovimentacaoIndividual = async function(idDocMov) {
         if(await customConfirm("Confirmar remoção?")) {
             await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
-            await customAlert("Removido!");
+            window.showToast("Removido!", "info");
         }
     };
 
@@ -3198,13 +3202,11 @@
         let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador:", "", true);
         if (!senhaAdmin) return;
         let autorizado = false;
-        for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; }
-        }
-        if (!autorizado) return customAlert("❌ Senha incorreta!");
+        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; } }
+        if (!autorizado) return window.showToast("❌ Senha incorreta!", "error");
 
         let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
-        if(!vendaObj) return customAlert("Venda não encontrada.");
+        if(!vendaObj) return window.showToast("Venda não encontrada.", "error");
 
         if(vendaObj.itens) {
             let stockUpdates = {};
@@ -3228,16 +3230,14 @@
         vendaObj.status = 'cancelado';
         await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
         registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
-        await customAlert("Venda cancelada e stock revertido!");
+        window.showToast("Venda cancelada e stock revertido!", "success");
     };
 
     window.apagarTodoHistoricoApp = async function() {
         let senha = await customPrompt("⚠️ ZONA DE PERIGO\nInsira a palavra-passe do Administrador:", "", true);
         if (!senha) return;
         let autorizado = false;
-        for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
-        }
+        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
         if(!autorizado || !(await customConfirm("⚠️ TEM CERTEZA ABSOLUTA?"))) return;
 
         try {
@@ -3246,9 +3246,9 @@
             let promessasDel = [];
             res.forEach(snap => snap.docs.forEach(d => promessasDel.push(deleteDoc(d.ref))));
             await Promise.all(promessasDel);
-            await customAlert("✅ Histórico apagado!");
+            window.showToast("✅ Histórico apagado!", "success");
             window.atualizarDashboard();
-        } catch(err) { await customAlert("Erro: " + err.message); }
+        } catch(err) { window.showToast("Erro: " + err.message, "error"); }
     };
 
     window.atualizarDashboard = function() {
@@ -3415,16 +3415,14 @@
         let senha = await customPrompt("🔒 AUTORIZAÇÃO\nInsira a palavra-passe para visualizar o Código de Licença:", "", true);
         if (!senha) return;
         let autorizado = false;
-        for (let u in usuarios) {
-            if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; }
-        }
+        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
         if (autorizado) {
             let inputLicenca = document.getElementById('cfgCodigoLicencaOculto');
             inputLicenca.type = "text";
             inputLicenca.value = codigoEmpresa;
-            await customAlert(`🔑 Código de Licença Ativo: ${codigoEmpresa}`);
+            window.showToast(`🔑 Código de Licença Ativo: ${codigoEmpresa}`, "info");
             setTimeout(() => { inputLicenca.type = "password"; inputLicenca.value = "••••••••"; }, 8000);
-        } else { await customAlert("❌ Acesso Negado!"); }
+        } else { window.showToast("❌ Acesso Negado!", "error"); }
     };
 
     window.abrirModalDefinicoes = function() {
@@ -3454,22 +3452,20 @@
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
         registarAuditLog('Empresa Atualizada', 'Dados da empresa e Chave Mestra alterados');
         
-        if (document.getElementById('nomeEmpresaHeader')) {
-            document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome;
-        }
-        await customAlert("Dados salvos com sucesso!");
+        if (document.getElementById('nomeEmpresaHeader')) document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome;
+        window.showToast("Dados salvos com sucesso!", "success");
     };
 
     window.mudarMinhaSenha = async function() {
         let p = document.getElementById('inputNovaSenha').value;
-        if(!p) return customAlert("Digite a nova palavra-passe.");
+        if(!p) return window.showToast("Digite a nova palavra-passe.", "warning");
         usuarios[usuarioAtual.nome].senha = p;
 
         let listaArrayFirestore = [];
         for (let nomeKey in usuarios) listaArrayFirestore.push({ nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, foto: usuarios[nomeKey].foto || "" });
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
         registarAuditLog('Senha Pessoal Alterada', `Palavra-passe alterada por ${usuarioAtual.nome}`);
-        await customAlert("Palavra-passe alterada!");
+        window.showToast("Palavra-passe alterada!", "success");
     };
 </script>
 
