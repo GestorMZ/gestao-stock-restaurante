@@ -1020,6 +1020,7 @@
                 <div class="card-stat laranja"><h4>Custo Produtos (COGS)</h4><div class="valor-card" id="dashCustoVendas">0.00 MT</div></div>
                 <div class="card-stat vermelho"><h4>Despesas Gerais</h4><div class="valor-card" id="dashDespesasGerais">0.00 MT</div></div>
                 <div class="card-stat roxo"><h4>Lucro Líquido Real</h4><div class="valor-card" id="dashLucroReal">0.00 MT</div></div>
+                <div class="card-stat" style="border-left-color: var(--teal);"><h4>Investimento em Stock</h4><div class="valor-card" id="dashInvestimentoStock">0.00 MT</div></div>
             </div>
 
             <div class="form-row" style="margin-top:20px;">
@@ -3328,7 +3329,12 @@
             let isCritico = item.qtd <= (item.min_alerta || 5);
 
             let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td style="color:var(--success); font-weight:800;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
-            let colAdmin = usuarioAtual.tipo === 'admin' ? `<td><button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProduto('${p}')">➖ Qtd</button><button class="btn-saida btn-sm" onclick="window.apagarProdutoTotal('${p}')">🗑️ Apagar</button></td>` : '';
+            let colAdmin = (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente') ? 
+                `<td>
+                    <button class="btn-success btn-sm" style="margin-bottom:4px;" onclick="window.adicionarQuantidadeProduto('${p}')">➕ Qtd</button>
+                    <button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProduto('${p}')">➖ Qtd</button>
+                    ${usuarioAtual.tipo === 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarProdutoTotal('${p}')">🗑️ Apagar</button>` : ''}
+                </td>` : '';
 
             tbody.innerHTML += `<tr>
                 <td><b>${p.toUpperCase()}</b></td>
@@ -3347,6 +3353,40 @@
         else paginaAtualStock += dir;
         if(paginaAtualStock < 1) paginaAtualStock = 1;
         renderizarStock();
+    };
+
+    window.adicionarQuantidadeProduto = async function(p) {
+        if (!window.iniciarProcessamento()) return;
+        try {
+            let item = stock[p];
+            if(!item) return;
+            let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja ADICIONAR? (Stock atual: ${item.qtd})`, "1");
+            if (!valStr) return;
+            let qtdAdicionar = parseFloat(valStr);
+            if(isNaN(qtdAdicionar) || qtdAdicionar <= 0) return window.showToast("Quantidade inválida.", "error");
+
+            let custoAtual = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+            let custoStr = await customPrompt(`Custo unitário desta nova entrada (MT):`, custoAtual.toFixed(2));
+            if (!custoStr) return;
+            let custoUnitNovo = parseFloat(custoStr);
+            if(isNaN(custoUnitNovo) || custoUnitNovo < 0) return window.showToast("Custo inválido.", "error");
+
+            item.qtd += qtdAdicionar;
+            item.preco_total += (qtdAdicionar * custoUnitNovo);
+
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+                tipo: 'ENTRADA RÁPIDA', produto: p, qtd: qtdAdicionar, usuario: usuarioAtual.nome, origem: 'Adição direta no Stock'
+            });
+
+            await salvarStockFirestore({ [p]: stock[p] });
+            registarAuditLog('Stock Adicionado', `Adicionadas ${qtdAdicionar} unidades de '${p}'`);
+            window.showToast("Stock adicionado com sucesso!", "success");
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+        } finally {
+            window.fimProcessamento();
+        }
     };
 
     window.apagarQuantidadeProduto = async function(p) {
@@ -3598,6 +3638,11 @@
         });
 
         let totalDesp = despesas.reduce((acc, i) => acc + i.valor, 0);
+        
+        let totalInvestidoStock = 0;
+        for(let p in stock) {
+            totalInvestidoStock += (stock[p].preco_total || 0);
+        }
 
         document.getElementById('dashValMpesa').innerText = (canais['M-Pesa'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValEmola').innerText = (canais['e-Mola'] || 0).toFixed(2) + " MT";
@@ -3609,6 +3654,9 @@
         document.getElementById('dashCustoVendas').innerText = totalCOGS.toFixed(2) + " MT";
         document.getElementById('dashDespesasGerais').innerText = totalDesp.toFixed(2) + " MT";
         document.getElementById('dashLucroReal').innerText = (totalVendas - totalCOGS - totalDesp).toFixed(2) + " MT";
+        if (document.getElementById('dashInvestimentoStock')) {
+            document.getElementById('dashInvestimentoStock').innerText = totalInvestidoStock.toFixed(2) + " MT";
+        }
 
         let topSorted = Object.entries(topProds).sort((a,b) => b[1] - a[1]).slice(0, 5);
         let divTop = document.getElementById('listaTopProdutos');
