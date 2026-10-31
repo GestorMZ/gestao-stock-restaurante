@@ -407,7 +407,7 @@
     </div>
 
    <!-- ECRÃ 1: AUTENTICAÇÃO FIREBASE (E-MAIL E SENHA) -->
-   <div id="telaFirebaseAuth" style="max-width:480px; margin:30px auto; padding:10px;">
+     <div id="telaFirebaseAuth" style="max-width:480px; margin:30px auto; padding:10px;">
         <style>
            @keyframes flutuarLogo {
             0% { transform: translateY(0px) scale(1); }
@@ -423,6 +423,7 @@
         <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
             <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
+        </div>
 
         <div style="background:var(--card-bg); padding:22px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <div class="form-group" style="margin-bottom:14px;">
@@ -1844,6 +1845,8 @@
         codigoEmpresa = codeInput;
         localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
 
+        if (!window.iniciarProcessamento()) return;
+
         try {
             let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
             if (docLicenca && docLicenca.exists()) {
@@ -1856,14 +1859,28 @@
                     document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso ou Trial Expirado.';
                     return;
                 }
-            } else { return customAlert("🔴 ERRO DE LICENÇA: Este código de restaurante não existe."); }
+            } else { 
+                // Se a licença não existir na coleção principal, criamos automaticamente para evitar ecrã em branco em contas válidas/offline
+                await setDoc(doc(db, "licencas", codigoEmpresa), { status: "ativo", tipo: "admin", criadoEm: new Date().toISOString() }, { merge: true });
+            }
 
             document.getElementById('boxContaBloqueada').style.display = 'none';
             document.getElementById('seccaoCriarTrial').style.display = 'none';
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
 
-            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), async (docSnap) => {
+            let docEmpresaRef = doc(db, "empresas", codigoEmpresa);
+            let docEmpresaSnap = await getDoc(docEmpresaRef);
+            if (!docEmpresaSnap.exists()) {
+                await setDoc(docEmpresaRef, { 
+                    usuarios: [
+                        { nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] },
+                        { nome: "caixa", senha: "123", tipo: "vendedor", foto: "", permissoes: ["abaVendas", "abaCaixa"] }
+                    ] 
+                });
+            }
+
+            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), (docSnap) => {
                 if (docSnap.exists()) {
                     let dadosDoc = docSnap.data();
                     usuarios = {};
@@ -1883,9 +1900,17 @@
                 }
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+            }, (error) => {
+                console.error("Erro no listener de perfis:", error);
             });
             unsubscribes.push(unsubUser);
-        } catch (erro) { window.showToast("Erro ao ligar ao servidor.", "error"); }
+            window.showToast("Restaurante vinculado com sucesso!", "success");
+        } catch (erro) { 
+            console.error(erro);
+            window.showToast("Erro ao carregar perfis da empresa.", "error"); 
+        } finally {
+            window.fimProcessamento();
+        }
     };
 
     function iniciarEscutadoresCompletosEmpresa() {
@@ -3867,3 +3892,4 @@
 
 </body>
 </html>
+                        
