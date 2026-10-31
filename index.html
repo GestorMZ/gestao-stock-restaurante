@@ -56,6 +56,8 @@
             border-radius: 16px; 
             box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04); 
             border: 1px solid #e2e8f0;
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         /* ----- ESTILOS PARA NOTIFICAÇÕES TOAST ----- */
@@ -84,6 +86,8 @@
             opacity: 1;
             transform: translateX(0);
             transition: 0.3s ease;
+            transform: translateZ(0);
+            will-change: transform, opacity;
         }
         .toast-success { border-left: 6px solid var(--success); }
         .toast-warning { border-left: 6px solid var(--warning); }
@@ -114,12 +118,13 @@
             white-space: nowrap; 
             transition: all 0.15s ease; 
             min-height: 46px;
+            transform: translateZ(0);
         }
 
         .tab-btn:hover { background: #e2e8f0; color: var(--text-main); }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
 
-        .tab-content { display: none; animation: fadeIn 0.15s ease; }
+        .tab-content { display: none; animation: fadeIn 0.15s ease; transform: translateZ(0); will-change: transform; }
         .tab-content.active { display: block; }
 
         @keyframes fadeIn {
@@ -163,6 +168,8 @@
             justify-content: center;
             gap: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transform: translateZ(0);
+            will-change: transform;
         }
 
         button:hover { background-color: var(--primary-dark); }
@@ -198,7 +205,7 @@
         .btn-atacho-fast:hover { background: #dbeafe; border-color: var(--primary); }
 
         .grid-perfis-login { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; justify-content: center; margin-bottom: 20px; }
-        .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 16px 12px; border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card-perfil-login { background: #f8fafc; border: 2px solid #e2e8f0; padding: 16px 12px; border-radius: 14px; text-align: center; cursor: pointer; transition: all 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transform: translateZ(0); }
         .card-perfil-login:hover, .card-perfil-login.ativo { border-color: var(--primary); background: #eff6ff; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.15); }
         .avatar-img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); margin-bottom: 8px; background: #cbd5e1; }
         .avatar-placeholder { width: 64px; height: 64px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 8px auto; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
@@ -232,6 +239,7 @@
             justify-content: space-between;
             min-height: 85px;
             transition: all 0.1s ease;
+            transform: translateZ(0);
         }
 
         .card-produto-pos:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12); }
@@ -264,7 +272,7 @@
         .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 14px 18px; border-radius: 12px; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; border: 1px solid #e2e8f0; }
 
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 18px 0; }
-        .card-stat { background: #f8fafc; padding: 16px; border-radius: 12px; border-left: 6px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; }
+        .card-stat { background: #f8fafc; padding: 16px; border-radius: 12px; border-left: 6px solid var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; transform: translateZ(0); }
         .card-stat.verde { border-left-color: var(--success); }
         .card-stat.laranja { border-left-color: var(--warning); }
         .card-stat.vermelho { border-left-color: var(--danger); }
@@ -285,14 +293,14 @@
         .badge-cortesia { background: #f43f5e; color: white; }
 
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; margin-bottom: 18px; }
-        .card-mesa { background: #f8fafc; border: 2px solid var(--border); padding: 14px 8px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; min-height: 65px; transition: 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .card-mesa { background: #f8fafc; border: 2px solid var(--border); padding: 14px 8px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; min-height: 65px; transition: 0.15s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transform: translateZ(0); }
         .card-mesa:hover { border-color: var(--primary); background: #eff6ff; }
         .card-mesa.ocupada { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
         .card-mesa.bloqueada { background: #fffbeb; border-color: #fde68a; color: #b45309; opacity: 0.9; }
         .card-mesa.selecionada { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); overflow-y: auto; }
-        .modal-content { background: white; max-width: 580px; margin: 4% auto; padding: 24px; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); overflow-y: auto; transform: translateZ(0); will-change: transform; }
+        .modal-content { background: white; max-width: 580px; margin: 4% auto; padding: 24px; border-radius: 16px; position: relative; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0; transform: translateZ(0); will-change: transform; }
         .close-modal { position: absolute; right: 20px; top: 16px; font-size: 28px; cursor: pointer; font-weight: bold; color: var(--text-muted); transition: color 0.15s; }
         .close-modal:hover { color: var(--danger); }
 
@@ -362,15 +370,15 @@
 <!-- TOAST CONTAINER (Notificações Não-Bloqueantes) -->
 <div id="toast-container"></div>
 
-<!-- OVERLAY DE CARREGAMENTO (Bloqueio UI) -->
+<!-- OVERLAY DE CARREGAMENTO GLOBAL (Defense in Depth) -->
 <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.5); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
     <div style="padding: 20px 40px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-weight: 800; color: var(--primary); font-size: 1.2em; display: flex; align-items: center; gap: 12px; border: 2px solid var(--primary);">
-        <span style="display:inline-block; animation: spin 1s linear infinite;">⏳</span> A processar...
+        <span style="display:inline-block; animation: spin 1s linear infinite;">⏳</span> A processar ação...
     </div>
     <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
 </div>
 
-<!-- MODAL DE SISTEMA CUSTOMIZADO PARA ALERTS CRÍTICOS E PROMPTS -->
+<!-- MODAL DE SISTEMA CUSTOMIZADO PARA ALERTS CRÍTICOS E PROMPTS CORRIGIDOS -->
 <div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
     <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
         <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Mensagem</h3>
@@ -411,8 +419,7 @@
         }
     </style>
         <div style="text-align:center; margin-bottom:24px;">
-        <!-- Logo real animado -->
-        <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
+        <img src="https://placehold.co/76x76/2563eb/ffffff?text=GS" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
             <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
         </div>
@@ -459,7 +466,6 @@
             </div>
             <div class="form-group" style="margin-bottom:20px;">
                 <label style="color:var(--primary); font-weight:800;">🔑 Palavra-passe (Exatamente 6 dígitos)</label>
-                <!-- Validação estrita: Aceita apenas números, limite de 6 caracteres -->
                 <input type="password" id="regPassword" placeholder="123456" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');" class="enter-trigger" data-action="window.submeterRegisto()">
                 <small style="color:var(--danger); font-size: 0.75em;">* Apenas números são permitidos.</small>
             </div>
@@ -1355,7 +1361,7 @@
                     for (let v of vendas) {
                         try {
                             let idLocal = v.idLocal;
-                            delete v.idLocal; // remover chave local antes de subir
+                            delete v.idLocal;
                             await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
                             
                             const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
@@ -1372,12 +1378,11 @@
         };
     };
 
-    // PWA Service Worker Registration
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js').catch(() => console.log('SW Registration failed/not found in sandbox.'));
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
     }
 
-    // ----- SISTEMA MODAL CUSTOMIZADO (Para blockers/erros críticos) -----
+    // ----- SISTEMA MODAL CUSTOMIZADO (Para blockers/erros críticos e correção de prompt) -----
     window.customAlert = function(msg) {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
@@ -1482,13 +1487,11 @@
         window.atualizarEstadoConexao();
         document.body.addEventListener('keyup', function(e) {
             if (e.key === 'Enter') {
-                // Para botões genéricos de finalizar venda
                 if (document.activeElement.id === 'cartValorEntregue') {
                     window.finalizarVendaCarrinho();
                     e.preventDefault();
                     return;
                 }
-                // Executa ação definida no data-action se a classe for enter-trigger
                 if (document.activeElement.classList.contains('enter-trigger')) {
                     let action = document.activeElement.getAttribute('data-action');
                     if (action) {
@@ -1498,7 +1501,6 @@
             }
         });
         
-        // Carrega empresa via URL se existir
         const urlParams = new URLSearchParams(window.location.search);
         let empUrl = urlParams.get('empresa');
         if (empUrl) {
@@ -1508,7 +1510,6 @@
             if (inputCod) inputCod.value = codigoEmpresa;
         }
     });
-
 
     // ----- VARIÁVEIS DE ESTADO DO SISTEMA -----
     let codigoEmpresa = "";
@@ -1541,9 +1542,7 @@
     let html5QrCodeScanner = null;
     let isScannerOpen = false;
 
-
     // ----- GESTÃO DE AUTENTICAÇÃO E REGISTO -----
-
     window.mostrarRegisto = function() {
         document.getElementById('telaFirebaseAuth').style.display = 'none';
         document.getElementById('telaRegisto').style.display = 'block';
@@ -2079,8 +2078,6 @@
 
     function configurarPerfilPermissoes() {
         let abasDisponiveis = usuarioAtual.permissoes || ['abaVendas'];
-        
-        // Mapeamento de IDs de abas para seus respectivos botões na navegação
         const mapaAbas = {
             'abaVendas': 'navTabVendas',
             'abaCaixa': 'navTabCaixa',
@@ -2101,7 +2098,6 @@
             }
         }
 
-        // Se a aba atual do utilizador não estiver permitida, redireciona para a primeira permitida
         let abaAtivaEl = document.querySelector('.tab-content.active');
         if (abaAtivaEl && !abasDisponiveis.includes(abaAtivaEl.id)) {
             window.mudarAba(abasDisponiveis[0] || 'abaVendas');
@@ -2972,7 +2968,6 @@
                 }
             }
 
-            // IndexedDB Offline-First Logic para Vendas
             if (navigator.onLine) {
                 try {
                     await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), registoVenda);
@@ -3331,8 +3326,8 @@
             let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td style="color:var(--success); font-weight:800;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
             let colAdmin = (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente') ? 
                 `<td>
-                    <button class="btn-success btn-sm" style="margin-bottom:4px;" onclick="window.adicionarQuantidadeProduto('${p}')">➕ Qtd</button>
-                    <button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProduto('${p}')">➖ Qtd</button>
+                    <button class="btn-success btn-sm" style="margin-bottom:4px;" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕ Qtd</button>
+                    <button class="btn-warning btn-sm" style="margin-bottom:4px;" onclick="window.apagarQuantidadeProdutoPrompt('${p}')">➖ Qtd</button>
                     ${usuarioAtual.tipo === 'admin' ? `<button class="btn-saida btn-sm" onclick="window.apagarProdutoTotal('${p}')">🗑️ Apagar</button>` : ''}
                 </td>` : '';
 
@@ -3355,22 +3350,24 @@
         renderizarStock();
     };
 
-    window.adicionarQuantidadeProduto = async function(p) {
+    // Correção do Bug do Prompt: Pergunta primeiro e só bloqueia depois de confirmar
+    window.adicionarQuantidadeProdutoPrompt = async function(p) {
+        let item = stock[p];
+        if(!item) return;
+        
+        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja ADICIONAR? (Stock atual: ${item.qtd})`, "1");
+        if (!valStr) return;
+        let qtdAdicionar = parseFloat(valStr);
+        if(isNaN(qtdAdicionar) || qtdAdicionar <= 0) return window.showToast("Quantidade inválida.", "error");
+
+        let custoAtual = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+        let custoStr = await customPrompt(`Custo unitário desta nova entrada (MT):`, custoAtual.toFixed(2));
+        if (!custoStr) return;
+        let custoUnitNovo = parseFloat(custoStr);
+        if(isNaN(custoUnitNovo) || custoUnitNovo < 0) return window.showToast("Custo inválido.", "error");
+
         if (!window.iniciarProcessamento()) return;
         try {
-            let item = stock[p];
-            if(!item) return;
-            let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja ADICIONAR? (Stock atual: ${item.qtd})`, "1");
-            if (!valStr) return;
-            let qtdAdicionar = parseFloat(valStr);
-            if(isNaN(qtdAdicionar) || qtdAdicionar <= 0) return window.showToast("Quantidade inválida.", "error");
-
-            let custoAtual = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-            let custoStr = await customPrompt(`Custo unitário desta nova entrada (MT):`, custoAtual.toFixed(2));
-            if (!custoStr) return;
-            let custoUnitNovo = parseFloat(custoStr);
-            if(isNaN(custoUnitNovo) || custoUnitNovo < 0) return window.showToast("Custo inválido.", "error");
-
             item.qtd += qtdAdicionar;
             item.preco_total += (qtdAdicionar * custoUnitNovo);
 
@@ -3389,16 +3386,17 @@
         }
     };
 
-    window.apagarQuantidadeProduto = async function(p) {
+    window.apagarQuantidadeProdutoPrompt = async function(p) {
+        let item = stock[p];
+        if(!item) return;
+
+        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
+        if (!valStr) return;
+        let qtdRemover = parseFloat(valStr);
+        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return window.showToast("Quantidade inválida.", "error");
+
         if (!window.iniciarProcessamento()) return;
         try {
-            let item = stock[p];
-            if(!item) return;
-            let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
-            if (!valStr) return;
-            let qtdRemover = parseFloat(valStr);
-            if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return window.showToast("Quantidade inválida.", "error");
-
             let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
             item.qtd -= qtdRemover;
             item.preco_total = Math.max(0, item.preco_total - (qtdRemover * custoUnit));
@@ -3420,17 +3418,16 @@
     };
 
     window.apagarProdutoTotal = async function(p) {
+        if(!(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`))) return;
         if (!window.iniciarProcessamento()) return;
         try {
-            if(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
-                if(!stock[p]) return;
-                delete stock[p];
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
-                registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
-                filtrarEExibirProdutosVenda();
-                renderizarStock();
-                window.showToast("Produto eliminado.", "info");
-            }
+            if(!stock[p]) return;
+            delete stock[p];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
+            registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+            window.showToast("Produto eliminado.", "info");
         } finally {
             window.fimProcessamento();
         }
@@ -3638,11 +3635,8 @@
         });
 
         let totalDesp = despesas.reduce((acc, i) => acc + i.valor, 0);
-        
         let totalInvestidoStock = 0;
-        for(let p in stock) {
-            totalInvestidoStock += (stock[p].preco_total || 0);
-        }
+        for(let p in stock) { totalInvestidoStock += (stock[p].preco_total || 0); }
 
         document.getElementById('dashValMpesa').innerText = (canais['M-Pesa'] || 0).toFixed(2) + " MT";
         document.getElementById('dashValEmola').innerText = (canais['e-Mola'] || 0).toFixed(2) + " MT";
