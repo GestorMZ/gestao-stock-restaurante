@@ -423,7 +423,6 @@
         <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
             <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
-        </div>
 
         <div style="background:var(--card-bg); padding:22px; border-radius:14px; border:1px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.02);">
             <div class="form-group" style="margin-bottom:14px;">
@@ -504,7 +503,7 @@
         <div id="boxContaBloqueada" style="display:none; background:#7f1d1d; border:2px solid var(--danger); padding:20px; border-radius:14px; margin-bottom:20px; text-align:center; color:#fecaca;">
             <h3 style="color:#fecaca; margin-top:0; font-size:1.2em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:14px;"></p>
-               
+            
 <div style="background:#fff; border:1px dashed #dc3545; padding:12px; border-radius:8px; margin:12px 0; text-align:left;">
                 <strong style="color:#007bff; display:block; margin-bottom:6px;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
                 <div style="font-size:0.9em; line-height:1.6; color:#222;">
@@ -517,7 +516,6 @@
 <p style="font-size:0.85em; margin-bottom:0;">Envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar.</p>
         </div>
 
-     
         <div id="seccaoPerfisEForm" style="display:none;">
             <p style="text-align:center; font-size:0.9em; font-weight:800; color:var(--purple); margin-bottom:12px;">🔑 Início de Turno: Selecione o Utilizador</p>
             <div id="gridPerfisLogin" class="grid-perfis-login"></div>
@@ -824,6 +822,22 @@
                 </div>
             </div>
 
+            <!-- QUADRO DE RESUMO DE INVESTIMENTO EM TEMPO REAL -->
+            <div class="cards-grid" style="margin-bottom: 18px;">
+                <div class="card-stat roxo">
+                    <h4>Investimento Inicial / Total</h4>
+                    <div class="valor-card" id="stockValInvestidoTotal">0.00 MT</div>
+                </div>
+                <div class="card-stat verde">
+                    <h4>Valor Atual em Stock (Venda)</h4>
+                    <div class="valor-card" id="stockValAtualVenda">0.00 MT</div>
+                </div>
+                <div class="card-stat laranja">
+                    <h4>Lucro Potencial Restante</h4>
+                    <div class="valor-card" id="stockValLucroPotencial">0.00 MT</div>
+                </div>
+            </div>
+
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">📥 Entrada de Produtos (Compras)</h4>
                 <div class="form-row">
@@ -890,7 +904,7 @@
 
             <div class="table-responsive" style="margin-bottom:12px;">
                 <table>
-                    <thead><tr><th>Produto</th><th>Categoria</th><th>Stock Atual</th><th>Mínimo</th><th>Preço Venda</th><th class="col-gerente">Custo Médio</th><th class="col-gerente">Lucro Est.</th><th class="col-gerente">Ações</th></tr></thead>
+                    <thead><tr><th>Produto</th><th>Categoria</th><th>Stock Atual</th><th>Mínimo</th><th>Preço Venda</th><th class="col-gerente">Custo Médio</th><th class="col-gerente">Investido / Atual</th><th class="col-gerente">Lucro Est.</th><th class="col-gerente">Ações</th></tr></thead>
                     <tbody id="corpoStock"></tbody>
                 </table>
             </div>
@@ -3323,6 +3337,23 @@
         let termoBusca = (document.getElementById('filtroBuscarStock')?.value || '').trim().toLowerCase();
         let produtosFiltrados = Object.keys(stock).filter(p => p.toLowerCase().includes(termoBusca));
 
+        let totalInvestidoGlobal = 0;
+        let totalValorVendaGlobal = 0;
+
+        produtosFiltrados.forEach(p => {
+            let item = stock[p];
+            let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+            let investidoProduto = item.preco_total || 0;
+            totalInvestidoGlobal += investidoProduto;
+            totalValorVendaGlobal += (item.qtd * (item.preco_venda || 0));
+        });
+
+        if (document.getElementById('stockValInvestidoTotal')) {
+            document.getElementById('stockValInvestidoTotal').innerText = totalInvestidoGlobal.toFixed(2) + " MT";
+            document.getElementById('stockValAtualVenda').innerText = totalValorVendaGlobal.toFixed(2) + " MT";
+            document.getElementById('stockValLucroPotencial').innerText = (totalValorVendaGlobal - totalInvestidoGlobal).toFixed(2) + " MT";
+        }
+
         let totalPaginas = Math.ceil(produtosFiltrados.length / ITENS_POR_PAGINA_STOCK) || 1;
         if(paginaAtualStock > totalPaginas) paginaAtualStock = totalPaginas;
         document.getElementById('pagAtualStock').innerText = paginaAtualStock;
@@ -3332,10 +3363,11 @@
         produtosFiltrados.slice(inicio, inicio + ITENS_POR_PAGINA_STOCK).forEach(p => {
             let item = stock[p];
             let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+            let investidoProduto = item.preco_total || 0;
             let precoVenda = item.preco_venda || 0;
             let isCritico = item.qtd <= (item.min_alerta || 5);
 
-            let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td style="color:var(--success); font-weight:800;">${(precoVenda - custoMedio).toFixed(2)} MT</td>` : '';
+            let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td><b>${investidoProduto.toFixed(2)} MT</b><br><small style="color:var(--text-muted);">(Custo total)</small></td><td style="color:var(--success); font-weight:800;">${((item.qtd * precoVenda) - investidoProduto).toFixed(2)} MT</td>` : '';
             let colAdmin = (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente') ? 
                 `<td>
                     <button class="btn-success btn-sm" style="margin-bottom:4px;" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕ Qtd</button>
