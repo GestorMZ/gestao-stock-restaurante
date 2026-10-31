@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GS Point - Sistema de Gestão & POS</title>
+    <title>GS Point Pro - Sistema de Gestão & POS</title>
 
     <!-- Meta Tags PWA -->
     <link rel="manifest" href="manifest.json">
@@ -362,6 +362,14 @@
 <!-- TOAST CONTAINER (Notificações Não-Bloqueantes) -->
 <div id="toast-container"></div>
 
+<!-- OVERLAY DE CARREGAMENTO (Bloqueio UI) -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.5); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+    <div style="padding: 20px 40px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); font-weight: 800; color: var(--primary); font-size: 1.2em; display: flex; align-items: center; gap: 12px; border: 2px solid var(--primary);">
+        <span style="display:inline-block; animation: spin 1s linear infinite;">⏳</span> A processar...
+    </div>
+    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+</div>
+
 <!-- MODAL DE SISTEMA CUSTOMIZADO PARA ALERTS CRÍTICOS E PROMPTS -->
 <div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
     <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
@@ -405,7 +413,7 @@
         <div style="text-align:center; margin-bottom:24px;">
         <!-- Logo real animado -->
         <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
-            <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Login</h2>
+            <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
         </div>
 
@@ -1066,7 +1074,7 @@
         <h3 style="margin-top:0;">🔑 Gerir Acessos às Abas: <span id="lblPerfilPermissoesNome" style="color:var(--primary); text-transform:uppercase;"></span></h3>
         <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Selecione as abas que este perfil tem permissão para visualizar e aceder:</p>
         
-        <div style="display:flex; flexDirection:column; gap:12px; margin-bottom:20px; background:var(--light); padding:16px; border-radius:12px; border:1px solid var(--border);">
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px; background:var(--light); padding:16px; border-radius:12px; border:1px solid var(--border);">
             <label style="font-weight:normal; text-transform:none; font-size:0.95em; display:flex; align-items:center; gap:8px; cursor:pointer;">
                 <input type="checkbox" id="permAbaVendas" value="abaVendas" style="width:18px; height:18px;"> 🛒 Balcão / Mesas (Vendas)
             </label>
@@ -1257,6 +1265,24 @@
         getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
+    // ----- VARIÁVEIS GLOBAIS DE DEFESA EM PROFUNDIDADE (MUTEX) -----
+    let isProcessing = false;
+
+    window.iniciarProcessamento = function() {
+        if (isProcessing) {
+            console.warn("Ação bloqueada: Processamento em curso.");
+            return false;
+        }
+        isProcessing = true;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        return true;
+    };
+
+    window.fimProcessamento = function() {
+        isProcessing = false;
+        document.getElementById('loadingOverlay').style.display = 'none';
+    };
+
     // Setup of Firebase Environment Rules
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     let fbConfig = {
@@ -1316,25 +1342,31 @@
 
     window.sincronizarVendasOffline = function() {
         if (!navigator.onLine || !dbOffline || !codigoEmpresa) return;
+        
         const tx = dbOffline.transaction("vendas_pendentes", "readonly");
         const req = tx.objectStore("vendas_pendentes").getAll();
         req.onsuccess = async () => {
             const vendas = req.result;
             if (vendas.length > 0) {
+                if (!window.iniciarProcessamento()) return;
                 window.showToast(`Sincronizando ${vendas.length} vendas offline...`, "info");
-                for (let v of vendas) {
-                    try {
-                        let idLocal = v.idLocal;
-                        delete v.idLocal; // remover chave local antes de subir
-                        await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
-                        
-                        const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
-                        txDel.objectStore("vendas_pendentes").delete(idLocal);
-                    } catch(e) {
-                        console.error("Erro ao subir venda offline:", e);
+                try {
+                    for (let v of vendas) {
+                        try {
+                            let idLocal = v.idLocal;
+                            delete v.idLocal; // remover chave local antes de subir
+                            await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
+                            
+                            const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
+                            txDel.objectStore("vendas_pendentes").delete(idLocal);
+                        } catch(e) {
+                            console.error("Erro ao subir venda offline:", e);
+                        }
                     }
+                    window.showToast("Sincronização concluída com sucesso!", "success");
+                } finally {
+                    window.fimProcessamento();
                 }
-                window.showToast("Sincronização concluída com sucesso!", "success");
             }
         };
     };
@@ -2616,57 +2648,63 @@
             return window.showToast("🔴 Venda Bloqueada: Abra o caixa primeiro!", "error");
         }
 
-        let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
-        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
-        let itensMesaAtual = mesas[mesaSelecionada] || [];
-
-        if (itensMesaAtual.length === 0 && bloqueioAtual) {
-            delete bloqueiosMesas[mesaSelecionada];
-            bloqueioAtual = null;
-        }
-
-        if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            return window.showToast(`⚠️ Mesa ocupada por ${bloqueioAtual.toUpperCase()}.`, "warning");
-        }
-
-        let prod = document.getElementById('cartSelectProduto').value;
-        let qtd = parseFloat(document.getElementById('cartQtd').value);
-        let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
-
-        if(!prod) return window.showToast("Selecione um produto.", "warning");
-        if(qtd <= 0 || isNaN(qtd)) return window.showToast("Quantidade inválida.", "error");
-
-        if (stock[prod]) {
-            if(stock[prod].qtd < qtd) return window.showToast("Stock insuficiente!", "error");
-        } else {
-            stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
-        }
-
-        let subtotal = qtd * precoUnit;
-        let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
-
-        stock[prod].qtd -= qtd;
-        stock[prod].preco_total = Math.max(0, stock[prod].preco_total - (qtd * custoUnit));
-        if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
-
-        if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
-        mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
+        if (!window.iniciarProcessamento()) return;
 
         try {
-            if (mesaSelecionada !== "Balcão") {
-                bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
-                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            }
-            if (mesaSelecionada !== "Balcão") {
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
-            }
-            await salvarStockFirestore({ [prod]: stock[prod] });
-        } catch (err) {}
+            let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
+            let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
+            let itensMesaAtual = mesas[mesaSelecionada] || [];
 
-        window.showToast(`${qtd}x ${prod.toUpperCase()} adicionado.`, "success");
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
+            if (itensMesaAtual.length === 0 && bloqueioAtual) {
+                delete bloqueiosMesas[mesaSelecionada];
+                bloqueioAtual = null;
+            }
+
+            if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
+                return window.showToast(`⚠️ Mesa ocupada por ${bloqueioAtual.toUpperCase()}.`, "warning");
+            }
+
+            let prod = document.getElementById('cartSelectProduto').value;
+            let qtd = parseFloat(document.getElementById('cartQtd').value);
+            let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
+
+            if(!prod) return window.showToast("Selecione um produto.", "warning");
+            if(qtd <= 0 || isNaN(qtd)) return window.showToast("Quantidade inválida.", "error");
+
+            if (stock[prod]) {
+                if(stock[prod].qtd < qtd) return window.showToast("Stock insuficiente!", "error");
+            } else {
+                stock[prod] = { qtd: 999, preco_total: 0, preco_venda: precoUnit, min_alerta: 5, categoria: 'outros' };
+            }
+
+            let subtotal = qtd * precoUnit;
+            let custoUnit = stock[prod].qtd > 0 ? (stock[prod].preco_total / stock[prod].qtd) : 0;
+
+            stock[prod].qtd -= qtd;
+            stock[prod].preco_total = Math.max(0, stock[prod].preco_total - (qtd * custoUnit));
+            if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
+
+            if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
+            mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
+
+            try {
+                if (mesaSelecionada !== "Balcão") {
+                    bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+                }
+                if (mesaSelecionada !== "Balcão") {
+                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
+                }
+                await salvarStockFirestore({ [prod]: stock[prod] });
+            } catch (err) {}
+
+            window.showToast(`${qtd}x ${prod.toUpperCase()} adicionado.`, "success");
+            renderizarMesasGrid();
+            window.renderizarCarrinho();
+            filtrarEExibirProdutosVenda();
+        } finally {
+            window.fimProcessamento();
+        }
     };
 
     window.setValorEntregueRapido = function(val) {
@@ -2780,36 +2818,44 @@
     };
 
     window.removerItemCarrinho = async function(idx) {
-        let bloqueioUser = bloqueiosMesas[mesaSelecionada];
-        if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-            return customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence a ${bloqueioUser.toUpperCase()}.`);
+        if (!window.iniciarProcessamento()) return;
+        
+        try {
+            let bloqueioUser = bloqueiosMesas[mesaSelecionada];
+            if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
+                return customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence a ${bloqueioUser.toUpperCase()}.`);
+            }
+
+            let itens = mesas[mesaSelecionada] || [];
+            let item = itens[idx];
+            if (!item) {
+                return window.showToast("⚠️ O item já não se encontra no carrinho.", "warning");
+            }
+
+            if(stock[item.produto]) {
+                stock[item.produto].qtd += item.qtd;
+                stock[item.produto].preco_total += (item.qtd * item.custoUnit);
+            }
+
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+                tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Removido da ${mesaSelecionada}`
+            });
+
+            await salvarStockFirestore({ [item.produto]: stock[item.produto] });
+            mesas[mesaSelecionada].splice(idx, 1);
+
+            if (mesaSelecionada !== "Balcão") {
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
+            }
+
+            renderizarMesasGrid();
+            window.renderizarCarrinho();
+            filtrarEExibirProdutosVenda();
+            window.showToast("Item removido e devolvido ao stock.", "info");
+        } finally {
+            window.fimProcessamento();
         }
-
-        let itens = mesas[mesaSelecionada] || [];
-        let item = itens[idx];
-        if (!item) return;
-
-        if(stock[item.produto]) {
-            stock[item.produto].qtd += item.qtd;
-            stock[item.produto].preco_total += (item.qtd * item.custoUnit);
-        }
-
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'DEVOLUÇÃO (ITEM REMOVIDO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Removido da ${mesaSelecionada}`
-        });
-
-        await salvarStockFirestore({ [item.produto]: stock[item.produto] });
-        mesas[mesaSelecionada].splice(idx, 1);
-
-        if (mesaSelecionada !== "Balcão") {
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
-        }
-
-        renderizarMesasGrid();
-        window.renderizarCarrinho();
-        filtrarEExibirProdutosVenda();
-        window.showToast("Item removido e devolvido ao stock.", "info");
     };
 
     window.imprimirPreRecibo = async function() {
@@ -2863,10 +2909,12 @@
             return window.showToast("🔴 Caixa Fechado!", "error");
         }
 
-        let itens = mesas[mesaSelecionada] || [];
-        if(itens.length === 0) return window.showToast("O carrinho está vazio.", "warning");
+        if (!window.iniciarProcessamento()) return;
 
         try {
+            let itens = mesas[mesaSelecionada] || [];
+            if(itens.length === 0) return window.showToast("O carrinho está vazio.", "warning");
+
             let modoPag = document.getElementById('cartModoPagamentoTipo').value;
             let metodo = "", desdobramentoInfo = null;
             let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
@@ -2911,7 +2959,7 @@
             let registoVenda = {
                 id: Date.now(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
                 usuario: usuarioAtual.nome, tipo: 'venda', status: 'concluido', mesa: mesaSelecionada,
-                itens, desconto: desc, totalVenda, subtotalLiq, valorIva, taxaIva, nuitCliente,
+                itens: JSON.parse(JSON.stringify(itens)), desconto: desc, totalVenda, subtotalLiq, valorIva, taxaIva, nuitCliente,
                 totalCusto, valorEntregue, troco, metodo, desdobramentoInfo, clienteFiado
             };
 
@@ -2944,6 +2992,8 @@
             }
 
             window.showToast("Venda concluída com sucesso!", "success");
+            let v = JSON.parse(JSON.stringify(registoVenda));
+            
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão (Venda Direta)";
             document.getElementById('cartDesconto').value = 0;
@@ -2957,11 +3007,13 @@
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
-            if (bluetoothCharacteristic) window.imprimirReciboBluetoothESC(registoVenda);
-            else imprimirTalão(registoVenda);
+            if (bluetoothCharacteristic) window.imprimirReciboBluetoothESC(v);
+            else imprimirTalão(v);
 
         } catch (erro) {
             window.showToast("⚠️ Falha ao registar venda: " + erro.message, "error");
+        } finally {
+            window.fimProcessamento();
         }
     };
 
@@ -3205,48 +3257,54 @@
     };
 
     window.salvarEntradaStock = async function() {
-        let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-        if(!prod) return window.showToast("Digite o nome do produto.", "warning");
+        if (!window.iniciarProcessamento()) return;
+        
+        try {
+            let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
+            if(!prod) return window.showToast("Digite o nome do produto.", "warning");
 
-        let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-        let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
-        let modoCompra = document.getElementById('simplesModoCompra').value;
-        let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+            let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+            let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
+            let modoCompra = document.getElementById('simplesModoCompra').value;
+            let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
+            let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-        let totalUnidades = 0, totalCusto = 0;
-        if(modoCompra === 'caixa') {
-            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-            totalUnidades = numCaixas * unidCaixa;
-            totalCusto = numCaixas * valCaixa;
-        } else {
-            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-            let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-            totalCusto = totalUnidades * custoUnit;
+            let totalUnidades = 0, totalCusto = 0;
+            if(modoCompra === 'caixa') {
+                let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+                let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+                let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+                totalUnidades = numCaixas * unidCaixa;
+                totalCusto = numCaixas * valCaixa;
+            } else {
+                totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+                let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+                totalCusto = totalUnidades * custoUnit;
+            }
+
+            if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+
+            stock[prod].qtd += totalUnidades;
+            stock[prod].preco_total += totalCusto;
+            stock[prod].min_alerta = minAlerta;
+            stock[prod].categoria = cat;
+            if(barcodeInput) stock[prod].barcode = barcodeInput;
+            if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+                tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa' : 'Compra Avulsa'
+            });
+
+            await salvarStockFirestore({ [prod]: stock[prod] });
+            registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
+            document.getElementById('simplesProduto').value = '';
+            document.getElementById('simplesBarcode').value = '';
+            filtrarEExibirProdutosVenda();
+            window.showToast("Stock atualizado com sucesso!", "success");
+        } finally {
+            window.fimProcessamento();
         }
-
-        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
-
-        stock[prod].qtd += totalUnidades;
-        stock[prod].preco_total += totalCusto;
-        stock[prod].min_alerta = minAlerta;
-        stock[prod].categoria = cat;
-        if(barcodeInput) stock[prod].barcode = barcodeInput;
-        if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
-
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa' : 'Compra Avulsa'
-        });
-
-        await salvarStockFirestore({ [prod]: stock[prod] });
-        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
-        document.getElementById('simplesProduto').value = '';
-        document.getElementById('simplesBarcode').value = '';
-        filtrarEExibirProdutosVenda();
-        window.showToast("Stock atualizado com sucesso!", "success");
     };
 
     function renderizarStock() {
@@ -3292,38 +3350,49 @@
     };
 
     window.apagarQuantidadeProduto = async function(p) {
-        let item = stock[p];
-        if(!item) return;
-        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
-        if (!valStr) return;
-        let qtdRemover = parseFloat(valStr);
-        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return window.showToast("Quantidade inválida.", "error");
+        if (!window.iniciarProcessamento()) return;
+        try {
+            let item = stock[p];
+            if(!item) return;
+            let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
+            if (!valStr) return;
+            let qtdRemover = parseFloat(valStr);
+            if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return window.showToast("Quantidade inválida.", "error");
 
-        let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-        item.qtd -= qtdRemover;
-        item.preco_total = Math.max(0, item.preco_total - (qtdRemover * custoUnit));
-        if(item.qtd < 0.01) { item.qtd = 0; item.preco_total = 0; }
+            let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+            item.qtd -= qtdRemover;
+            item.preco_total = Math.max(0, item.preco_total - (qtdRemover * custoUnit));
+            if(item.qtd < 0.01) { item.qtd = 0; item.preco_total = 0; }
 
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'REMOÇÃO MANUAL', produto: p, qtd: qtdRemover, usuario: usuarioAtual.nome, origem: 'Remoção direta'
-        });
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+                tipo: 'REMOÇÃO MANUAL', produto: p, qtd: qtdRemover, usuario: usuarioAtual.nome, origem: 'Remoção direta'
+            });
 
-        await salvarStockFirestore({ [p]: stock[p] });
-        registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
-        window.showToast("Stock atualizado!", "success");
-        filtrarEExibirProdutosVenda();
-        renderizarStock();
+            await salvarStockFirestore({ [p]: stock[p] });
+            registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
+            window.showToast("Stock atualizado!", "success");
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+        } finally {
+            window.fimProcessamento();
+        }
     };
 
     window.apagarProdutoTotal = async function(p) {
-        if(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
-            delete stock[p];
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
-            registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
-            filtrarEExibirProdutosVenda();
-            renderizarStock();
-            window.showToast("Produto eliminado.", "info");
+        if (!window.iniciarProcessamento()) return;
+        try {
+            if(await customConfirm(`Apagar totalmente o produto '${p.toUpperCase()}' do stock?`)) {
+                if(!stock[p]) return;
+                delete stock[p];
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
+                registarAuditLog('Produto Eliminado', `Produto '${p}' apagado do stock`);
+                filtrarEExibirProdutosVenda();
+                renderizarStock();
+                window.showToast("Produto eliminado.", "info");
+            }
+        } finally {
+            window.fimProcessamento();
         }
     };
 
@@ -3426,36 +3495,44 @@
     window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
         let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador:", "", true);
         if (!senhaAdmin) return;
-        let autorizado = false;
-        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; } }
-        if (!autorizado) return window.showToast("❌ Senha incorreta!", "error");
+        
+        if (!window.iniciarProcessamento()) return;
+        
+        try {
+            let autorizado = false;
+            for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; } }
+            if (!autorizado) return window.showToast("❌ Senha incorreta!", "error");
 
-        let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
-        if(!vendaObj) return window.showToast("Venda não encontrada.", "error");
+            let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
+            if(!vendaObj) return window.showToast("Venda não encontrada.", "error");
+            if(vendaObj.status === 'cancelado') return window.showToast("Esta venda já se encontra cancelada.", "warning");
 
-        if(vendaObj.itens) {
-            let stockUpdates = {};
-            for(let item of vendaObj.itens) {
-                if(stock[item.produto]) {
-                    stock[item.produto].qtd += item.qtd;
-                    let custo = item.custoUnit || (stock[item.produto].qtd > 0 ? stock[item.produto].preco_total / stock[item.produto].qtd : 0);
-                    stock[item.produto].preco_total += (item.qtd * custo);
-                    stockUpdates[item.produto] = stock[item.produto];
+            if(vendaObj.itens) {
+                let stockUpdates = {};
+                for(let item of vendaObj.itens) {
+                    if(stock[item.produto]) {
+                        stock[item.produto].qtd += item.qtd;
+                        let custo = item.custoUnit || (stock[item.produto].qtd > 0 ? stock[item.produto].preco_total / stock[item.produto].qtd : 0);
+                        stock[item.produto].preco_total += (item.qtd * custo);
+                        stockUpdates[item.produto] = stock[item.produto];
+                    }
+                    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                        id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+                        tipo: 'DEVOLUÇÃO (CANCELAMENTO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Cancelamento Venda #${vendaObj.id}`
+                    });
                 }
-                await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                    id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                    tipo: 'DEVOLUÇÃO (CANCELAMENTO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Cancelamento Venda #${vendaObj.id}`
-                });
+                if (Object.keys(stockUpdates).length > 0) {
+                    await salvarStockFirestore(stockUpdates);
+                }
             }
-            if (Object.keys(stockUpdates).length > 0) {
-                await salvarStockFirestore(stockUpdates);
-            }
-        }
 
-        vendaObj.status = 'cancelado';
-        await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
-        registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
-        window.showToast("Venda cancelada e stock revertido!", "success");
+            vendaObj.status = 'cancelado';
+            await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
+            registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada por Admin`);
+            window.showToast("Venda cancelada e stock revertido!", "success");
+        } finally {
+            window.fimProcessamento();
+        }
     };
 
     window.apagarTodoHistoricoApp = async function() {
