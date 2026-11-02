@@ -1,4 +1,3 @@
-<!-- ... existing code ... -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -27,33 +26,31 @@
 
     <style>
         :root {
-            /* Paleta Premium & Elegante */
-            --primary: #3b82f6;       /* Blue 500 */
-            --primary-dark: #2563eb;  /* Blue 600 */
-            --primary-light: #eff6ff; /* Blue 50 */
+            --primary: #3b82f6;       
+            --primary-dark: #2563eb;  
+            --primary-light: #eff6ff; 
             
-            --success: #10b981;       /* Emerald 500 */
+            --success: #10b981;       
             --success-dark: #059669;
             --success-light: #ecfdf5;
             
-            --danger: #ef4444;        /* Red 500 */
+            --danger: #ef4444;        
             --danger-dark: #dc2626;
             --danger-light: #fef2f2;
             
-            --warning: #f59e0b;       /* Amber 500 */
-            --purple: #8b5cf6;        /* Violet 500 */
-            --teal: #14b8a6;          /* Teal 500 */
+            --warning: #f59e0b;       
+            --purple: #8b5cf6;        
+            --teal: #14b8a6;          
             
-            --bg-body: #f8fafc;       /* Slate 50 - Fundo muito leve */
-            --card-bg: #ffffff;       /* Branco puro para os cartões */
-            --border: #e2e8f0;        /* Slate 200 */
+            --bg-body: #f8fafc;       
+            --card-bg: #ffffff;       
+            --border: #e2e8f0;        
             --border-light: #f1f5f9;
             
-            --text-main: #334155;     /* Slate 700 - Texto principal suave */
-            --text-muted: #64748b;    /* Slate 500 - Texto secundário */
-            --text-dark: #0f172a;     /* Slate 900 - Títulos */
+            --text-main: #334155;     
+            --text-muted: #64748b;    
+            --text-dark: #0f172a;     
             
-            /* Sombras Refinadas (Soft Shadows) */
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.025);
@@ -92,7 +89,6 @@
             border: 1px solid rgba(226, 232, 240, 0.6);
         }
 
-        /* ----- NOTIFICAÇÕES TOAST ----- */
         #toast-container {
             position: fixed;
             top: 24px;
@@ -364,7 +360,6 @@
         .close-modal { position: absolute; right: 24px; top: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); transition: color 0.2s; line-height: 1; font-weight: 300;}
         .close-modal:hover { color: var(--text-dark); }
 
-        /* ----- ESTILO ZS REST (POS SPLIT VIEW) ----- */
         .pos-container {
             display: flex;
             gap: 16px;
@@ -478,7 +473,6 @@
             .pos-right-panel { height: 600px; }
         }
 
-        /* MODO ESCURO PROFISSIONAL (Dark SaaS) */
         body.dark-mode { 
             --bg-body: #0b0f19;       
             --card-bg: #111827;       
@@ -2146,11 +2140,8 @@
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
                 listaArrayFirestore.push({ 
-                    nome: nomeKey, 
-                    senha: usuarios[nomeKey].senha, 
-                    tipo: usuarios[nomeKey].tipo, 
-                    foto: usuarios[nomeKey].foto || "",
-                    permissoes: usuarios[nomeKey].permissoes || []
+                    nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "", permissoes: usuarios[nomeKey].permissoes || []
                 });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
@@ -2931,7 +2922,6 @@
             if(!clienteFiado) return window.showToast("Selecione o cliente fiado.", "error");
         }
 
-        // 1. ISOLAR OS DADOS DA VENDA PARA IMPRESSÃO IMEDIATA ANTES DE QUALQUER OPERAÇÃO ASYNC
         let vendaParaImpressao = {
             id: Date.now(),
             data: new Date().toLocaleString('pt-MZ'),
@@ -2949,7 +2939,6 @@
             metodo
         };
 
-        // 2. DISPARAR A IMPRESSÃO IMEDIATAMENTE NO CONTEXTO DO CLIQUE DO UTILIZADOR
         if (bluetoothCharacteristic) {
             window.imprimirReciboBluetoothESC(vendaParaImpressao);
         } else {
