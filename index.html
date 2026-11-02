@@ -3138,11 +3138,32 @@
                 if(!clienteFiado) return window.showToast("Selecione o cliente para o fiado.", "error");
             }
 
+            // Criar cópia imediata dos dados para impressão antes de limpar o carrinho
+            let vendaParaImpressao = {
+                id: Date.now(),
+                data: new Date().toLocaleString('pt-MZ'),
+                mesa: mesaSelecionada,
+                usuario: usuarioAtual.nome,
+                itens: JSON.parse(JSON.stringify(itens)),
+                desconto: desc,
+                totalVenda,
+                subtotalLiq,
+                valorIva,
+                taxaIva,
+                nuitCliente,
+                valorEntregue,
+                troco,
+                metodo
+            };
+
             let registoVenda = {
-                id: Date.now(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                usuario: usuarioAtual.nome, tipo: 'venda', status: 'concluido', mesa: mesaSelecionada,
-                itens: JSON.parse(JSON.stringify(itens)), desconto: desc, totalVenda, subtotalLiq, valorIva, taxaIva, nuitCliente,
-                totalCusto, valorEntregue, troco, metodo, desdobramentoInfo, clienteFiado
+                ...vendaParaImpressao,
+                timestamp: Date.now(),
+                tipo: 'venda',
+                status: 'concluido',
+                totalCusto,
+                desdobramentoInfo,
+                clienteFiado
             };
 
             if(metodo === 'Fiado') {
@@ -3173,7 +3194,6 @@
             }
 
             window.showToast("Venda concluída!", "success");
-            let v = JSON.parse(JSON.stringify(registoVenda));
             
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão";
@@ -3188,8 +3208,12 @@
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
-            if (bluetoothCharacteristic) window.imprimirReciboBluetoothESC(v);
-            else imprimirTalão(v);
+            // Emitir o recibo imediatamente utilizando a cópia isolada
+            if (bluetoothCharacteristic) {
+                window.imprimirReciboBluetoothESC(vendaParaImpressao);
+            } else {
+                imprimirTalão(vendaParaImpressao);
+            }
 
         } catch (erro) {
             window.showToast("⚠️ Falha ao registar venda: " + erro.message, "error");
