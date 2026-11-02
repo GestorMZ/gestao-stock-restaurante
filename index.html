@@ -979,6 +979,7 @@
                 <div class="form-row">
                     <div class="form-group"><label>Preço Venda Unitário</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                     <div class="form-group"><label>Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="5" min="1"></div>
+                    <div class="form-group"><label>Imagem / Ícone (Opcional)</label><input type="file" id="simplesImagem" accept="image/*" style="padding: 6px; font-size: 0.85em; background: var(--bg-body);"></div>
                 </div>
 
                 <div id="boxCalculoLucro" style="background:var(--bg-body); border:1px solid var(--border); padding:16px; border-radius:var(--radius-md); margin-bottom:16px; display:none; font-size: 0.9em;">
@@ -2707,11 +2708,22 @@
 
         prodsExibicao.forEach(p => {
             let item = stock[p];
+            let imgVisual = '';
+            
+            // Exibe a imagem se existir, senão mostra um ícone genérico da categoria
+            if (item.imagem) {
+                imgVisual = `<img src="${item.imagem}" style="width:100%; height:70px; object-fit:contain; margin-bottom:8px; border-radius:4px;">`;
+            } else {
+                let iconeCat = item.categoria === 'bebidas' ? '🥤' : item.categoria === 'pratos' ? '🍽️' : item.categoria === 'petiscos' ? '🍟' : '📦';
+                imgVisual = `<div style="width:100%; height:70px; background:var(--bg-body); display:flex; align-items:center; justify-content:center; font-size:32px; border-radius:4px; margin-bottom:8px;">${iconeCat}</div>`;
+            }
+
             grid.innerHTML += `
                 <div class="card-produto-pos" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    <strong style="font-size:0.9em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:8px;">${p.toUpperCase()}</strong>
-                    <span style="color:var(--text-dark); font-weight:600; font-size:1.1em;">${(item.preco_venda||0).toFixed(2)} MT</span>
-                    <small style="font-size:0.75em; color:var(--text-muted); margin-top:4px;">Stock: ${item.qtd}</small>
+                    ${imgVisual}
+                    <strong style="font-size:0.85em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:4px;" title="${p.toUpperCase()}">${p.toUpperCase()}</strong>
+                    <span style="color:var(--text-dark); font-weight:700; font-size:1.05em;">${(item.preco_venda||0).toFixed(2)} MT</span>
+                    <small style="font-size:0.7em; color:var(--text-muted); margin-top:4px;">Stock: ${item.qtd}</small>
                 </div>
             `;
         });
@@ -3361,6 +3373,32 @@
             let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
             let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
+            // Processar a imagem inserida (Reduzir qualidade para não pesar a Base de Dados)
+            let fileImg = document.getElementById('simplesImagem').files[0];
+            let imgBase64 = "";
+            if (fileImg) {
+                imgBase64 = await new Promise(resolve => {
+                    let reader = new FileReader();
+                    reader.onload = e => {
+                        let img = new Image();
+                        img.onload = () => {
+                            let canvas = document.createElement('canvas');
+                            canvas.width = 150; canvas.height = 150;
+                            let ctx = canvas.getContext('2d');
+                            ctx.fillStyle = "#ffffff"; 
+                            ctx.fillRect(0,0,150,150);
+                            let scale = Math.min(150 / img.width, 150 / img.height);
+                            let x = (150 / 2) - (img.width / 2) * scale;
+                            let y = (150 / 2) - (img.height / 2) * scale;
+                            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+                            resolve(canvas.toDataURL('image/jpeg', 0.8)); // Comprime para salvar rápido
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(fileImg);
+                });
+            }
+
             let totalUnidades = 0, totalCusto = 0;
             if(modoCompra === 'caixa') {
                 let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
@@ -3382,6 +3420,7 @@
             stock[prod].categoria = cat;
             if(barcodeInput) stock[prod].barcode = barcodeInput;
             if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+            if(imgBase64) stock[prod].imagem = imgBase64; // Guarda a imagem no stock
 
             await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
                 id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
@@ -3393,6 +3432,7 @@
             
             document.getElementById('simplesProduto').value = '';
             document.getElementById('simplesBarcode').value = '';
+            document.getElementById('simplesImagem').value = ''; // Limpa o campo
             filtrarEExibirProdutosVenda();
             window.showToast("Stock atualizado!", "success");
         } finally {
