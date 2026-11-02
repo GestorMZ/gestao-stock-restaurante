@@ -534,29 +534,21 @@
         .card-produto-pos {
             border: none;
             border-radius: var(--radius-md);
-            padding: 12px 8px;
+            padding: 0; /* Removido o padding para permitir a barra de preço no fundo */
             text-align: center;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 120px;
-            transition: transform 0.1s ease;
-            color: white; /* Texto branco para contrastar com botões coloridos */
+            justify-content: space-between;
+            align-items: stretch;
+            min-height: 110px;
+            transition: transform 0.1s ease, filter 0.2s;
+            color: white; 
+            overflow: hidden; /* Importante para a barra inferior respeitar o arredondamento */
         }
+        .card-produto-pos:hover { filter: brightness(1.1); }
         .card-produto-pos:active { transform: scale(0.95); }
-        .card-produto-pos img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            background: white;
-            border-radius: 50%;
-            padding: 4px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
 
         @media (max-width: 900px) {
             .pos-container { flex-direction: column; height: auto; }
@@ -2797,27 +2789,21 @@
 
         prodsExibicao.forEach(p => {
             let item = stock[p];
-            let imgVisual = '';
             
-            // Cores baseadas na categoria estilo ZS Rest
-            let corFundo = '#64748b'; // Defeito (Outros/Cinza)
-            if(item.categoria === 'bebidas') corFundo = '#0284c7'; // Azul
-            else if(item.categoria === 'pratos') corFundo = '#ea580c'; // Laranja Escuro
-            else if(item.categoria === 'petiscos') corFundo = '#16a34a'; // Verde
+            // Cores baseadas na categoria estilo ZS Rest (Tons sólidos e vibrantes)
+            let corFundo = '#64748b'; // Defeito (Outros/Cinza - Slate)
+            if(item.categoria === 'bebidas') corFundo = '#0284c7'; // Azul (Sky)
+            else if(item.categoria === 'pratos') corFundo = '#ea580c'; // Laranja (Orange)
+            else if(item.categoria === 'petiscos') corFundo = '#16a34a'; // Verde (Green)
             
-            // Exibe a imagem se existir, senão mostra um ícone genérico da categoria
-            if (item.imagem) {
-                imgVisual = `<img src="${item.imagem}">`;
-            } else {
-                let iconeCat = item.categoria === 'bebidas' ? '🥤' : item.categoria === 'pratos' ? '🍽️' : item.categoria === 'petiscos' ? '🍟' : '📦';
-                imgVisual = `<div style="width:50px; height:50px; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; font-size:24px; border-radius:50%; margin-bottom:8px;">${iconeCat}</div>`;
-            }
-
             grid.innerHTML += `
                 <div class="card-produto-pos" style="background-color: ${corFundo};" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    ${imgVisual}
-                    <strong style="font-size:0.85em; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:4px; width:100%;" title="${p.toUpperCase()}">${p.toUpperCase()}</strong>
-                    <span style="font-weight:800; font-size:1.1em; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 12px;">${(item.preco_venda||0).toFixed(2)}</span>
+                    <div style="flex:1; display:flex; align-items:center; justify-content:center; padding: 8px;">
+                        <strong style="font-size:0.9em; text-align:center; word-break:break-word; line-height:1.2; text-transform:uppercase;" title="${p.toUpperCase()}">${p.toUpperCase()}</strong>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.25); padding: 8px 0; font-weight:800; font-size:1em; letter-spacing: 0.5px;">
+                        ${(item.preco_venda||0).toFixed(2)}
+                    </div>
                 </div>
             `;
         });
