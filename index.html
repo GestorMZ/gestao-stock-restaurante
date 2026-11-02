@@ -89,6 +89,32 @@
             border: 1px solid rgba(226, 232, 240, 0.6);
         }
 
+        /* ANIMAÇÃO DA LOGO DA MARCA */
+        @keyframes pulseLogo {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(59, 130, 246, 0)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.3)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(59, 130, 246, 0)); }
+        }
+
+        @keyframes floatLogo {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animated-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: var(--shadow-md);
+            margin: 0 auto 16px auto;
+            display: block;
+            animation: pulseLogo 3s ease-in-out infinite, floatLogo 4s ease-in-out infinite;
+            border: 2px solid var(--primary);
+            background: #0b1329;
+        }
+
         #toast-container {
             position: fixed;
             top: 24px;
@@ -560,7 +586,8 @@
     <!-- ECRÃ 1: AUTENTICAÇÃO FIREBASE -->
     <div id="telaFirebaseAuth" style="max-width:400px; margin:60px auto; padding:0;">
         <div style="text-align:center; margin-bottom:32px;">
-            <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--primary-light); color: var(--primary); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 16px auto;">✨</div>
+            <!-- LOGO ANIMADA INTEGRADA -->
+            <img src="https://placehold.co/192x192/0b1329/10b981?text=GS" class="animated-logo" alt="GS Point Logo" onerror="this.src='https://placehold.co/192x192/3b82f6/ffffff?text=GS'">
             <h2 style="margin-bottom:8px; font-size:1.6em;">GS Point Pro</h2>
             <p style="font-size:0.95em; color:var(--text-muted); margin-top:0;">Autenticação segura na nuvem</p>
         </div>
@@ -587,7 +614,7 @@
     <!-- ECRÃ 1.5: REGISTO DE NOVA CONTA -->
     <div id="telaRegisto" style="max-width:400px; margin:60px auto; padding:0; display:none;">
         <div style="text-align:center; margin-bottom:32px;">
-            <div style="width: 64px; height: 64px; border-radius: 16px; background:var(--success-light); color:var(--success-dark); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 16px auto;">📝</div>
+            <img src="https://placehold.co/192x192/0b1329/10b981?text=GS" class="animated-logo" alt="GS Point Logo">
             <h2 style="margin-bottom:8px; font-size:1.6em;">Criar Conta</h2>
             <p style="font-size:0.95em; color:var(--text-muted); margin-top:0;">Preencha os seus dados empresariais</p>
         </div>
@@ -617,31 +644,42 @@
     </div>
 
     <!-- ECRÃ 2: CÓDIGO DA EMPRESA / LICENÇA -->
-    <div id="telaLogin" style="max-width:400px; margin:60px auto; padding:0; display:none;">
-        <div style="text-align:center; margin-bottom:32px;">
-            <h2 style="margin-bottom:8px; font-size:1.6em;">Vincular Negócio</h2>
-            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticado como: <span id="lblEmailLogado" style="color:var(--text-dark); font-weight: 500;"></span></p>
+   <div id="telaLogin" style="max-width:480px; margin:30px auto; padding:10px; display:none;">
+        <div style="text-align:center; margin-bottom:24px;">
+            <h2 style="margin-bottom:6px; font-size:1.8em;">Vincular Restaurante</h2>
+            <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Utilizador autenticado: <b id="lblEmailLogado" style="color:var(--success);"></b></p>
         </div>
 
-        <div style="background:var(--card-bg); padding:32px; border-radius:var(--radius-xl); border:1px solid var(--border); margin-bottom:24px; box-shadow:var(--shadow-sm);">
-            <div class="form-group" style="margin-bottom:24px;">
-                <label>Código da Licença</label>
+        <div style="background:var(--card-bg); padding:18px; border-radius:14px; border:1px solid var(--border); margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
+            <div class="form-group" style="margin-bottom:12px;">
+                <label style="color:var(--primary); font-weight:800;">🏢 Código do Restaurante / Licença</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: REST-123" style="text-transform:uppercase; font-weight:500; letter-spacing:1px;" class="enter-trigger" data-action="window.carregarPerfisEmpresa()">
-                    <button type="button" class="btn-outline btn-sm" style="width:auto; padding: 0 16px;" onclick="window.revelarCodigoLoginAdmin()">👁️</button>
+                    <input type="password" id="loginCodigoEmpresa" placeholder="Ex: BAR-MUNHUANA" style="text-transform:uppercase; font-weight:bold; letter-spacing:1px;" class="enter-trigger" data-action="window.carregarPerfisEmpresa()">
+                    <button type="button" class="btn-warning btn-sm" style="width:auto; white-space:nowrap;" onclick="window.revelarCodigoLoginAdmin()">👁️ Revelar</button>
                 </div>
             </div>
-            <button onclick="window.carregarPerfisEmpresa()" style="width: 100%;">Validar Licença</button>
+            <button class="btn-primary" onclick="window.carregarPerfisEmpresa()">🔍 Validar Licença & Carregar Perfis</button>
         </div>
+
 
         <div id="seccaoCriarTrial" style="background:transparent; padding:0; text-align:center;">
             <button class="btn-outline" onclick="window.criarEmpresaTeste()" style="width: 100%; border-style: dashed;">Iniciar Teste Gratuito (2 Dias)</button>
         </div>
 
         <div id="boxContaBloqueada" style="display:none; background:var(--danger-light); border:1px solid #fecaca; padding:24px; border-radius:var(--radius-xl); margin-bottom:24px; text-align:center; color:var(--danger-dark);">
-            <h3 style="margin-top:0; font-size:1.1em;">Acesso Suspenso</h3>
+            <h3 style="margin-top:0; font-size:1.1em;">🔴 ACESSO SUSPENSO / LICENÇA EXPIRADA</h3>
             <p id="textoMotivoBloqueio" style="font-size:0.9em; margin-bottom:16px;"></p>
-            <p style="font-size:0.85em; margin-bottom:0;">Contacte o suporte para reativar.</p>
+           
+ <div style="background:rgba(0,0,0,0.2); border:1px dashed var(--danger); padding:14px; border-radius:10px; margin:14px 0; text-align:left;">
+                <strong style="color:#93c5fd; display:block; margin-bottom:8px; font-size:0.95em;">📱 Dados para Reativação (M-Pesa / e-Mola):</strong>
+                <div style="font-size:0.9em; line-height:1.6;">
+                    • <b>M-Pesa:</b> 84 903 0686 (Valter Lopes)<br>
+                    • <b>e-Mola:</b> 87 406 3572 (Valter Lopes)<br>
+                    • <b>Valor da Mensalidade:</b> 1.500 MT
+                </div>
+            </div>
+ 
+<p style="font-size:0.85em; margin-bottom:0;">Após efetuar o pagamento, envie o comprovativo via WhatsApp para <b>+258 84 903 0686</b> para reativar o sistema instantaneamente..</p>
         </div>
 
         <div id="seccaoPerfisEForm" style="display:none;">
@@ -1338,7 +1376,7 @@
     </div>
 </div>
 
-<!-- NOVO MODAL: GESTÃO E LIMPEZA ESPECÍFICA DE HISTÓRICOS -->
+<!-- MODAL: GESTÃO E LIMPEZA ESPECÍFICA DE HISTÓRICOS -->
 <div id="modalGestaoLimpezaDados" class="modal">
     <div class="modal-content" style="max-width:440px;">
         <span class="close-modal" onclick="window.fecharModalGestaoLimpezaDados()">&times;</span>
