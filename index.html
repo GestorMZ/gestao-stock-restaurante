@@ -1,3 +1,4 @@
+<!-- ... existing code ... -->
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -88,7 +89,7 @@
             padding: 32px; 
             border-radius: var(--radius-xl); 
             box-shadow: var(--shadow-lg); 
-            border: 1px solid rgba(226, 232, 240, 0.6); /* Borda muito sutil */
+            border: 1px solid rgba(226, 232, 240, 0.6);
         }
 
         /* ----- NOTIFICAÇÕES TOAST ----- */
@@ -134,7 +135,6 @@
         h2 { font-size: 1.5em; }
         h4 { font-size: 1.1em; color: var(--text-main); }
         
-        /* Navegação em Tabs Elegante */
         .tabs-nav { 
             display: flex; 
             gap: 24px; 
@@ -156,17 +156,11 @@
             white-space: nowrap; 
             transition: all 0.2s ease; 
             border-bottom: 2px solid transparent;
-            margin-bottom: -1px; /* Para sobrepor a borda inferior */
+            margin-bottom: -1px;
         }
 
-        .tab-btn:hover { 
-            color: var(--primary); 
-        }
-        .tab-btn.active { 
-            color: var(--primary); 
-            font-weight: 600;
-            border-bottom-color: var(--primary);
-        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); font-weight: 600; border-bottom-color: var(--primary); }
 
         .tab-content { display: none; animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .tab-content.active { display: block; }
@@ -176,7 +170,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Formulários Clean */
         .form-row { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
         .form-group { flex: 1; min-width: 180px; }
         label { 
@@ -209,7 +202,6 @@
             outline: none;
         }
 
-        /* Botões Refinados */
         button { 
             background-color: var(--primary); 
             color: white; 
@@ -227,11 +219,7 @@
             box-shadow: var(--shadow-sm);
         }
 
-        button:hover { 
-            background-color: var(--primary-dark); 
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
+        button:hover { background-color: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
         button:active { transform: translateY(0); box-shadow: none; }
 
         .btn-saida { background-color: var(--card-bg); color: var(--danger); border: 1px solid var(--danger); box-shadow: none;}
@@ -240,8 +228,8 @@
         .btn-success:hover { background-color: var(--success-dark); }
         .btn-warning { background-color: var(--warning); color: white; }
         .btn-warning:hover { background-color: #d97706; }
-        .btn-excel { background-color: var(--teal); color: white; }
-        .btn-excel:hover { background-color: #0f766e; }
+        .btn-teal { background-color: var(--teal); color: white; }
+        .btn-teal:hover { background-color: #0f766e; }
         .btn-purple { background-color: var(--purple); color: white; }
         .btn-purple:hover { background-color: #7c3aed; }
         .btn-dark { background-color: var(--text-dark); }
@@ -251,26 +239,6 @@
         .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--text-main); box-shadow: none; }
         .btn-outline:hover { border-color: var(--primary); color: var(--primary); background-color: var(--primary-light); }
 
-        .btn-atacho-fast {
-            background: var(--card-bg);
-            color: var(--text-main);
-            border: 1px dashed var(--border);
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            font-size: 0.9em;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: none;
-        }
-        .btn-atacho-fast:hover { 
-            border-style: solid;
-            border-color: var(--primary); 
-            color: var(--primary);
-            background: var(--primary-light); 
-        }
-
-        /* Perfis Login */
         .grid-perfis-login { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 16px; justify-content: center; margin-bottom: 32px; }
         .card-perfil-login { 
             background: var(--bg-body); 
@@ -303,40 +271,6 @@
         }
         .btn-mais-perfis:hover { background: var(--bg-body); color: var(--text-main); border-style: solid; }
 
-        /* Grid Produtos POS - Clean */
-        .grid-produtos-pos { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-            gap: 12px; 
-            max-height: 360px; 
-            overflow-y: auto; 
-            margin-bottom: 16px; 
-            padding-right: 4px; 
-        }
-        .grid-produtos-pos::-webkit-scrollbar { width: 4px; }
-        .grid-produtos-pos::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 4px; }
-
-        .card-produto-pos { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            border-radius: var(--radius-lg); 
-            padding: 16px 12px; 
-            text-align: center; 
-            cursor: pointer; 
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 100px;
-            transition: all 0.2s ease;
-        }
-        .card-produto-pos:hover { 
-            border-color: var(--primary); 
-            box-shadow: var(--shadow-md); 
-            transform: translateY(-2px);
-        }
-        .card-produto-pos:active { transform: scale(0.98); }
-
         .cat-btn { 
             background: transparent; 
             color: var(--text-muted); 
@@ -358,7 +292,6 @@
             font-weight: 600;
         }
 
-        /* Status & Alertas Modernos e Discretos */
         .status-caixa-banner { 
             padding: 12px 20px; border-radius: var(--radius-md); margin-bottom: 24px; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -376,7 +309,6 @@
             margin-bottom: 32px; flex-wrap: wrap; gap: 16px; 
         }
 
-        /* Cards Estatísticas Minimalistas */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 24px 0; }
         .card-stat { 
             background: var(--card-bg); padding: 20px; border-radius: var(--radius-lg); 
@@ -392,7 +324,6 @@
         .card-stat.vermelho .valor-card { color: var(--danger); }
         .card-stat.roxo .valor-card { color: var(--purple); }
 
-        /* Tabelas Clean */
         .table-responsive { overflow-x: auto; margin-top: 16px; border-radius: var(--radius-md); border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; background: var(--card-bg); }
         th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
@@ -406,7 +337,6 @@
         .badge-cancelado { background: var(--text-muted); color: white; text-decoration: line-through; }
         .badge-cortesia { background: #fdf4ff; color: #c026d3; }
 
-        /* Mesas Grid Elegante */
         .mesas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-bottom: 24px; }
         .card-mesa { 
             background: var(--card-bg); border: 1px solid var(--border); 
@@ -419,7 +349,6 @@
         .card-mesa.bloqueada { background: #fffbeb; border-color: transparent; color: #b45309; }
         .card-mesa.selecionada { border-color: var(--primary); background: var(--primary); color: white; font-weight: 600; box-shadow: var(--shadow-md); }
 
-        /* Modais Glassmorphism Suave */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); overflow-y: auto; }
         .modal-content { 
             background: var(--card-bg); max-width: 500px; margin: 6% auto; padding: 32px; 
@@ -434,14 +363,6 @@
         
         .close-modal { position: absolute; right: 24px; top: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); transition: color 0.2s; line-height: 1; font-weight: 300;}
         .close-modal:hover { color: var(--text-dark); }
-
-        /* Específico do POS Form */
-        .pos-resumo-box {
-            background: var(--bg-body);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-top: 24px;
-        }
 
         /* ----- ESTILO ZS REST (POS SPLIT VIEW) ----- */
         .pos-container {
@@ -532,9 +453,10 @@
         }
 
         .card-produto-pos {
+            position: relative;
             border: none;
             border-radius: var(--radius-md);
-            padding: 0; /* Removido o padding para permitir a barra de preço no fundo */
+            padding: 0;
             text-align: center;
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -545,7 +467,7 @@
             min-height: 110px;
             transition: transform 0.1s ease, filter 0.2s;
             color: white; 
-            overflow: hidden; /* Importante para a barra inferior respeitar o arredondamento */
+            overflow: hidden;
         }
         .card-produto-pos:hover { filter: brightness(1.1); }
         .card-produto-pos:active { transform: scale(0.95); }
@@ -589,7 +511,7 @@
             body * { visibility: hidden; }
             .container { display: none !important; }
             #areaImpressao, #areaImpressao * { visibility: visible; }
-            #areaImpressao { display: block; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; color: #000; background: #fff; }
+            #areaImpressao { display: block !important; position: absolute; left: 0; top: 0; width: 80mm; font-family: 'Courier New', Courier, monospace; font-size: 11px; padding: 5px; color: #000; background: #fff; z-index: 999999; }
         }
         @media (max-width: 768px) {
             .form-row { flex-direction: column; gap: 12px; }
@@ -641,8 +563,8 @@
         </div>
     </div>
 
-   <!-- ECRÃ 1: AUTENTICAÇÃO FIREBASE -->
-     <div id="telaFirebaseAuth" style="max-width:400px; margin:60px auto; padding:0;">
+    <!-- ECRÃ 1: AUTENTICAÇÃO FIREBASE -->
+    <div id="telaFirebaseAuth" style="max-width:400px; margin:60px auto; padding:0;">
         <div style="text-align:center; margin-bottom:32px;">
             <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--primary-light); color: var(--primary); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 16px auto;">✨</div>
             <h2 style="margin-bottom:8px; font-size:1.6em;">GS Point Pro</h2>
@@ -810,7 +732,6 @@
                         <h3 style="margin:0; font-size: 1.2em; color: white;">Comanda: <span id="labelMesaAtual" style="color:#60a5fa;">Balcão</span></h3>
                     </div>
                     
-                    <!-- Inserção manual compacta (opcional, já que agora clica nos produtos) -->
                     <div style="padding: 8px; background: var(--border-light); border-bottom: 1px solid var(--border); display:flex; gap:4px; align-items:center;">
                         <select id="cartSelectProduto" onchange="window.preencherPrecoVenda()" style="flex:1; padding:6px; font-size:0.8em;"></select>
                         <input type="number" id="cartQtd" value="1" min="0.1" step="0.1" style="width:50px; padding:6px; text-align:center; font-size:0.8em;">
@@ -866,7 +787,6 @@
                             <select id="cartSelectClienteFiado" style="padding:8px;"></select>
                         </div>
                         
-                        <!-- Opções extras ocultas por padrão para poupar espaço -->
                         <div style="display:none;">
                             <input type="text" id="cartNuitCliente">
                             <input type="text" id="cartTelefoneWa">
@@ -1402,7 +1322,7 @@
     </div>
 </div>
 
-<!-- ÁREA DE IMPRESSÃO -->
+<!-- ÁREA DE IMPRESSÃO VISÍVEL APENAS PARA O PRINT -->
 <div id="areaImpressao">
     <div id="conteudoReciboFiscal">
         <div style="text-align:center;">
@@ -1452,14 +1372,10 @@
         getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut 
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    // ----- VARIÁVEIS GLOBAIS DE DEFESA EM PROFUNDIDADE (MUTEX) -----
     let isProcessing = false;
 
     window.iniciarProcessamento = function() {
-        if (isProcessing) {
-            console.warn("Ação bloqueada: Processamento em curso.");
-            return false;
-        }
+        if (isProcessing) return false;
         isProcessing = true;
         document.getElementById('loadingOverlay').style.display = 'flex';
         return true;
@@ -1470,7 +1386,6 @@
         document.getElementById('loadingOverlay').style.display = 'none';
     };
 
-    // Setup of Firebase Environment Rules
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
     let fbConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
@@ -1485,7 +1400,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ----- SISTEMA DE NOTIFICAÇÕES TOAST (NÃO-BLOQUEANTES) -----
     window.showToast = function(msg, type = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -1505,7 +1419,6 @@
         }, 3000);
     };
 
-    // ----- OFFLINE FIRST (INDEXED DB) PARA VENDAS -----
     let dbOffline;
     const requestDB = indexedDB.open("GSPointOfflineDB", 1);
     requestDB.onupgradeneeded = (e) => {
@@ -1524,33 +1437,26 @@
         venda.idLocal = "off_" + Date.now();
         const tx = dbOffline.transaction("vendas_pendentes", "readwrite");
         tx.objectStore("vendas_pendentes").add(venda);
-        window.showToast("Internet falhou! Venda guardada localmente para sincronização.", "warning");
+        window.showToast("Internet falhou! Venda guardada localmente.", "warning");
     };
 
     window.sincronizarVendasOffline = function() {
         if (!navigator.onLine || !dbOffline || !codigoEmpresa) return;
-        
         const tx = dbOffline.transaction("vendas_pendentes", "readonly");
         const req = tx.objectStore("vendas_pendentes").getAll();
         req.onsuccess = async () => {
             const vendas = req.result;
             if (vendas.length > 0) {
                 if (!window.iniciarProcessamento()) return;
-                window.showToast(`Sincronizando ${vendas.length} vendas offline...`, "info");
                 try {
                     for (let v of vendas) {
-                        try {
-                            let idLocal = v.idLocal;
-                            delete v.idLocal;
-                            await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
-                            
-                            const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
-                            txDel.objectStore("vendas_pendentes").delete(idLocal);
-                        } catch(e) {
-                            console.error("Erro ao subir venda offline:", e);
-                        }
+                        let idLocal = v.idLocal;
+                        delete v.idLocal;
+                        await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
+                        let txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
+                        txDel.objectStore("vendas_pendentes").delete(idLocal);
                     }
-                    window.showToast("Sincronização concluída com sucesso!", "success");
+                    window.showToast("Sincronização concluída!", "success");
                 } finally {
                     window.fimProcessamento();
                 }
@@ -1558,20 +1464,14 @@
         };
     };
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js').catch(() => {});
-    }
-
-    // ----- SISTEMA MODAL CUSTOMIZADO (Para blockers/erros críticos e correção de prompt) -----
     window.customAlert = function(msg) {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
-            document.getElementById('customModalTitle').innerText = 'Aviso do Sistema';
+            document.getElementById('customModalTitle').innerText = 'Aviso';
             document.getElementById('customModalText').innerText = msg;
             document.getElementById('customModalInput').style.display = 'none';
             document.getElementById('customModalBtnCancel').style.display = 'none';
-            let btnOK = document.getElementById('customModalBtnOK');
-            btnOK.onclick = () => {
+            document.getElementById('customModalBtnOK').onclick = () => {
                 document.getElementById('customModalOverlay').style.display = 'none';
                 resolve();
             };
@@ -1599,7 +1499,7 @@
     window.customPrompt = function(msg, defaultVal = '', isPassword = false) {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
-            document.getElementById('customModalTitle').innerText = 'Entrada de Dados';
+            document.getElementById('customModalTitle').innerText = 'Entrada';
             document.getElementById('customModalText').innerText = msg;
             let input = document.getElementById('customModalInput');
             input.style.display = 'block';
@@ -1626,23 +1526,18 @@
             let gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
-
             if (tipo === 'sucesso') {
                 osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-                osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
                 gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                osc.start(); osc.stop(ctx.currentTime + 0.2);
+                osc.start(); osc.stop(ctx.currentTime + 0.15);
             } else if (tipo === 'click') {
                 osc.frequency.setValueAtTime(440, ctx.currentTime);
                 gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
                 osc.start(); osc.stop(ctx.currentTime + 0.03);
             } else if (tipo === 'alerta') {
                 osc.frequency.setValueAtTime(220, ctx.currentTime);
                 gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-                osc.start(); osc.stop(ctx.currentTime + 0.25);
+                osc.start(); osc.stop(ctx.currentTime + 0.2);
             }
         } catch(e) {}
     };
@@ -1652,17 +1547,16 @@
         if (!badge) return;
         if (!navigator.onLine) {
             badge.style.color = "var(--danger)";
-            badge.innerHTML = '🔴 Offline (Modo Local)';
+            badge.innerHTML = '🔴 Offline';
             return;
         }
         badge.style.color = "var(--text-main)";
         badge.innerHTML = '🟢 Online';
     };
 
-    window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); window.sincronizarVendasOffline(); });
-    window.addEventListener('offline', () => { window.atualizarEstadoConexao(); window.tocarSom('alerta'); });
+    window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.sincronizarVendasOffline(); });
+    window.addEventListener('offline', () => { window.atualizarEstadoConexao(); });
 
-    // ----- SUPORTE GLOBAL TECLA ENTER -----
     document.addEventListener('DOMContentLoaded', () => {
         window.atualizarEstadoConexao();
         document.body.addEventListener('keyup', function(e) {
@@ -1674,9 +1568,7 @@
                 }
                 if (document.activeElement.classList.contains('enter-trigger')) {
                     let action = document.activeElement.getAttribute('data-action');
-                    if (action) {
-                        try { eval(action); } catch(err) {}
-                    }
+                    if (action) { try { eval(action); } catch(err) {} }
                 }
             }
         });
@@ -1691,7 +1583,6 @@
         }
     });
 
-    // ----- VARIÁVEIS DE ESTADO DO SISTEMA -----
     let codigoEmpresa = "";
     let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
     let mesas = { "Balcão": [] };
@@ -1722,7 +1613,6 @@
     let html5QrCodeScanner = null;
     let isScannerOpen = false;
 
-    // ----- GESTÃO DE AUTENTICAÇÃO E REGISTO -----
     window.mostrarRegisto = function() {
         document.getElementById('telaFirebaseAuth').style.display = 'none';
         document.getElementById('telaRegisto').style.display = 'block';
@@ -1745,10 +1635,7 @@
         try {
             let cred = await createUserWithEmailAndPassword(auth, email, senha);
             let uid = cred.user.uid;
-            let adminDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'usuarios_admin', uid);
-            
-            await setDoc(adminDocRef, { dataNascimento: dataNasc, contacto: contacto, email: email, role: 'admin', criadoEm: new Date().toISOString() });
-
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'usuarios_admin', uid), { dataNascimento: dataNasc, contacto: contacto, email: email, role: 'admin', criadoEm: new Date().toISOString() });
             window.showToast("✅ Conta registada com sucesso!", "success");
             document.getElementById('telaRegisto').style.display = 'none';
         } catch (error) {
@@ -1760,22 +1647,21 @@
         let email = document.getElementById('authEmailInput').value.trim();
         let senha = document.getElementById('authPasswordInput').value;
         if (!email || !senha) return window.showToast("Preencha o e-mail e a palavra-passe!", "warning");
-
         try {
             await signInWithEmailAndPassword(auth, email, senha);
         } catch (error) {
-            window.showToast("⚠️ Credenciais inválidas ou conta não encontrada.", "error");
+            window.showToast("⚠️ Credenciais inválidas.", "error");
         }
     };
 
     window.recuperarSenhaFirebase = async function() {
         let email = document.getElementById('authEmailInput').value.trim();
-        if (!email) return window.showToast("Introduza o seu e-mail no campo acima primeiro.", "warning");
+        if (!email) return window.showToast("Introduza o seu e-mail acima primeiro.", "warning");
         try {
             await sendPasswordResetEmail(auth, email);
-            window.showToast("📩 E-mail de recuperação enviado com sucesso!", "success");
+            window.showToast("📩 E-mail de recuperação enviado!", "success");
         } catch (error) {
-            await customAlert("Erro ao enviar e-mail: " + error.message);
+            await customAlert("Erro: " + error.message);
         }
     };
 
@@ -1803,10 +1689,9 @@
 
     window.criarEmpresaTeste = async function() {
         if (localStorage.getItem('trialCriado')) {
-            return window.showToast("Acesso Recusado: Apenas 1 teste permitido por dispositivo.", "error");
+            return window.showToast("Apenas 1 teste permitido por dispositivo.", "error");
         }
-
-        let nomeRestaurante = await customPrompt("Bem-vindo! Qual é o nome do seu negócio?", "", false);
+        let nomeRestaurante = await customPrompt("Nome do seu negócio?", "", false);
         if (!nomeRestaurante || nomeRestaurante.trim() === "") return;
         
         let randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -1820,32 +1705,31 @@
             await setDoc(doc(db, "empresas", codigoTrial, "dados", "empresa"), { nome: nomeRestaurante, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0 });
 
             localStorage.setItem('trialCriado', codigoTrial);
-            await customAlert(`✅ CONTA DE TESTE CRIADA!\n\n🏢 CÓDIGO: ${codigoTrial}\n👤 UTILIZADOR: admin\n🔑 SENHA: 123\n\nVálido até: ${validadeFormatada}`);
+            await customAlert(`✅ CONTA DE TESTE CRIADA!\n\n🏢 CÓDIGO: ${codigoTrial}\n👤 UTILIZADOR: admin\n🔑 SENHA: 123`);
             
             let inputCod = document.getElementById('loginCodigoEmpresa');
             if(inputCod) inputCod.value = codigoTrial;
             window.carregarPerfisEmpresa();
         } catch (erro) {
-            await customAlert("⚠️ Erro de rede: " + erro.message);
+            await customAlert("⚠️ Erro: " + erro.message);
         }
     };
 
     window.revelarCodigoLoginAdmin = async function() {
         let elInput = document.getElementById('loginCodigoEmpresa');
         if (!elInput) return;
-        let senha = await customPrompt("🔒 AUTORIZAÇÃO\nInsira a palavra-passe do Administrador para ver o código:", "", true);
+        let senha = await customPrompt("🔒 Palavra-passe do Administrador:", "", true);
         if (!senha) return;
-
         let autorizado = false;
         for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
         if (!autorizado && (senha.trim() === "1234" || senha.trim() === String(dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
 
         if (autorizado) {
             elInput.type = "text";
-            window.showToast(`🔑 Código da Licença: ${elInput.value || codigoEmpresa}`, "info");
+            window.showToast(`🔑 Código: ${elInput.value || codigoEmpresa}`, "info");
             setTimeout(() => { elInput.type = "password"; }, 8000);
         } else {
-            window.showToast("❌ Acesso Negado: Palavra-passe incorreta!", "error");
+            window.showToast("❌ Palavra-passe incorreta!", "error");
         }
     };
 
@@ -1854,7 +1738,7 @@
         if (usuarioAtual && document.getElementById('telaBloqueio').style.display === 'none') {
             timerInatividade = setTimeout(() => {
                 window.bloquearEcra();
-                registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente após 1 min sem ação`);
+                registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente`);
             }, 60000);
         }
     }
@@ -1886,7 +1770,7 @@
                 { fps: 10, qrbox: { width: 250, height: 150 } },
                 (decodedText) => { if (isScannerOpen) { window.processarCodigoBarrasLido(decodedText); window.fecharModalScannerBarcode(); } },
                 () => {}
-            ).catch((err) => { if (isScannerOpen) { window.showToast("Erro ao aceder à câmara.", "error"); window.fecharModalScannerBarcode(); } });
+            ).catch((err) => { if (isScannerOpen) { window.showToast("Erro na câmara.", "error"); window.fecharModalScannerBarcode(); } });
         }, 300);
     };
 
@@ -1909,7 +1793,7 @@
                     }
                 },
                 () => {}
-            ).catch((err) => { if (isScannerOpen) { window.showToast("Erro ao aceder à câmara.", "error"); window.fecharModalScannerBarcode(); } });
+            ).catch((err) => { if (isScannerOpen) { window.showToast("Erro na câmara.", "error"); window.fecharModalScannerBarcode(); } });
         }, 300);
     };
 
@@ -1947,7 +1831,7 @@
         let pwd = document.getElementById('inputSenhaDesbloqueio').value;
         if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
             document.getElementById('telaBloqueio').style.display = 'none';
-            registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
+            registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado`);
             resetarTimerInatividade();
             window.tocarSom('sucesso');
         } else {
@@ -2052,14 +1936,11 @@
                 }
                 renderizarPerfisLogin();
                 if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-            }, (error) => {
-                console.error("Erro no listener de perfis:", error);
-            });
+            }, (error) => {});
             unsubscribes.push(unsubUser);
             window.showToast("Negócio vinculado com sucesso!", "success");
         } catch (erro) { 
-            console.error(erro);
-            window.showToast("Erro ao carregar perfis da empresa.", "error"); 
+            window.showToast("Erro ao carregar perfis.", "error"); 
         } finally {
             window.fimProcessamento();
         }
@@ -2180,7 +2061,7 @@
         for (let u in usuarios) {
             let uObj = usuarios[u];
             let avatarHtml = uObj.foto ? `<img src="${uObj.foto}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : `<span style="display:inline-block; width:36px; height:36px; border-radius:50%; background:var(--primary-light); color:var(--primary-dark); text-align:center; line-height:36px; font-weight:600;">${u.charAt(0).toUpperCase()}</span>`;
-            modalLista.innerHTML += `<button style="display:flex; align-items:center; gap:12px; background:var(--bg-body); border:1px solid var(--border); color:var(--text-dark); padding:10px 16px; text-align:left; border-radius:var(--radius-md); font-weight:500; cursor:pointer;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'">${avatarHtml}<span style="text-transform:uppercase; flex:1;">${u}</span> <small style="color:var(--text-muted);">${uObj.tipo}</small></button>`;
+            modalLista.innerHTML += `<button style="display:flex; align-items:center; gap:12px; background:var(--bg-body); border:1px solid var(--border); color:var(--text-dark); padding:10px 16px; text-align:left; border-radius:var(--radius-md); font-weight:500; cursor:pointer;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">${avatarHtml}<span style="text-transform:uppercase; flex:1;">${u}</span> <small style="color:var(--text-muted);">${uObj.tipo}</small></button>`;
         }
         document.getElementById('modalMaisPerfis').style.display = 'block';
     };
@@ -2213,7 +2094,7 @@
             
             document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
             document.getElementById('nomeUsuarioLogado').innerText = u;
-            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : usuarios[u].tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
+            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : usuarios[u].tipo === 'gerente' ? 'Gerente' : 'Operador';
             
             let headerAvatar = document.getElementById('headerAvatarBox');
             if(usuarioAtual.foto) headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
@@ -2240,7 +2121,7 @@
     };
 
     window.fazerLogout = function() {
-        if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
+        if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada`);
         if(timerInatividade) clearTimeout(timerInatividade);
         usuarioAtual = null;
         desconectarEscutadores();
@@ -2273,8 +2154,8 @@
                 });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            window.showToast(`A palavra-passe de '${u.toUpperCase()}' foi alterada!`, "success");
-            registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida via Chave Mestra`);
+            window.showToast("Palavra-passe alterada!", "success");
+            registarAuditLog('Redefinição de Senha', `Senha de ${u} redefinida`);
             window.fecharModalResetSenha();
         } else { window.showToast("Chave Mestra Incorreta!", "error"); }
     };
@@ -2293,17 +2174,8 @@
         for (let abaId in mapaAbas) {
             let btnNav = document.getElementById(mapaAbas[abaId]);
             if (btnNav) {
-                if (abasDisponiveis.includes(abaId)) {
-                    btnNav.style.display = 'inline-block';
-                } else {
-                    btnNav.style.display = 'none';
-                }
+                btnNav.style.display = abasDisponiveis.includes(abaId) ? 'inline-block' : 'none';
             }
-        }
-
-        let abaAtivaEl = document.querySelector('.tab-content.active');
-        if (abaAtivaEl && !abasDisponiveis.includes(abaAtivaEl.id)) {
-            window.mudarAba(abasDisponiveis[0] || 'abaVendas');
         }
     }
 
@@ -2352,9 +2224,7 @@
         if(usuarios[u]) return window.showToast("Utilizador já existe!", "error");
 
         let permissoesSelecionadas = [];
-        document.querySelectorAll('.novo-permissao-aba:checked').forEach(cb => {
-            permissoesSelecionadas.push(cb.value);
-        });
+        document.querySelectorAll('.novo-permissao-aba:checked').forEach(cb => { permissoesSelecionadas.push(cb.value); });
         if (permissoesSelecionadas.length === 0) permissoesSelecionadas = ['abaVendas'];
 
         processarFotoAvatar(fileInput, async function(fotoBase64) {
@@ -2362,19 +2232,15 @@
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
                 listaArrayFirestore.push({ 
-                    nome: nomeKey, 
-                    senha: usuarios[nomeKey].senha, 
-                    tipo: usuarios[nomeKey].tipo, 
-                    foto: usuarios[nomeKey].foto || "",
-                    permissoes: usuarios[nomeKey].permissoes || []
+                    nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "", permissoes: usuarios[nomeKey].permissoes || []
                 });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             document.getElementById('novoUserNome').value = '';
             document.getElementById('novoUserSenha').value = '';
-            document.getElementById('novoUserFoto').value = '';
-            registarAuditLog('Perfil Criado', `Perfil '${u}' (${t}) criado`);
-            window.showToast(`✅ Perfil '${u.toUpperCase()}' criado com sucesso!`, "success");
+            registarAuditLog('Perfil Criado', `Perfil '${u}' criado`);
+            window.showToast("✅ Perfil criado com sucesso!", "success");
         });
     };
 
@@ -2385,16 +2251,13 @@
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
                 listaArrayFirestore.push({ 
-                    nome: nomeKey, 
-                    senha: usuarios[nomeKey].senha, 
-                    tipo: usuarios[nomeKey].tipo, 
-                    foto: usuarios[nomeKey].foto || "",
-                    permissoes: usuarios[nomeKey].permissoes || []
+                    nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "", permissoes: usuarios[nomeKey].permissoes || []
                 });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
             registarAuditLog('Perfil Removido', `Perfil '${u}' eliminado`);
-            window.showToast(`Perfil '${u.toUpperCase()}' removido.`, "success");
+            window.showToast("Perfil removido.", "success");
         }
     };
 
@@ -2405,16 +2268,12 @@
             let listaArrayFirestore = [];
             for (let nomeKey in usuarios) {
                 listaArrayFirestore.push({ 
-                    nome: nomeKey, 
-                    senha: usuarios[nomeKey].senha, 
-                    tipo: usuarios[nomeKey].tipo, 
-                    foto: usuarios[nomeKey].foto || "",
-                    permissoes: usuarios[nomeKey].permissoes || []
+                    nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, 
+                    foto: usuarios[nomeKey].foto || "", permissoes: usuarios[nomeKey].permissoes || []
                 });
             }
             await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-            registarAuditLog('Senha Alterada', `Palavra-passe de '${u}' alterada por Admin`);
-            window.showToast(`Palavra-passe alterada!`, "success");
+            window.showToast("Palavra-passe alterada!", "success");
         }
     };
 
@@ -2459,16 +2318,12 @@
         let listaArrayFirestore = [];
         for (let nomeKey in usuarios) {
             listaArrayFirestore.push({ 
-                nome: nomeKey, 
-                senha: usuarios[nomeKey].senha, 
-                tipo: usuarios[nomeKey].tipo, 
-                foto: usuarios[nomeKey].foto || "",
-                permissoes: usuarios[nomeKey].permissoes || []
+                nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, 
+                foto: usuarios[nomeKey].foto || "", permissoes: usuarios[nomeKey].permissoes || []
             });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-        registarAuditLog('Permissões Atualizadas', `Acessos de '${usuarioEditandoPermissoes}' modificados pelo Admin`);
-        window.showToast("Permissões de abas atualizadas com sucesso!", "success");
+        window.showToast("Permissões atualizadas!", "success");
         window.fecharModalGerirPermissoes();
         renderizarUsuarios();
     };
@@ -2492,14 +2347,11 @@
             let fotoTd = userObj.foto ? `<img src="${userObj.foto}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;">` : `<div style="width:36px; height:36px; border-radius:50%; background:var(--primary-light); color:var(--primary-dark); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9em;">${u.charAt(0).toUpperCase()}</div>`;
             let tipoBadge = userObj.tipo === 'admin' ? 'Administrador' : userObj.tipo === 'gerente' ? 'Gerente' : 'Operador';
             
-            let abasCont = (userObj.permissoes || []).length;
-            let abasTextoBadge = `<span class="badge" style="background:var(--border-light);">${abasCont} abas</span>`;
-
             tbody.innerHTML += `<tr>
                 <td>${fotoTd}</td>
                 <td><b style="text-transform:uppercase;">${u}</b></td>
                 <td><span class="badge">${tipoBadge}</span></td>
-                <td>${abasTextoBadge}</td>
+                <td><span class="badge">${(userObj.permissoes || []).length} abas</span></td>
                 <td style="color:var(--success-dark); font-weight:600;">${totalVendido.toFixed(2)} MT</td>
                 <td>
                     <button class="btn-outline btn-sm" onclick="window.abrirModalGerirPermissoes('${u}')">Acessos</button>
@@ -2527,7 +2379,7 @@
         tbody.innerHTML = '';
         let vendasUser = historico.filter(h => h.tipo === 'venda' && h.usuario === u);
         if(vendasUser.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sem vendas registadas.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sem vendas.</td></tr>';
             return;
         }
         vendasUser.forEach(v => {
@@ -2538,9 +2390,7 @@
                 <td>${v.mesa || 'Balcão'}</td>
                 <td><span class="badge">${v.metodo}</span></td>
                 <td><small>${resumoItens}</small></td>
-                <td style="font-weight:600; color:${ehCancelado?'var(--text-muted)':'var(--text-dark)'}; text-decoration:${ehCancelado?'line-through':'none'};">
-                    ${v.totalVenda.toFixed(2)} MT
-                </td>
+                <td style="font-weight:600; text-decoration:${ehCancelado?'line-through':'none'};">${v.totalVenda.toFixed(2)} MT</td>
                 <td>${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${v.idDoc}',${v.id})">Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}</td>
             </tr>`;
         });
@@ -2583,7 +2433,7 @@
     }
 
     async function solicitarAutorizacaoGestor(acaoNome) {
-        let senhaAuth = await customPrompt(`🔒 AUTORIZAÇÃO DE GESTOR\nInsira a senha para ${acaoNome}:`, "", true);
+        let senhaAuth = await customPrompt(`🔒 Senha de Gestor para ${acaoNome}:`, "", true);
         if (!senhaAuth) return false;
         let autorizado = false;
         for (let u in usuarios) {
@@ -2592,36 +2442,26 @@
             }
         }
         if (!autorizado && (String(senhaAuth).trim() === String(dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
-        
-        if (!autorizado) {
-            window.showToast("❌ Autorização Negada!", "error");
-            return false;
-        }
+        if (!autorizado) { window.showToast("❌ Autorização Negada!", "error"); return false; }
         return true;
     }
 
     window.abrirCaixaTurno = async function() {
         if (!(await solicitarAutorizacaoGestor('Abrir o Caixa'))) return;
-
         let fundo = parseFloat(document.getElementById('inputFundoManeio').value) || 0;
         caixaEstado = { aberto: true, fundo, timestampAbertura: Date.now(), dataAbertura: new Date().toLocaleString('pt-MZ'), usuarioAbertura: usuarioAtual.nome };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
-        registarAuditLog('Caixa Aberto', `Caixa aberto com fundo inicial de ${fundo} MT`);
-        window.showToast("Caixa aberto com sucesso!", "success");
+        window.showToast("Caixa aberto!", "success");
     };
 
     window.fecharCaixaTurnoCEGO = async function() {
         let mesasComItens = [];
         for(let m in mesas) { if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
-        if(mesasComItens.length > 0) {
-            return customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\nAinda existem mesas ativas: ${mesasComItens.join(', ')}.`);
-        }
-
+        if(mesasComItens.length > 0) return customAlert(`🚫 Mesas ativas: ${mesasComItens.join(', ')}.`);
         if (!(await solicitarAutorizacaoGestor('Fechar o Caixa'))) return;
 
         let valContado = parseFloat(document.getElementById('inputFechoValorContado').value);
-        if(isNaN(valContado) || valContado < 0) return window.showToast("Introduza o valor contado.", "warning");
-        if(!(await customConfirm(`Confirma que contou exatamente ${valContado.toFixed(2)} MT na gaveta?`))) return;
+        if(isNaN(valContado) || valContado < 0) return window.showToast("Introduza o valor.", "warning");
 
         let dataFecho = new Date().toLocaleString('pt-MZ');
         let tAbertura = caixaEstado.timestampAbertura || 0;
@@ -2641,20 +2481,15 @@
         await addDoc(collection(db, "empresas", codigoEmpresa, "turnos"), registoTurno);
         caixaEstado = { aberto: false, fundo: 0 };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), caixaEstado);
-        registarAuditLog('Caixa Encerrado', `Contado: ${valContado} MT | Diferença: ${diferenca} MT`);
-
         document.getElementById('inputFechoValorContado').value = '';
-        await customAlert(`🔒 Turno Encerrado!\n\nVendas Dinheiro: ${vendasNum.toFixed(2)} MT\nValor Contado: ${valContado.toFixed(2)} MT\nDiferença: ${diferenca.toFixed(2)} MT`);
+        await customAlert(`🔒 Turno Encerrado!\nDinheiro: ${vendasNum.toFixed(2)} MT\nContado: ${valContado.toFixed(2)} MT\nDiferença: ${diferenca.toFixed(2)} MT`);
     };
 
     function renderizarHistoricoTurnos() {
         let tbody = document.getElementById('corpoHistoricoTurnosCaixa');
         if(!tbody) return;
         tbody.innerHTML = '';
-        if(turnosCaixa.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Sem turnos encerrados.</td></tr>';
-            return;
-        }
+        if(turnosCaixa.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Sem turnos.</td></tr>'; return; }
         let totalPaginas = Math.ceil(turnosCaixa.length / ITENS_POR_PAGINA_TURNOS) || 1;
         if(paginaAtualTurnos > totalPaginas) paginaAtualTurnos = totalPaginas;
         document.getElementById('pagAtualTurnos').innerText = paginaAtualTurnos;
@@ -2662,9 +2497,6 @@
 
         let inicio = (paginaAtualTurnos - 1) * ITENS_POR_PAGINA_TURNOS;
         turnosCaixa.slice(inicio, inicio + ITENS_POR_PAGINA_TURNOS).forEach(t => {
-            let difClass = t.diferenca < 0 ? 'color:var(--danger);' : t.diferenca > 0 ? 'color:var(--success-dark);' : '';
-            let difTexto = t.diferenca === 0 ? '0.00 MT' : `${t.diferenca > 0 ? '+' : ''}${t.diferenca.toFixed(2)} MT`;
-
             tbody.innerHTML += `<tr>
                 <td><small>${t.dataAbertura || '-'}</small></td>
                 <td><small>${t.dataFecho || '-'}</small></td>
@@ -2673,7 +2505,7 @@
                 <td><b>${(t.vendasEspécie || 0).toFixed(2)} MT</b></td>
                 <td>${(t.despesas || 0).toFixed(2)} MT</td>
                 <td><b>${(t.valorContado || 0).toFixed(2)} MT</b></td>
-                <td style="${difClass} font-weight:600;">${difTexto}</td>
+                <td style="${t.diferenca < 0 ? 'color:var(--danger);' : ''} font-weight:600;">${t.diferenca.toFixed(2)} MT</td>
             </tr>`;
         });
     }
@@ -2685,16 +2517,14 @@
     };
 
     window.registarDespesa = async function() {
-        if (!caixaEstado.aberto) return window.showToast("🔴 Caixa Encerrado!", "error");
+        if (!caixaEstado.aberto) return window.showToast("🔴 Caixa Fechado!", "error");
         let desc = document.getElementById('despesaDesc').value.trim();
         let val = parseFloat(document.getElementById('despesaValor').value) || 0;
-        if(!desc || val <= 0) return window.showToast("Preencha a descrição e valor.", "warning");
+        if(!desc || val <= 0) return window.showToast("Preencha descrição e valor.", "warning");
 
         let novaDespesa = { id: Date.now(), desc, valor: val, usuario: usuarioAtual.nome, timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ') };
         despesas.push(novaDespesa);
-        
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: arrayUnion(novaDespesa) }, { merge: true });
-        registarAuditLog('Despesa Registada', `Despesa: ${desc} (${val} MT)`);
         document.getElementById('despesaDesc').value = '';
         document.getElementById('despesaValor').value = '';
         window.showToast("Despesa registada!", "success");
@@ -2704,7 +2534,6 @@
         let grid = document.getElementById('gridMesas');
         if(!grid) return;
         grid.innerHTML = '';
-        
         for(let m in mesas) {
             let temItens = mesas[m] && mesas[m].length > 0;
             let isSel = m === mesaSelecionada;
@@ -2727,18 +2556,10 @@
     window.selecionarMesa = async function(m) {
         let itensDaMesa = mesas[m] || [];
         let bloqueioUser = bloqueiosMesas[m];
-
         if (itensDaMesa.length === 0 && bloqueioUser) {
             delete bloqueiosMesas[m];
             setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-            bloqueioUser = null;
         }
-
-        let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
-        if (itensDaMesa.length > 0 && bloqueioUser && bloqueioUser !== usuarioAtual.nome && !isGerenteOuAdmin) {
-            return window.showToast(`⚠️ Mesa em uso por ${bloqueioUser.toUpperCase()}.`, "warning");
-        }
-
         mesaSelecionada = m;
         document.getElementById('labelMesaAtual').innerText = m;
         renderizarMesasGrid();
@@ -2789,20 +2610,24 @@
 
         prodsExibicao.forEach(p => {
             let item = stock[p];
+            let corFundo = '#64748b'; 
+            if(item.categoria === 'bebidas') corFundo = '#0284c7'; 
+            else if(item.categoria === 'pratos') corFundo = '#ea580c'; 
+            else if(item.categoria === 'petiscos') corFundo = '#16a34a'; 
             
-            // Cores baseadas na categoria estilo ZS Rest (Tons sólidos e vibrantes)
-            let corFundo = '#64748b'; // Defeito (Outros/Cinza - Slate)
-            if(item.categoria === 'bebidas') corFundo = '#0284c7'; // Azul (Sky)
-            else if(item.categoria === 'pratos') corFundo = '#ea580c'; // Laranja (Orange)
-            else if(item.categoria === 'petiscos') corFundo = '#16a34a'; // Verde (Green)
-            
+            let qtdDisp = item.qtd !== undefined ? item.qtd : 0;
+            let badgeStockCor = qtdDisp <= (item.min_alerta || 5) ? 'background: rgba(239, 68, 68, 0.85); color: white;' : 'background: rgba(0,0,0,0.25); color: #f8fafc;';
+
             grid.innerHTML += `
                 <div class="card-produto-pos" style="background-color: ${corFundo};" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    <div style="flex:1; display:flex; align-items:center; justify-content:center; padding: 8px;">
+                    <div style="position: absolute; top: 4px; right: 4px; padding: 2px 6px; border-radius: 12px; font-size: 0.7em; font-weight: 700; ${badgeStockCor}">
+                        ${qtdDisp} un
+                    </div>
+                    <div style="flex:1; display:flex; align-items:center; justify-content:center; padding: 12px 6px 4px 6px;">
                         <strong style="font-size:0.9em; text-align:center; word-break:break-word; line-height:1.2; text-transform:uppercase;" title="${p.toUpperCase()}">${p.toUpperCase()}</strong>
                     </div>
-                    <div style="background: rgba(0,0,0,0.25); padding: 8px 0; font-weight:800; font-size:1em; letter-spacing: 0.5px;">
-                        ${(item.preco_venda||0).toFixed(2)}
+                    <div style="background: rgba(0,0,0,0.25); padding: 6px 0; font-weight:800; font-size:0.95em;">
+                        ${(item.preco_venda||0).toFixed(2)} MT
                     </div>
                 </div>
             `;
@@ -2834,19 +2659,6 @@
         if (!window.iniciarProcessamento()) return;
 
         try {
-            let bloqueioAtual = bloqueiosMesas[mesaSelecionada];
-            let isGerenteOuAdmin = usuarioAtual && (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente');
-            let itensMesaAtual = mesas[mesaSelecionada] || [];
-
-            if (itensMesaAtual.length === 0 && bloqueioAtual) {
-                delete bloqueiosMesas[mesaSelecionada];
-                bloqueioAtual = null;
-            }
-
-            if (mesaSelecionada !== "Balcão" && bloqueioAtual && bloqueioAtual !== usuarioAtual.nome && !isGerenteOuAdmin) {
-                return window.showToast(`⚠️ Mesa ocupada por ${bloqueioAtual.toUpperCase()}.`, "warning");
-            }
-
             let prod = document.getElementById('cartSelectProduto').value;
             let qtd = parseFloat(document.getElementById('cartQtd').value);
             let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value);
@@ -2865,21 +2677,16 @@
 
             stock[prod].qtd -= qtd;
             stock[prod].preco_total = Math.max(0, stock[prod].preco_total - (qtd * custoUnit));
-            if(stock[prod].qtd < 0.01) { stock[prod].qtd = 0; stock[prod].preco_total = 0; }
 
             if(!mesas[mesaSelecionada]) mesas[mesaSelecionada] = [];
             mesas[mesaSelecionada].push({ produto: prod, qtd, precoUnit, subtotal, custoUnit });
 
-            try {
-                if (mesaSelecionada !== "Balcão") {
-                    bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
-                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
-                }
-                if (mesaSelecionada !== "Balcão") {
-                    await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
-                }
-                await salvarStockFirestore({ [prod]: stock[prod] });
-            } catch (err) {}
+            if (mesaSelecionada !== "Balcão") {
+                bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: usuarioAtual.nome } }, { merge: true });
+            }
+            await salvarStockFirestore({ [prod]: stock[prod] });
 
             window.showToast(`${qtd}x ${prod.toUpperCase()} adicionado.`, "success");
             renderizarMesasGrid();
@@ -2916,7 +2723,6 @@
 
     window.alternarModoPagamentoVisual = function() {
         let modo = document.getElementById('cartModoPagamentoTipo').value;
-        document.getElementById('boxPagamentoUnico').style.display = modo === 'Unico' ? 'block' : 'none';
         document.getElementById('boxPagamentoDesdobradoArea').style.display = modo === 'Desdobrado' ? 'block' : 'none';
         if(modo === 'Desdobrado') window.calcularTotaisDesdobrados();
     };
@@ -3001,18 +2807,10 @@
 
     window.removerItemCarrinho = async function(idx) {
         if (!window.iniciarProcessamento()) return;
-        
         try {
-            let bloqueioUser = bloqueiosMesas[mesaSelecionada];
-            if (mesaSelecionada !== "Balcão" && bloqueioUser && bloqueioUser !== usuarioAtual.nome) {
-                return customAlert(`⚠️ Acesso Negado: A mesa ${mesaSelecionada} pertence a ${bloqueioUser.toUpperCase()}.`);
-            }
-
             let itens = mesas[mesaSelecionada] || [];
             let item = itens[idx];
-            if (!item) {
-                return window.showToast("⚠️ O item já não se encontra no carrinho.", "warning");
-            }
+            if (!item) return;
 
             if(stock[item.produto]) {
                 stock[item.produto].qtd += item.qtd;
@@ -3028,7 +2826,7 @@
             mesas[mesaSelecionada].splice(idx, 1);
 
             if (mesaSelecionada !== "Balcão") {
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: usuarioAtual.nome } }, { merge: true });
             }
 
             renderizarMesasGrid();
@@ -3065,8 +2863,8 @@
         document.getElementById('reciboMesa').innerText = mesaSelecionada;
         document.getElementById('reciboData').innerText = new Date().toLocaleString('pt-MZ');
         document.getElementById('reciboVendedor').innerText = usuarioAtual.nome;
-        document.getElementById('reciboNuitClienteDisplay').innerText = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
-        document.getElementById('reciboMetodo').innerText = "Aguardando Pagamento";
+        document.getElementById('reciboNuitClienteDisplay').innerText = 'Consumidor Final';
+        document.getElementById('reciboMetodo').innerText = "Aguardando";
         document.getElementById('reciboDesconto').innerText = desc.toFixed(2);
         document.getElementById('reciboSubtotalLiq').innerText = subtotalLiq.toFixed(2);
         document.getElementById('reciboTaxaIvaValor').innerText = taxaIva;
@@ -3083,79 +2881,84 @@
         document.getElementById('reciboValorEntregue').innerText = "0.00";
         document.getElementById('reciboTroco').innerText = "0.00";
 
-        setTimeout(() => { window.print(); }, 300);
+        window.print();
     };
 
     window.finalizarVendaCarrinho = async function() {
-        if (!caixaEstado.aberto) {
-            return window.showToast("🔴 Caixa Fechado!", "error");
+        if (!caixaEstado.aberto) return window.showToast("🔴 Caixa Fechado!", "error");
+        
+        let itens = mesas[mesaSelecionada] || [];
+        if(itens.length === 0) return window.showToast("O carrinho está vazio.", "warning");
+
+        let modoPag = document.getElementById('cartModoPagamentoTipo').value;
+        let metodo = "", desdobramentoInfo = null;
+        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
+        let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
+        let totalVenda = Math.max(0, totalSemDesc - desc);
+
+        if(modoPag === 'Desdobrado') {
+            let dDin = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
+            let dMpe = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
+            let dEmo = parseFloat(document.getElementById('payDesdEmola').value) || 0;
+            let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
+            let somaDesd = dDin + dMpe + dEmo + dPos;
+
+            if(Math.abs(somaDesd - totalVenda) > 0.1) return window.showToast(`⚠️ Diferença nos pagamentos mistos!`, "error");
+            metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
+            desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
+        } else {
+            metodo = document.getElementById('cartMetodoPagamento').value;
+        }
+
+        if (metodo === 'Cortesia') { totalVenda = 0; desc = totalSemDesc; }
+
+        let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
+        if (metodo === 'Numerário' && valorEntregue <= 0) {
+            document.getElementById('cartValorEntregue').focus();
+            return window.showToast("⚠️ Introduza o valor entregue!", "warning");
+        }
+
+        let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
+        let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
+        let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
+        let valorIva = totalVenda - subtotalLiq;
+        let troco = Math.max(0, valorEntregue - totalVenda);
+        let nuitCliente = 'Consumidor Final';
+
+        let clienteFiado = null;
+        if(metodo === 'Fiado') {
+            clienteFiado = document.getElementById('cartSelectClienteFiado').value;
+            if(!clienteFiado) return window.showToast("Selecione o cliente fiado.", "error");
+        }
+
+        // 1. ISOLAR OS DADOS DA VENDA PARA IMPRESSÃO IMEDIATA ANTES DE QUALQUER OPERAÇÃO ASYNC
+        let vendaParaImpressao = {
+            id: Date.now(),
+            data: new Date().toLocaleString('pt-MZ'),
+            mesa: mesaSelecionada,
+            usuario: usuarioAtual.nome,
+            itens: JSON.parse(JSON.stringify(itens)),
+            desconto: desc,
+            totalVenda,
+            subtotalLiq,
+            valorIva,
+            taxaIva,
+            nuitCliente,
+            valorEntregue,
+            troco,
+            metodo
+        };
+
+        // 2. DISPARAR A IMPRESSÃO IMEDIATAMENTE NO CONTEXTO DO CLIQUE DO UTILIZADOR
+        if (bluetoothCharacteristic) {
+            window.imprimirReciboBluetoothESC(vendaParaImpressao);
+        } else {
+            imprimirTalão(vendaParaImpressao);
         }
 
         if (!window.iniciarProcessamento()) return;
 
         try {
-            let itens = mesas[mesaSelecionada] || [];
-            if(itens.length === 0) return window.showToast("O carrinho está vazio.", "warning");
-
-            let modoPag = document.getElementById('cartModoPagamentoTipo').value;
-            let metodo = "", desdobramentoInfo = null;
-            let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-            let totalSemDesc = itens.reduce((acc, i) => acc + i.subtotal, 0);
-            let totalVenda = Math.max(0, totalSemDesc - desc);
-
-            if(modoPag === 'Desdobrado') {
-                let dDin = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
-                let dMpe = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
-                let dEmo = parseFloat(document.getElementById('payDesdEmola').value) || 0;
-                let dPos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
-                let somaDesd = dDin + dMpe + dEmo + dPos;
-
-                if(Math.abs(somaDesd - totalVenda) > 0.1) return window.showToast(`⚠️ Soma dos pagamentos (${somaDesd.toFixed(2)} MT) diferente do Total (${totalVenda.toFixed(2)} MT)!`, "error");
-                metodo = "Desdobrado (Din:" + dDin + ", Mpe:" + dMpe + ", Emo:" + dEmo + ", Pos:" + dPos + ")";
-                desdobramentoInfo = { din: dDin, mpe: dMpe, emo: dEmo, pos: dPos };
-            } else {
-                metodo = document.getElementById('cartMetodoPagamento').value;
-            }
-
-            if (metodo === 'Cortesia') { totalVenda = 0; desc = totalSemDesc; }
-
-            let valorEntregue = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
-            if (metodo === 'Numerário' && valorEntregue <= 0) {
-                document.getElementById('cartValorEntregue').focus();
-                return window.showToast("⚠️ Introduza o 'Valor Entregue' pelo cliente!", "warning");
-            }
-
-            let totalCusto = itens.reduce((acc, i) => acc + (i.qtd * i.custoUnit), 0);
-            let taxaIva = (dadosEmpresa.aplicarIva === 'sim' && metodo !== 'Cortesia') ? (parseFloat(dadosEmpresa.taxaIva) || 16) : 0;
-            let subtotalLiq = totalVenda / (1 + (taxaIva / 100));
-            let valorIva = totalVenda - subtotalLiq;
-            let troco = Math.max(0, valorEntregue - totalVenda);
-            let nuitCliente = document.getElementById('cartNuitCliente').value.trim() || 'Consumidor Final';
-
-            let clienteFiado = null;
-            if(metodo === 'Fiado') {
-                clienteFiado = document.getElementById('cartSelectClienteFiado').value;
-                if(!clienteFiado) return window.showToast("Selecione o cliente para o fiado.", "error");
-            }
-
-            // Criar cópia imediata dos dados para impressão antes de limpar o carrinho
-            let vendaParaImpressao = {
-                id: Date.now(),
-                data: new Date().toLocaleString('pt-MZ'),
-                mesa: mesaSelecionada,
-                usuario: usuarioAtual.nome,
-                itens: JSON.parse(JSON.stringify(itens)),
-                desconto: desc,
-                totalVenda,
-                subtotalLiq,
-                valorIva,
-                taxaIva,
-                nuitCliente,
-                valorEntregue,
-                troco,
-                metodo
-            };
-
             let registoVenda = {
                 ...vendaParaImpressao,
                 timestamp: Date.now(),
@@ -3186,21 +2989,17 @@
 
             mesas[mesaSelecionada] = [];
             if (mesaSelecionada !== "Balcão") {
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: mesas[mesaSelecionada], operador: bloqueiosMesas[mesaSelecionada] || usuarioAtual.nome } }, { merge: true });
-            }
-            if (mesaSelecionada !== "Balcão" && bloqueiosMesas[mesaSelecionada] === usuarioAtual.nome) {
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesaSelecionada]: { itens: [], operador: '' } }, { merge: true });
                 delete bloqueiosMesas[mesaSelecionada];
                 setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), bloqueiosMesas).catch(()=>{});
             }
 
-            window.showToast("Venda concluída!", "success");
+            window.showToast("Venda registada!", "success");
             
             mesaSelecionada = "Balcão";
             document.getElementById('labelMesaAtual').innerText = "Balcão";
             document.getElementById('cartDesconto').value = 0;
             document.getElementById('cartValorEntregue').value = 0;
-            document.getElementById('cartNuitCliente').value = '';
-            document.getElementById('cartTelefoneWa').value = '';
             document.getElementById('cartModoPagamentoTipo').value = 'Unico';
             window.alternarModoPagamentoVisual();
 
@@ -3208,15 +3007,8 @@
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
 
-            // Emitir o recibo imediatamente utilizando a cópia isolada
-            if (bluetoothCharacteristic) {
-                window.imprimirReciboBluetoothESC(vendaParaImpressao);
-            } else {
-                imprimirTalão(vendaParaImpressao);
-            }
-
         } catch (erro) {
-            window.showToast("⚠️ Falha ao registar venda: " + erro.message, "error");
+            window.showToast("Erro ao gravar venda: " + erro.message, "error");
         } finally {
             window.fimProcessamento();
         }
@@ -3254,10 +3046,10 @@
         document.getElementById('reciboValorEntregue').innerText = (v.valorEntregue || 0).toFixed(2);
         document.getElementById('reciboTroco').innerText = (v.troco || 0).toFixed(2);
 
-        setTimeout(() => { window.print(); }, 300);
+        window.print();
     }
 
-    window.imprimirGuiaCozinha = async function() {
+    window.imprimirGuiaCozinha = function() {
         let itens = mesas[mesaSelecionada] || [];
         if(itens.length === 0) return window.showToast("Carrinho vazio.", "warning");
 
@@ -3269,11 +3061,11 @@
         let divItens = document.getElementById('cozinhaItens');
         divItens.innerHTML = '';
         itens.forEach(i => { divItens.innerHTML += `<div>• ${i.qtd}x ${i.produto.toUpperCase()}</div>`; });
-        setTimeout(() => { window.print(); }, 300);
+        window.print();
     };
 
     window.conectarImpressoraBluetooth = async function() {
-        if (!navigator.bluetooth) return customAlert("Navegador não suporta Bluetooth API.");
+        if (!navigator.bluetooth) return customAlert("Bluetooth não suportado.");
         try {
             document.getElementById('statusBtPrinter').innerText = "Procurando...";
             bluetoothDevice = await navigator.bluetooth.requestDevice({
@@ -3284,20 +3076,18 @@
             const services = await server.getPrimaryServices();
             const characteristics = await services[0].getCharacteristics();
             bluetoothCharacteristic = characteristics[0];
-            document.getElementById('statusBtPrinter').innerText = `Conectado: ${bluetoothDevice.name || 'Impressora'}`;
-            document.getElementById('statusBtPrinter').style.color = "var(--success)";
+            document.getElementById('statusBtPrinter').innerText = `Conectado!`;
             window.showToast("✅ Bluetooth Conectado!", "success");
         } catch (erro) {
             document.getElementById('statusBtPrinter').innerText = "Desconectado";
-            document.getElementById('statusBtPrinter').style.color = "var(--danger)";
-            window.showToast("Falha na ligação Bluetooth.", "error");
+            window.showToast("Falha Bluetooth.", "error");
         }
     };
 
     window.testarImpressaoBluetooth = async function() {
-        if (!bluetoothCharacteristic) return window.showToast("Conecte a impressora primeiro.", "warning");
+        if (!bluetoothCharacteristic) return window.showToast("Conecte a impressora.", "warning");
         let encoder = new TextEncoder();
-        let texto = "\x1B\x40\x1B\x61\x01TESTE IMPRESSAO\nGS POINT POS\n--------------------------------\n\n\n\n";
+        let texto = "\x1B\x40\x1B\x61\x01TESTE\nGS POINT POS\n--------------------------------\n\n\n";
         await bluetoothCharacteristic.writeValue(encoder.encode(texto));
     };
 
@@ -3307,7 +3097,7 @@
             let encoder = new TextEncoder();
             let txt = "\x1B\x40\x1B\x61\x01" + `${dadosEmpresa.nome || 'RESTAURANTE'}\n--------------------------------\n${v.data}\n` + "\x1B\x61\x00" + `Mesa: ${v.mesa} | Op: ${v.usuario}\nPagamento: ${v.metodo}\n--------------------------------\n`;
             v.itens.forEach(i => { txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`; });
-            txt += `--------------------------------\nTOTAL: ${v.totalVenda.toFixed(2)} MT\nTroco: ${v.troco.toFixed(2)} MT\n` + "\x1B\x61\x01\nObrigado!\n\n\n\n";
+            txt += `--------------------------------\nTOTAL: ${v.totalVenda.toFixed(2)} MT\nTroco: ${v.troco.toFixed(2)} MT\n` + "\x1B\x61\x01\nObrigado!\n\n\n";
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
         } catch (err) { imprimirTalão(v); }
     };
@@ -3315,7 +3105,7 @@
     window.cadastrarCliente = async function() {
         let nome = document.getElementById('novoClienteNome').value.trim();
         let tel = document.getElementById('novoClienteTelefone').value.trim();
-        if(!nome) return window.showToast("Introduza o nome do cliente.", "error");
+        if(!nome) return window.showToast("Introduza o nome.", "error");
 
         let novoCliente = { id: Date.now(), nome, telefone: tel, divida: 0 };
         clientes.push(novoCliente);
@@ -3345,13 +3135,12 @@
 
     window.liquidarDividaCliente = async function(idx) {
         let c = clientes[idx];
-        let valStr = await customPrompt(`Liquidar quanto da dívida de ${c.nome}? (Total: ${c.divida} MT)`, c.divida.toString());
+        let valStr = await customPrompt(`Liquidar quanto da dívida de ${c.nome}?`, c.divida.toString());
         if (!valStr) return;
         let val = parseFloat(valStr);
         if(val > 0) {
             c.divida = Math.max(0, c.divida - val);
             await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
-            registarAuditLog('Dívida Liquidada', `Liquidação de ${val} MT para ${c.nome}`);
             window.showToast("Pagamento registado!", "success");
         }
     };
@@ -3359,10 +3148,8 @@
     window.eliminarClienteFiado = async function(idx) {
         let c = clientes[idx];
         if(!c) return;
-        if(c.divida > 0 && !(await customConfirm(`⚠️ O cliente ${c.nome} tem dívida. Deseja eliminar?`))) return;
         clientes.splice(idx, 1);
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
-        registarAuditLog('Cliente Removido', `Cliente '${c.nome}' eliminado`);
         window.showToast("Cliente eliminado!", "success");
     };
 
@@ -3384,7 +3171,7 @@
         if(!sel) return;
         sel.innerHTML = '<option value="">-- Selecionar Garrafa --</option>';
         for(let p in stock) {
-            if(stock[p].qtd >= 1) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd} garrafas)</option>`;
+            if(stock[p].qtd >= 1) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
         }
         document.getElementById('modalConversaoShots').style.display = 'block';
     };
@@ -3398,8 +3185,7 @@
         let numShotsPorGarrafa = parseInt(document.getElementById('inputQtdShotsPorGarrafa').value) || 20;
         let precoShot = parseFloat(document.getElementById('inputPrecoVendaShot').value) || 0;
 
-        if(!garrafa) return window.showToast("Selecione a garrafa.", "error");
-        if(!nomeShot) return window.showToast("Introduza o nome do shot.", "error");
+        if(!garrafa || !nomeShot) return window.showToast("Preencha os campos.", "error");
         if(stock[garrafa].qtd < qtdGarrafasAbrir) return window.showToast("Stock insuficiente.", "error");
 
         let custoUnitGarrafa = stock[garrafa].qtd > 0 ? (stock[garrafa].preco_total / stock[garrafa].qtd) : 0;
@@ -3408,27 +3194,14 @@
 
         stock[garrafa].qtd -= qtdGarrafasAbrir;
         stock[garrafa].preco_total = Math.max(0, stock[garrafa].preco_total - custoTotalGarrafas);
-        if(stock[garrafa].qtd < 0.01) { stock[garrafa].qtd = 0; stock[garrafa].preco_total = 0; }
 
         if(!stock[nomeShot]) stock[nomeShot] = { qtd: 0, preco_total: 0, preco_venda: precoShot, min_alerta: 10, categoria: 'bebidas' };
         stock[nomeShot].qtd += totalShotsGerados;
         stock[nomeShot].preco_total += custoTotalGarrafas;
         if(precoShot > 0) stock[nomeShot].preco_venda = precoShot;
 
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'SAÍDA (CONVERSÃO SHOTS)', produto: garrafa, qtd: qtdGarrafasAbrir, usuario: usuarioAtual.nome, origem: `Convertidas em ${totalShotsGerados}x ${nomeShot}`
-        });
-
-        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-            tipo: 'ENTRADA (CONVERSÃO)', produto: nomeShot, qtd: totalShotsGerados, usuario: usuarioAtual.nome, origem: `Origem: ${qtdGarrafasAbrir}x ${garrafa}`
-        });
-
         await salvarStockFirestore({ [garrafa]: stock[garrafa], [nomeShot]: stock[nomeShot] });
-        registarAuditLog('Conversão de Garrafa', `${qtdGarrafasAbrir}x ${garrafa} convertidas em ${totalShotsGerados}x ${nomeShot}`);
-
-        window.showToast(`✅ Conversão concluída!`, "success");
+        window.showToast("Conversão concluída!", "success");
         window.fecharModalConversaoShots();
         filtrarEExibirProdutosVenda();
         renderizarStock();
@@ -3465,7 +3238,6 @@
 
     window.salvarEntradaStock = async function() {
         if (!window.iniciarProcessamento()) return;
-        
         try {
             let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
             if(!prod) return window.showToast("Digite o nome do produto.", "warning");
@@ -3476,7 +3248,6 @@
             let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
             let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-            // Processar a imagem inserida (Reduzir qualidade para não pesar a Base de Dados)
             let fileImg = document.getElementById('simplesImagem').files[0];
             let imgBase64 = "";
             if (fileImg) {
@@ -3488,13 +3259,12 @@
                             let canvas = document.createElement('canvas');
                             canvas.width = 150; canvas.height = 150;
                             let ctx = canvas.getContext('2d');
-                            ctx.fillStyle = "#ffffff"; 
-                            ctx.fillRect(0,0,150,150);
+                            ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,150,150);
                             let scale = Math.min(150 / img.width, 150 / img.height);
                             let x = (150 / 2) - (img.width / 2) * scale;
                             let y = (150 / 2) - (img.height / 2) * scale;
                             ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                            resolve(canvas.toDataURL('image/jpeg', 0.8)); // Comprime para salvar rápido
+                            resolve(canvas.toDataURL('image/jpeg', 0.8));
                         };
                         img.src = e.target.result;
                     };
@@ -3523,19 +3293,12 @@
             stock[prod].categoria = cat;
             if(barcodeInput) stock[prod].barcode = barcodeInput;
             if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
-            if(imgBase64) stock[prod].imagem = imgBase64; // Guarda a imagem no stock
-
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Por Caixa' : 'Avulsa'
-            });
+            if(imgBase64) stock[prod].imagem = imgBase64;
 
             await salvarStockFirestore({ [prod]: stock[prod] });
-            registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
-            
             document.getElementById('simplesProduto').value = '';
             document.getElementById('simplesBarcode').value = '';
-            document.getElementById('simplesImagem').value = ''; // Limpa o campo
+            document.getElementById('simplesImagem').value = '';
             filtrarEExibirProdutosVenda();
             window.showToast("Stock atualizado!", "success");
         } finally {
@@ -3551,13 +3314,10 @@
         let termoBusca = (document.getElementById('filtroBuscarStock')?.value || '').trim().toLowerCase();
         let produtosFiltrados = Object.keys(stock).filter(p => p.toLowerCase().includes(termoBusca));
 
-        let totalInvestidoGlobal = 0;
-        let totalValorVendaGlobal = 0;
-
+        let totalInvestidoGlobal = 0, totalValorVendaGlobal = 0;
         produtosFiltrados.forEach(p => {
             let item = stock[p];
-            let investidoProduto = item.preco_total || 0;
-            totalInvestidoGlobal += investidoProduto;
+            totalInvestidoGlobal += (item.preco_total || 0);
             totalValorVendaGlobal += (item.qtd * (item.preco_venda || 0));
         });
 
@@ -3582,13 +3342,7 @@
 
             let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td><b>${investidoProduto.toFixed(2)} MT</b></td><td style="color:var(--success-dark); font-weight:600;">${((item.qtd * precoVenda) - investidoProduto).toFixed(2)} MT</td>` : '';
             let colAdmin = (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente') ? 
-                `<td>
-                    <div style="display:flex; gap:6px;">
-                        <button class="btn-outline btn-sm" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕</button>
-                        <button class="btn-outline btn-sm" onclick="window.apagarQuantidadeProdutoPrompt('${p}')">➖</button>
-                        ${usuarioAtual.tipo === 'admin' ? `<button class="btn-outline btn-sm" style="color:var(--danger); border-color:transparent;" onclick="window.apagarProdutoTotal('${p}')">🗑️</button>` : ''}
-                    </div>
-                </td>` : '';
+                `<td><button class="btn-outline btn-sm" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕</button></td>` : '';
 
             tbody.innerHTML += `<tr>
                 <td><b style="color:var(--primary);">${p.toUpperCase()}</b></td>
@@ -3603,7 +3357,7 @@
 
     window.mudarPaginaStock = function(dir, ehAvancoDireto = false) {
         if(ehAvancoDireto) paginaAtualStock++;
-        else if(dir === 1 && document.getElementById('filtroBuscarStock')) paginaAtualStock = 1;
+        else if(dir === 1) paginaAtualStock = 1;
         else paginaAtualStock += dir;
         if(paginaAtualStock < 1) paginaAtualStock = 1;
         renderizarStock();
@@ -3612,83 +3366,14 @@
     window.adicionarQuantidadeProdutoPrompt = async function(p) {
         let item = stock[p];
         if(!item) return;
-        
-        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja ADICIONAR? (Stock: ${item.qtd})`, "1");
+        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja ADICIONAR?`, "1");
         if (!valStr) return;
-        let qtdAdicionar = parseFloat(valStr);
-        if(isNaN(qtdAdicionar) || qtdAdicionar <= 0) return window.showToast("Quantidade inválida.", "error");
-
-        let custoAtual = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-        let custoStr = await customPrompt(`Custo unitário desta nova entrada (MT):`, custoAtual.toFixed(2));
-        if (!custoStr) return;
-        let custoUnitNovo = parseFloat(custoStr);
-        if(isNaN(custoUnitNovo) || custoUnitNovo < 0) return window.showToast("Custo inválido.", "error");
-
-        if (!window.iniciarProcessamento()) return;
-        try {
-            item.qtd += qtdAdicionar;
-            item.preco_total += (qtdAdicionar * custoUnitNovo);
-
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                tipo: 'ENTRADA RÁPIDA', produto: p, qtd: qtdAdicionar, usuario: usuarioAtual.nome, origem: 'Ajuste Manual'
-            });
-
-            await salvarStockFirestore({ [p]: stock[p] });
-            registarAuditLog('Stock Adicionado', `Adicionadas ${qtdAdicionar} unidades de '${p}'`);
-            window.showToast("Stock adicionado!", "success");
-            filtrarEExibirProdutosVenda();
-            renderizarStock();
-        } finally {
-            window.fimProcessamento();
-        }
-    };
-
-    window.apagarQuantidadeProdutoPrompt = async function(p) {
-        let item = stock[p];
-        if(!item) return;
-
-        let valStr = await customPrompt(`Remover unidades de '${p.toUpperCase()}' (Stock: ${item.qtd}):`, "1");
-        if (!valStr) return;
-        let qtdRemover = parseFloat(valStr);
-        if(isNaN(qtdRemover) || qtdRemover <= 0 || qtdRemover > item.qtd) return window.showToast("Quantidade inválida.", "error");
-
-        if (!window.iniciarProcessamento()) return;
-        try {
-            let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-            item.qtd -= qtdRemover;
-            item.preco_total = Math.max(0, item.preco_total - (qtdRemover * custoUnit));
-            if(item.qtd < 0.01) { item.qtd = 0; item.preco_total = 0; }
-
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                tipo: 'REMOÇÃO MANUAL', produto: p, qtd: qtdRemover, usuario: usuarioAtual.nome, origem: 'Ajuste Manual'
-            });
-
-            await salvarStockFirestore({ [p]: stock[p] });
-            registarAuditLog('Stock Reduzido', `Removidas ${qtdRemover} unidades de '${p}'`);
-            window.showToast("Stock reduzido!", "success");
-            filtrarEExibirProdutosVenda();
-            renderizarStock();
-        } finally {
-            window.fimProcessamento();
-        }
-    };
-
-    window.apagarProdutoTotal = async function(p) {
-        if(!(await customConfirm(`Apagar o produto '${p.toUpperCase()}' do sistema?`))) return;
-        if (!window.iniciarProcessamento()) return;
-        try {
-            if(!stock[p]) return;
-            delete stock[p];
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
-            registarAuditLog('Produto Eliminado', `Produto '${p}' apagado`);
-            filtrarEExibirProdutosVenda();
-            renderizarStock();
-            window.showToast("Produto eliminado.", "info");
-        } finally {
-            window.fimProcessamento();
-        }
+        let qtd = parseFloat(valStr);
+        if(isNaN(qtd) || qtd <= 0) return;
+        item.qtd += qtd;
+        await salvarStockFirestore({ [p]: item });
+        renderizarStock();
+        window.showToast("Stock atualizado!", "success");
     };
 
     function renderizarMovimentacoesStock() {
@@ -3706,8 +3391,6 @@
         let inicio = (paginaAtualMov - 1) * ITENS_POR_PAGINA_MOV;
         listaFiltrada.slice(inicio, inicio + ITENS_POR_PAGINA_MOV).forEach(m => {
             let isEntrada = m.tipo.includes('ENTRADA') || m.tipo.includes('DEVOLUÇÃO');
-            let colAdminAcao = (usuarioAtual && usuarioAtual.tipo === 'admin') ? `<td><button class="btn-outline btn-sm" style="color:var(--danger); border-color:transparent;" onclick="window.apagarMovimentacaoIndividual('${m.idDoc}')">🗑️</button></td>` : `<td>-</td>`;
-
             tbody.innerHTML += `<tr>
                 <td><small>${m.data}</small></td>
                 <td><span class="badge ${isEntrada ? 'badge-entrada' : 'badge-saida'}">${m.tipo}</span></td>
@@ -3715,30 +3398,19 @@
                 <td style="font-weight:600; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">${isEntrada ? '+' : '-'}${m.qtd}</td>
                 <td><b style="text-transform:capitalize;">${m.usuario}</b></td>
                 <td><small>${m.origem || '-'}</small></td>
-                ${colAdminAcao}
             </tr>`;
         });
     }
 
-    window.mudarPaginaMovimentacao = function(dir, ehAvancoDireto = false) {
-        if(ehAvancoDireto) paginaAtualMov++;
-        else if(dir === 1 && document.getElementById('filtroTipoMovimentacao')) paginaAtualMov = 1;
-        else paginaAtualMov += dir;
+    window.mudarPaginaMovimentacao = function(dir) {
+        paginaAtualMov += dir;
         if(paginaAtualMov < 1) paginaAtualMov = 1;
         renderizarMovimentacoesStock();
-    };
-
-    window.apagarMovimentacaoIndividual = async function(idDocMov) {
-        if(await customConfirm("Confirmar remoção da movimentação?")) {
-            await deleteDoc(doc(db, "empresas", codigoEmpresa, "movimentacoes", idDocMov));
-            window.showToast("Removido!", "info");
-        }
     };
 
     function verificarAlertasStock() {
         let temCritico = false;
         for(let p in stock) { if(stock[p].qtd <= (stock[p].min_alerta || 5)) { temCritico = true; break; } }
-        if(temCritico) window.tocarSom('alerta');
         document.getElementById('boxAlertaStockGlobal').style.display = temCritico ? 'block' : 'none';
     }
 
@@ -3755,7 +3427,7 @@
         let lista = historicoDashFiltrado;
 
         if(lista.length === 0) {
-            tbodyHist.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sem transações.</td></tr>';
+            tbodyHist.innerHTML = '<tr><td colspan="6" style="text-align:center;">Sem transações.</td></tr>';
             return;
         }
 
@@ -3766,7 +3438,7 @@
 
         let inicio = (paginaAtualAdminHist - 1) * ITENS_POR_PAGINA_ADMIN_HIST;
         lista.slice(inicio, inicio + ITENS_POR_PAGINA_ADMIN_HIST).forEach(h => {
-            let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : (h.detalhes || '-');
+            let resumo = h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join(', ') : '-';
             let ehCancelado = h.status === 'cancelado';
             let ehCortesia = h.metodo === 'Cortesia';
 
@@ -3778,7 +3450,7 @@
                     <span class="badge ${ehCortesia ? 'badge-cortesia' : ''}">${h.metodo || 'Venda'}</span>
                     ${ehCancelado ? '<span class="badge badge-cancelado">CANCELADO</span>' : ''}
                 </td>
-                <td style="font-weight:600; color:${ehCancelado?'var(--text-muted)':'var(--success-dark)'}; text-decoration:${ehCancelado?'line-through':'none'};">
+                <td style="font-weight:600; text-decoration:${ehCancelado?'line-through':'none'};">
                     ${(h.totalVenda || 0).toFixed(2)} MT
                 </td>
                 <td>${!ehCancelado && h.tipo === 'venda' ? `<button class="btn-outline btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc}',${h.id})">Cancelar</button>` : '-'}</td>
@@ -3787,64 +3459,46 @@
     };
 
     window.cancelarVendaAdmin = async function(idDocVenda, idNum) {
-        let senhaAdmin = await customPrompt("🔒 AUTORIZAÇÃO DE ADMIN\nInsira a senha de Administrador:", "", true);
+        let senhaAdmin = await customPrompt("🔒 Senha de Administrador:", "", true);
         if (!senhaAdmin) return;
-        
-        if (!window.iniciarProcessamento()) return;
-        
-        try {
-            let autorizado = false;
-            for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; } }
-            if (!autorizado) return window.showToast("❌ Senha incorreta!", "error");
+        let autorizado = false;
+        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senhaAdmin).trim()) { autorizado = true; break; } }
+        if (!autorizado) return window.showToast("Senha incorreta!", "error");
 
-            let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
-            if(!vendaObj) return window.showToast("Venda não encontrada.", "error");
-            if(vendaObj.status === 'cancelado') return window.showToast("Já cancelada.", "warning");
+        let vendaObj = historico.find(h => h.idDoc === idDocVenda || h.id === idNum);
+        if(!vendaObj || vendaObj.status === 'cancelado') return;
 
-            if(vendaObj.itens) {
-                let stockUpdates = {};
-                for(let item of vendaObj.itens) {
-                    if(stock[item.produto]) {
-                        stock[item.produto].qtd += item.qtd;
-                        let custo = item.custoUnit || (stock[item.produto].qtd > 0 ? stock[item.produto].preco_total / stock[item.produto].qtd : 0);
-                        stock[item.produto].preco_total += (item.qtd * custo);
-                        stockUpdates[item.produto] = stock[item.produto];
-                    }
-                    await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                        id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                        tipo: 'DEVOLUÇÃO (CANCELAMENTO)', produto: item.produto, qtd: item.qtd, usuario: usuarioAtual.nome, origem: `Cancelamento Venda #${vendaObj.id}`
-                    });
-                }
-                if (Object.keys(stockUpdates).length > 0) {
-                    await salvarStockFirestore(stockUpdates);
+        if(vendaObj.itens) {
+            let stockUpdates = {};
+            for(let item of vendaObj.itens) {
+                if(stock[item.produto]) {
+                    stock[item.produto].qtd += item.qtd;
+                    stockUpdates[item.produto] = stock[item.produto];
                 }
             }
-
-            vendaObj.status = 'cancelado';
-            await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
-            registarAuditLog('Venda Cancelada', `Venda #${vendaObj.id} cancelada`);
-            window.showToast("Venda cancelada e stock revertido!", "success");
-        } finally {
-            window.fimProcessamento();
+            if (Object.keys(stockUpdates).length > 0) await salvarStockFirestore(stockUpdates);
         }
+
+        vendaObj.status = 'cancelado';
+        await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", vendaObj.idDoc), vendaObj, { merge: true });
+        window.showToast("Venda cancelada!", "success");
     };
 
     window.apagarTodoHistoricoApp = async function() {
-        let senha = await customPrompt("⚠️ ZONA DE PERIGO\nSenha de Administrador:", "", true);
+        let senha = await customPrompt("⚠️ Senha de Administrador:", "", true);
         if (!senha) return;
         let autorizado = false;
         for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
-        if(!autorizado || !(await customConfirm("⚠️ TEM CERTEZA ABSOLUTA? Isto apagará todo o histórico de vendas e logs!"))) return;
+        if(!autorizado || !(await customConfirm("⚠️ Deseja apagar todo o histórico?"))) return;
 
         try {
-            let p = [getDocs(collection(db, "empresas", codigoEmpresa, "vendas")), getDocs(collection(db, "empresas", codigoEmpresa, "movimentacoes")), getDocs(collection(db, "empresas", codigoEmpresa, "turnos")), getDocs(collection(db, "empresas", codigoEmpresa, "auditLogs"))];
-            let res = await Promise.all(p);
-            let promessasDel = [];
-            res.forEach(snap => snap.docs.forEach(d => promessasDel.push(deleteDoc(d.ref))));
-            await Promise.all(promessasDel);
-            window.showToast("✅ Histórico limpo com sucesso!", "success");
+            let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
+            let promessas = [];
+            snap.docs.forEach(d => promessas.push(deleteDoc(d.ref)));
+            await Promise.all(promessas);
+            window.showToast("Histórico limpo!", "success");
             window.atualizarDashboard();
-        } catch(err) { window.showToast("Erro: " + err.message, "error"); }
+        } catch(err) { window.showToast("Erro.", "error"); }
     };
 
     window.atualizarDashboard = function() {
@@ -3900,7 +3554,7 @@
             divTop.innerHTML = '';
             topSorted.forEach(([p, q], idx) => {
                 divTop.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-light);">
-                    <span style="font-weight:500; color:var(--text-main);">${idx+1}. <span style="text-transform:capitalize;">${p}</span></span>
+                    <span style="font-weight:500;">${idx+1}. <span style="text-transform:capitalize;">${p}</span></span>
                     <span class="badge">${q} un</span>
                 </div>`;
             });
@@ -3924,64 +3578,34 @@
                 datasets: [{
                     data: [canais['M-Pesa']||0, canais['e-Mola']||0, canais['POS']||0, canais['Numerário']||0, canais['Fiado']||0],
                     backgroundColor: ['#8b5cf6', '#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
-                    borderWidth: 0,
-                    hoverOffset: 4
+                    borderWidth: 0
                 }]
             },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, font: { family: "'Inter', sans-serif" } } }
-                },
-                cutout: '75%'
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } }, cutout: '75%' }
         });
     }
 
     window.fazerBackup = function() {
-        let usuariosSemSenhas = {};
-        for(let u in usuarios) usuariosSemSenhas[u] = { tipo: usuarios[u].tipo, foto: usuarios[u].foto || "", permissoes: usuarios[u].permissoes || [] };
-
-        let backupData = {
-            codigoEmpresa, usuarios: usuariosSemSenhas, stock, movimentacoesStock, historico, clientes, despesas, turnosCaixa, auditLogs,
-            dadosEmpresa: { nome: dadosEmpresa.nome, nuit: dadosEmpresa.nuit, endereco: dadosEmpresa.endereco, telefone: dadosEmpresa.telefone, slogan: dadosEmpresa.slogan },
-            dataBackup: new Date().toLocaleString('pt-MZ')
-        };
-
+        let backupData = { codigoEmpresa, stock, historico, clientes, despesas, turnosCaixa };
         let blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
         let a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `backup_${codigoEmpresa}_${Date.now()}.json`;
+        a.download = `backup_${codigoEmpresa}.json`;
         a.click();
-        URL.revokeObjectURL(a.href);
     };
 
     window.exportarVendasExcel = function() {
-        let dadosExcel = historico.map(item => ({
-            "Empresa": codigoEmpresa, "Data": item.data, "Estado": item.status || "concluido",
-            "Utilizador": item.usuario, "Mesa": item.mesa || "Balcão", "Método": item.metodo, "Total Venda (MT)": item.totalVenda || 0
-        }));
-        let ws = XLSX.utils.json_to_sheet(dadosExcel);
+        let ws = XLSX.utils.json_to_sheet(historico);
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Vendas");
-        XLSX.writeFile(wb, `Vendas_${codigoEmpresa}_${Date.now()}.xlsx`);
+        XLSX.writeFile(wb, `Vendas_${codigoEmpresa}.xlsx`);
     };
 
     window.exportarStockExcel = function() {
-        let dadosStock = [];
-        for(let p in stock) {
-            let item = stock[p];
-            let custoMedio = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
-            dadosStock.push({
-                "Empresa": codigoEmpresa, "Produto": p.toUpperCase(), "Categoria": (item.categoria||'outros').toUpperCase(),
-                "Stock": item.qtd, "Custo (MT)": custoMedio.toFixed(2), "Preço Venda (MT)": (item.preco_venda||0).toFixed(2)
-            });
-        }
-        let ws = XLSX.utils.json_to_sheet(dadosStock);
+        let ws = XLSX.utils.json_to_sheet(Object.entries(stock).map(([k, v]) => ({ produto: k, ...v })));
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Stock");
-        XLSX.writeFile(wb, `Stock_${codigoEmpresa}_${Date.now()}.xlsx`);
+        XLSX.writeFile(wb, `Stock_${codigoEmpresa}.xlsx`);
     };
 
     window.abrirModalQRMenu = function() {
@@ -3989,7 +3613,7 @@
         let urlSite = window.location.href;
         document.getElementById('textLinkMenu').innerText = urlSite;
         document.getElementById('qrcodeArea').innerHTML = '';
-        new QRCode(document.getElementById('qrcodeArea'), { text: urlSite, width: 180, height: 180, colorDark: "#0f172a", colorLight: "#ffffff" });
+        new QRCode(document.getElementById('qrcodeArea'), { text: urlSite, width: 180, height: 180 });
     };
 
     window.fecharModalQRMenu = function() { document.getElementById('modalQRMenu').style.display = 'none'; };
@@ -3997,7 +3621,6 @@
     function preencherCamposEmpresaModal() {
         if (document.getElementById('cfgNomeEmpresa')) {
             document.getElementById('cfgCodigoLicencaOculto').value = "••••••••";
-            document.getElementById('cfgCodigoLicencaOculto').type = "password";
             document.getElementById('cfgNomeEmpresa').value = dadosEmpresa.nome || '';
             document.getElementById('cfgNuit').value = dadosEmpresa.nuit || '';
             document.getElementById('cfgTelefone').value = dadosEmpresa.telefone || '';
@@ -4010,7 +3633,7 @@
     }
 
     window.revelarLicencaAdmin = async function() {
-        let senha = await customPrompt("🔒 AUTORIZAÇÃO\nSenha de Administrador:", "", true);
+        let senha = await customPrompt("🔒 Senha de Administrador:", "", true);
         if (!senha) return;
         let autorizado = false;
         for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
@@ -4018,9 +3641,8 @@
             let inputLicenca = document.getElementById('cfgCodigoLicencaOculto');
             inputLicenca.type = "text";
             inputLicenca.value = codigoEmpresa;
-            window.showToast(`🔑 Código revelado temporariamente.`, "info");
             setTimeout(() => { inputLicenca.type = "password"; inputLicenca.value = "••••••••"; }, 8000);
-        } else { window.showToast("❌ Acesso Negado!", "error"); }
+        } else { window.showToast("Incorreto.", "error"); }
     };
 
     window.abrirModalDefinicoes = function() {
@@ -4049,30 +3671,23 @@
         };
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
         document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome;
-        window.showToast("Definições da empresa guardadas!", "success");
+        window.showToast("Definições guardadas!", "success");
     };
 
     window.mudarMinhaSenha = async function() {
         let novaSenha = document.getElementById('inputNovaSenha').value;
-        if (!novaSenha || novaSenha.length < 3) return window.showToast("A senha deve ter pelo menos 3 caracteres.", "warning");
-        
+        if (!novaSenha || novaSenha.length < 3) return window.showToast("Mínimo 3 caracteres.", "warning");
         usuarios[usuarioAtual.nome].senha = novaSenha;
-        
         let listaArrayFirestore = [];
         for (let nomeKey in usuarios) {
             listaArrayFirestore.push({ 
-                nome: nomeKey, 
-                senha: usuarios[nomeKey].senha, 
-                tipo: usuarios[nomeKey].tipo, 
-                foto: usuarios[nomeKey].foto || "",
-                permissoes: usuarios[nomeKey].permissoes || []
+                nome: nomeKey, senha: usuarios[nomeKey].senha, tipo: usuarios[nomeKey].tipo, 
+                foto: usuarios[nomeKey].foto || "", permissoes: usuarios[nomeKey].permissoes || []
             });
         }
         await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
-        
         document.getElementById('inputNovaSenha').value = '';
-        window.showToast("Palavra-passe alterada com sucesso!", "success");
-        registarAuditLog('Senha Alterada', `${usuarioAtual.nome} alterou a própria senha.`);
+        window.showToast("Palavra-passe alterada!", "success");
     };
 
 </script>
