@@ -963,16 +963,16 @@
                 <div class="form-row" id="rowModoCaixa">
                     <div class="form-group"><label>Qtd Caixas</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
                     <div class="form-group"><label>Unidades/Caixa</label><input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Custo p/ Caixa</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Quanto custou a caixa (MT)</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row" id="rowModoUnidade" style="display:none;">
                     <div class="form-group"><label>Qtd Unidades</label><input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Custo Unitário</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Custo Unitário (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group"><label>Preço Venda Unitário</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Quanto vale agora (Preço Venda Unit.)</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                     <div class="form-group"><label>Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="5" min="1"></div>
                     <div class="form-group"><label>Imagem / Ícone (Opcional)</label><input type="file" id="simplesImagem" accept="image/*" style="padding: 6px; font-size: 0.85em; background: var(--bg-body);"></div>
                 </div>
@@ -1259,7 +1259,11 @@
     <div class="modal-content" style="max-width:440px;">
         <span class="close-modal" onclick="window.fecharModalConversaoShots()">&times;</span>
         <h3 style="margin-top:0;">Converter em Shots</h3>
-        <div class="form-group" style="margin-bottom: 16px;"><label>Garrafa a Abrir</label><select id="selectGarrafaConversao"></select></div>
+        <div class="form-group" style="margin-bottom: 12px;">
+            <label>Pesquisar Garrafa</label>
+            <input type="text" id="inputPesquisaGarrafaShots" placeholder="Digite para filtrar garrafas..." oninput="window.filtrarDropdownGarrafasShots()" style="padding: 8px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;"><label>Garrafa a Abrir</label><select id="selectGarrafaConversao" size="4" style="height: 120px;"></select></div>
         <div class="form-group" style="margin-bottom: 16px;"><label>Qtd Garrafas</label><input type="number" id="inputQtdGarrafasAbrir" value="1" min="1" step="1"></div>
         <div class="form-group" style="margin-bottom: 16px;"><label>Nome do Shot</label><input type="text" id="inputNomeShotDestino" placeholder="Ex: Shot Red Label"></div>
         <div class="form-row">
@@ -3156,13 +3160,26 @@
     };
 
     window.abrirModalConversaoShots = function() {
+        window.preencherDropdownGarrafasShots('');
+        document.getElementById('inputPesquisaGarrafaShots').value = '';
+        document.getElementById('modalConversaoShots').style.display = 'block';
+    };
+
+    window.preencherDropdownGarrafasShots = function(filtro = '') {
         let sel = document.getElementById('selectGarrafaConversao');
         if(!sel) return;
-        sel.innerHTML = '<option value="">-- Selecionar Garrafa --</option>';
+        sel.innerHTML = '';
+        let termo = filtro.trim().toLowerCase();
         for(let p in stock) {
-            if(stock[p].qtd >= 1) sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
+            if(stock[p].qtd >= 1 && p.toLowerCase().includes(termo)) {
+                sel.innerHTML += `<option value="${p}">${p.toUpperCase()} (Disp: ${stock[p].qtd})</option>`;
+            }
         }
-        document.getElementById('modalConversaoShots').style.display = 'block';
+    };
+
+    window.filtrarDropdownGarrafasShots = function() {
+        let termo = document.getElementById('inputPesquisaGarrafaShots').value;
+        window.preencherDropdownGarrafasShots(termo);
     };
 
     window.fecharModalConversaoShots = function() { document.getElementById('modalConversaoShots').style.display = 'none'; };
@@ -3331,7 +3348,11 @@
 
             let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td><b>${investidoProduto.toFixed(2)} MT</b></td><td style="color:var(--success-dark); font-weight:600;">${((item.qtd * precoVenda) - investidoProduto).toFixed(2)} MT</td>` : '';
             let colAdmin = (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente') ? 
-                `<td><button class="btn-outline btn-sm" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕</button></td>` : '';
+                `<td>
+                    <button class="btn-outline btn-sm" title="Adicionar Unidades" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕</button>
+                    <button class="btn-outline btn-sm" title="Remover Unidades" onclick="window.removerQuantidadeProdutoPrompt('${p}')" style="color:var(--warning);">➖</button>
+                    <button class="btn-saida btn-sm" title="Apagar Produto" onclick="window.apagarProdutoStock('${p}')">🗑️</button>
+                 </td>` : '';
 
             tbody.innerHTML += `<tr>
                 <td><b style="color:var(--primary);">${p.toUpperCase()}</b></td>
@@ -3363,6 +3384,43 @@
         await salvarStockFirestore({ [p]: item });
         renderizarStock();
         window.showToast("Stock atualizado!", "success");
+    };
+
+    window.removerQuantidadeProdutoPrompt = async function(p) {
+        let item = stock[p];
+        if(!item) return;
+        let valStr = await customPrompt(`Quantas unidades de '${p.toUpperCase()}' deseja REMOVER?`, "1");
+        if (!valStr) return;
+        let qtd = parseFloat(valStr);
+        if(isNaN(qtd) || qtd <= 0) return;
+        if(item.qtd < qtd) return window.showToast("Quantidade superior ao stock atual!", "error");
+        
+        let custoUnit = item.qtd > 0 ? (item.preco_total / item.qtd) : 0;
+        item.qtd -= qtd;
+        item.preco_total = Math.max(0, item.preco_total - (qtd * custoUnit));
+
+        await salvarStockFirestore({ [p]: item });
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+            tipo: 'SAÍDA MANUAL', produto: p, qtd, usuario: usuarioAtual.nome, origem: 'Ajuste Stock Manual'
+        });
+        renderizarStock();
+        window.showToast("Stock removido com sucesso!", "success");
+    };
+
+    window.apagarProdutoStock = async function(p) {
+        if(!(await customConfirm(`Tem a certeza que deseja ELIMINAR COMPLETAMENTE o produto '${p.toUpperCase()}' do stock?`))) return;
+        if(!(await solicitarAutorizacaoGestor('Apagar Produto do Stock'))) return;
+
+        try {
+            delete stock[p];
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), { [p]: deleteField() }, { merge: true });
+            renderizarStock();
+            filtrarEExibirProdutosVenda();
+            window.showToast("Produto eliminado do stock!", "success");
+        } catch(e) {
+            window.showToast("Erro ao eliminar produto.", "error");
+        }
     };
 
     function renderizarMovimentacoesStock() {
