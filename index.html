@@ -1860,9 +1860,13 @@
                     return;
                 }
             } else { 
-                // Se a licença não existir na coleção principal, criamos automaticamente para evitar ecrã em branco em contas válidas/offline
-                await setDoc(doc(db, "licencas", codigoEmpresa), { status: "ativo", tipo: "admin", criadoEm: new Date().toISOString() }, { merge: true });
+                // Impede a criação de licenças falsas! Exige que o utilizador crie um Trial válido ou insira um código real.
+                window.showToast("❌ Código de licença inválido ou não encontrado!", "error");
+                return;
             }
+
+            // Grava o código no cache apenas se for um código válido verificado acima.
+            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
 
             document.getElementById('boxContaBloqueada').style.display = 'none';
             document.getElementById('seccaoCriarTrial').style.display = 'none';
