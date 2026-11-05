@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS Master - Gestão Central de Licenças</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --border: #cbd5e1;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--light); margin: 0; padding: 20px; color: var(--dark); }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        h2, h3 { margin-top: 0; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 200px; }
+        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.85em; color: #64748b; text-transform: uppercase; }
+        input, select, button { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; box-sizing: border-box; font-weight: 600; }
+        button { background: var(--primary); color: white; cursor: pointer; border: none; font-weight: 800; transition: 0.15s; }
+        button:hover { opacity: 0.9; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .table-responsive { overflow-x: auto; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; color: #64748b; font-size: 0.75em; text-transform: uppercase; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 700; }
+        .badge-ativo { background: #d1fae5; color: #065f46; }
+        .badge-suspenso { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🛠️ GS Master - Painel Central de Licenças</h2>
+    <p style="color: #64748b;">Gere os pacotes, prazos e acessos de todos os clientes do GS Point.</p>
+
+    <!-- SECÇÃO DE LOGIN MASTER -->
+    <div id="loginMasterBox" style="max-width: 400px; margin: 40px auto; background: #fff; padding: 20px; border: 1px solid var(--border); border-radius: 12px;">
+        <h3>Login Master</h3>
+        <div class="form-group" style="margin-bottom: 12px;">
+            <label>E-mail Admin</label>
+            <input type="email" id="masterEmail" placeholder="admin@gspoint.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+            <label>Palavra-passe</label>
+            <input type="password" id="masterSenha" placeholder="******">
+        </div>
+        <button onclick="fazerLoginMaster()">Entrar no Painel Master</button>
+    </div>
+
+    <!-- PAINEL DE CONTROLO (OCULTO ATÉ LOGIN) -->
+    <div id="painelMasterConteudo" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+            <h3 style="margin: 0;">Emitir Nova Licença / Pacote</h3>
+            <button onclick="fazerLogoutMaster()" style="width: auto; padding: 8px 16px; background: var(--dark);">Terminar Sessão</button>
+        </div>
+
+        <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-top: 14px; border: 1px solid var(--border);">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nome do Cliente / Restaurante</label>
+                    <input type="text" id="novoNomeCliente" placeholder="Ex: Restaurante Sabor da Cidade">
+                </div>
+                <div class="form-group">
+                    <label>Selecionar Pacote</label>
+                    <select id="selectPacoteMaster" onchange="atualizarLimitesPacote()">
+                        <option value="pacote_um">Pacote 1 (2 Mesas / 2 Usuários)</option>
+                        <option value="pacote_dois">Pacote 2 (5 Mesas / 5 Usuários)</option>
+                        <option value="pacote_tres">Pacote 3 (10 Mesas / 15 Usuários)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Limite de Mesas</label>
+                    <input type="number" id="inputLimMesas" value="2">
+                </div>
+                <div class="form-group">
+                    <label>Limite de Usuários</label>
+                    <input type="number" id="inputLimUsers" value="2">
+                </div>
+                <div class="form-group">
+                    <label>Data de Validade</label>
+                    <input type="date" id="inputValidadeLicenca">
+                </div>
+            </div>
+
+            <button class="btn-success" onclick="gerarNovaLicenca()">Gerar e Registar Licença 🚀</button>
+        </div>
+
+        <h3 style="margin-top: 30px;">Licenças Emitidas Ativas</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código / Empresa</th>
+                        <th>Pacote</th>
+                        <th>Limites (Mesas / Users)</th>
+                        <th>Validade</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaLicencasMaster">
+                    <!-- Preenchido via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getFirestore, collection, setDoc, doc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    let fbConfig = {
+        apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
+        authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
+        projectId: "gestao-restaurante-a74e4"
+    };
+
+    const app = initializeApp(fbConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    window.fazerLoginMaster = async function() {
+        let email = document.getElementById('masterEmail').value;
+        let senha = document.getElementById('masterSenha').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, senha);
+        } catch (e) {
+            alert("Erro no login: " + e.message);
+        }
+    };
+
+    window.fazerLogoutMaster = function() { signOut(auth); };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('loginMasterBox').style.display = 'none';
+            document.getElementById('painelMasterConteudo').style.display = 'block';
+            carregarLicencasMaster();
+            
+            // Definir data padrão de validade para daqui a 30 dias
+            let d = new Date();
+            d.setDate(d.getDate() + 30);
+            document.getElementById('inputValidadeLicenca').value = d.toISOString().split('T')[0];
+        } else {
+            document.getElementById('loginMasterBox').style.display = 'block';
+            document.getElementById('painelMasterConteudo').style.display = 'none';
+        }
+    });
+
+    window.atualizarLimitesPacote = function() {
+        let pac = document.getElementById('selectPacoteMaster').value;
+        let m = 2, u = 2;
+        if(pac === 'pacote_dois') { m = 5; u = 5; }
+        if(pac === 'pacote_tres') { m = 10; u = 15; }
+        document.getElementById('inputLimMesas').value = m;
+        document.getElementById('inputLimUsers').value = u;
+    };
+
+    window.gerarNovaLicenca = async function() {
+        let nome = document.getElementById('novoNomeCliente').value.trim();
+        let pacote = document.getElementById('selectPacoteMaster').value;
+        let mesas = parseInt(document.getElementById('inputLimMesas').value) || 2;
+        let users = parseInt(document.getElementById('inputLimUsers').value) || 2;
+        let validade = document.getElementById('inputValidadeLicenca').value;
+
+        if(!nome) return alert("Insira o nome do cliente.");
+
+        let randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+        let prefixo = nome.replace(/\s+/g, '').substring(0, 4).toUpperCase();
+        let codigoLicenca = `LIC-${prefixo}-${randomStr}`;
+
+        try {
+            // Guarda a licença na coleção global de licenças do Firestore
+            await setDoc(doc(db, "licencas", codigoLicenca), {
+                nomeCliente: nome,
+                tipoPacote: pacote,
+                limiteMesas: mesas,
+                limiteUsuarios: users,
+                validade: validade,
+                status: "ativo",
+                criadoEm: new Date().toISOString()
+            });
+
+            // Cria a estrutura base da empresa no Firestore
+            await setDoc(doc(db, "empresas", codigoLicenca), {
+                usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] }]
+            });
+            await setDoc(doc(db, "empresas", codigoLicenca, "dados", "empresa"), {
+                nome: nome, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0
+            });
+
+            alert(`✅ Licença criada com sucesso!\n\nCódigo: ${codigoLicenca}`);
+            document.getElementById('novoNomeCliente').value = '';
+            carregarLicencasMaster();
+        } catch(e) {
+            alert("Erro ao criar licença: " + e.message);
+        }
+    };
+
+    async function carregarLicencasMaster() {
+        let tbody = document.getElementById('tabelaLicencasMaster');
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">A carregar licenças...</td></tr>';
+        
+        try {
+            let snap = await getDocs(collection(db, "licencas"));
+            tbody.innerHTML = '';
+            if(snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b;">Nenhuma licença emitida.</td></tr>';
+                return;
+            }
+
+            snap.forEach(d => {
+                let l = d.data();
+                let id = d.id;
+                let badgeClass = l.status === 'ativo' ? 'badge-ativo' : 'badge-suspenso';
+
+                tbody.innerHTML += `<tr>
+                    <td><b>${id}</b><br><small style="color:#64748b;">${l.nomeCliente || 'Sem nome'}</small></td>
+                    <td>${(l.tipoPacote || 'pacote_um').toUpperCase()}</td>
+                    <td>${l.limiteMesas || 2} mesas / ${l.limiteUsuarios || 2} users</td>
+                    <td>${l.validade || 'Indefinido'}</td>
+                    <td><span class="badge ${badgeClass}">${(l.status || 'ativo').toUpperCase()}</span></td>
+                    <td>
+                        <button class="btn-danger" style="padding:6px 10px; font-size:12px; width:auto;" onclick="mudarStatusLicenca('${id}', '${l.status === 'ativo' ? 'suspenso' : 'ativo'}')">${l.status === 'ativo' ? 'Suspender' : 'Ativar'}</button>
+                    </td>
+                </tr>`;
+            });
+        } catch(e) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Erro ao carregar dados.</td></tr>';
+        }
+    }
+
+    window.mudarStatusLicenca = async function(id, novoStatus) {
+        try {
+            await setDoc(doc(db, "licencas", id), { status: novoStatus }, { merge: true });
+            carregarLicencasMaster();
+        } catch(e) {
+            alert("Erro ao alterar status: " + e.message);
+        }
+    };
+</script>
+
+</body>
+</html>
