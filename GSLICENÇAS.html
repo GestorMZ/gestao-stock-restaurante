@@ -15,7 +15,7 @@
             --border: #cbd5e1;
         }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--light); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         h2, h3 { margin-top: 0; }
         .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
         .form-group { flex: 1; min-width: 200px; }
@@ -25,6 +25,7 @@
         button:hover { opacity: 0.9; }
         .btn-success { background: var(--success); }
         .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); color: white; }
         .table-responsive { overflow-x: auto; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
@@ -32,15 +33,17 @@
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 700; }
         .badge-ativo { background: #d1fae5; color: #065f46; }
         .badge-suspenso { background: #fee2e2; color: #991b1b; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 24px; border-radius: 12px; max-width: 500px; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>🛠️ GS Master - Painel Central de Licenças</h2>
-    <p style="color: #64748b;">Gere os pacotes, prazos e acessos de todos os clientes do GS Point.</p>
+    <p style="color: #64748b;">Gere os pacotes, prazos, edite ou remova acessos dos clientes do GS Point.</p>
 
-    <!-- SECÇÃO DE LOGIN MASTER -->
+    <!-- LOGIN MASTER -->
     <div id="loginMasterBox" style="max-width: 400px; margin: 40px auto; background: #fff; padding: 20px; border: 1px solid var(--border); border-radius: 12px;">
         <h3>Login Master</h3>
         <div class="form-group" style="margin-bottom: 12px;">
@@ -54,7 +57,7 @@
         <button onclick="fazerLoginMaster()">Entrar no Painel Master</button>
     </div>
 
-    <!-- PAINEL DE CONTROLO (OCULTO ATÉ LOGIN) -->
+    <!-- PAINEL DE CONTROLO -->
     <div id="painelMasterConteudo" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
             <h3 style="margin: 0;">Emitir Nova Licença / Pacote</h3>
@@ -116,6 +119,47 @@
     </div>
 </div>
 
+<!-- MODAL DE EDIÇÃO -->
+<div id="modalEditar" class="modal">
+    <div class="modal-content">
+        <h3>✏️ Editar Licença: <span id="editCodigoLbl" style="color:var(--primary)"></span></h3>
+        <input type="hidden" id="editCodigoId">
+        
+        <div class="form-group" style="margin-bottom:12px;">
+            <label>Nome da Empresa / Cliente</label>
+            <input type="text" id="editNomeCliente">
+        </div>
+        <div class="form-row" style="margin-bottom:12px;">
+            <div class="form-group">
+                <label>Limite de Mesas</label>
+                <input type="number" id="editLimMesas">
+            </div>
+            <div class="form-group">
+                <label>Limite de Utilizadores</label>
+                <input type="number" id="editLimUsers">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+            <label>Data de Validade</label>
+            <input type="date" id="editValidade">
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-success" onclick="guardarEdicaoLicenca()">Guardar Alterações</button>
+            <button style="background:var(--dark);" onclick="fecharModalEditar()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CUSTOMIZADO (ESTILO DA IMAGEM) -->
+<div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
+    <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
+        <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Aviso do Sistema</h3>
+        <div id="customModalText" style="margin-bottom:20px; font-weight:600; line-height: 1.5; text-align: left;"></div>
+        <button id="customModalBtnOK" class="btn-primary" style="background: var(--primary); padding: 12px; border-radius: 10px; font-weight: 800;">OK</button>
+    </div>
+</div>
+
 <!-- Scripts Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -131,6 +175,18 @@
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
+    // Função de Alerta Customizado idêntica à imagem
+    window.customAlertHtml = function(htmlContent) {
+        return new Promise(resolve => {
+            document.getElementById('customModalOverlay').style.display = 'flex';
+            document.getElementById('customModalText').innerHTML = htmlContent;
+            document.getElementById('customModalBtnOK').onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve();
+            };
+        });
+    };
 
     window.fazerLoginMaster = async function() {
         let email = document.getElementById('masterEmail').value;
@@ -150,7 +206,6 @@
             document.getElementById('painelMasterConteudo').style.display = 'block';
             carregarLicencasMaster();
             
-            // Definir data padrão de validade para daqui a 30 dias
             let d = new Date();
             d.setDate(d.getDate() + 30);
             document.getElementById('inputValidadeLicenca').value = d.toISOString().split('T')[0];
@@ -183,7 +238,6 @@
         let codigoLicenca = `LIC-${prefixo}-${randomStr}`;
 
         try {
-            // Guarda a licença na coleção global de licenças do Firestore
             await setDoc(doc(db, "licencas", codigoLicenca), {
                 nomeCliente: nome,
                 tipoPacote: pacote,
@@ -194,7 +248,6 @@
                 criadoEm: new Date().toISOString()
             });
 
-            // Cria a estrutura base da empresa no Firestore
             await setDoc(doc(db, "empresas", codigoLicenca), {
                 usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] }]
             });
@@ -202,9 +255,19 @@
                 nome: nome, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0
             });
 
-            alert(`✅ Licença criada com sucesso!\n\nCódigo: ${codigoLicenca}`);
             document.getElementById('novoNomeCliente').value = '';
             carregarLicencasMaster();
+
+            // Mostra o popup exatamente igual à imagem que enviou
+            let avisoHtml = `
+                <div style="font-size: 1.1em; font-weight: bold; margin-bottom: 12px; text-align: center;">✅ CONTA CRIADA COM SUCESSO!</div>
+                <div style="margin-bottom: 8px;">🏢 <b>CÓDIGO:</b> <span style="color:var(--primary);">${codigoLicenca}</span></div>
+                <div style="margin-bottom: 8px;">👤 <b>UTILIZADOR:</b> admin</div>
+                <div style="margin-bottom: 12px;">🔑 <b>SENHA:</b> 123</div>
+                <div style="text-align: center; font-size: 0.95em; color: #64748b; border-top: 1px solid #e2e8f0; pt: 10px; margin-top: 10px;">Válido até: <b>${validade}</b></div>
+            `;
+            await window.customAlertHtml(avisoHtml);
+
         } catch(e) {
             alert("Erro ao criar licença: " + e.message);
         }
@@ -234,7 +297,11 @@
                     <td>${l.validade || 'Indefinido'}</td>
                     <td><span class="badge ${badgeClass}">${(l.status || 'ativo').toUpperCase()}</span></td>
                     <td>
-                        <button class="btn-danger" style="padding:6px 10px; font-size:12px; width:auto;" onclick="mudarStatusLicenca('${id}', '${l.status === 'ativo' ? 'suspenso' : 'ativo'}')">${l.status === 'ativo' ? 'Suspender' : 'Ativar'}</button>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <button class="btn-warning" style="padding:6px 10px; font-size:12px; width:auto;" onclick="abrirModalEditar('${id}', '${l.nomeCliente || ''}', ${l.limiteMesas || 2}, ${l.limiteUsuarios || 2}, '${l.validade || ''}')">Editar</button>
+                            <button class="btn-danger" style="padding:6px 10px; font-size:12px; width:auto;" onclick="mudarStatusLicenca('${id}', '${l.status === 'ativo' ? 'suspenso' : 'ativo'}')">${l.status === 'ativo' ? 'Suspender' : 'Ativar'}</button>
+                            <button class="btn-danger" style="background:#7f1d1d; padding:6px 10px; font-size:12px; width:auto;" onclick="eliminarEmpresa('${id}')">Eliminar</button>
+                        </div>
                     </td>
                 </tr>`;
             });
@@ -249,6 +316,61 @@
             carregarLicencasMaster();
         } catch(e) {
             alert("Erro ao alterar status: " + e.message);
+        }
+    };
+
+    window.abrirModalEditar = function(id, nome, mesas, users, validade) {
+        document.getElementById('editCodigoId').value = id;
+        document.getElementById('editCodigoLbl').innerText = id;
+        document.getElementById('editNomeCliente').value = nome;
+        document.getElementById('editLimMesas').value = mesas;
+        document.getElementById('editLimUsers').value = users;
+        document.getElementById('editValidade').value = validade;
+        document.getElementById('modalEditar').style.display = 'flex';
+    };
+
+    window.fecharModalEditar = function() {
+        document.getElementById('modalEditar').style.display = 'none';
+    };
+
+    window.guardarEdicaoLicenca = async function() {
+        let id = document.getElementById('editCodigoId').value;
+        let nome = document.getElementById('editNomeCliente').value.trim();
+        let mesas = parseInt(document.getElementById('editLimMesas').value) || 2;
+        let users = parseInt(document.getElementById('editLimUsers').value) || 2;
+        let validade = document.getElementById('editValidade').value;
+
+        try {
+            await setDoc(doc(db, "licencas", id), {
+                nomeCliente: nome,
+                limiteMesas: mesas,
+                limiteUsuarios: users,
+                validade: validade
+            }, { merge: true });
+
+            await setDoc(doc(db, "empresas", id, "dados", "empresa"), {
+                nome: nome
+            }, { merge: true });
+
+            alert("✅ Licença atualizada com sucesso!");
+            fecharModalEditar();
+            carregarLicencasMaster();
+        } catch(e) {
+            alert("Erro ao atualizar: " + e.message);
+        }
+    };
+
+    window.eliminarEmpresa = async function(id) {
+        if(!confirm(`⚠️ TEM A CERTEZA que deseja ELIMINAR permanentemente a licença e dados da empresa '${id}'? Esta ação não pode ser desfeita.`)) return;
+
+        try {
+            await deleteDoc(doc(db, "licencas", id));
+            await deleteDoc(doc(db, "empresas", id));
+            
+            alert("🗑️ Empresa e licença eliminadas com sucesso.");
+            carregarLicencasMaster();
+        } catch(e) {
+            alert("Erro ao eliminar empresa: " + e.message);
         }
     };
 </script>
