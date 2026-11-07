@@ -3843,4 +3843,355 @@
                 <td><b style="text-transform:uppercase;">${h.usuario || '-'}</b></td>
                 <td><small>${resumo}</small></td>
                 <td>
-                    <span class="badge ${ehCortesia ? 'badge-cortesia
+                    <span class="badge ${ehCortesia ? 'badge-cortesia' : (ehCancelado ? 'badge-cancelado' : 'badge-entrada')}">${ehCancelado ? 'CANCELADO' : (h.metodo || 'Venda')}</span>
+                </td>
+                <td style="font-weight:bold; color:${ehCancelado ? 'var(--text-muted)' : 'var(--success)'}; text-decoration:${ehCancelado ? 'line-through' : 'none'};">
+                    ${(h.totalVenda || 0).toFixed(2)} MT
+                </td>
+                <td>
+                    ${!ehCancelado ? `<button class="btn-saida btn-sm" onclick="window.cancelarVendaAdmin('${h.idDoc}', ${h.id})">🚫 Cancelar</button>` : '<span class="badge badge-cancelado">Cancelado</span>'}
+                </td>
+            </tr>`;
+        });
+    };
+
+    window.cancelarVendaAdmin = async function(idDoc, idVenda) {
+        if (!(await solicitarAutorizacaoGestor('Cancelar esta venda'))) return;
+
+        let motivo = await customPrompt("Introduza o motivo do cancelamento:", "Erro no pedido");
+        if (!motivo) return;
+
+        let vIdx = historico.findIndex(h => h.idDoc === idDoc || h.id === idVenda);
+        if (vIdx === -1) return window.showToast("Venda não encontrada.", "error");
+
+        let v = historico[vIdx];
+        if (v.status === 'cancelado') return window.showToast("Esta venda já está cancelada.", "warning");
+
+        if (!window.iniciarProcessamento()) return;
+
+        try {
+            // Devolver itens ao stock
+            if (v.itens && Array.isArray(v.itens)) {
+                for (let item of v.itens) {
+                    if (stock[item.produto]) {
+                        stock[item.produto].qtd += item.qtd;
+                        stock[item.produto].preco_total += (item.qtd * (item.custoUnit || 0));
+                    }
+                }
+                await salvarStockFirestore(stock);
+            }
+
+            // Atualizar status da venda no Firestore
+            await setDoc(doc(db, "empresas", codigoEmpresa, "vendas", idDoc), { status: 'cancelado', motivoCancelamento: motivo, canceladoPor: usuarioAtual.nome, dataCancelamento: new Date().toLocaleString('pt-MZ') }, { merge: true });
+
+            registarAuditLog('Venda Cancelada', `Venda ID ${idVenda} cancelada por ${usuarioAtual.nome}. Motivo: ${motivo}`);
+            window.showToast("Venda cancelada e stock devolvido!", "success");
+            window.atualizarDashboard();
+            renderizarStock();
+            filtrarEExibirProdutosVenda();
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    window.atualizarDashboard = function() {
+        let filtro = document.getElementById('filtroDataTipo')?.value || 'hoje';
+        let agora = new Date();
+        let hojeStr = agora.toISOString().split('T')[0];
+
+        historicoDashFiltrado = historico.filter(h => {
+            if (!h.timestamp) return true;
+            let d = new Date(h.timestamp);
+            let dStr = d.toISOString().split('T')[0];
+
+            if (filtro === 'hoje') return dStr === hojeStr;
+            if (filtro === 'ontem') {
+                let ontem = new Date(agora);
+                ontem.setDate(ontem.getDate() - 1);
+                return dStr === ontem.toISOString().split('T')[0];
+            }
+            if (filtro === 'mes') return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+            return true;
+        });
+
+        let vendasValidas = historicoDashFiltrado.filter(h => h.tipo === 'venda' && h.status !== 'cancelado');
+        let totalVendas = 0, totalCusto = 0, totalMpesa = 0, totalEmola = 0, totalPOS = 0, totalNumerario = 0, totalFiado = 0;
+
+        vendasValidas.forEach(v => {
+            totalVendas += (v.totalVenda || 0);
+            totalCusto += (v.totalCusto || 0);
+
+            if (v.desdobramentoInfo) {
+                totalNumerario += (v.desdobramentoInfo.din || 0);
+                totalMpesa += (v.desdobramentoInfo.mpe || 0);
+                totalEmola += (v.desdobramentoInfo.emo || 0);
+                totalPOS += (v.desdobramentoInfo.pos || 0);
+            } else {
+                let m = (v.metodo || '').toLowerCase();
+                if (m.includes('m-pesa')) totalMpesa += v.totalVenda;
+                else if (m.includes('e-mola')) totalEmola += v.totalVenda;
+                else if (m.includes('pos')) totalPOS += v.totalVenda;
+                else if (m.includes('fiado')) totalFiado += v.totalVenda;
+                else if (m.includes('numerário') || m.includes('dinheiro')) totalNumerario += v.totalVenda;
+            }
+        });
+
+        let totalDespesasGerais = despesas.reduce((acc, d) => acc + (d.valor || 0), 0);
+        let lucroLiquido = (totalVendas - totalCusto) - totalDespesasGerais;
+        let investStock = Object.values(stock).reduce((acc, i) => acc + (i.preco_total || 0), 0);
+
+        if (document.getElementById('dashValMpesa')) {
+            document.getElementById('dashValMpesa').innerText = totalMpesa.toFixed(2) + " MT";
+            document.getElementById('dashValEmola').innerText = totalEmola.toFixed(2) + " MT";
+            document.getElementById('dashValPOS').innerText = totalPOS.toFixed(2) + " MT";
+            document.getElementById('dashValNumerario').innerText = totalNumerario.toFixed(2) + " MT";
+            document.getElementById('dashValFiado').innerText = totalFiado.toFixed(2) + " MT";
+
+            document.getElementById('dashTotalVendas').innerText = totalVendas.toFixed(2) + " MT";
+            document.getElementById('dashCustoVendas').innerText = totalCusto.toFixed(2) + " MT";
+            document.getElementById('dashDespesasGerais').innerText = totalDespesasGerais.toFixed(2) + " MT";
+            document.getElementById('dashLucroReal').innerText = lucroLiquido.toFixed(2) + " MT";
+            document.getElementById('dashInvestimentoStock').innerText = investStock.toFixed(2) + " MT";
+        }
+
+        renderizarGraficoEStats(totalNumerario, totalMpesa, totalEmola, totalPOS, totalFiado);
+        window.renderizarHistoricoAdmin();
+    };
+
+    function renderizarGraficoEStats(num, mpesa, emola, pos, fiado) {
+        let ctx = document.getElementById('graficoCanaisPay');
+        if (!ctx) return;
+
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Numerário', 'M-Pesa', 'e-Mola', 'POS', 'Fiado'],
+                datasets: [{
+                    data: [num, mpesa, emola, pos, fiado],
+                    backgroundColor: ['#059669', '#7c3aed', '#d97706', '#2563eb', '#dc2626']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+
+        // Top 5 Produtos
+        let topContainer = document.getElementById('listaTopProdutos');
+        if (topContainer) {
+            topContainer.innerHTML = '';
+            let contagem = {};
+            historicoDashFiltrado.forEach(h => {
+                if (h.tipo === 'venda' && h.status !== 'cancelado' && h.itens) {
+                    h.itens.forEach(i => {
+                        contagem[i.produto] = (contagem[i.produto] || 0) + i.qtd;
+                    });
+                }
+            });
+
+            let ordenados = Object.keys(contagem).sort((a, b) => contagem[b] - contagem[a]).slice(0, 5);
+            if (ordenados.length === 0) {
+                topContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.9em;">Sem registos no período.</p>';
+            } else {
+                ordenados.forEach((prod, idx) => {
+                    topContainer.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border); font-size:0.9em;">
+                            <span><b>#${idx + 1} ${prod.toUpperCase()}</b></span>
+                            <span class="badge" style="background:var(--primary); color:white;">${contagem[prod]} unid.</span>
+                        </div>`;
+                });
+            }
+        }
+    }
+
+    window.apagarTodoHistoricoApp = async function() {
+        if (!(await solicitarAutorizacaoGestor('Apagar Todo o Histórico de Vendas'))) return;
+        if (!(await customConfirm("⚠️ ATENÇÃO: Esta ação é irreversível e vai eliminar TODAS as vendas e registos! Tem a certeza?"))) return;
+
+        if (!window.iniciarProcessamento()) return;
+
+        try {
+            let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
+            for (let docSnap of snap.docs) {
+                await deleteDoc(doc(db, "empresas", codigoEmpresa, "vendas", docSnap.id));
+            }
+            historico = [];
+            registarAuditLog('Histórico Apagado', 'Todo o histórico de vendas foi eliminado pelo Administrador');
+            window.showToast("Histórico eliminado com sucesso!", "info");
+            window.atualizarDashboard();
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    window.exportarVendasExcel = function() {
+        if (historicoDashFiltrado.length === 0) return window.showToast("Sem vendas para exportar.", "warning");
+
+        let dadosExcel = historicoDashFiltrado.map(h => ({
+            "Data/Hora": h.data || '',
+            "Operador": h.usuario || '',
+            "Mesa": h.mesa || 'Balcão',
+            "Método Pagamento": h.metodo || '',
+            "Valor Total (MT)": h.totalVenda || 0,
+            "Desconto (MT)": h.desconto || 0,
+            "Status": h.status || 'concluido',
+            "Itens": h.itens ? h.itens.map(i => `${i.qtd}x ${i.produto}`).join('; ') : ''
+        }));
+
+        let ws = XLSX.utils.json_to_sheet(dadosExcel);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Vendas");
+        XLSX.writeFile(wb, `Vendas_${codigoEmpresa}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        window.showToast("Ficheiro Excel gerado!", "success");
+    };
+
+    window.exportarStockExcel = function() {
+        let dadosExcel = Object.keys(stock).map(p => ({
+            "Produto": p.toUpperCase(),
+            "Categoria": (stock[p].categoria || 'outros').toUpperCase(),
+            "Quantidade em Stock": stock[p].qtd || 0,
+            "Preço Venda Unitário (MT)": stock[p].preco_venda || 0,
+            "Custo Total Investido (MT)": stock[p].preco_total || 0,
+            "Custo Médio Unitário (MT)": stock[p].qtd > 0 ? (stock[p].preco_total / stock[p].qtd).toFixed(2) : 0,
+            "Mínimo Alerta": stock[p].min_alerta || 5
+        }));
+
+        let ws = XLSX.utils.json_to_sheet(dadosExcel);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Stock");
+        XLSX.writeFile(wb, `Stock_${codigoEmpresa}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        window.showToast("Stock exportado para Excel!", "success");
+    };
+
+    window.fazerBackup = function() {
+        let backupData = {
+            codigoEmpresa,
+            dadosEmpresa,
+            stock,
+            usuarios,
+            clientes,
+            caixaEstado,
+            dataBackup: new Date().toISOString()
+        };
+
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `Backup_${codigoEmpresa}_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        window.showToast("Backup transferido com sucesso!", "success");
+    };
+
+    window.abrirModalQRMenu = function() {
+        let container = document.getElementById('qrcodeArea');
+        if (!container) return;
+        container.innerHTML = '';
+        let urlMenu = window.location.origin + window.location.pathname + `?empresa=${codigoEmpresa}`;
+        document.getElementById('textLinkMenu').innerText = urlMenu;
+
+        new QRCode(container, {
+            text: urlMenu,
+            width: 180,
+            height: 180
+        });
+
+        document.getElementById('modalQRMenu').style.display = 'block';
+    };
+
+    window.fecharModalQRMenu = function() { document.getElementById('modalQRMenu').style.display = 'none'; };
+
+    window.abrirModalDefinicoes = function() {
+        if (!usuarioAtual || (usuarioAtual.tipo !== 'admin' && usuarioAtual.tipo !== 'gerente')) {
+            document.getElementById('seccaoEmpresaAdmin').style.display = 'none';
+        } else {
+            document.getElementById('seccaoEmpresaAdmin').style.display = 'block';
+            preencherCamposEmpresaModal();
+        }
+        document.getElementById('modalDefinicoes').style.display = 'block';
+    };
+
+    window.fecharModalDefinicoes = function() { document.getElementById('modalDefinicoes').style.display = 'none'; };
+
+    function preencherCamposEmpresaModal() {
+        if (document.getElementById('cfgNomeEmpresa')) {
+            document.getElementById('cfgNomeEmpresa').value = dadosEmpresa.nome || '';
+            document.getElementById('cfgNuit').value = dadosEmpresa.nuit || '';
+            document.getElementById('cfgTelefone').value = dadosEmpresa.telefone || '';
+            document.getElementById('cfgEndereco').value = dadosEmpresa.endereco || '';
+            document.getElementById('cfgAplicarIva').value = dadosEmpresa.aplicarIva || 'sim';
+            document.getElementById('cfgTaxaIva').value = dadosEmpresa.taxaIva || 16;
+            document.getElementById('cfgSlogan').value = dadosEmpresa.slogan || '';
+            document.getElementById('cfgChaveMestra').value = dadosEmpresa.chaveMestra || '1234';
+        }
+    }
+
+    window.guardarDadosEmpresa = async function() {
+        dadosEmpresa.nome = document.getElementById('cfgNomeEmpresa').value.trim();
+        dadosEmpresa.nuit = document.getElementById('cfgNuit').value.trim();
+        dadosEmpresa.telefone = document.getElementById('cfgTelefone').value.trim();
+        dadosEmpresa.endereco = document.getElementById('cfgEndereco').value.trim();
+        dadosEmpresa.aplicarIva = document.getElementById('cfgAplicarIva').value;
+        dadosEmpresa.taxaIva = parseFloat(document.getElementById('cfgTaxaIva').value) || 16;
+        dadosEmpresa.slogan = document.getElementById('cfgSlogan').value.trim();
+        dadosEmpresa.chaveMestra = document.getElementById('cfgChaveMestra').value.trim() || '1234';
+
+        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa, { merge: true });
+        registarAuditLog('Definições Alteradas', 'Dados do restaurante e IVA atualizados');
+        window.showToast("Definições guardadas com sucesso!", "success");
+        if (document.getElementById('nomeEmpresaHeader')) document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
+        window.fecharModalDefinicoes();
+    };
+
+    window.revelarLicencaAdmin = async function() {
+        let elInput = document.getElementById('cfgCodigoLicencaOculto');
+        if (!elInput) return;
+        let senha = await customPrompt("🔒 AUTORIZAÇÃO\nInsira a palavra-passe do Administrador para ver a licença:", "", true);
+        if (!senha) return;
+
+        let autorizado = false;
+        for (let u in usuarios) { if (usuarios[u].tipo === 'admin' && String(usuarios[u].senha).trim() === String(senha).trim()) { autorizado = true; break; } }
+        if (!autorizado && (senha.trim() === "1234" || senha.trim() === String(dadosEmpresa.chaveMestra || "1234").trim())) autorizado = true;
+
+        if (autorizado) {
+            elInput.type = "text";
+            elInput.value = codigoEmpresa;
+            window.showToast(`🔑 Código da Licença: ${codigoEmpresa}`, "info");
+            setTimeout(() => { elInput.type = "password"; elInput.value = "••••••••"; }, 8000);
+        } else {
+            window.showToast("❌ Acesso Negado!", "error");
+        }
+    };
+
+    window.mudarMinhaSenha = async function() {
+        let novaPass = document.getElementById('inputNovaSenha').value.trim();
+        if (!novaPass) return window.showToast("Digite a nova palavra-passe.", "warning");
+
+        if (usuarioAtual && usuarios[usuarioAtual.nome]) {
+            usuarios[usuarioAtual.nome].senha = novaPass;
+            let listaArrayFirestore = [];
+            for (let nomeKey in usuarios) {
+                listaArrayFirestore.push({
+                    nome: nomeKey,
+                    senha: usuarios[nomeKey].senha,
+                    tipo: usuarios[nomeKey].tipo,
+                    foto: usuarios[nomeKey].foto || "",
+                    permissoes: usuarios[nomeKey].permissoes || []
+                });
+            }
+            await setDoc(doc(db, "empresas", codigoEmpresa), { usuarios: listaArrayFirestore }, { merge: true });
+            document.getElementById('inputNovaSenha').value = '';
+            window.showToast("Palavra-passe alterada com sucesso!", "success");
+            registarAuditLog('Senha Alterada', `${usuarioAtual.nome} alterou a própria senha`);
+            window.fecharModalDefinicoes();
+        }
+    };
+
+</script>
+</body>
+</html>
