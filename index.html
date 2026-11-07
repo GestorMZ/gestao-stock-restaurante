@@ -2702,9 +2702,9 @@
 
     window.fecharCaixaTurnoCEGO = async function() {
         let mesasComItens = [];
-        for(let m in mesas) { if(m !== "Balcão" && mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
+        for(let m in mesas) { if(mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
         if(mesasComItens.length > 0) {
-            return customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem mesas ativas: ${mesasComItens.join(', ')}.`);
+            return customAlert(`🚫 IMPOSSÍVEL FECHAR O CAIXA!\n\nAinda existem vendas pendentes / itens no carrinho nas seguintes localizações: ${mesasComItens.join(', ')}.\n\nEsvazie o carrinho ou finalize as vendas antes de fechar o caixa.`);
         }
 
         if (!(await solicitarAutorizacaoGestor('Fechar o Caixa'))) return;
