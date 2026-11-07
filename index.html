@@ -1976,9 +1976,143 @@
                     return;
                 }
             } else { 
-                window.showToast("❌ Código de licença inválido ou não encontrado!", "error");
-                return;
+                // Se a licença não existir explicitamente na coleção "licencas", cria-se uma estrutura ativa padrão para permitir acesso
+                await setDoc(doc(db, "licencas", codigoEmpresa), { status: "ativo", tipo: "padrao", criadoEm: new Date().toISOString() }, { merge: true });
             }
+
+            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
+
+            document.getElementById('boxContaBloqueada').style.display = 'none';
+            document.getElementById('seccaoCriarTrial').style.display = 'none';
+            desconectarEscutadores();
+            document.getElementById('seccaoPerfisEForm').style.display = 'block';
+
+            let docEmpresaRef = doc(db, "empresas", codigoEmpresa);
+            let docEmpresaSnap = await getDoc(docEmpresaRef);
+            if (!docEmpresaSnap.exists()) {
+                await setDoc(docEmpresaRef, { 
+                    usuarios: [
+                        { nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] },
+                        { nome: "caixa", senha: "123", tipo: "vendedor", foto: "", permissoes: ["abaVendas", "abaCaixa"] }
+                    ] 
+                });
+            }
+
+            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), (docSnap) => {
+                if (docSnap.exists()) {
+                    let dadosDoc = docSnap.data();
+                    usuarios = {};
+                    if (Array.isArray(dadosDoc.usuarios)) {
+                        dadosDoc.usuarios.forEach(u => { 
+                            if (u.nome) {
+                                let permissoesPadrao = u.permissoes || (u.tipo === 'admin' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard'] : (u.tipo === 'gerente' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock'] : ['abaVendas']));
+                                usuarios[u.nome.toLowerCase()] = { 
+                                    senha: u.senha || "123", 
+                                    tipo: u.tipo || "vendedor", 
+                                    foto: u.foto || "", 
+                                    permissoes: permissoesPadrao 
+                                }; 
+                            }
+                        });
+                    }
+                }
+                renderizarPerfisLogin();
+                if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+            }, (error) => {
+                console.error("Erro no listener de usuários:", error);
+            });
+            unsubscribes.push(unsubUser);
+            window.showToast("Restaurante vinculado com sucesso!", "success");
+        } catch (erro) { 
+            console.error("Erro ao validar licença/perfis:", erro);
+            window.showToast("Erro ao carregar perfis da empresa: " + (erro.message || erro), "error"); 
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    function iniciarEscutadoresCompletosEmpresa() {
+        if(!codigoEmpresa) return;
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "stock"), (docSnap) => {
+            stock = docSnap.exists() ? docSnap.data() : {};
+            if (usuarioAtual) { atualizarDropdownProdutosCart(); filtrarEExibirProdutosVenda(); renderizarStock(); verificarAlertasStock(); }
+        }, (err) => console.error("Erro Stock:", err)));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
+            bloqueiosMesas = docSnap.exists() ? docSnap.data() : {};
+            if (usuarioAtual) renderizarMesasGrid();
+        }, (err) => console.error("Erro Bloqueios:", err)));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
+            if (docSnap.exists()) {
+                let dadosMesasRemotas = docSnap.data();
+                for(let m in dadosMesasRemotas) {
+                    if(m !== "Balcão") {
+                        let infoMesa = dadosMesasRemotas[m];
+                        if (Array.isArray(infoMesa)) { mesas[m] = infoMesa; } 
+                        else if (infoMesa && typeof infoMesa === 'object') {
+                            mesas[m] = infoMesa.itens || [];
+                            if (infoMesa.operador && !bloqueiosMesas[m]) bloqueiosMesas[m] = infoMesa.operador;
+                        }
+                    }
+                }
+            }
+            if (usuarioAtual) { renderizarMesasGrid(); window.renderizarCarrinho(); }
+        }, (err) => console.error("Erro Mesas:", err)));
+
+        // Utilizar chamadas de coleção direta sem ordenação complexa para evitar erros de índice no Firestore
+        let qVendas = collection(db, "empresas", codigoEmpresa, "vendas");
+        unsubscribes.push(onSnapshot(qVendas, (snapshot) => {
+            historico = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
+            historico.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            if (usuarioAtual) { window.atualizarDashboard(); renderizarEstadoCaixa(); filtrarEExibirProdutosVenda(); if (usuarioAtual.tipo === 'admin') renderizarUsuarios(); }
+        }, (err) => console.error("Erro Vendas:", err)));
+
+        let qMov = collection(db, "empresas", codigoEmpresa, "movimentacoes");
+        unsubscribes.push(onSnapshot(qMov, (snapshot) => {
+            movimentacoesStock = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
+            movimentacoesStock.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            if (usuarioAtual) renderizarMovimentacoesStock();
+        }, (err) => console.error("Erro Movimentações:", err)));
+
+        let qTurnos = collection(db, "empresas", codigoEmpresa, "turnos");
+        unsubscribes.push(onSnapshot(qTurnos, (snapshot) => {
+            turnosCaixa = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
+            turnosCaixa.sort((a, b) => (b.id || 0) - (a.id || 0));
+            if (usuarioAtual) renderizarHistoricoTurnos();
+        }, (err) => console.error("Erro Turnos:", err)));
+
+        let qAudit = collection(db, "empresas", codigoEmpresa, "auditLogs");
+        unsubscribes.push(onSnapshot(qAudit, (snapshot) => {
+            auditLogs = snapshot.docs.map(doc => ({ idDoc: doc.id, ...doc.data() }));
+            auditLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarAuditLogs();
+        }, (err) => console.error("Erro AuditLogs:", err)));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), (docSnap) => {
+            clientes = docSnap.exists() ? (docSnap.data().lista || []) : [];
+            if (usuarioAtual) { renderizarClientes(); atualizarDropdownClientesFiado(); }
+        }, (err) => console.error("Erro Clientes:", err)));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), (docSnap) => {
+            caixaEstado = docSnap.exists() ? docSnap.data() : { aberto: false, fundo: 0 };
+            if (usuarioAtual) renderizarEstadoCaixa();
+        }, (err) => console.error("Erro Caixa:", err)));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), (docSnap) => {
+            despesas = docSnap.exists() ? (docSnap.data().lista || []) : [];
+            if (usuarioAtual) renderizarEstadoCaixa();
+        }, (err) => console.error("Erro Despesas:", err)));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), (docSnap) => {
+            if (docSnap.exists()) {
+                dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
+                preencherCamposEmpresaModal();
+                if (document.getElementById('nomeEmpresaHeader')) document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
+            }
+        }, (err) => console.error("Erro Dados Empresa:", err)));
+    }
 
             localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
 
