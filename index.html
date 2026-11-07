@@ -345,14 +345,14 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px 14px;
+            padding: 16px 12px;
             text-align: center;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 120px;
+            min-height: 140px;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
@@ -364,7 +364,18 @@
         .zrest-product-card:hover { border-color: var(--primary); box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15); transform: translateY(-4px); }
         .zrest-product-card:hover::before { opacity: 1; }
         .zrest-product-card:active { transform: scale(0.96); }
-        .zrest-prod-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .zrest-prod-title { 
+            font-size: 15px; 
+            font-weight: 800; 
+            color: #0f172a; 
+            line-height: 1.3;
+            margin-bottom: 8px; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 3; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+            word-break: break-word;
+        }
         .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.25em; }
         .zrest-prod-stock { font-size: 0.75em; color: var(--text-muted); font-weight: 600; margin-top: 6px; background: #f1f5f9; padding: 4px 8px; border-radius: 12px; display: inline-block; }
 
@@ -432,7 +443,8 @@
         body.dark-mode .zrest-cat-btn.active { background: var(--primary); color: white; }
         body.dark-mode .zrest-product-card { background: #1a253c; border-color: var(--border); }
         body.dark-mode .zrest-product-card:hover { border-color: var(--primary); }
-        body.dark-mode .zrest-prod-title, body.dark-mode .zrest-cart-item-name { color: #f1f5f9; }
+        body.dark-mode .zrest-prod-title { color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        body.dark-mode .zrest-cart-item-name { color: #f1f5f9; }
         body.dark-mode .zrest-cart-header, body.dark-mode .zrest-checkout-area { background: #0f1524; border-color: var(--border); }
         body.dark-mode .zrest-cart-items { background: #131b2e; }
         body.dark-mode .zrest-cart-item-row { border-color: var(--border); }
