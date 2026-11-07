@@ -4222,4 +4222,92 @@
         }
     };
 
+    // ----- CARREGAR E VALIDAR PERFIS DA EMPRESA E LICENÇA -----
+    window.carregarPerfisEmpresa = async function() {
+        let inputCod = document.getElementById('loginCodigoEmpresa');
+        if (!inputCod) return;
+        let cod = inputCod.value.trim().toUpperCase();
+        if (!cod) return window.showToast("Por favor, introduza o código do restaurante ou licença.", "warning");
+
+        if (!window.iniciarProcessamento()) return;
+
+        try {
+            // Validar se a licença existe no Firestore
+            let licDoc = await getDoc(doc(db, "licencas", cod));
+            let licData = licDoc.exists() ? licDoc.data() : null;
+
+            // Se a licença não existe na coleção 'licencas', verificar se existe registo na coleção 'empresas'
+            let empDoc = await getDoc(doc(db, "empresas", cod));
+            
+            if (!licData && !empDoc.exists()) {
+                document.getElementById('seccaoPerfisEForm').style.display = 'none';
+                document.getElementById('boxContaBloqueada').style.display = 'none';
+                return window.showToast("⚠️ Código de Licença não encontrado ou inválido!", "error");
+            }
+
+            // Verificar validade se for conta de teste/trial ou licença registada
+            if (licData) {
+                let hojeStr = new Date().toISOString().split('T')[0];
+                if (licData.validade && licData.validade < hojeStr) {
+                    document.getElementById('seccaoPerfisEForm').style.display = 'none';
+                    document.getElementById('boxContaBloqueada').style.display = 'block';
+                    document.getElementById('textoMotivoBloqueio').innerText = `A licença (${cod}) expirou no dia ${licData.validade}. Contacte o suporte para renovar.`;
+                    return;
+                }
+            }
+
+            document.getElementById('boxContaBloqueada').style.display = 'none';
+            codigoEmpresa = cod;
+            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
+
+            // Carregar perfis de utilizador
+            if (empDoc.exists() && empDoc.data().usuarios) {
+                let lista = empDoc.data().usuarios;
+                usuarios = {};
+                if (Array.isArray(lista)) {
+                    lista.forEach(u => {
+                        usuarios[u.nome.toLowerCase()] = {
+                            senha: u.senha,
+                            tipo: u.tipo || 'vendedor',
+                            foto: u.foto || "",
+                            permissoes: u.permissoes || ['abaVendas']
+                        };
+                    });
+                }
+            } else {
+                // Caso seja o primeiro acesso da licença sem perfis cadastrados, criar admin por defeito
+                usuarios = {
+                    "admin": { senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] }
+                };
+                await setDoc(doc(db, "empresas", codigoEmpresa), {
+                    usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] }]
+                }, { merge: true });
+            }
+
+            renderizarPerfisLogin();
+            document.getElementById('seccaoPerfisEForm').style.display = 'block';
+            window.showToast("Licença validada com sucesso!", "success");
+
+        } catch (erro) {
+            console.error(erro);
+            window.showToast("Erro ao carregar dados da empresa: " + erro.message, "error");
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    // Exportar funções necessárias para o âmbito global (window)
+    window.renderizarStock = renderizarStock;
+    window.renderizarEstadoCaixa = renderizarEstadoCaixa;
+    window.renderizarClientes = renderizarClientes;
+    window.renderizarUsuarios = renderizarUsuarios;
+    window.renderizarAuditLogs = renderizarAuditLogs;
+    window.renderizarHistoricoTurnos = renderizarHistoricoTurnos;
+    window.renderizarMovimentacoesStock = renderizarMovimentacoesStock;
+    window.renderizarMesasGrid = renderizarMesasGrid;
+    window.filtrarEExibirProdutosVenda = filtrarEExibirProdutosVenda;
+    window.atualizarDropdownProdutosCart = atualizarDropdownProdutosCart;
+    window.atualizarDropdownClientesFiado = atualizarDropdownClientesFiado;
 </script>
+</body>
+</html>
