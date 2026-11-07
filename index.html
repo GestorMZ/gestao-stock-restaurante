@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -44,24 +45,31 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
             background-color: var(--light); 
             margin: 0; 
-            padding: 12px; 
+            padding: 8px 12px; 
             color: var(--text-main); 
             transition: background-color 0.25s var(--ease-out-pro), color 0.25s var(--ease-out-pro);
             -webkit-tap-highlight-color: transparent;
-            scroll-behavior: smooth;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .container { 
-            max-width: 1440px; 
+            max-width: 100%; 
+            width: 100%;
+            height: calc(100vh - 16px);
             margin: 0 auto; 
             background: var(--card-bg); 
-            padding: 20px; 
-            border-radius: 20px; 
+            padding: 12px 16px; 
+            border-radius: 16px; 
             box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.02); 
             border: 1px solid var(--border);
             transform: translateZ(0);
             will-change: transform;
             transition: background-color 0.25s var(--ease-out-pro), border-color 0.25s var(--ease-out-pro), box-shadow 0.25s var(--ease-out-pro);
+            display: flex;
+            flex-direction: column;
         }
 
         /* ----- ESTILOS PARA NOTIFICAÇÕES TOAST ----- */
@@ -99,17 +107,17 @@
         .toast-error { border-left: 5px solid var(--danger); }
         .toast-info { border-left: 5px solid var(--primary); }
         .toast.fade-out { opacity: 0; transform: translateX(30px); }
-
-        h2, h3, h4 { margin-top: 5px; color: var(--dark); font-weight: 800; letter-spacing: -0.025em; }
+        h2, h3, h4 { margin-top: 2px; color: var(--dark); font-weight: 800; letter-spacing: -0.025em; }
         
         .tabs-nav { 
             display: flex; 
-            gap: 8px; 
-            margin-bottom: 20px; 
+            gap: 6px; 
+            margin-bottom: 8px; 
             border-bottom: 2px solid var(--border); 
             overflow-x: auto; 
-            padding-bottom: 10px; 
+            padding-bottom: 6px; 
             scrollbar-width: none;
+            flex-shrink: 0;
         }
         .tabs-nav::-webkit-scrollbar { display: none; }
 
@@ -117,22 +125,22 @@
             background: #f1f5f9; 
             color: var(--text-muted); 
             border: none; 
-            padding: 12px 20px; 
-            border-radius: 12px; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
             font-weight: 700; 
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer; 
             white-space: nowrap; 
             transition: all 0.2s var(--ease-out-pro); 
-            min-height: 46px;
+            min-height: 38px;
             transform: translateZ(0);
         }
 
         .tab-btn:hover { background: #e2e8f0; color: var(--text-main); transform: translateY(-1px); }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3); }
 
-        .tab-content { display: none; animation: fadeIn 0.2s var(--ease-out-pro); transform: translateZ(0); will-change: transform; }
-        .tab-content.active { display: block; }
+        .tab-content { display: none; animation: fadeIn 0.2s var(--ease-out-pro); transform: translateZ(0); will-change: transform; flex: 1; min-height: 0; flex-direction: column; }
+        .tab-content.active { display: flex; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
@@ -206,15 +214,15 @@
         .btn-mais-perfis { background: #f1f5f9; border: 2px dashed var(--border); padding: 12px; border-radius: 16px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-main); font-weight: bold; min-height: 100px; transition: all 0.2s var(--ease-out-pro); }
         .btn-mais-perfis:hover { background: #e2e8f0; border-color: var(--primary); transform: translateY(-2px); }
 
-        .status-caixa-banner { padding: 14px 18px; border-radius: 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.25s var(--ease-out-pro); }
-        .caixa-aberto { background: #ecfdf5; color: #065f46; border: 2px solid #a7f3d0; }
-        .caixa-fechado { background: #fef2f2; color: #991b1b; border: 2px solid #fecaca; }
+        .status-caixa-banner { padding: 8px 14px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-space-between; align-items: center; font-weight: 700; font-size: 13px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: all 0.25s var(--ease-out-pro); flex-shrink: 0; }
+        .caixa-aberto { background: #ecfdf5; color: #065f46; border: 1.5px solid #a7f3d0; }
+        .caixa-fechado { background: #fef2f2; color: #991b1b; border: 1.5px solid #fecaca; }
 
         .box-calculo-lucro { background: #eff6ff; border: 2px solid #bfdbfe; padding: 14px; border-radius: 12px; margin-bottom: 15px; display: none; }
-        .alerta-stock-box { background: #fffbeb; border: 2px solid #fde68a; color: #b45309; padding: 14px; border-radius: 12px; margin-bottom: 15px; display: none; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
-        .alerta-caixa-bloqueio { background: #fef2f2; border: 2px solid #fecaca; color: #991b1b; padding: 16px; border-radius: 12px; margin-bottom: 15px; font-weight: bold; display: none; }
+        .alerta-stock-box { background: #fffbeb; border: 2px solid #fde68a; color: #b45309; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; display: none; font-weight: 700; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); flex-shrink: 0; }
+        .alerta-caixa-bloqueio { background: #fef2f2; border: 2px solid #fecaca; color: #991b1b; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; font-weight: bold; font-size: 13px; display: none; flex-shrink: 0; }
 
-        .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 14px 18px; border-radius: 16px; margin-bottom: 18px; flex-wrap: wrap; gap: 12px; border: 1px solid var(--border); transition: all 0.25s var(--ease-out-pro); }
+        .header-usuario { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 8px 14px; border-radius: 12px; margin-bottom: 8px; flex-wrap: nowrap; gap: 10px; border: 1px solid var(--border); transition: all 0.25s var(--ease-out-pro); flex-shrink: 0; }
 
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 18px 0; }
         .card-stat { background: #f8fafc; padding: 18px; border-radius: 16px; border-left: 6px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid var(--border); transform: translateZ(0); transition: all 0.2s var(--ease-out-pro); }
@@ -244,58 +252,63 @@
         .close-modal:hover { color: var(--danger); }
 
         /* ============================================================
-           ZREST POS STYLE - ESPECÍFICO PARA A ABA DE VENDAS (SUPER SMOOTH)
+           ZREST POS STYLE - ESPECÍFICO PARA A ABA DE VENDAS (SUPER SMOOTH FULLSCREEN)
            ============================================================ */
         .zrest-pos-wrapper {
             display: flex;
-            gap: 20px;
-            align-items: flex-start;
-            margin-top: 10px;
+            gap: 14px;
+            align-items: stretch;
+            margin-top: 4px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
         }
 
         .zrest-left-panel {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 10px;
             min-width: 0;
+            height: 100%;
+            overflow: hidden;
         }
 
         .zrest-right-panel {
-            width: 440px;
+            width: 410px;
             background: var(--card-bg);
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid var(--border);
             box-shadow: 0 10px 30px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
-            position: sticky;
-            top: 20px;
-            height: calc(100vh - 100px);
-            min-height: 650px;
+            height: 100%;
             overflow: hidden;
             transition: background-color 0.25s var(--ease-out-pro), border-color 0.25s var(--ease-out-pro);
+            flex-shrink: 0;
         }
 
         /* Mesas estilo Zrest */
         .zrest-mesas-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 12px;
-            margin-bottom: 10px;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
             scrollbar-width: thin;
             scroll-behavior: smooth;
+            flex-shrink: 0;
         }
         .zrest-mesa-card {
             background: var(--card-bg);
-            border: 2px solid var(--border);
-            padding: 12px 20px;
-            border-radius: 16px;
+            border: 1.5px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
             font-weight: 700;
-            min-width: 120px;
+            font-size: 13px;
+            min-width: 100px;
             transition: all 0.2s var(--ease-out-pro);
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
             flex-shrink: 0;
@@ -308,22 +321,23 @@
         /* Header de Pesquisa Zrest */
         .zrest-search-header {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             background: var(--card-bg);
-            padding: 16px;
-            border-radius: 18px;
+            padding: 10px 14px;
+            border-radius: 14px;
             border: 1px solid var(--border);
             box-shadow: 0 4px 15px rgba(0,0,0,0.02);
             align-items: center;
             transition: all 0.25s var(--ease-out-pro);
+            flex-shrink: 0;
         }
 
         /* Pills de Categoria Zrest */
         .zrest-cat-scroll {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding-bottom: 2px;
             scrollbar-width: none;
             scroll-behavior: smooth;
         }
@@ -331,9 +345,9 @@
             background: #f1f5f9;
             color: var(--text-main);
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
-            padding: 12px 24px;
+            padding: 8px 16px;
             border-radius: 100px;
             cursor: pointer;
             white-space: nowrap;
@@ -345,26 +359,27 @@
         /* Grid de Produtos Zrest com Texto Visível e Animações Suaves */
         .zrest-product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+            gap: 12px;
             overflow-y: auto;
             padding-right: 4px;
-            padding-bottom: 20px;
-            height: calc(100vh - 280px);
+            padding-bottom: 10px;
+            flex: 1;
+            min-height: 0;
             scroll-behavior: smooth;
         }
         .zrest-product-card {
             background: var(--card-bg);
             border: 1.5px solid var(--border);
-            border-radius: 18px;
-            padding: 16px 14px;
+            border-radius: 16px;
+            padding: 12px 10px;
             text-align: center;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 145px;
+            min-height: 125px;
             transition: all 0.22s var(--ease-out-pro);
             position: relative;
             overflow: hidden;
@@ -377,33 +392,33 @@
         .zrest-product-card:hover::before { opacity: 1; }
         .zrest-product-card:active { transform: scale(0.96); }
         .zrest-prod-title { 
-            font-size: 15px; 
+            font-size: 14px; 
             font-weight: 800; 
             color: var(--text-main); 
-            line-height: 1.35;
-            margin-bottom: 8px; 
+            line-height: 1.3;
+            margin-bottom: 4px; 
             display: -webkit-box; 
             -webkit-line-clamp: 3; 
             -webkit-box-orient: vertical; 
             overflow: hidden; 
             word-break: break-word;
         }
-        .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.25em; }
-        .zrest-prod-stock { font-size: 0.78em; color: var(--text-muted); font-weight: 700; margin-top: 6px; background: #f1f5f9; padding: 4px 10px; border-radius: 12px; display: inline-block; transition: background 0.2s; }
+        .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.15em; }
+        .zrest-prod-stock { font-size: 0.75em; color: var(--text-muted); font-weight: 700; margin-top: 4px; background: #f1f5f9; padding: 2px 8px; border-radius: 10px; display: inline-block; transition: background 0.2s; }
 
         .zrest-btn-ver-mais {
             grid-column: 1 / -1;
             background: #eff6ff;
             color: var(--primary);
             border: 2px dashed var(--primary);
-            border-radius: 18px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 12px;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             text-align: center;
             transition: all 0.2s var(--ease-out-pro);
-            margin-top: 8px;
+            margin-top: 4px;
         }
         .zrest-btn-ver-mais:hover {
             background: var(--primary);
@@ -415,20 +430,22 @@
 
         /* Right Panel (Cart) Zrest */
         .zrest-cart-header {
-            padding: 20px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             background: #f8fafc;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: background-color 0.25s var(--ease-out-pro);
+            flex-shrink: 0;
         }
-        .zrest-cart-header h4 { margin: 0; font-size: 1.1em; color: var(--primary); }
+        .zrest-cart-header h4 { margin: 0; font-size: 1em; color: var(--primary); }
         
         .zrest-cart-items {
             flex: 1;
+            min-height: 0;
             overflow-y: auto;
-            padding: 10px 20px;
+            padding: 8px 16px;
             background: #fff;
             scroll-behavior: smooth;
             transition: background-color 0.25s var(--ease-out-pro);
@@ -437,26 +454,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 8px 0;
             border-bottom: 1px dashed var(--border);
             transition: border-color 0.2s;
         }
         .zrest-cart-item-info { flex: 1; }
-        .zrest-cart-item-name { font-weight: 800; font-size: 14px; color: var(--dark); margin-bottom: 4px; }
-        .zrest-cart-item-meta { font-size: 13px; color: var(--text-muted); }
-        .zrest-cart-item-price { font-weight: 800; color: var(--dark); font-size: 15px; text-align: right; }
-        .zrest-cart-item-delete { background: #fee2e2; color: var(--danger); border: none; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.2s var(--ease-out-pro); margin-left: 12px; }
+        .zrest-cart-item-name { font-weight: 800; font-size: 13px; color: var(--dark); margin-bottom: 2px; }
+        .zrest-cart-item-meta { font-size: 12px; color: var(--text-muted); }
+        .zrest-cart-item-price { font-weight: 800; color: var(--dark); font-size: 14px; text-align: right; }
+        .zrest-cart-item-delete { background: #fee2e2; color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.2s var(--ease-out-pro); margin-left: 10px; }
         .zrest-cart-item-delete:hover { background: var(--danger); color: white; transform: scale(1.08); }
 
         .zrest-checkout-area {
             background: #f8fafc;
             border-top: 1px solid var(--border);
-            padding: 20px;
+            padding: 14px 16px;
             transition: background-color 0.25s var(--ease-out-pro);
+            flex-shrink: 0;
         }
-        .zrest-totals-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); font-weight: 600; }
-        .zrest-totals-main { display: flex; justify-content: space-between; margin: 12px 0 20px 0; font-size: 24px; font-weight: 900; color: var(--dark); align-items: center; }
-        .zrest-pay-btn { background: var(--success); color: white; width: 100%; border-radius: 14px; font-size: 18px; font-weight: 800; padding: 18px 22px; border: none; cursor: pointer; transition: all 0.22s var(--ease-out-pro); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.28); display: flex; justify-content: space-between; }
+        .zrest-totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .zrest-totals-main { display: flex; justify-content: space-between; margin: 8px 0 12px 0; font-size: 20px; font-weight: 900; color: var(--dark); align-items: center; }
+        .zrest-pay-btn { background: var(--success); color: white; width: 100%; border-radius: 12px; font-size: 16px; font-weight: 800; padding: 14px 18px; border: none; cursor: pointer; transition: all 0.22s var(--ease-out-pro); box-shadow: 0 8px 24px rgba(16, 185, 129, 0.28); display: flex; justify-content: space-between; min-height: 44px; }
         .zrest-pay-btn:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 12px 28px rgba(16, 185, 129, 0.38); }
         .zrest-pay-btn:active { transform: scale(0.97); }
 
@@ -464,10 +482,11 @@
             background: white;
             color: var(--dark);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 800;
-            font-size: 14px;
-            padding: 12px 8px;
+            font-size: 12px;
+            padding: 8px 4px;
+            min-height: 34px;
             cursor: pointer;
             transition: all 0.18s var(--ease-out-pro);
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
