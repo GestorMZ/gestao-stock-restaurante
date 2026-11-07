@@ -318,163 +318,165 @@
             gap: 6px;
             overflow-x: auto;
             padding-bottom: 2px;
-            scrollbar-width: none;
-        }
-        .zrest-cat-btn {
-            background: #f1f5f9;
-            color: var(--text-main);
-            border: none;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 8px 16px;
-            border-radius: 100px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .zrest-cat-btn.active { background: var(--dark); color: white; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
-
-        .zrest-product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-            gap: 12px;
-            padding-right: 4px;
-            padding-bottom: 10px;
-            flex: 1;
-        }
-        .zrest-product-card {
-            background: var(--card-bg);
-            border: 1.5px solid var(--border);
-            border-radius: 16px;
-            padding: 12px 10px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 125px;
-            position: relative;
-            overflow: hidden;
-        }
-        .zrest-product-card:hover { border-color: var(--primary); transform: translateY(-3px); }
-        .zrest-prod-title { 
-            font-size: 14px; 
-            font-weight: 800; 
-            color: var(--text-main); 
-            line-height: 1.3;
-            margin-bottom: 4px; 
-            display: -webkit-box; 
-            -webkit-line-clamp: 3; 
-            -webkit-box-orient: vertical; 
-            overflow: hidden; 
-            word-break: break-word;
-        }
-        .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.15em; }
-        .zrest-prod-stock { font-size: 0.75em; color: var(--text-muted); font-weight: 700; margin-top: 4px; background: #f1f5f9; padding: 2px 8px; border-radius: 10px; display: inline-block; }
-
-        .zrest-btn-ver-mais {
-            grid-column: 1 / -1;
-            background: #eff6ff;
-            color: var(--primary);
-            border: 2px dashed var(--primary);
-            border-radius: 14px;
-            padding: 12px;
-            font-weight: 800;
-            font-size: 14px;
-            cursor: pointer;
-            text-align: center;
-            margin-top: 4px;
         }
 
-        .zrest-cart-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            background: #f8fafc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        .zrest-cart-header h4 { margin: 0; font-size: 1em; color: var(--primary); }
-        
-        .zrest-cart-items {
-            flex: 1;
-            min-height: 200px;
-            max-height: 350px;
-            overflow-y: auto;
-            padding: 8px 16px;
-            background: #fff;
-        }
-        .zrest-cart-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border);
-        }
-        .zrest-cart-item-info { flex: 1; }
-        .zrest-cart-item-name { font-weight: 800; font-size: 13px; color: var(--dark); margin-bottom: 2px; }
-        .zrest-cart-item-meta { font-size: 12px; color: var(--text-muted); }
-        .zrest-cart-item-price { font-weight: 800; color: var(--dark); font-size: 14px; text-align: right; }
-        .zrest-cart-item-delete { background: #fee2e2; color: var(--danger); border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-left: 10px; }
-
-        .zrest-checkout-area {
-            background: #f8fafc;
-            border-top: 1px solid var(--border);
-            padding: 14px 16px;
-            flex-shrink: 0;
-        }
-        .zrest-totals-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; color: var(--text-muted); font-weight: 600; }
-        .zrest-totals-main { display: flex; justify-content: space-between; margin: 8px 0 12px 0; font-size: 20px; font-weight: 900; color: var(--dark); align-items: center; }
-        .zrest-pay-btn { background: var(--success); color: white; width: 100%; border-radius: 12px; font-size: 16px; font-weight: 800; padding: 14px 18px; border: none; cursor: pointer; display: flex; justify-content: space-between; min-height: 44px; }
-
-        .btn-atacho-fast {
-            background: white;
-            color: var(--dark);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 12px;
-            padding: 8px 4px;
-            min-height: 34px;
-            cursor: pointer;
-        }
-
-        /* MODO ESCURO */
+        /* MODO ESCURO PROFISSIONAL & ELEGANTE (DARK CANVAS) */
         body.dark-mode { 
-            --light: #090d16; 
-            --card-bg: #111827; 
-            --border: #1f2937; 
-            --text-main: #f3f4f6; 
-            --text-muted: #9ca3af; 
-            --dark: #ffffff;
+            --light: #0b0f19; 
+            --card-bg: #151c2c; 
+            --border: #26334d; 
+            --text-main: #e2e8f0; 
+            --text-muted: #94a3b8; 
+            --dark: #f8fafc;
             --primary: #3b82f6;
             --primary-dark: #2563eb;
             background-color: var(--light); 
             color: var(--text-main); 
         }
-        body.dark-mode .container { background: var(--card-bg); border-color: var(--border); }
-        body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label { color: #f9fafb; }
-        body.dark-mode input, body.dark-mode select { background: #1f2937; color: #f9fafb; border-color: #374151; }
-        body.dark-mode th { background-color: #1f2937; color: #9ca3af; border-bottom-color: var(--border); }
-        body.dark-mode td { border-bottom-color: var(--border); color: #e5e7eb; }
-        body.dark-mode tr:hover td { background-color: #1f2937; }
-        body.dark-mode .card-stat, body.dark-mode .card-perfil-login { background: #1f2937; border-color: #374151; color: #f9fafb; }
-        body.dark-mode .header-usuario { background: #1f2937; border-color: #374151; color: #f9fafb; }
-        body.dark-mode .tabs-nav { border-bottom-color: var(--border); }
-        body.dark-mode .tab-btn { background: #1f2937; color: #9ca3af; border: 1px solid #374151; }
-        body.dark-mode .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-        body.dark-mode .modal-content { background: #111827; border-color: #374151; color: #f9fafb; }
-        body.dark-mode .zrest-right-panel, body.dark-mode .zrest-search-header { background: #111827; border-color: #1f2937; }
-        body.dark-mode .zrest-mesa-card { background: #1f2937; border-color: #374151; color: #f9fafb; }
-        body.dark-mode .zrest-cat-btn { background: #1f2937; color: #9ca3af; }
-        body.dark-mode .zrest-cat-btn.active { background: #ffffff; color: #090d16; }
-        body.dark-mode .zrest-product-card { background: #1f2937; border-color: #374151; }
-        body.dark-mode .zrest-prod-title { color: #ffffff; }
-        body.dark-mode .zrest-prod-stock { background: #111827; color: #9ca3af; }
-        body.dark-mode .zrest-cart-header, body.dark-mode .zrest-checkout-area { background: #0b0f19; border-color: #1f2937; }
-        body.dark-mode .zrest-cart-items { background: #111827; }
-        body.dark-mode .zrest-cart-item-name, body.dark-mode .zrest-cart-item-price, body.dark-mode .zrest-totals-main { color: #ffffff; }
+        body.dark-mode .container { 
+            background: var(--card-bg); 
+            border-color: var(--border); 
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+        }
+        body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label { 
+            color: #f1f5f9; 
+        }
+        body.dark-mode input, body.dark-mode select { 
+            background: #1e293b; 
+            color: #f8fafc; 
+            border-color: #334155; 
+        }
+        body.dark-mode input:focus, body.dark-mode select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+        body.dark-mode table {
+            background-color: #151c2c;
+        }
+        body.dark-mode th { 
+            background-color: #1e293b; 
+            color: #94a3b8; 
+            border-bottom-color: var(--border); 
+        }
+        body.dark-mode td { 
+            border-bottom-color: var(--border); 
+            color: #cbd5e1; 
+        }
+        body.dark-mode tr:hover td { 
+            background-color: #1e293b; 
+        }
+        body.dark-mode .card-stat, body.dark-mode .card-perfil-login { 
+            background: #1e293b; 
+            border-color: #334155; 
+            color: #f8fafc; 
+        }
+        body.dark-mode .header-usuario { 
+            background: #1e293b; 
+            border-color: #334155; 
+            color: #f8fafc; 
+        }
+        body.dark-mode .tabs-nav { 
+            border-bottom-color: var(--border); 
+        }
+        body.dark-mode .tab-btn { 
+            background: #1e293b; 
+            color: #94a3b8; 
+            border: 1px solid #334155; 
+        }
+        body.dark-mode .tab-btn:hover {
+            background: #334155;
+            color: #f8fafc;
+        }
+        body.dark-mode .tab-btn.active { 
+            background: var(--primary); 
+            color: #fff; 
+            border-color: var(--primary); 
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+        }
+        body.dark-mode .modal-content { 
+            background: #151c2c; 
+            border-color: #334155; 
+            color: #f8fafc; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+        body.dark-mode .zrest-right-panel, body.dark-mode .zrest-search-header { 
+            background: #151c2c; 
+            border-color: var(--border); 
+        }
+        body.dark-mode .zrest-mesa-card { 
+            background: #1e293b; 
+            border-color: #334155; 
+            color: #f8fafc; 
+        }
+        body.dark-mode .zrest-mesa-card.ocupada {
+            background: #450a0a;
+            border-color: #991b1b;
+            color: #fca5a5;
+        }
+        body.dark-mode .zrest-mesa-card.selecionada {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #ffffff;
+        }
+        body.dark-mode .zrest-cat-btn { 
+            background: #1e293b; 
+            color: #94a3b8; 
+        }
+        body.dark-mode .zrest-cat-btn:hover {
+            background: #334155;
+            color: #f8fafc;
+        }
+        body.dark-mode .zrest-cat-btn.active { 
+            background: #f8fafc; 
+            color: #0b0f19; 
+        }
+        body.dark-mode .zrest-product-card { 
+            background: #1e293b; 
+            border-color: #334155; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+        body.dark-mode .zrest-product-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        body.dark-mode .zrest-prod-title { 
+            color: #ffffff; 
+        }
+        body.dark-mode .zrest-prod-stock { 
+            background: #0f172a; 
+            color: #94a3b8; 
+        }
+        body.dark-mode .zrest-cart-header, body.dark-mode .zrest-checkout-area { 
+            background: #0f172a; 
+            border-color: var(--border); 
+        }
+        body.dark-mode .zrest-cart-items { 
+            background: #151c2c; 
+        }
+        body.dark-mode .zrest-cart-item-row {
+            border-bottom-color: #26334d;
+        }
+        body.dark-mode .zrest-cart-item-name, body.dark-mode .zrest-cart-item-price, body.dark-mode .zrest-totals-main { 
+            color: #ffffff; 
+        }
+        body.dark-mode .btn-atacho-fast {
+            background: #1e293b;
+            color: #f8fafc;
+            border-color: #334155;
+        }
+        body.dark-mode .btn-atacho-fast:hover {
+            background: #334155;
+            border-color: var(--primary);
+        }
+        body.dark-mode .box-calculo-lucro {
+            background: #1e293b;
+            border-color: #3b82f6;
+            color: #e2e8f0;
+        }
+        body.dark-mode .badge {
+            background: #334155;
+            color: #cbd5e1;
+        }
 
         @media (max-width: 1100px) {
             .zrest-pos-wrapper { flex-direction: column; }
@@ -1407,13 +1409,15 @@
             return false;
         }
         isProcessing = true;
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'flex';
         return true;
     };
 
     window.fimProcessamento = function() {
         isProcessing = false;
-        document.getElementById('loadingOverlay').style.display = 'none';
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = 'none';
     };
 
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -1433,6 +1437,7 @@
     // NOTIFICAÇÕES TOAST
     window.showToast = function(msg, type = 'success') {
         const container = document.getElementById('toast-container');
+        if (!container) return;
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         
@@ -1463,40 +1468,53 @@
         dbOffline = e.target.result;
         window.sincronizarVendasOffline();
     };
+    requestDB.onerror = (e) => {
+        console.error("IndexedDB error:", e);
+    };
 
     window.salvarVendaOffline = function(venda) {
         if (!dbOffline) return;
-        venda.idLocal = "off_" + Date.now();
-        const tx = dbOffline.transaction("vendas_pendentes", "readwrite");
-        tx.objectStore("vendas_pendentes").add(venda);
-        window.showToast("Sem Internet! Venda guardada localmente.", "warning");
+        try {
+            venda.idLocal = "off_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+            const tx = dbOffline.transaction("vendas_pendentes", "readwrite");
+            tx.objectStore("vendas_pendentes").add(venda);
+            window.showToast("Sem Internet! Venda guardada localmente.", "warning");
+        } catch(e) {
+            console.error("Erro ao gravar venda offline:", e);
+        }
     };
 
     window.sincronizarVendasOffline = function() {
         if (!navigator.onLine || !dbOffline || !codigoEmpresa) return;
-        const tx = dbOffline.transaction("vendas_pendentes", "readonly");
-        const req = tx.objectStore("vendas_pendentes").getAll();
-        req.onsuccess = async () => {
-            const vendas = req.result;
-            if (vendas.length > 0) {
-                if (!window.iniciarProcessamento()) return;
-                window.showToast(`Sincronizando ${vendas.length} vendas...`, "info");
-                try {
-                    for (let v of vendas) {
-                        try {
-                            let idLocal = v.idLocal;
-                            delete v.idLocal;
-                            await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
-                            const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
-                            txDel.objectStore("vendas_pendentes").delete(idLocal);
-                        } catch(e) {}
+        try {
+            const tx = dbOffline.transaction("vendas_pendentes", "readonly");
+            const req = tx.objectStore("vendas_pendentes").getAll();
+            req.onsuccess = async () => {
+                const vendas = req.result;
+                if (vendas && vendas.length > 0) {
+                    if (!window.iniciarProcessamento()) return;
+                    window.showToast(`Sincronizando ${vendas.length} vendas...`, "info");
+                    try {
+                        for (let v of vendas) {
+                            try {
+                                let idLocal = v.idLocal;
+                                delete v.idLocal;
+                                await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
+                                const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
+                                txDel.objectStore("vendas_pendentes").delete(idLocal);
+                            } catch(e) {
+                                console.error("Erro ao sincronizar item individual:", e);
+                            }
+                        }
+                        window.showToast("Sincronização concluída com sucesso!", "success");
+                    } finally {
+                        window.fimProcessamento();
                     }
-                    window.showToast("Sincronização concluída com sucesso!", "success");
-                } finally {
-                    window.fimProcessamento();
                 }
-            }
-        };
+            };
+        } catch(e) {
+            console.error("Erro no processo de sincronização offline:", e);
+        }
     };
 
     if ('serviceWorker' in navigator) {
@@ -1506,14 +1524,16 @@
     // SISTEMA MODAL CUSTOMIZADO
     window.customAlert = function(msg) {
         return new Promise(resolve => {
-            document.getElementById('customModalOverlay').style.display = 'flex';
+            const overlay = document.getElementById('customModalOverlay');
+            if(!overlay) return resolve();
+            overlay.style.display = 'flex';
             document.getElementById('customModalTitle').innerText = 'Aviso do Sistema';
             document.getElementById('customModalText').innerText = msg;
             document.getElementById('customModalInput').style.display = 'none';
             document.getElementById('customModalBtnCancel').style.display = 'none';
             let btnOK = document.getElementById('customModalBtnOK');
             btnOK.onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
+                overlay.style.display = 'none';
                 resolve();
             };
         });
@@ -1521,17 +1541,19 @@
 
     window.customConfirm = function(msg) {
         return new Promise(resolve => {
-            document.getElementById('customModalOverlay').style.display = 'flex';
+            const overlay = document.getElementById('customModalOverlay');
+            if(!overlay) return resolve(false);
+            overlay.style.display = 'flex';
             document.getElementById('customModalTitle').innerText = 'Confirmação';
             document.getElementById('customModalText').innerText = msg;
             document.getElementById('customModalInput').style.display = 'none';
             document.getElementById('customModalBtnCancel').style.display = 'block';
             document.getElementById('customModalBtnOK').onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
+                overlay.style.display = 'none';
                 resolve(true);
             };
             document.getElementById('customModalBtnCancel').onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
+                overlay.style.display = 'none';
                 resolve(false);
             };
         });
@@ -1539,7 +1561,9 @@
 
     window.customPrompt = function(msg, defaultVal = '', isPassword = false) {
         return new Promise(resolve => {
-            document.getElementById('customModalOverlay').style.display = 'flex';
+            const overlay = document.getElementById('customModalOverlay');
+            if(!overlay) return resolve(null);
+            overlay.style.display = 'flex';
             document.getElementById('customModalTitle').innerText = 'Entrada de Dados';
             document.getElementById('customModalText').innerText = msg;
             let input = document.getElementById('customModalInput');
@@ -1550,11 +1574,11 @@
 
             document.getElementById('customModalBtnCancel').style.display = 'block';
             document.getElementById('customModalBtnOK').onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
+                overlay.style.display = 'none';
                 resolve(input.value);
             };
             document.getElementById('customModalBtnCancel').onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
+                overlay.style.display = 'none';
                 resolve(null);
             };
         });
@@ -3453,6 +3477,7 @@
         let custoStr = await customPrompt(`Custo unitário por peça (MT):`, custoAtual.toFixed(2));
         if (!custoStr) return;
         let custoUnitNovo = parseFloat(custoStr);
+        if (isNaN(custoUnitNovo) || custoUnitNovo < 0) custoUnitNovo = custoAtual;
 
         if (!window.iniciarProcessamento()) return;
         try {
@@ -3481,6 +3506,7 @@
         let valStr = await customPrompt(`Quantas peças de '${p.toUpperCase()}' deseja remover? (Stock: ${item.qtd})`, "1");
         if (!valStr) return;
         let qtdRemover = parseFloat(valStr);
+        if (isNaN(qtdRemover) || qtdRemover <= 0) return window.showToast("Quantidade inválida.", "error");
 
         if (!window.iniciarProcessamento()) return;
         try {
@@ -3538,7 +3564,7 @@
             tbody.innerHTML += `<tr>
                 <td><small>${m.data}</small></td>
                 <td><span class="badge ${isEntrada ? 'badge-entrada' : 'badge-saida'}">${m.tipo}</span></td>
-                <td><b>${m.produto.toUpperCase()}</b></td>
+                <td><b>${(m.produto||'').toUpperCase()}</b></td>
                 <td style="font-weight:bold; color:${isEntrada ? 'var(--success)' : 'var(--danger)'};">${isEntrada ? '+' : '-'}${m.qtd}</td>
                 <td><b style="text-transform:uppercase;">${m.usuario}</b></td>
                 <td><small>${m.origem || '-'}</small></td>
@@ -3566,7 +3592,8 @@
         let temCritico = false;
         for(let p in stock) { if(stock[p].qtd <= (stock[p].min_alerta || 2)) { temCritico = true; break; } }
         if(temCritico) window.tocarSom('alerta');
-        document.getElementById('boxAlertaStockGlobal').style.display = temCritico ? 'block' : 'none';
+        let box = document.getElementById('boxAlertaStockGlobal');
+        if (box) box.style.display = temCritico ? 'block' : 'none';
     }
 
     window.mudarPaginaAdminHist = function(dir) {
@@ -3717,25 +3744,27 @@
 
     function renderizarGraficoEStats(num, mpesa, emola, pos, fiado) {
         let ctx = document.getElementById('graficoCanaisPay');
-        if (!ctx) return;
+        if (!ctx || typeof Chart === 'undefined') return;
 
         if (chartInstance) chartInstance.destroy();
 
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Numerário', 'M-Pesa', 'e-Mola', 'POS', 'Fiado'],
-                datasets: [{
-                    data: [num, mpesa, emola, pos, fiado],
-                    backgroundColor: ['#059669', '#7c3aed', '#d97706', '#2563eb', '#dc2626']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
+        try {
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Numerário', 'M-Pesa', 'e-Mola', 'POS', 'Fiado'],
+                    datasets: [{
+                        data: [num, mpesa, emola, pos, fiado],
+                        backgroundColor: ['#059669', '#7c3aed', '#d97706', '#2563eb', '#dc2626']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        } catch(e) { console.error("Erro no Chart.js:", e); }
 
         let topContainer = document.getElementById('listaTopProdutos');
         if (topContainer) {
@@ -3785,6 +3814,7 @@
     };
 
     window.exportarVendasExcel = function() {
+        if (typeof XLSX === 'undefined') return window.showToast("Biblioteca XLSX indisponível.", "error");
         if (historicoDashFiltrado.length === 0) return window.showToast("Sem vendas para exportar.", "warning");
 
         let dadosExcel = historicoDashFiltrado.map(h => ({
@@ -3806,6 +3836,7 @@
     };
 
     window.exportarStockExcel = function() {
+        if (typeof XLSX === 'undefined') return window.showToast("Biblioteca XLSX indisponível.", "error");
         let dadosExcel = Object.keys(stock).map(p => ({
             "Peça / Artigo": (stock[p].nomeOriginal || p).toUpperCase(),
             "Tamanho / Especificação": stock[p].tamanho || 'Único',
@@ -3847,7 +3878,7 @@
 
     window.abrirModalQRMenu = function() {
         let container = document.getElementById('qrcodeArea');
-        if (!container) return;
+        if (!container || typeof QRCode === 'undefined') return window.showToast("QRCode indisponível.", "error");
         container.innerHTML = '';
         let urlMenu = window.location.origin + window.location.pathname + `?empresa=${codigoEmpresa}`;
         document.getElementById('textLinkMenu').innerText = urlMenu;
