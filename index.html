@@ -1034,7 +1034,7 @@
         <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:15px;">
-                <h2 style="margin:0;">Gestão de Stock na Despensa</h2>
+                <h2 style="margin:0;">Gestão de Stock Multissectorial</h2>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn-purple btn-sm" onclick="window.abrirModalConversaoShots()">🍷 Abrir Garrafa p/ Shots</button>
                     <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock</button>
@@ -1058,11 +1058,49 @@
             </div>
 
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
-                <h4 style="margin-top:0;">📥 Entrada de Produtos (Compras)</h4>
+                <h4 style="margin-top:0;">📥 Entrada de Produtos (Compras & Cadastro)</h4>
+
+                <!-- SELETOR DE SECTOR DE ATIVIDADE -->
+                <div class="form-row" style="background:var(--light); padding:10px 14px; border-radius:10px; margin-bottom:14px; border:1px solid var(--border);">
+                    <div class="form-group" style="margin:0;">
+                        <label style="color:var(--primary); font-weight:800;">🛍️ Tipo de Produto / Sector:</label>
+                        <select id="simplesTipoSector" onchange="window.alternarCamposSectorStock()">
+                            <option value="geral">🏷️ Geral / Bebidas & Alimentos</option>
+                            <option value="vestuario">👕 Roupas, Calçado & Acessórios</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-row">
-                    <div class="form-group"><label>Produto / Bebida</label><input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml"></div>
                     <div class="form-group">
-                        <label>Código de Barras</label>
+                        <label id="labelNomeProduto">Nome do Produto / Peça</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: T-Shirt Oversized, Calças Jeans, Cerveja 2M">
+                    </div>
+
+                    <!-- CAMPO DE TAMANHO & COR (Visíveis quando Sector = Vestuário) -->
+                    <div class="form-group box-campo-vestuario" style="display:none;">
+                        <label style="color:var(--purple); font-weight:800;">📏 Tamanho</label>
+                        <select id="simplesTamanhoPeca">
+                            <option value="S">S (Pequeno)</option>
+                            <option value="M" selected>M (Médio)</option>
+                            <option value="L">L (Grande)</option>
+                            <option value="XL">XL (Extra Grande)</option>
+                            <option value="XXL">XXL</option>
+                            <option value="Único">Tamanho Único</option>
+                            <option value="36">36</option>
+                            <option value="38">38</option>
+                            <option value="40">40</option>
+                            <option value="42">42</option>
+                            <option value="44">44</option>
+                        </select>
+                    </div>
+                    <div class="form-group box-campo-vestuario" style="display:none;">
+                        <label style="color:var(--purple); font-weight:800;">🎨 Cor / Variação (Opcional)</label>
+                        <input type="text" id="simplesCorPeca" placeholder="Ex: Preto, Azul, Branco">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Código de Barras / Ref</label>
                         <div style="display: flex; gap: 6px;">
                             <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
                             <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 14px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
@@ -1072,37 +1110,40 @@
                         <label>Categoria</label>
                         <select id="simplesCategoria">
                             <option value="bebidas">🍺 Bebidas</option>
-                            <option value="pratos">🍲 Pratos</option>
+                            <option value="pratos">🍲 Pratos / Alimentos</option>
                             <option value="petiscos">🍟 Petiscos</option>
+                            <option value="vestuario">👕 Roupas & Vestuário</option>
+                            <option value="calcado">👟 Calçado</option>
+                            <option value="acessorios">👜 Acessórios</option>
                             <option value="outros">🍷 Outros</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-row">
+                <div class="form-row" id="rowModoCompraWrapper">
                     <div class="form-group">
                         <label>Formato de Compra</label>
                         <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-                            <option value="caixa">📦 Por Caixa / Fardo</option>
-                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                            <option value="unidade">👕 / 🍺 Por Unidade Avulsa / Peça</option>
+                            <option value="caixa">📦 Por Caixa / Fardo / Pack</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-row" id="rowModoCaixa">
-                    <div class="form-group"><label>Qtd. de Caixas</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Unid. por Caixa</label><input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Preço Pago por Caixa (MT)</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                <div class="form-row" id="rowModoCaixa" style="display:none;">
+                    <div class="form-group"><label>Qtd. de Caixas/Packs</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Unid. por Caixa/Pack</label><input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Preço Pago por Caixa/Pack (MT)</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
-                <div class="form-row" id="rowModoUnidade" style="display:none;">
-                    <div class="form-group"><label>Qtd. Total Unidades</label><input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Custo por Unidade (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                <div class="form-row" id="rowModoUnidade">
+                    <div class="form-group"><label>Qtd. Total de Peças / Unidades</label><input type="number" id="simplesQtd" value="1" step="1" min="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Custo por Peça / Unidade (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group"><label style="color:var(--success);">Preço Venda Unitário (MT)</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Limite Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="5" min="1"></div>
+                    <div class="form-group"><label>Limite Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="3" min="1"></div>
                 </div>
 
                 <div id="boxCalculoLucro" class="box-calculo-lucro">
@@ -2041,83 +2082,83 @@
         tbody.innerHTML = '';
         if(auditLogs.length === 0) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sem registos.</td></tr>'; return; }
         let totalPaginas = Math.ceil(auditLogs.length / ITENS_POR_PAGINA_AUDIT) || 1;
-        if(paginaAtualAuditLogs > totalPaginas) paginaAtualAuditLogs = totalPaginas;
-        document.getElementById('pagAtualAuditLogs').innerText = paginaAtualAuditLogs;
-        document.getElementById('pagTotalAuditLogs').innerText = totalPaginas;
-        let inicio = (paginaAtualAuditLogs - 1) * ITENS_POR_PAGINA_AUDIT;
-        auditLogs.slice(inicio, inicio + ITENS_POR_PAGINA_AUDIT).forEach(log => {
-            tbody.innerHTML += `<tr><td><small>${log.data || '-'}</small></td><td><b>${log.usuario || '-'}</b></td><td><span class="badge" style="background:var(--purple); color:white;">${log.evento || '-'}</span></td><td><small>${log.detalhes || '-'}</small></td></tr>`;
-        });
-    }
+    window.alternarCamposSectorStock = function() {
+        let sector = document.getElementById('simplesTipoSector').value;
+        let camposVestuario = document.querySelectorAll('.box-campo-vestuario');
+        let labelNome = document.getElementById('labelNomeProduto');
+        let selCat = document.getElementById('simplesCategoria');
 
-    window.carregarPerfisEmpresa = async function() {
-        let elCod = document.getElementById('loginCodigoEmpresa');
-        let codeInput = elCod ? elCod.value.trim().toUpperCase() : "";
-        if(!codeInput) return window.showToast("Introduza o Código do Restaurante!", "warning");
+        if (sector === 'vestuario') {
+            camposVestuario.forEach(el => el.style.display = 'block');
+            if (labelNome) labelNome.innerText = "Nome da Peça / Roupa";
+            if (selCat) selCat.value = 'vestuario';
+        } else {
+            camposVestuario.forEach(el => el.style.display = 'none');
+            if (labelNome) labelNome.innerText = "Nome do Produto";
+        }
+    };
 
-        codigoEmpresa = codeInput;
-
+    window.salvarEntradaStock = async function() {
         if (!window.iniciarProcessamento()) return;
-
+        
         try {
-            let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
-            let docEmpresaRef = doc(db, "empresas", codigoEmpresa);
-            let docEmpresaSnap = await getDoc(docEmpresaRef);
+            let sector = document.getElementById('simplesTipoSector').value;
+            let prodBase = document.getElementById('simplesProduto').value.trim();
+            if(!prodBase) return window.showToast("Digite o nome da peça ou produto.", "warning");
 
-            // CORREÇÃO CRÍTICA: Bloquear a criação automática ao inventar códigos aleatórios
-            if ((!docLicenca || !docLicenca.exists()) && (!docEmpresaSnap || !docEmpresaSnap.exists())) {
-                window.showToast("❌ Código de Licença não encontrado ou inválido!", "error");
-                document.getElementById('seccaoPerfisEForm').style.display = 'none';
-                return;
-            }
-
-            if (docLicenca && docLicenca.exists()) {
-                let dadosLicenca = docLicenca.data();
-                let hoje = new Date().toISOString().split('T')[0];
-                if (dadosLicenca.status === "suspenso" || (dadosLicenca.validade && dadosLicenca.validade < hoje)) {
-                    document.getElementById('seccaoPerfisEForm').style.display = 'none';
-                    document.getElementById('seccaoCriarTrial').style.display = 'none';
-                    document.getElementById('boxContaBloqueada').style.display = 'block';
-                    document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso ou Trial Expirado.';
-                    return;
+            let prod = prodBase;
+            if (sector === 'vestuario') {
+                let tamanho = document.getElementById('simplesTamanhoPeca').value;
+                let cor = document.getElementById('simplesCorPeca').value.trim();
+                if (cor) {
+                    prod = `${prodBase} - ${tamanho} (${cor})`;
+                } else {
+                    prod = `${prodBase} - ${tamanho}`;
                 }
             }
 
-            localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
+            prod = prod.toLowerCase();
 
-            document.getElementById('boxContaBloqueada').style.display = 'none';
-            document.getElementById('seccaoCriarTrial').style.display = 'none';
-            desconectarEscutadores();
-            document.getElementById('seccaoPerfisEForm').style.display = 'block';
+            let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+            let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
+            let modoCompra = document.getElementById('simplesModoCompra').value;
+            let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 3;
+            let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-            let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), (docSnap) => {
-                if (docSnap.exists()) {
-                    let dadosDoc = docSnap.data();
-                    usuarios = {};
-                    if (Array.isArray(dadosDoc.usuarios)) {
-                        dadosDoc.usuarios.forEach(u => { 
-                            if (u.nome) {
-                                let permissoesPadrao = u.permissoes || (u.tipo === 'admin' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard'] : (u.tipo === 'gerente' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock'] : ['abaVendas']));
-                                usuarios[u.nome.toLowerCase()] = { 
-                                    senha: u.senha || "123", 
-                                    tipo: u.tipo || "vendedor", 
-                                    foto: u.foto || "", 
-                                    permissoes: permissoesPadrao 
-                                }; 
-                            }
-                        });
-                    }
-                }
-                renderizarPerfisLogin();
-                if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-            }, (error) => {
-                console.error("Erro no listener de usuários:", error);
+            let totalUnidades = 0, totalCusto = 0;
+            if(modoCompra === 'caixa') {
+                let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+                let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+                let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+                totalUnidades = numCaixas * unidCaixa;
+                totalCusto = numCaixas * valCaixa;
+            } else {
+                totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+                let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+                totalCusto = totalUnidades * custoUnit;
+            }
+
+            if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
+
+            stock[prod].qtd += totalUnidades;
+            stock[prod].preco_total += totalCusto;
+            stock[prod].min_alerta = minAlerta;
+            stock[prod].categoria = cat;
+            if(barcodeInput) stock[prod].barcode = barcodeInput;
+            if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+                tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa/Pack' : 'Compra Avulsa'
             });
-            unsubscribes.push(unsubUser);
-            window.showToast("Restaurante vinculado com sucesso!", "success");
-        } catch (erro) { 
-            console.error("Erro ao validar licença/perfis:", erro);
-            window.showToast("Erro ao carregar perfis da empresa: " + (erro.message || erro), "error"); 
+
+            await salvarStockFirestore({ [prod]: stock[prod] });
+            registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
+            document.getElementById('simplesProduto').value = '';
+            document.getElementById('simplesCorPeca').value = '';
+            document.getElementById('simplesBarcode').value = '';
+            filtrarEExibirProdutosVenda();
+            window.showToast(`✅ '${prod.toUpperCase()}' adicionado com sucesso!`, "success");
         } finally {
             window.fimProcessamento();
         }
@@ -4182,5 +4223,3 @@
     };
 
 </script>
-</body>
-</html>
