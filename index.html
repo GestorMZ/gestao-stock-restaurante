@@ -611,9 +611,9 @@
 
 <div class="container">
 
-    <!-- ECRÃ DE BLOQUEIO -->
-    <div id="telaBloqueio" class="modal" style="display:none; background:rgba(11, 15, 25, 0.9); z-index:9999; align-items:center; justify-content:center;">
-        <div class="modal-content" style="max-width:380px; text-align:center; padding:30px;">
+    <!-- ECRÃ DE BLOQUEIO (FIXED CENTRALIZED POSITIONING) -->
+    <div id="telaBloqueio" class="modal" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(11, 15, 25, 0.92); backdrop-filter:blur(8px); align-items:center; justify-content:center;">
+        <div class="modal-content" style="max-width:380px; width:90%; text-align:center; padding:30px; margin:auto; position:relative;">
             <div style="font-size:42px; margin-bottom:10px;">🔒</div>
             <h3 style="margin-top:0; font-size:1.4em;">Ecrã Bloqueado</h3>
             <p style="font-size:0.9em; color:var(--text-muted); margin-bottom:20px;">Introduza a palavra-passe do utilizador <b id="lockUserNomeDisplay" style="color:var(--primary); text-transform:uppercase;"></b> para desbloquear:</p>
@@ -2045,12 +2045,21 @@
         if(!codeInput) return window.showToast("Introduza o Código do Restaurante!", "warning");
 
         codigoEmpresa = codeInput;
-        localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
 
         if (!window.iniciarProcessamento()) return;
 
         try {
             let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
+            let docEmpresaRef = doc(db, "empresas", codigoEmpresa);
+            let docEmpresaSnap = await getDoc(docEmpresaRef);
+
+            // CORREÇÃO CRÍTICA: Bloquear a criação automática ao inventar códigos aleatórios
+            if ((!docLicenca || !docLicenca.exists()) && (!docEmpresaSnap || !docEmpresaSnap.exists())) {
+                window.showToast("❌ Código de Licença não encontrado ou inválido!", "error");
+                document.getElementById('seccaoPerfisEForm').style.display = 'none';
+                return;
+            }
+
             if (docLicenca && docLicenca.exists()) {
                 let dadosLicenca = docLicenca.data();
                 let hoje = new Date().toISOString().split('T')[0];
@@ -2061,9 +2070,6 @@
                     document.getElementById('textoMotivoBloqueio').innerText = dadosLicenca.mensagemBloqueio || 'Mensalidade em atraso ou Trial Expirado.';
                     return;
                 }
-            } else { 
-                // Se a licença não existir explicitamente na coleção "licencas", cria-se uma estrutura ativa padrão para permitir acesso
-                await setDoc(doc(db, "licencas", codigoEmpresa), { status: "ativo", tipo: "padrao", criadoEm: new Date().toISOString() }, { merge: true });
             }
 
             localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
@@ -2072,17 +2078,6 @@
             document.getElementById('seccaoCriarTrial').style.display = 'none';
             desconectarEscutadores();
             document.getElementById('seccaoPerfisEForm').style.display = 'block';
-
-            let docEmpresaRef = doc(db, "empresas", codigoEmpresa);
-            let docEmpresaSnap = await getDoc(docEmpresaRef);
-            if (!docEmpresaSnap.exists()) {
-                await setDoc(docEmpresaRef, { 
-                    usuarios: [
-                        { nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] },
-                        { nome: "caixa", senha: "123", tipo: "vendedor", foto: "", permissoes: ["abaVendas", "abaCaixa"] }
-                    ] 
-                });
-            }
 
             let unsubUser = onSnapshot(doc(db, "empresas", codigoEmpresa), (docSnap) => {
                 if (docSnap.exists()) {
