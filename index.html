@@ -379,6 +379,26 @@
         .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.25em; }
         .zrest-prod-stock { font-size: 0.75em; color: var(--text-muted); font-weight: 600; margin-top: 6px; background: #f1f5f9; padding: 4px 8px; border-radius: 12px; display: inline-block; }
 
+        .zrest-btn-ver-mais {
+            grid-column: 1 / -1;
+            background: #eff6ff;
+            color: var(--primary);
+            border: 2px dashed var(--primary);
+            border-radius: 16px;
+            padding: 16px;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        .zrest-btn-ver-mais:hover {
+            background: var(--primary);
+            color: white;
+            border-style: solid;
+        }
+
         /* Right Panel (Cart) Zrest */
         .zrest-cart-header {
             padding: 20px;
@@ -1686,6 +1706,7 @@
     let authUserFirebase = null;
     let mesaSelecionada = "Balcão";
     let categoriaPOSSelecionada = "todos";
+    let expandirTodosProdutosPOS = false;
     let chartInstance = null;
     let unsubscribes = [];
 
@@ -2766,8 +2787,15 @@
     window.filtrarCategoriaPOS = function(cat, evt) {
         window.tocarSom('click');
         categoriaPOSSelecionada = cat;
+        expandirTodosProdutosPOS = false;
         document.querySelectorAll('.zrest-cat-btn').forEach(b => b.classList.remove('active'));
         if(evt && evt.target) evt.target.classList.add('active');
+        window.filtrarEExibirProdutosVenda();
+    };
+
+    window.toggleExpandirProdutosPOS = function() {
+        window.tocarSom('click');
+        expandirTodosProdutosPOS = !expandirTodosProdutosPOS;
         window.filtrarEExibirProdutosVenda();
     };
 
@@ -2791,9 +2819,12 @@
         });
 
         prods.sort((a, b) => (contagemFreq[b] || 0) - (contagemFreq[a] || 0));
-        let prodsExibicao = termo ? prods : prods; // Mostra tudo ao usar zrest layout com scroll vertical
 
-        if(prodsExibicao.length === 0) {
+        let deveExibirTodos = termo.length > 0 || expandirTodosProdutosPOS;
+        let prodsExibicao = deveExibirTodos ? prods : prods.slice(0, 13);
+        let restantes = prods.length - 13;
+
+        if(prods.length === 0) {
             grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-muted);">Nenhum produto encontrado nesta categoria.</div>';
             return;
         }
@@ -2808,6 +2839,20 @@
                 </div>
             `;
         });
+
+        if (!deveExibirTodos && restantes > 0) {
+            grid.innerHTML += `
+                <button type="button" class="zrest-btn-ver-mais" onclick="window.toggleExpandirProdutosPOS()">
+                    📂 Ver Mais Produtos (+${restantes})
+                </button>
+            `;
+        } else if (expandirTodosProdutosPOS && restantes > 0 && !termo) {
+            grid.innerHTML += `
+                <button type="button" class="zrest-btn-ver-mais" onclick="window.toggleExpandirProdutosPOS()" style="background:#f1f5f9; color:var(--text-main); border-color:var(--border);">
+                    ▲ Mostrar Apenas os 13 Mais Usados
+                </button>
+            `;
+        }
     };
 
     window.selecionarProdutoCardPOS = function(p) {
