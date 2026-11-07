@@ -35,84 +35,84 @@
             --text-main: #1e293b;
             --text-muted: #64748b;
             --ease-out-pro: cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        * { touch-action: manipulation; box-sizing: border-box; }
-
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-            background-color: var(--light); 
-            margin: 0; 
-            padding: 12px 16px; 
-            color: var(--text-main); 
-            transition: background-color 0.25s var(--ease-out-pro), color 0.25s var(--ease-out-pro);
-            -webkit-tap-highlight-color: transparent;
-            min-height: 100vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .container { 
-            max-width: 100%; 
-            width: 100%;
-            min-height: calc(100vh - 24px);
-            margin: 0 auto; 
+        .zrest-cart-items { 
             background: var(--card-bg); 
-            padding: 16px 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.02); 
-            border: 1px solid var(--border);
-            transform: translateZ(0);
-            will-change: transform;
-            transition: background-color 0.25s var(--ease-out-pro), border-color 0.25s var(--ease-out-pro), box-shadow 0.25s var(--ease-out-pro);
-            display: flex;
-            flex-direction: column;
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            max-height: 280px; 
+            overflow-y: auto; 
+            margin-bottom: 12px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            padding: 6px;
         }
 
-        /* NOTIFICAÇÕES TOAST */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-        .toast {
-            background: #0f172a;
-            color: #fff;
-            padding: 14px 22px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.95em;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-            pointer-events: auto;
+        .zrest-cart-item-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            opacity: 1;
-            transform: translateX(0);
-            transition: all 0.3s var(--ease-out-pro);
-            backdrop-filter: blur(8px);
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            gap: 8px;
         }
-        .toast-success { border-left: 5px solid var(--success); }
-        .toast-warning { border-left: 5px solid var(--warning); }
-        .toast-error { border-left: 5px solid var(--danger); }
-        .toast-info { border-left: 5px solid var(--primary); }
-        .toast.fade-out { opacity: 0; transform: translateX(30px); }
-        h2, h3, h4 { margin-top: 2px; color: var(--dark); font-weight: 800; letter-spacing: -0.025em; }
-        
-        .tabs-nav { 
-            display: flex; 
-            gap: 6px; 
-            margin-bottom: 8px; 
-            border-bottom: 2px solid var(--border); 
-            overflow-x: auto; 
-            padding-bottom: 6px; 
-            scrollbar-width: none;
+
+        .zrest-cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .zrest-cart-item-name {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .zrest-cart-item-meta {
+            font-size: 0.75em;
+            color: var(--text-muted);
+        }
+
+        .zrest-cart-item-price {
+            font-size: 0.85em;
+            font-weight: 800;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .zrest-cart-item-delete {
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 0;
+            min-height: unset;
+            box-shadow: none;
+            transition: background 0.15s;
+        }
+        .zrest-cart-item-delete:hover {
+            background: #fee2e2;
+            transform: none;
+        }
+
+        .zrest-checkout-area {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px;
             flex-shrink: 0;
         }
         .tabs-nav::-webkit-scrollbar { display: none; }
@@ -452,12 +452,17 @@
         }
         body.dark-mode .zrest-cart-items { 
             background: #151c2c; 
+            border-color: var(--border);
         }
         body.dark-mode .zrest-cart-item-row {
-            border-bottom-color: #26334d;
+            background: #1e293b;
+            border-color: #26334d;
         }
         body.dark-mode .zrest-cart-item-name, body.dark-mode .zrest-cart-item-price, body.dark-mode .zrest-totals-main { 
             color: #ffffff; 
+        }
+        body.dark-mode .zrest-cart-item-delete:hover {
+            background: #7f1d1d;
         }
         body.dark-mode .btn-atacho-fast {
             background: #1e293b;
@@ -1444,10 +1449,6 @@
         let icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : 'ℹ️'));
         toast.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
         container.appendChild(toast);
-        
-        if (type === 'success') window.tocarSom('sucesso');
-        else if (type === 'error') window.tocarSom('alerta');
-        else window.tocarSom('click');
 
         setTimeout(() => {
             toast.classList.add('fade-out');
@@ -1585,31 +1586,8 @@
     };
 
     window.tocarSom = function(tipo) {
-        try {
-            let ctx = new (window.AudioContext || window.webkitAudioContext)();
-            let osc = ctx.createOscillator();
-            let gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            if (tipo === 'sucesso') {
-                osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-                osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                osc.start(); osc.stop(ctx.currentTime + 0.2);
-            } else if (tipo === 'click') {
-                osc.frequency.setValueAtTime(440, ctx.currentTime);
-                gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
-                osc.start(); osc.stop(ctx.currentTime + 0.03);
-            } else if (tipo === 'alerta') {
-                osc.frequency.setValueAtTime(220, ctx.currentTime);
-                gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-                osc.start(); osc.stop(ctx.currentTime + 0.25);
-            }
-        } catch(e) {}
+        // Sons desativados a pedido do utilizador
+        return;
     };
 
     window.atualizarEstadoConexao = function() {
@@ -2904,11 +2882,11 @@
         let total = 0;
 
         if (itens.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:40px 10px;">Carrinho vazio.</div>';
+            container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px 10px; font-size:0.85em;">Carrinho vazio.</div>';
         } else {
             itens.forEach((item, idx) => {
                 total += item.subtotal;
-                let tamTag = item.tamanho ? ` <span class="badge" style="background:var(--purple); color:white; font-size:10px;">${item.tamanho}</span>` : '';
+                let tamTag = item.tamanho ? ` <span class="badge" style="background:var(--purple); color:white; font-size:9px; padding:2px 6px;">${item.tamanho}</span>` : '';
                 container.innerHTML += `
                     <div class="zrest-cart-item-row">
                         <div class="zrest-cart-item-info">
