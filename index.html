@@ -822,13 +822,15 @@
                 <!-- PAINEL ESQUERDO: Produtos -->
                 <div class="zrest-left-panel">
                     
-                    <div class="zrest-search-header">
+                 <div class="zrest-search-header">
                         <div class="zrest-cat-scroll" style="flex: 1;">
                             <button class="zrest-cat-btn active" onclick="window.filtrarCategoriaPOS('todos', event)">Categorias (Todas)</button>
+                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('roupas', event)">👕 Roupas</button>
+                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('acessorios', event)">👜 Acessórios</button>
+                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('celulares', event)">📱 Celulares</button>
+                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('computadores', event)">💻 Computadores</button>
                             <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('bebidas', event)">🍺 Bebidas</button>
-                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('pratos', event)">🍲 Pratos</button>
-                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('petiscos', event)">🍟 Petiscos</button>
-                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('outros', event)">🍷 Outros</button>
+                            <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('outros', event)">📦 Outros</button>
                         </div>
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <input type="text" id="cartPesquisaProduto" placeholder="🔍 Pesquisar..." oninput="window.filtrarEExibirProdutosVenda()" style="width: 180px; border-radius: 100px;">
@@ -1031,10 +1033,10 @@
             </div>
         </div>
 
-        <!-- ABA 4: STOCK -->
+    <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:15px;">
-                <h2 style="margin:0;">Gestão de Stock na Despensa</h2>
+                <h2 style="margin:0;">Gestão de Stock Geral (Roupas, Eletrónicos & Outros)</h2>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn-purple btn-sm" onclick="window.abrirModalConversaoShots()">🍷 Abrir Garrafa p/ Shots</button>
                     <button class="btn-excel btn-sm" onclick="window.exportarStockExcel()">📊 Exportar Stock</button>
@@ -1058,51 +1060,58 @@
             </div>
 
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
-                <h4 style="margin-top:0;">📥 Entrada de Produtos (Compras)</h4>
+                <h4 style="margin-top:0;">📥 Entrada de Novos Produtos (Roupas, Celulares, Computadores, etc.)</h4>
+                
                 <div class="form-row">
-                    <div class="form-group"><label>Produto / Bebida</label><input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola 330ml"></div>
                     <div class="form-group">
-                        <label>Código de Barras</label>
+                        <label>Nome do Produto / Modelo / Marca</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: Camisa Polo L, iPhone 13, Portátil HP Core i5">
+                    </div>
+                    <div class="form-group">
+                        <label>Código de Barras / SKU</label>
                         <div style="display: flex; gap: 6px;">
                             <input type="text" id="simplesBarcode" placeholder="Ex: 7622210449259" style="flex: 1;">
                             <button type="button" class="btn-purple btn-sm" style="width: auto; padding: 0 14px; white-space: nowrap;" onclick="window.abrirModalScannerStock()">📷 Ler</button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Categoria</label>
+                        <label>Categoria do Produto</label>
                         <select id="simplesCategoria">
-                            <option value="bebidas">🍺 Bebidas</option>
-                            <option value="pratos">🍲 Pratos</option>
-                            <option value="petiscos">🍟 Petiscos</option>
-                            <option value="outros">🍷 Outros</option>
+                            <option value="roupas">👕 Roupas & Calçado</option>
+                            <option value="acessorios">👜 Acessórios</option>
+                            <option value="celulares">📱 Celulares & Tablets</option>
+                            <option value="computadores">💻 Computadores & Eletrónicos</option>
+                            <option value="bebidas">🍺 Bebidas / Restauração</option>
+                            <option value="pratos">🍲 Pratos / Alimentos</option>
+                            <option value="outros">📦 Outros Produtos</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Formato de Compra</label>
+                        <label>Formato de Entrada</label>
                         <select id="simplesModoCompra" onchange="window.calcularPrecosEntrada()">
-                            <option value="caixa">📦 Por Caixa / Fardo</option>
-                            <option value="unidade">🍺 Por Unidade Avulsa</option>
+                            <option value="unidade">📦 Por Unidade / Peça Avulsa (Ideal para Roupas, Eletrónicos)</option>
+                            <option value="caixa">📦 Por Caixa / Lote / Fardo</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-row" id="rowModoCaixa">
-                    <div class="form-group"><label>Qtd. de Caixas</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Unid. por Caixa</label><input type="number" id="unidPorCaixa" value="24" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                <div class="form-row" id="rowModoCaixa" style="display:none;">
+                    <div class="form-group"><label>Qtd. de Caixas / Lotes</label><input type="number" id="qtdCaixas" value="1" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Unid. por Caixa</label><input type="number" id="unidPorCaixa" value="10" min="1" step="1" oninput="window.calcularPrecosEntrada()"></div>
                     <div class="form-group"><label>Preço Pago por Caixa (MT)</label><input type="number" id="precoCaixa" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
-                <div class="form-row" id="rowModoUnidade" style="display:none;">
-                    <div class="form-group"><label>Qtd. Total Unidades</label><input type="number" id="simplesQtd" value="1" step="0.1" min="0.1" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Custo por Unidade (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
+                <div class="form-row" id="rowModoUnidade">
+                    <div class="form-group"><label>Quantidade a Adicionar (Stock)</label><input type="number" id="simplesQtd" value="1" step="1" min="1" oninput="window.calcularPrecosEntrada()"></div>
+                    <div class="form-group"><label>Custo Unitário de Aquisição (MT)</label><input type="number" id="simplesPrecoCusto" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group"><label style="color:var(--success);">Preço Venda Unitário (MT)</label><input type="number" id="simplesPrecoVendaUnit" step="0.5" min="0" oninput="window.calcularPrecosEntrada()"></div>
-                    <div class="form-group"><label>Limite Alerta Mínimo</label><input type="number" id="simplesMinAlerta" value="5" min="1"></div>
+                    <div class="form-group"><label>Limite Alerta Stock Mínimo</label><input type="number" id="simplesMinAlerta" value="2" min="1"></div>
                 </div>
 
                 <div id="boxCalculoLucro" class="box-calculo-lucro">
@@ -1156,6 +1165,7 @@
                 </div>
             </div>
         </div>
+       
 
         <!-- ABA 5: USUÁRIOS & PERMISSÕES -->
         <div id="abaUsuarios" class="tab-content col-admin">
@@ -2700,7 +2710,7 @@
         window.showToast("Caixa aberto com sucesso!", "success");
     };
 
-    window.fecharCaixaTurnoCEGO = async function() {
+  window.fecharCaixaTurnoCEGO = async function() {
         let mesasComItens = [];
         for(let m in mesas) { if(mesas[m] && mesas[m].length > 0) mesasComItens.push(m); }
         if(mesasComItens.length > 0) {
@@ -2734,10 +2744,54 @@
         registarAuditLog('Caixa Encerrado', `Fecho Cego - Contado: ${valContado} MT | Diferenca: ${diferenca} MT`);
 
         document.getElementById('inputFechoValorContado').value = '';
-        await customAlert(`🔒 Turno Encerrado!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
+        
+        // Imprimir o talão de fecho de caixa com o nome do operador
+        imprimirTalaoFechoCaixa(registoTurno);
+
+        await customAlert(`🔒 Turno Encerrado por ${usuarioAtual.nome.toUpperCase()}!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
     };
 
-    function renderizarHistoricoTurnos() {
+   function imprimirTalaoFechoCaixa(t) {
+        document.getElementById('conteudoReciboFiscal').style.display = 'block';
+        document.getElementById('conteudoGuiaCozinha').style.display = 'none';
+
+        document.getElementById('reciboNomeEmpresa').innerText = dadosEmpresa.nome || 'RESTAURANTE';
+        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
+        document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
+        document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : '';
+        document.getElementById('reciboSlogan').innerText = "FECHO DE CAIXA (TURNO)";
+
+        document.getElementById('reciboTipoTituloDisplay').innerText = "RELATÓRIO DE FECHO DE CAIXA";
+        document.getElementById('reciboMesa').innerText = "Caixa Geral";
+        document.getElementById('reciboData').innerText = t.dataFecho;
+        
+        // AQUI APARECE O NOME DE QUEM FEZ O FECHO:
+        document.getElementById('reciboVendedor').innerText = t.usuarioFecho.toUpperCase();
+        
+        document.getElementById('reciboNuitClienteDisplay').innerText = "Abertura: " + t.usuarioAbertura;
+        document.getElementById('reciboMetodo').innerText = "Fecho Cego";
+        document.getElementById('reciboDesconto').innerText = "0.00";
+        document.getElementById('reciboSubtotalLiq').innerText = t.saldoEsperado.toFixed(2);
+        document.getElementById('reciboTaxaIvaValor').innerText = "0";
+        document.getElementById('reciboValIva').innerText = "0.00";
+
+        let divItens = document.getElementById('reciboItens');
+        divItens.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Fundo Inicial:</span><span>${t.fundoInicial.toFixed(2)} MT</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Vendas Dinheiro:</span><span>${t.vendasEspécie.toFixed(2)} MT</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Despesas:</span><span>${t.despesas.toFixed(2)} MT</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Valor Contado:</span><span><b>${t.valorContado.toFixed(2)} MT</b></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Diferença:</span><span><b>${t.diferenca.toFixed(2)} MT</b></span></div>
+        `;
+        
+        document.getElementById('reciboTotal').innerText = t.valorContado.toFixed(2);
+        document.getElementById('reciboValorEntregue').innerText = t.valorContado.toFixed(2);
+        document.getElementById('reciboTroco').innerText = "0.00";
+
+        setTimeout(() => { window.print(); }, 300);
+    } 
+
+function renderizarHistoricoTurnos() {
         let tbody = document.getElementById('corpoHistoricoTurnosCaixa');
         if(!tbody) return;
         tbody.innerHTML = '';
