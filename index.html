@@ -2751,7 +2751,7 @@
         await customAlert(`🔒 Turno Encerrado por ${usuarioAtual.nome.toUpperCase()}!\n\n• Vendas Dinheiro: ${vendasNum.toFixed(2)} MT\n• Valor Contado: ${valContado.toFixed(2)} MT\n• Diferença: ${diferenca.toFixed(2)} MT`);
     };
 
-   function imprimirTalaoFechoCaixa(t) {
+  function imprimirTalaoFechoCaixa(t) {
         document.getElementById('conteudoReciboFiscal').style.display = 'block';
         document.getElementById('conteudoGuiaCozinha').style.display = 'none';
 
@@ -2759,13 +2759,13 @@
         document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : 'NUIT: ---';
         document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || '';
         document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : '';
-        document.getElementById('reciboSlogan').innerText = "FECHO DE CAIXA (TURNO)";
+        document.getElementById('reciboSlogan').innerText = "FECHO DE CAIXA & TURNOS";
 
-        document.getElementById('reciboTipoTituloDisplay').innerText = "RELATÓRIO DE FECHO DE CAIXA";
+        document.getElementById('reciboTipoTituloDisplay').innerText = "RELATÓRIO DE FECHO DE TURNO";
         document.getElementById('reciboMesa').innerText = "Caixa Geral";
         document.getElementById('reciboData').innerText = t.dataFecho;
         
-        // AQUI APARECE O NOME DE QUEM FEZ O FECHO:
+        // Nome de quem fez o fecho
         document.getElementById('reciboVendedor').innerText = t.usuarioFecho.toUpperCase();
         
         document.getElementById('reciboNuitClienteDisplay').innerText = "Abertura: " + t.usuarioAbertura;
@@ -2775,22 +2775,46 @@
         document.getElementById('reciboTaxaIvaValor').innerText = "0";
         document.getElementById('reciboValIva').innerText = "0.00";
 
+        // Calcular também as vendas digitais do turno para aparecer no talão
+        let tAbertura = caixaEstado.timestampAbertura || 0;
+        let turnosVendas = historico.filter(h => h.tipo === 'venda' && h.status !== 'cancelado' && (h.timestamp || 0) >= tAbertura);
+        
+        let mpesaTurno = 0, emolaTurno = 0, posTurno = 0;
+        turnosVendas.forEach(v => {
+            if (v.desdobramentoInfo) {
+                mpesaTurno += (v.desdobramentoInfo.mpe || 0);
+                emolaTurno += (v.desdobramentoInfo.emo || 0);
+                posTurno += (v.desdobramentoInfo.pos || 0);
+            } else {
+                let m = (v.metodo || '').toLowerCase();
+                if (m.includes('m-pesa')) mpesaTurno += v.totalVenda;
+                else if (m.includes('e-mola')) emolaTurno += v.totalVenda;
+                else if (m.includes('pos')) posTurno += v.totalVenda;
+            }
+        });
+
         let divItens = document.getElementById('reciboItens');
         divItens.innerHTML = `
+            <div style="font-weight:bold; margin-bottom:4px;">--- GAVETA (DINHEIRO) ---</div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Fundo Inicial:</span><span>${t.fundoInicial.toFixed(2)} MT</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Vendas Dinheiro:</span><span>${t.vendasEspécie.toFixed(2)} MT</span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Despesas:</span><span>${t.despesas.toFixed(2)} MT</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Despesas (Retiradas):</span><span>${t.despesas.toFixed(2)} MT</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Valor Contado:</span><span><b>${t.valorContado.toFixed(2)} MT</b></span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Diferença:</span><span><b>${t.diferenca.toFixed(2)} MT</b></span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Diferença (Quebra):</span><span><b>${t.diferenca.toFixed(2)} MT</b></span></div>
+            
+            <div style="font-weight:bold; margin-top:6px; margin-bottom:4px;">--- CARTEIRAS DIGITAIS / POS ---</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Total M-Pesa:</span><span>${mpesaTurno.toFixed(2)} MT</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Total e-Mola:</span><span>${emolaTurno.toFixed(2)} MT</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Total POS:</span><span>${posTurno.toFixed(2)} MT</span></div>
         `;
         
-        document.getElementById('reciboTotal').innerText = t.valorContado.toFixed(2);
+        let totalGeralTurno = t.valorContado + mpesaTurno + emolaTurno + posTurno;
+        document.getElementById('reciboTotal').innerText = totalGeralTurno.toFixed(2);
         document.getElementById('reciboValorEntregue').innerText = t.valorContado.toFixed(2);
         document.getElementById('reciboTroco').innerText = "0.00";
 
         setTimeout(() => { window.print(); }, 300);
-    } 
-
+    }
 function renderizarHistoricoTurnos() {
         let tbody = document.getElementById('corpoHistoricoTurnosCaixa');
         if(!tbody) return;
