@@ -3797,31 +3797,51 @@ function renderizarHistoricoTurnos() {
             window.fimProcessamento();
         }
     };
-window.atribuirCodigoBarrasRapido = async function(produtoNome) {
+window.atribuirCodigoBarrasRapido = function(produtoNome) {
         let produtoObj = stock[produtoNome];
         if (!produtoObj) return;
 
-        let codigoAtual = produtoObj.barcode || '';
-        let novoCodigo = await customPrompt(`Atribuir código de barras para '${produtoNome.toUpperCase()}':\n\nPode ler com a câmara ou digitar o número EAN/Barcode:`, codigoAtual);
+        window.showToast(`A abrir câmara para escanear '${produtoNome.toUpperCase()}'...`, "info");
         
-        if (novoCodigo === null) return; // Utilizador cancelou
-        
-        novoCodigo = novoCodigo.trim();
-        produtoObj.barcode = novoCodigo;
+        let modal = document.getElementById('modalScannerBarcode');
+        if (!modal) return;
+        modal.style.display = 'block';
+        isScannerOpen = true;
 
-        if (!window.iniciarProcessamento()) return;
-        try {
-            await salvarStockFirestore({ [produtoNome]: produtoObj });
-            registarAuditLog('Código de Barras Atribuído', `Produto '${produtoNome}' associado ao código: ${novoCodigo || 'Removido'}`);
-            window.showToast(`✅ Código guardado para ${produtoNome.toUpperCase()}!`, "success");
-            renderizarStock();
-        } catch (e) {
-            window.showToast("Erro ao guardar código de barras.", "error");
-        } finally {
-            window.fimProcessamento();
-        }
+        setTimeout(() => {
+            if (!html5QrCodeScanner) html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            html5QrCodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                async (decodedText) => {
+                    if (isScannerOpen) {
+                        let codigoLido = decodedText.trim();
+                        produtoObj.barcode = codigoLido;
+
+                        if (!window.iniciarProcessamento()) return;
+                        try {
+                            await salvarStockFirestore({ [produtoNome]: produtoObj });
+                            registarAuditLog('Código de Barras Atribuído', `Produto '${produtoNome}' associado ao código: ${codigoLido}`);
+                            window.showToast(`✅ Código ${codigoLido} associado a ${produtoNome.toUpperCase()}!`, "success");
+                            renderizarStock();
+                        } catch (e) {
+                            window.showToast("Erro ao guardar código de barras.", "error");
+                        } finally {
+                            window.fimProcessamento();
+                        }
+
+                        window.fecharModalScannerBarcode();
+                    }
+                },
+                () => {}
+            ).catch((err) => { 
+                if (isScannerOpen) { 
+                    window.showToast("Erro ao aceder à câmara. Verifique as permissões.", "error"); 
+                    window.fecharModalScannerBarcode(); 
+                } 
+            });
+        }, 300);
     };
-
     window.apagarQuantidadeProdutoPrompt = async function(p) {
         let item = stock[p];
         if(!item) return;
