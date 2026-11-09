@@ -953,7 +953,7 @@
 
             </div>
         </div>
-</div>
+
         <!-- ABA 2: CAIXA -->
         <div id="abaCaixa" class="tab-content col-gerente">
             <h2>Controlo de Caixa & Fecho Cego</h2>
@@ -1033,7 +1033,7 @@
             </div>
         </div>
 
-    <!-- ABA 4: STOCK -->
+  <!-- ABA 4: STOCK -->
         <div id="abaStock" class="tab-content col-gerente">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:15px;">
                 <h2 style="margin:0;">Gestão de Stock Geral (Roupas, Eletrónicos & Outros)</h2>
@@ -1059,36 +1059,38 @@
                 </div>
             </div>
 
+            <!-- FORMULÁRIO DE ENTRADA CORRIGIDO E ALINHADO -->
             <div style="background:var(--card-bg); padding:18px; border-radius:12px; margin-bottom:18px; border:1px solid var(--border);">
                 <h4 style="margin-top:0;">📥 Entrada de Novos Produtos (Roupas, Celulares, Computadores, etc.)</h4>
                 
                 <div class="form-row">
-    <div class="form-group">
-        <label>Nome do Produto / Modelo / Bebidas / Marca</label>
-        <input type="text" id="simplesProduto" placeholder="Ex:">
-    </div>
-    <!-- NOVO: Campos de Variação de Roupa -->
-    <div class="form-group" style="flex: 0.7;">
-        <label>Tamanho</label>
-        <select id="simplesTamanho">
-            <option value="">-- N/D (Sem tamanho) --</option>
-            <option value="XS">XS / PP</option>
-            <option value="S">S / P</option>
-            <option value="M">M (Médio)</option>
-            <option value="L">L / G</option>
-            <option value="XL">XL / GG</option>
-            <option value="XXL">XXL / XGG</option>
-            <option value="38">38</option>
-            <option value="40">40</option>
-            <option value="42">42</option>
-            <option value="44">44</option>
-        </select>
-    </div>
-    <div class="form-group" style="flex: 0.7;">
-        <label>Cor</label>
-        <input type="text" id="simplesCor" placeholder="Ex: Preto, Azul, Branco">
-    </div>
-</div>
+                    <div class="form-group">
+                        <label>Nome do Produto / Modelo / Bebidas / Marca</label>
+                        <input type="text" id="simplesProduto" placeholder="Ex: T-Shirt / Whisky">
+                    </div>
+                    <div class="form-group" style="flex: 0.7;">
+                        <label>Tamanho</label>
+                        <select id="simplesTamanho">
+                            <option value="">-- N/D (Sem tamanho) --</option>
+                            <option value="XS">XS / PP</option>
+                            <option value="S">S / P</option>
+                            <option value="M">M (Médio)</option>
+                            <option value="L">L / G</option>
+                            <option value="XL">XL / GG</option>
+                            <option value="XXL">XXL / XGG</option>
+                            <option value="38">38</option>
+                            <option value="40">40</option>
+                            <option value="42">42</option>
+                            <option value="44">44</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 0.7;">
+                        <label>Cor</label>
+                        <input type="text" id="simplesCor" placeholder="Ex: Preto, Azul, Branco">
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label>Código de Barras / SKU</label>
                         <div style="display: flex; gap: 6px;">
