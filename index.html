@@ -3450,42 +3450,147 @@ function renderizarHistoricoTurnos() {
         setTimeout(() => { window.print(); }, 300);
     };
 
-    window.conectarImpressoraBluetooth = async function() {
-        if (!navigator.bluetooth) return customAlert("Navegador não suporta Bluetooth API.");
+   window.conectarImpressoraBluetooth = async function() {
+        if (!navigator.bluetooth) return customAlert("O seu navegador não suporta a API Web Bluetooth. Utilize o Google Chrome.");
         try {
-            document.getElementById('statusBtPrinter').innerText = "Procurando... 🟡";
+            document.getElementById('statusBtPrinter').innerText = "A procurar impressora... 🟡";
+            
+            // Solicita o dispositivo Bluetooth (compatível com impressoras térmicas ESC/POS BLE)
             bluetoothDevice = await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
-                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2']
+                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2']
             });
+
             const server = await bluetoothDevice.gatt.connect();
             const services = await server.getPrimaryServices();
-            const characteristics = await services[0].getCharacteristics();
-            bluetoothCharacteristic = characteristics[0];
+            
+            // Procura automaticamente pela característica de escrita da impressora
+            for (let service of services) {
+                const characteristics = await service.getCharacteristics();
+                for (let characteristic of characteristics) {
+                    if (characteristic.properties.write || characteristic.properties.writeWithoutResponse) {
+                        bluetoothCharacteristic = characteristic;
+                        break;
+                    }
+                }
+                if (bluetoothCharacteristic) break;
+            }
+
+            if (!bluetoothCharacteristic) {
+                throw new Error("Característica de escrita ESC/POS não encontrada no dispositivo.");
+            }
+
             document.getElementById('statusBtPrinter').innerText = `Conectado a ${bluetoothDevice.name || 'Impressora'} 🟢`;
-            window.showToast("✅ Bluetooth Conectado!", "success");
+            window.showToast("✅ Impressora Bluetooth conectada com sucesso!", "success");
         } catch (erro) {
+            console.error(erro);
             document.getElementById('statusBtPrinter').innerText = "Status: Desconectado 🔴";
-            window.showToast("Falha na ligação Bluetooth.", "error");
+            window.showToast("Falha na ligação Bluetooth: " + erro.message, "error");
         }
     };
 
+    // ----- TESTE DE IMPRESSÃO DIRETA VIA BLUETOOTH -----
     window.testarImpressaoBluetooth = async function() {
-        if (!bluetoothCharacteristic) return window.showToast("Conecte a impressora primeiro.", "warning");
-        let encoder = new TextEncoder();
-        let texto = "\x1B\x40\x1B\x61\x01TESTE IMPRESSAO\nGS POINT POS\n--------------------------------\n\n\n\n";
-        await bluetoothCharacteristic.writeValue(encoder.encode(texto));
-    };
-
-    window.imprimirReciboBluetoothESC = async function(v) {
-        if (!bluetoothCharacteristic) return;
+        if (!bluetoothCharacteristic) return window.showToast("Conecte a impressora Bluetooth primeiro nas definições.", "warning");
         try {
             let encoder = new TextEncoder();
-            let txt = "\x1B\x40\x1B\x61\x01" + `${dadosEmpresa.nome || 'RESTAURANTE'}\n--------------------------------\n${v.data}\n` + "\x1B\x61\x00" + `Mesa: ${v.mesa} | Op: ${v.usuario}\nPagamento: ${v.metodo}\n--------------------------------\n`;
-            v.itens.forEach(i => { txt += `${i.qtd}x ${i.produto} - ${i.subtotal.toFixed(2)} MT\n`; });
-            txt += `--------------------------------\nTOTAL: ${v.totalVenda.toFixed(2)} MT\nTroco: ${v.troco.toFixed(2)} MT\n` + "\x1B\x61\x01\nObrigado!\n\n\n\n";
+            // Comandos ESC/POS: [Initialize, Center Align, Bold On, Text, Bold Off, Feed & Cut]
+            let comandos = "\x1B\x40" + "\x1B\x61\x01" + "\x1B\x45\x01" + "TESTE DE IMPRESSAO\n" + "GS POINT POS PRO\n" + "\x1B\x45\x00" + "--------------------------------\n" + "Impressora configurada com sucesso!\n\n\n\x1B\x65";
+            await bluetoothCharacteristic.writeValue(encoder.encode(comandos));
+            window.showToast("Teste enviado para a impressora!", "success");
+        } catch (err) {
+            window.showToast("Erro ao enviar dados para a impressora.", "error");
+        }
+    };
+
+    // ----- IMPRESSÃO DIRETA DO RECIBO DE VENDA VIA BLUETOOTH -----
+    window.imprimirReciboBluetoothESC = async function(v) {
+        if (!bluetoothCharacteristic) {
+            // Se não houver impressora Bluetooth conectada, recorre à impressão normal do navegador
+            imprimirTalão(v);
+            return;
+        }
+
+        try {
+            let encoder = new TextEncoder();
+            let empresaNome = dadosEmpresa.nome || 'RESTAURANTE';
+            let nuitEmpresa = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}\n` : '';
+            let enderecoEmp = dadosEmpresa.endereco ? `${dadosEmpresa.endereco}\n` : '';
+            let sloganEmp = dadosEmpresa.slogan || 'Obrigado pela preferência!';
+
+            // Montagem do talão com comandos ESC/POS alinhados
+            let txt = "\x1B\x40"; // Inicializar impressora
+            txt += "\x1B\x61\x01"; // Alinhar ao centro
+            txt += "\x1B\x45\x01" + empresaNome + "\x1B\x45\x00\n";
+            txt += nuitEmpresa + enderecoEmp;
+            txt += "--------------------------------\n";
+            txt += "COMPROVATIVO DE VENDA (VD)\n";
+            txt += v.data + "\n";
+            txt += "\x1B\x61\x00"; // Alinhar à esquerda
+            txt += `Mesa: ${v.mesa}\n`;
+            txt += `Operador: ${v.usuario}\n`;
+            txt += `Cliente NUIT: ${v.nuitCliente || 'Consumidor Final'}\n`;
+            txt += `Pagamento: ${v.metodo}\n`;
+            txt += "--------------------------------\n";
+
+            v.itens.forEach(i => {
+                let nomeProd = i.produto.toUpperCase();
+                let subTotalStr = i.subtotal.toFixed(2) + " MT";
+                txt += `${i.qtd}x ${nomeProd}\n  -> ${subTotalStr}\n`;
+            });
+
+            txt += "--------------------------------\n";
+            txt += `Desconto: ${(v.desconto || 0).toFixed(2)} MT\n`;
+            txt += `Subtotal Líquido: ${(v.subtotalLiq || v.totalVenda).toFixed(2)} MT\n`;
+            if (v.taxaIva > 0) {
+                txt += `IVA (${v.taxaIva}%): ${(v.valorIva || 0).toFixed(2)} MT\n`;
+            }
+            txt += "\x1B\x45\x01"; // Negrito ligado
+            txt += `TOTAL: ${v.totalVenda.toFixed(2)} MT\n`;
+            txt += "\x1B\x45\x00"; // Negrito desligado
+            txt += `Valor Entregue: ${(v.valorEntregue || 0).toFixed(2)} MT\n`;
+            txt += `Troco: ${(v.troco || 0).toFixed(2)} MT\n`;
+            txt += "\x1B\x61\x01"; // Alinhar ao centro
+            txt += "--------------------------------\n";
+            txt += sloganEmp + "\n\n\n";
+
             await bluetoothCharacteristic.writeValue(encoder.encode(txt));
-        } catch (err) { imprimirTalão(v); }
+            window.showToast("📄 Talão impresso com sucesso via Bluetooth!", "success");
+        } catch (err) {
+            console.error("Erro na impressão Bluetooth ESC/POS:", err);
+            window.showToast("Erro na impressora Bluetooth. A usar impressão padrão.", "warning");
+            imprimirTalão(v);
+        }
+    };
+
+    // ----- IMPRESSÃO DIRETA DA GUIA DE COZINHA VIA BLUETOOTH -----
+    window.imprimirGuiaCozinhaBluetooth = async function() {
+        let itens = mesas[mesaSelecionada] || [];
+        if (itens.length === 0) return window.showToast("O carrinho está vazio.", "warning");
+
+        if (!bluetoothCharacteristic) {
+            window.imprimirGuiaCozinha();
+            return;
+        }
+
+        try {
+            let encoder = new TextEncoder();
+            let txt = "\x1B\x40\x1B\x61\x01\x1B\x45\x01" + "PEDIDO DE COZINHA\n" + "\x1B\x45\x00" + `MESA / COMANDA: ${mesaSelecionada}\n` + `${new Date().toLocaleString('pt-MZ')}\n`;
+            txt += "================================\n";
+            txt += "\x1B\x61\x00\x1B\x45\x01"; // Alinhado à esquerda + Negrito
+
+            itens.forEach(i => {
+                txt += `[ ] ${i.qtd}x ${i.produto.toUpperCase()}\n`;
+            });
+
+            txt += "\x1B\x45\x00\x1B\x61\x01"; // Negrito off + Centralizado
+            txt += "================================\n\n\n";
+
+            await bluetoothCharacteristic.writeValue(encoder.encode(txt));
+            window.showToast("🍳 Guia de cozinha enviada para a impressora!", "success");
+        } catch (err) {
+            window.imprimirGuiaCozinha();
+        }
     };
 
     window.cadastrarCliente = async function() {
