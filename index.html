@@ -1063,10 +1063,32 @@
                 <h4 style="margin-top:0;">📥 Entrada de Novos Produtos (Roupas, Celulares, Computadores, etc.)</h4>
                 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Nome do Produto / Modelo / Marca</label>
-                        <input type="text" id="simplesProduto" placeholder="Ex: Camisa Polo L, iPhone 13, Portátil HP Core i5">
-                    </div>
+    <div class="form-group">
+        <label>Nome do Produto / Modelo / Marca</label>
+        <input type="text" id="simplesProduto" placeholder="Ex: Camisa Polo, Ténis Nike">
+    </div>
+    <!-- NOVO: Campos de Variação de Roupa -->
+    <div class="form-group" style="flex: 0.7;">
+        <label>Tamanho</label>
+        <select id="simplesTamanho">
+            <option value="">-- N/D (Sem tamanho) --</option>
+            <option value="XS">XS / PP</option>
+            <option value="S">S / P</option>
+            <option value="M">M (Médio)</option>
+            <option value="L">L / G</option>
+            <option value="XL">XL / GG</option>
+            <option value="XXL">XXL / XGG</option>
+            <option value="38">38</option>
+            <option value="40">40</option>
+            <option value="42">42</option>
+            <option value="44">44</option>
+        </select>
+    </div>
+    <div class="form-group" style="flex: 0.7;">
+        <label>Cor</label>
+        <input type="text" id="simplesCor" placeholder="Ex: Preto, Azul, Branco">
+    </div>
+</div>
                     <div class="form-group">
                         <label>Código de Barras / SKU</label>
                         <div style="display: flex; gap: 6px;">
@@ -3744,56 +3766,68 @@ function renderizarHistoricoTurnos() {
         document.getElementById('resLucroTotalCaixa').innerText = (lucroUnitario * totalUnidades).toFixed(2) + " MT";
     };
 
-    window.salvarEntradaStock = async function() {
-        if (!window.iniciarProcessamento()) return;
+window.salvarEntradaStock = async function() {
+    if (!window.iniciarProcessamento()) return;
+    
+    try {
+        let nomeProdBase = document.getElementById('simplesProduto').value.trim().toLowerCase();
+        if(!nomeProdBase) return window.showToast("Digite o nome do produto.", "warning");
+
+        // NOVO: Capturar Tamanho e Cor e concatenar se existirem
+        let tamanho = document.getElementById('simplesTamanho')?.value.trim() || '';
+        let cor = document.getElementById('simplesCor')?.value.trim().toLowerCase() || '';
         
-        try {
-            let prod = document.getElementById('simplesProduto').value.trim().toLowerCase();
-            if(!prod) return window.showToast("Digite o nome do produto.", "warning");
+        let prod = nomeProdBase;
+        if (tamanho) prod += ` [Tam: ${tamanho}]`;
+        if (cor) prod += ` [Cor: ${cor}]`;
+        prod = prod.toLowerCase();
 
-            let barcodeInput = document.getElementById('simplesBarcode').value.trim();
-            let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
-            let modoCompra = document.getElementById('simplesModoCompra').value;
-            let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
-            let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
+        let barcodeInput = document.getElementById('simplesBarcode').value.trim();
+        let cat = (document.getElementById('simplesCategoria').value || 'outros').toLowerCase().trim();
+        let modoCompra = document.getElementById('simplesModoCompra').value;
+        let minAlerta = parseFloat(document.getElementById('simplesMinAlerta').value) || 5;
+        let precoVendaUnit = parseFloat(document.getElementById('simplesPrecoVendaUnit').value) || 0;
 
-            let totalUnidades = 0, totalCusto = 0;
-            if(modoCompra === 'caixa') {
-                let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
-                let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
-                let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
-                totalUnidades = numCaixas * unidCaixa;
-                totalCusto = numCaixas * valCaixa;
-            } else {
-                totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
-                let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
-                totalCusto = totalUnidades * custoUnit;
-            }
-
-            if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput };
-
-            stock[prod].qtd += totalUnidades;
-            stock[prod].preco_total += totalCusto;
-            stock[prod].min_alerta = minAlerta;
-            stock[prod].categoria = cat;
-            if(barcodeInput) stock[prod].barcode = barcodeInput;
-            if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
-
-            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
-                id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
-                tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa' : 'Compra Avulsa'
-            });
-
-            await salvarStockFirestore({ [prod]: stock[prod] });
-            registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
-            document.getElementById('simplesProduto').value = '';
-            document.getElementById('simplesBarcode').value = '';
-            filtrarEExibirProdutosVenda();
-            window.showToast("Stock atualizado com sucesso!", "success");
-        } finally {
-            window.fimProcessamento();
+        let totalUnidades = 0, totalCusto = 0;
+        if(modoCompra === 'caixa') {
+            let numCaixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+            let unidCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 1;
+            let valCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+            totalUnidades = numCaixas * unidCaixa;
+            totalCusto = numCaixas * valCaixa;
+        } else {
+            totalUnidades = parseFloat(document.getElementById('simplesQtd').value) || 0;
+            let custoUnit = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+            totalCusto = totalUnidades * custoUnit;
         }
-    };
+
+        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput, tamanho, cor };
+
+        stock[prod].qtd += totalUnidades;
+        stock[prod].preco_total += totalCusto;
+        stock[prod].min_alerta = minAlerta;
+        stock[prod].categoria = cat;
+        stock[prod].tamanho = tamanho;
+        stock[prod].cor = cor;
+        if(barcodeInput) stock[prod].barcode = barcodeInput;
+        if(precoVendaUnit > 0) stock[prod].preco_venda = precoVendaUnit;
+
+        await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+            id: Date.now() + Math.random(), data: new Date().toLocaleString('pt-MZ'), timestamp: Date.now(),
+            tipo: 'ENTRADA (COMPRA)', produto: prod, qtd: totalUnidades, usuario: usuarioAtual.nome, origem: modoCompra === 'caixa' ? 'Compra por Caixa' : 'Compra Avulsa'
+        });
+
+        await salvarStockFirestore({ [prod]: stock[prod] });
+        registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
+        document.getElementById('simplesProduto').value = '';
+        document.getElementById('simplesBarcode').value = '';
+        if(document.getElementById('simplesCor')) document.getElementById('simplesCor').value = '';
+        filtrarEExibirProdutosVenda();
+        window.showToast("Stock com variação atualizado com sucesso!", "success");
+    } finally {
+        window.fimProcessamento();
+    }
+};
 
   function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
