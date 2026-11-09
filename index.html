@@ -1129,13 +1129,25 @@
                 <h4 style="margin:0;">📦 Stock Atual de Produtos</h4>
                 <div style="max-width:260px; width:100%;"><input type="text" id="filtroBuscarStock" placeholder="🔍 Pesquisar produto..." oninput="window.mudarPaginaStock(1)" style="padding:8px 12px; font-size:0.9em;"></div>
             </div>
-
-            <div class="table-responsive" style="margin-bottom:12px;">
-                <table>
-                    <thead><tr><th>Produto</th><th>Categoria</th><th>Stock Atual</th><th>Mínimo</th><th>Preço Venda</th><th class="col-gerente">Custo Médio</th><th class="col-gerente">Investido / Atual</th><th class="col-gerente">Lucro Est.</th><th class="col-gerente">Ações</th></tr></thead>
-                    <tbody id="corpoStock"></tbody>
-                </table>
-            </div>
+<div class="table-responsive" style="margin-bottom:12px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Cód. de Barras</th>
+                <th>Categoria</th>
+                <th>Stock Atual</th>
+                <th>Mínimo</th>
+                <th>Preço Venda</th>
+                <th class="col-gerente">Custo Médio</th>
+                <th class="col-gerente">Investido / Atual</th>
+                <th class="col-gerente">Lucro Est.</th>
+                <th class="col-gerente">Ações</th>
+            </tr>
+        </thead>
+        <tbody id="corpoStock"></tbody>
+    </table>
+</div>
 
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; background:var(--card-bg); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
                 <button class="btn-dark btn-sm" onclick="window.mudarPaginaStock(-1)">⬅️ Anterior</button>
@@ -3678,7 +3690,7 @@ function renderizarHistoricoTurnos() {
         }
     };
 
-    function renderizarStock() {
+  function renderizarStock() {
         let tbody = document.getElementById('corpoStock');
         if(!tbody) return;
         tbody.innerHTML = '';
@@ -3715,8 +3727,10 @@ function renderizarHistoricoTurnos() {
             let investidoProduto = item.preco_total || 0;
             let precoVenda = item.preco_venda || 0;
             let isCritico = item.qtd <= (item.min_alerta || 5);
+            let barcodeVal = item.barcode || '';
 
             let colFin = isGerenteOuAdmin ? `<td>${custoMedio.toFixed(2)} MT</td><td><b>${investidoProduto.toFixed(2)} MT</b><br><small style="color:var(--text-muted);">(Custo total)</small></td><td style="color:var(--success); font-weight:800;">${((item.qtd * precoVenda) - investidoProduto).toFixed(2)} MT</td>` : '';
+            
             let colAdmin = (usuarioAtual.tipo === 'admin' || usuarioAtual.tipo === 'gerente') ? 
                 `<td>
                     <button class="btn-success btn-sm" style="margin-bottom:4px;" onclick="window.adicionarQuantidadeProdutoPrompt('${p}')">➕ Qtd</button>
@@ -3726,6 +3740,12 @@ function renderizarHistoricoTurnos() {
 
             tbody.innerHTML += `<tr>
                 <td><b>${p.toUpperCase()}</b></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <span style="font-size:0.85em; font-family:monospace; background:var(--light); padding:2px 6px; border-radius:6px; border:1px solid var(--border);">${barcodeVal ? barcodeVal : 'N/D'}</span>
+                        <button class="btn-purple btn-sm" style="padding:4px 8px; font-size:11px;" onclick="window.atribuirCodigoBarrasRapido('${p}')" title="Atribuir Código de Barras">📷</button>
+                    </div>
+                </td>
                 <td><span class="badge" style="background:var(--light); color:var(--text-main);">${(item.categoria||'outros').toUpperCase()}</span></td>
                 <td class="${isCritico ? 'alerta' : ''}">${item.qtd} ${isCritico ? '⚠️' : ''}</td>
                 <td>${item.min_alerta || 5}</td>
@@ -3773,6 +3793,30 @@ function renderizarHistoricoTurnos() {
             window.showToast("Stock adicionado com sucesso!", "success");
             filtrarEExibirProdutosVenda();
             renderizarStock();
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+window.atribuirCodigoBarrasRapido = async function(produtoNome) {
+        let produtoObj = stock[produtoNome];
+        if (!produtoObj) return;
+
+        let codigoAtual = produtoObj.barcode || '';
+        let novoCodigo = await customPrompt(`Atribuir código de barras para '${produtoNome.toUpperCase()}':\n\nPode ler com a câmara ou digitar o número EAN/Barcode:`, codigoAtual);
+        
+        if (novoCodigo === null) return; // Utilizador cancelou
+        
+        novoCodigo = novoCodigo.trim();
+        produtoObj.barcode = novoCodigo;
+
+        if (!window.iniciarProcessamento()) return;
+        try {
+            await salvarStockFirestore({ [produtoNome]: produtoObj });
+            registarAuditLog('Código de Barras Atribuído', `Produto '${produtoNome}' associado ao código: ${novoCodigo || 'Removido'}`);
+            window.showToast(`✅ Código guardado para ${produtoNome.toUpperCase()}!`, "success");
+            renderizarStock();
+        } catch (e) {
+            window.showToast("Erro ao guardar código de barras.", "error");
         } finally {
             window.fimProcessamento();
         }
