@@ -649,7 +649,7 @@
     </style>
         <div style="text-align:center; margin-bottom:24px;">
         <img src="icon-192.png" alt="Logo GS Point" class="logo-animado" style="width: 76px; height: 76px; border-radius: 18px; object-fit: cover; margin-bottom: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.35);">
-            <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point Security</h2>
+            <h2 style="margin-bottom:6px; font-size:1.8em;">GS Point LOGIN</h2>
             <p style="font-size:0.9em; color:var(--text-muted); margin-top:0;">Autenticação de Ponta a Ponta com Firebase Auth</p>
         </div>
 
@@ -777,7 +777,6 @@
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                 <span id="statusRedeBadge" style="padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1;">⏳ A verificar rede...</span>
                 <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
-                <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
                 <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
                 <button id="btnDefinicoes" class="btn-warning btn-sm" onclick="window.abrirModalDefinicoes()">⚙ Definições</button>
                 <button class="btn-saida btn-sm" onclick="window.fazerLogout()">Sair</button>
@@ -786,7 +785,7 @@
 
         <div id="bannerStatusCaixa" class="status-caixa-banner caixa-fechado">
             <span id="textoStatusCaixa">🔴 Caixa Encerrado</span>
-            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa', event)">Abrir Caixa</button>
+            <button id="btnAcaoCaixaHeader" class="btn-success btn-sm"> 
         </div>
 
         <div id="boxAlertaStockGlobal" class="alerta-stock-box">
@@ -1961,16 +1960,14 @@
         }
     };
 
-    function resetarTimerInatividade() {
+ function resetarTimerInatividade() {
         if (timerInatividade) clearTimeout(timerInatividade);
-        if (usuarioAtual && document.getElementById('telaBloqueio').style.display === 'none') {
+        if (usuarioAtual && document.getElementById('telaSistema').style.display !== 'none') {
             timerInatividade = setTimeout(() => {
-                window.bloquearEcra();
-                registarAuditLog('Bloqueio por Inatividade', `Sistema bloqueado automaticamente após 1 min sem ação`);
-            }, 60000);
+                window.fazerLogout();
+                window.showToast("Sessão terminada por inatividade. Selecione o perfil novamente.", "warning");              
         }
     }
-
     ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetarTimerInatividade, true));
 
     window.addEventListener('keydown', function(event) {
@@ -2041,25 +2038,7 @@
     };
     if(localStorage.getItem('modoNoturno') === 'sim') document.body.classList.add('dark-mode');
 
-    window.bloquearEcra = function() {
-        if(!usuarioAtual) return;
-        document.getElementById('lockUserNomeDisplay').innerText = usuarioAtual.nome;
-        document.getElementById('inputSenhaDesbloqueio').value = '';
-        document.getElementById('telaBloqueio').style.display = 'flex';
-        if (timerInatividade) clearTimeout(timerInatividade);
-    };
-
-    window.desbloquearEcra = async function() {
-        let pwd = document.getElementById('inputSenhaDesbloqueio').value;
-        if(usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
-            document.getElementById('telaBloqueio').style.display = 'none';
-            registarAuditLog('Desbloqueio de Ecrã', `Ecrã desbloqueado por ${usuarioAtual.nome}`);
-            resetarTimerInatividade();
-            window.tocarSom('sucesso');
-        } else {
-            window.showToast("Palavra-passe incorreta!", "error");
-        }
-    };
+   
 
     async function registarAuditLog(evento, detalhes) {
         if(!codigoEmpresa || !usuarioAtual) return;
@@ -4280,21 +4259,38 @@ window.atribuirCodigoBarrasRapido = function(produtoNome) {
         }
     }
 
-    window.apagarTodoHistoricoApp = async function() {
-        if (!(await solicitarAutorizacaoGestor('Apagar Todo o Histórico de Vendas'))) return;
-        if (!(await customConfirm("⚠️ ATENÇÃO: Esta ação é irreversível e vai eliminar TODAS as vendas e registos! Tem a certeza?"))) return;
+   window.apagarTodoHistoricoApp = async function() {
+        if (!(await solicitarAutorizacaoGestor('Apagar TODO o Histórico e Registos da App'))) return;
+        if (!(await customConfirm("⚠️ ALERTA MÁXIMO DE SEGURANÇA: Esta ação vai eliminar PERMANENTEMENTE e de forma irreversível:\n\n• Todo o Histórico de Vendas\n• Todas as Movimentações de Stock\n• Todo o Registo de Auditoria e Segurança (Logs)\n• Todo o Histórico de Turnos e Caixa\n• Todas as Despesas Registadas\n\nTem a certeza absoluta?"))) return;
 
         if (!window.iniciarProcessamento()) return;
 
         try {
-            let snap = await getDocs(collection(db, "empresas", codigoEmpresa, "vendas"));
-            for (let docSnap of snap.docs) {
-                await deleteDoc(doc(db, "empresas", codigoEmpresa, "vendas", docSnap.id));
+            const colecoesParaLimpar = ['vendas', 'movimentacoes', 'turnos', 'auditLogs'];
+            
+            for (let colNome of colecoesParaLimpar) {
+                let snap = await getDocs(collection(db, "empresas", codigoEmpresa, colNome));
+                for (let docSnap of snap.docs) {
+                    await deleteDoc(doc(db, "empresas", codigoEmpresa, colNome, docSnap.id));
+                }
             }
+
+            // Limpar também dados em arrays nos documentos de dados da empresa (despesas, etc.)
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: [] }, { merge: true });
+
             historico = [];
-            registarAuditLog('Histórico Apagado', 'Todo o histórico de vendas foi eliminado pelo Administrador');
-            window.showToast("Histórico eliminado com sucesso!", "info");
+            movimentacoesStock = [];
+            turnosCaixa = [];
+            auditLogs = [];
+            despesas = [];
+
+            window.showToast("🔥 Todo o histórico, auditoria e registos foram apagados com sucesso!", "success");
             window.atualizarDashboard();
+            renderizarMovimentacoesStock();
+            renderizarHistoricoTurnos();
+            renderizarAuditLogs();
+        } catch(e) {
+            window.showToast("Erro ao apagar histórico: " + e.message, "error");
         } finally {
             window.fimProcessamento();
         }
