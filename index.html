@@ -1763,16 +1763,26 @@
     ];
 
     window.detetarIconeProduto = function(nome, categoria = "") {
-        const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        for (const regra of GS_REGRAS_BEBIDAS) {
-            if (regra.palavras.some(p => limpo.includes(p))) return regra.icon;
-        }
-        const cat = (categoria || "").toLowerCase();
-        if (cat === "bebidas") return "refrigerante_lata";
-        if (cat === "pratos") return "prato_refeicao";
-        return "padrao_produto";
-    };
+    const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    const cat = (categoria || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
+    // 1. Procura nas regras de palavras-chave
+    for (const regra of GS_REGRAS_BEBIDAS) {
+        if (regra.palavras.some(p => limpo.includes(p))) return regra.icon;
+    }
+
+    // 2. Se for da categoria Bebidas e não reconheceu a marca, põe lata/garrafa em vez do cubo!
+    if (cat.includes("bebida") || cat.includes("bar") || cat.includes("garrafeira")) {
+        return "refrigerante_lata";
+    }
+
+    // 3. Se for da categoria Pratos/Comida
+    if (cat.includes("prato") || cat.includes("comida") || cat.includes("cozinha") || cat.includes("lanche")) {
+        return "prato_refeicao";
+    }
+
+    return "padrao_produto";
+};
     window.atualizarPreviewIconeCadastro = function() {
         const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
         if (selManual !== 'auto') return;
