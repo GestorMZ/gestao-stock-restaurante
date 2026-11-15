@@ -396,6 +396,24 @@
             overflow: hidden; 
             word-break: break-word;
         }
+.zrest-prod-icon {
+            width: 38px;
+            height: 38px;
+            margin: 0 auto 6px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 6px;
+            transition: transform 0.2s var(--ease-out-pro);
+        }
+        .zrest-prod-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        .zrest-product-card:hover .zrest-prod-icon {
+            transform: scale(1.1);
+        }
         .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.15em; }
         .zrest-prod-stock { font-size: 0.75em; color: var(--text-muted); font-weight: 700; margin-top: 4px; background: #f1f5f9; padding: 2px 8px; border-radius: 10px; display: inline-block; transition: background 0.2s; }
 
@@ -1065,8 +1083,28 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nome do Produto / Modelo / Bebidas / Marca</label>
-                        <input type="text" id="simplesProduto" placeholder="Ex: T-Shirt / Whisky">
+                        <label>Nome do Produto / Bebida / Marca</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <div id="previewIconeCadastro" style="width: 46px; height: 46px; flex-shrink: 0; border-radius: 12px; background: #f1f5f9; color: #475569; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                            </div>
+                            <input type="text" id="simplesProduto" placeholder="Ex: Cerveja 2M, Coca-Cola, Whisky..." oninput="window.atualizarPreviewIconeCadastro()" style="flex: 1;">
+                            <select id="simplesIconeManual" onchange="window.mudarIconeManualCadastro()" style="width: 155px; font-size: 13px; padding: 10px;">
+                                <option value="auto">✨ Auto-Detetar</option>
+                                <option value="cerveja_garrafa">🍺 Cerveja Garrafa</option>
+                                <option value="cerveja_caneca">🍻 Fino / Caneca</option>
+                                <option value="refrigerante_lata">🥤 Refrigerante / Lata</option>
+                                <option value="agua_garrafa">💧 Água Mineral</option>
+                                <option value="vinho_garrafa">🍷 Vinho / Garrafeira</option>
+                                <option value="destilado_whisky">🥃 Whisky / Destilado</option>
+                                <option value="sumo_copo">🧃 Sumo / Natural</option>
+                                <option value="cafe_xicara">☕ Café / Chá</option>
+                                <option value="cocktail">🍸 Cocktail / Gin</option>
+                                <option value="energetico">⚡ Energético</option>
+                                <option value="prato_refeicao">🍲 Prato / Refeição</option>
+                                <option value="padrao_produto">📦 Produto Geral</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group" style="flex: 0.7;">
                         <label>Tamanho</label>
@@ -1595,6 +1633,172 @@
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+// ----- BIBLIOTECA INTERNA DE ÍCONES DE BEBIDAS E PRODUTOS -----
+    const GS_BEBIDAS_ICONS = {
+        cerveja_garrafa: {
+            cor: "#d97706", bg: "#fef3c7",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v3l2 4v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-4V2z"/><path d="M9 5h6"/><path d="M7 13h10"/></svg>`
+        },
+        cerveja_caneca: {
+            cor: "#b45309", bg: "#fde68a",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M5 8h12v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8z"/><path d="M5 8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3"/><line x1="9" y1="12" x2="9" y2="17"/><line x1="13" y1="12" x2="13" y2="17"/></svg>`
+        },
+        refrigerante_lata: {
+            cor: "#dc2626", bg: "#fee2e2",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M6 8h12"/><path d="M6 16h12"/><path d="M10 2h4v2h-4z"/></svg>`
+        },
+        agua_garrafa: {
+            cor: "#0284c7", bg: "#e0f2fe",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4v2h-4z"/><path d="M8 6h8l1 3v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l1-3z"/><path d="M7 12h10"/><path d="M7 16h10"/></svg>`
+        },
+        vinho_garrafa: {
+            cor: "#7c3aed", bg: "#ede9fe",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></svg>`
+        },
+        destilado_whisky: {
+            cor: "#92400e", bg: "#ffedd5",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14l-1.5 15a2 2 0 0 1-2 1.8h-7a2 2 0 0 1-2-1.8L5 4z"/><path d="M6 11h12"/><path d="M9 15h3"/></svg>`
+        },
+        sumo_copo: {
+            cor: "#ea580c", bg: "#ffedd5",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1.5 13h-9L6 8z"/><path d="M12 8l3-6h3"/><path d="M6.5 12h11"/></svg>`
+        },
+        cafe_xicara: {
+            cor: "#57534e", bg: "#f5f5f4",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>`
+        },
+        cocktail: {
+            cor: "#059669", bg: "#d1fae5",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22h8"/><path d="M12 11v11"/><path d="m19 3-7 8-7-8Z"/><path d="M7 6h10"/></svg>`
+        },
+        energetico: {
+            cor: "#2563eb", bg: "#dbeafe",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M13 7l-3 5h4l-3 5"/></svg>`
+        },
+        prato_refeicao: {
+            cor: "#16a34a", bg: "#dcfce7",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>`
+        },
+        padrao_produto: {
+            cor: "#475569", bg: "#f1f5f9",
+            svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`
+        }
+    };
+
+    const GS_REGRAS_BEBIDAS = [
+        // Cervejas Nacionais e Importadas (Garrafa)
+        { 
+            icon: "cerveja_garrafa", 
+            palavras: [
+                "2m", "dois eme", "manica", "laurentina", "laurentina preta", "laurentina clara", 
+                "impala", "txilar", "lite", "castle", "castelo", "heineken", "corona", 
+                "budweiser", "savanna", "hunters", "flying fish", "brutal fruit", "black label", 
+                "carling", "amstel", "stella", "sagres", "super bock", "cerveja", "mini", "550ml"
+            ] 
+        },
+        // Cerveja à Pressão / Balde
+        { 
+            icon: "cerveja_caneca", 
+            palavras: ["fino", "caneca", "imperial", "pressao", "chopp", "balde", "torre"] 
+        },
+        // Refrigerantes Locais e Latas
+        { 
+            icon: "refrigerante_lata", 
+            palavras: [
+                "coca", "coca-cola", "fanta", "sprite", "sparletta", "sparleto", "stoney", 
+                "schweppes", "twist", "creme soda", "pine nut", "iron brew", "mirinda", 
+                "pepsi", "7up", "lata", "refresco", "refrigerante", "gasosa", "2l", "1.5l", "pet"
+            ] 
+        },
+        // Energéticos Comuns em MZ
+        { 
+            icon: "energetico", 
+            palavras: ["red bull", "dragon", "monster", "score", "power", "booster", "play", "energetico", "switch"] 
+        },
+        // Águas Minerais de Moçambique
+        { 
+            icon: "agua_garrafa", 
+            palavras: ["agua", "vumba", "namaacha", "fonte", "mineral", "tonica", "soda", "aquavita", "pura"] 
+        },
+        // Vinhos (Portugueses / Sul-Africanos comuns em MZ)
+        { 
+            icon: "vinho_garrafa", 
+            palavras: [
+                "vinho", "tinto", "branco", "rose", "espumante", "champanhe", "casal garcia", 
+                "periquita", "papa figos", "esteva", "monte velho", "borba", "alentejo", 
+                "four cousins", "drostdy", "robertson", "nederburg", "taca", "garrafa vinho"
+            ] 
+        },
+        // Destilados, Aguardentes e Licores Nacionais/Locais
+        { 
+            icon: "destilado_whisky", 
+            palavras: [
+                "tipo tinto", "kambaku", "r&r", "888", "tentacao", "ponto final", "boss", 
+                "whisky", "red label", "black label", "double black", "gold label", "blue label",
+                "jack daniels", "jameson", "chivas", "grant", "ballantines", "vat 69", "j&b", "famous grouse",
+                "vodka", "absolut", "smirnoff", "ciroc", "russian bear", "count pushkin",
+                "gin", "gordons", "bombay", "tanqueray", "beefeater", "hendricks", "inverroche",
+                "amarula", "licor", "shot", "tequila", "olmeca", "jose cuervo", "rum", "bacardi", 
+                "captain morgan", "malibu", "hennessy", "conhaque", "brandy", "richelieu", "klipdrift", "viceroy"
+            ] 
+        },
+        // Sumos Nacionais e Regionais
+        { 
+            icon: "sumo_copo", 
+            palavras: [
+                "sumo", "santana", "ceres", "compal", "frutree", "liquifruit", "rhodes", 
+                "tropika", "yogi sip", "natural", "batido", "smoothie", "limonada", "ice tea", "lipton", "nectar"
+            ] 
+        },
+        // Cafetaria e Chá
+        { 
+            icon: "cafe_xicara", 
+            palavras: ["cafe", "expresso", "bica", "galao", "meia de leite", "cappuccino", "cha", "rooibos", "chocolate quente", "descafeinado", "latte"] 
+        },
+        // Cocktails
+        { 
+            icon: "cocktail", 
+            palavras: ["cocktail", "caipirinha", "caipiroska", "mojito", "margarita", "gin tonico", "pina colada", "sangria", "daiquiri", "tequila sunrise"] 
+        }
+    ];
+
+    window.detetarIconeProduto = function(nome, categoria = "") {
+        const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        for (const regra of GS_REGRAS_BEBIDAS) {
+            if (regra.palavras.some(p => limpo.includes(p))) return regra.icon;
+        }
+        const cat = (categoria || "").toLowerCase();
+        if (cat === "bebidas") return "refrigerante_lata";
+        if (cat === "pratos") return "prato_refeicao";
+        return "padrao_produto";
+    };
+
+    window.atualizarPreviewIconeCadastro = function() {
+        const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
+        if (selManual !== 'auto') return;
+        const nome = document.getElementById('simplesProduto')?.value || '';
+        const cat = document.getElementById('simplesCategoria')?.value || '';
+        const iconId = window.detetarIconeProduto(nome, cat);
+        const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+        const box = document.getElementById('previewIconeCadastro');
+        if (box) {
+            box.style.color = info.cor;
+            box.style.background = info.bg;
+            box.innerHTML = info.svg;
+        }
+    };
+
+    window.mudarIconeManualCadastro = function() {
+        const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
+        if (selManual === 'auto') return window.atualizarPreviewIconeCadastro();
+        const info = GS_BEBIDAS_ICONS[selManual] || GS_BEBIDAS_ICONS.padrao_produto;
+        const box = document.getElementById('previewIconeCadastro');
+        if (box) {
+            box.style.color = info.cor;
+            box.style.background = info.bg;
+            box.innerHTML = info.svg;
+        }
+    };
 
     // ----- SISTEMA DE NOTIFICAÇÕES TOAST (NÃO-BLOQUEANTES) -----
     window.showToast = function(msg, type = 'success') {
@@ -3003,17 +3207,22 @@ function renderizarHistoricoTurnos() {
             return;
         }
 
-        prodsExibicao.forEach(p => {
+       prodsExibicao.forEach(p => {
             let item = stock[p];
+            let iconId = item.icone || window.detetarIconeProduto(p, item.categoria);
+            let iconData = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+
             grid.innerHTML += `
                 <div class="zrest-product-card" onclick="window.selecionarProdutoCardPOS('${p}')">
+                    <div class="zrest-prod-icon" style="background: ${iconData.bg}; color: ${iconData.cor};">
+                        ${iconData.svg}
+                    </div>
                     <div class="zrest-prod-title" title="${p.toUpperCase()}">${p.toUpperCase()}</div>
                     <div class="zrest-prod-price">${(item.preco_venda||0).toFixed(2)} MT</div>
                     <div class="zrest-prod-stock">📦 Disp: ${item.qtd}</div>
                 </div>
             `;
         });
-
         if (!deveExibirTodos && restantes > 0) {
             grid.innerHTML += `
                 <button type="button" class="zrest-btn-ver-mais" onclick="window.toggleExpandirProdutosPOS()">
@@ -3804,7 +4013,11 @@ window.salvarEntradaStock = async function() {
             totalCusto = totalUnidades * custoUnit;
         }
 
-        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput, tamanho, cor };
+       let escolhaIcone = document.getElementById('simplesIconeManual')?.value || 'auto';
+        let iconeFinal = escolhaIcone === 'auto' ? window.detetarIconeProduto(nomeProdBase, cat) : escolhaIcone;
+
+        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput, tamanho, cor, icone: iconeFinal };
+        stock[prod].icone = iconeFinal;
 
         stock[prod].qtd += totalUnidades;
         stock[prod].preco_total += totalCusto;
