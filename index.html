@@ -397,23 +397,23 @@
             word-break: break-word;
         }
 .zrest-prod-icon {
-            width: 38px;
-            height: 38px;
-            margin: 0 auto 6px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            padding: 6px;
-            transition: transform 0.2s var(--ease-out-pro);
-        }
-        .zrest-prod-icon svg {
-            width: 24px;
-            height: 24px;
-        }
-        .zrest-product-card:hover .zrest-prod-icon {
-            transform: scale(1.1);
-        }
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 6px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    padding: 4px;
+    transition: transform 0.2s var(--ease-out-pro);
+}
+.zrest-prod-icon svg {
+    width: 58px;
+    height: 58px;
+}
+.zrest-product-card:hover .zrest-prod-icon {
+    transform: scale(1.1);
+}
 .zrest-prod-img {
             width: 68px;
             height: 68px;
@@ -1775,88 +1775,149 @@
             palavras: ["cocktail", "caipirinha", "caipiroska", "mojito", "margarita", "gin tonico", "pina colada", "sangria", "daiquiri", "tequila sunrise"] 
         }
     ];
-// ----- CATÁLOGO AUTOMÁTICO DE FOTOS REAIS (PRODUTOS MOÇAMBICANOS & GERAIS) -----
-const GS_CATALOGO_FOTOS_MZ = [
-    // Cervejas Nacionais e Regionais
-    { palavras: ["2m", "dois eme"], foto: "https://images.openfoodfacts.org/images/products/600/123/456/7890/front_pt.3.400.jpg" },
-    { palavras: ["laurentina preta"], foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Laurentina_Preta_beer_bottle.jpg/320px-Laurentina_Preta_beer_bottle.jpg" },
-    { palavras: ["laurentina clara", "laurentina"], foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Laurentina_Clara.jpg/320px-Laurentina_Clara.jpg" },
-    { palavras: ["manica"], foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Manica_beer_Mozambique.jpg/320px-Manica_beer_Mozambique.jpg" },
-    { palavras: ["heineken"], foto: "https://images.openfoodfacts.org/images/products/871/200/002/5649/front_en.104.400.jpg" },
-    { palavras: ["corona"], foto: "https://images.openfoodfacts.org/images/products/750/106/419/1459/front_en.54.400.jpg" },
-    { palavras: ["castle lite", "lite"], foto: "https://images.openfoodfacts.org/images/products/600/332/601/0451/front_en.19.400.jpg" },
-    { palavras: ["savanna"], foto: "https://images.openfoodfacts.org/images/products/600/145/200/0123/front_en.15.400.jpg" },
+// ----- MOTOR VISUAL DE MARCAS MOÇAMBICANAS & PRODUTOS (OFFLINE & INSTANTÂNEO) -----
+const GS_BEBIDAS_ICONS = {
+    marca_2m: {
+        cor: "#b91c1c", bg: "#fef2f2",
+        svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#78350f"/><rect x="26" y="4" width="12" height="4" fill="#dc2626"/><rect x="22" y="26" width="20" height="20" rx="2" fill="#ffffff"/><circle cx="32" cy="36" r="8" fill="#dc2626"/><text x="32" y="39" font-family="Arial,sans-serif" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle">2M</text></svg>`
+    },
+    marca_laurentina_preta: {
+        cor: "#111827", bg: "#f3f4f6",
+        svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#1f2937"/><rect x="26" y="4" width="12" height="4" fill="#f59e0b"/><rect x="22" y="25" width="20" height="22" rx="2" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/><text x="32" y="35" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#fbbf24" text-anchor="middle">LAUREN</text><text x="32" y="42" font-family="Arial,sans-serif" font-weight="800" font-size="6" fill="#ffffff" text-anchor="middle">PRETA</text></svg>`
+    },
+    marca_laurentina_clara: {
+        cor: "#d97706", bg: "#fffbeb",
+        svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#92400e"/><rect x="26" y="4" width="12" height="4" fill="#fbbf24"/><rect x="22" y="25" width="20" height="22" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/><text x="32" y="35" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#b45309" text-anchor="middle">LAUREN</text><text x="32" y="42" font-family="Arial,sans-serif" font-weight="800" font-size="6" fill="#dc2626" text-anchor="middle">CLARA</text></svg>`
+    },
+    marca_manica: {
+        cor: "#15803d", bg: "#f0fdf4",
+        svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#14532d"/><rect x="26" y="4" width="12" height="4" fill="#eab308"/><rect x="22" y="26" width="20" height="20" rx="2" fill="#facc15"/><text x="32" y="38" font-family="Arial,sans-serif" font-weight="900" font-size="7" fill="#14532d" text-anchor="middle">MANICA</text></svg>`
+    },
+    marca_heineken: {
+        cor: "#16a34a", bg: "#dcfce7",
+        svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#16a34a"/><rect x="22" y="26" width="20" height="18" rx="9" fill="#ffffff"/><polygon points="32,28 33.5,32 37.5,32 34.2,34.5 35.5,38.5 32,36 28.5,38.5 29.8,34.5 26.5,32 30.5,32" fill="#dc2626"/><rect x="21" y="33" width="22" height="5" fill="#15803d"/><text x="32" y="37" font-family="Arial,sans-serif" font-weight="900" font-size="4.5" fill="#ffffff" text-anchor="middle">HEINEKEN</text></svg>`
+    },
+    marca_coca: {
+        cor: "#dc2626", bg: "#fee2e2",
+        svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#dc2626"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><rect x="20" y="55" width="24" height="3" rx="1" fill="#cbd5e1"/><path d="M18 32 Q32 26 46 32" stroke="#ffffff" stroke-width="2.5" fill="none"/><text x="32" y="42" font-family="Georgia,serif" font-style="italic" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle">Coca-Cola</text></svg>`
+    },
+    marca_fanta: {
+        cor: "#ea580c", bg: "#ffedd5",
+        svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#f97316"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><circle cx="32" cy="34" r="10" fill="#2563eb"/><text x="32" y="37" font-family="Arial,sans-serif" font-weight="900" font-size="8" fill="#ffffff" text-anchor="middle">FANTA</text></svg>`
+    },
+    marca_sprite: {
+        cor: "#059669", bg: "#d1fae5",
+        svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#10b981"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><polygon points="21,34 32,25 43,34 32,43" fill="#facc15"/><text x="32" y="36" font-family="Arial,sans-serif" font-weight="900" font-size="7.5" fill="#065f46" text-anchor="middle">SPRITE</text></svg>`
+    },
+    marca_sparletta: {
+        cor: "#16a34a", bg: "#dcfce7",
+        svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#15803d"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><rect x="19" y="27" width="26" height="14" rx="3" fill="#ffffff"/><text x="32" y="36" font-family="Arial,sans-serif" font-weight="900" font-size="6.2" fill="#dc2626" text-anchor="middle">SPARLETTA</text></svg>`
+    },
+    marca_agua_mz: {
+        cor: "#0284c7", bg: "#e0f2fe",
+        svg: `<svg viewBox="0 0 64 64"><path d="M27 6h10v5l5 8v37a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V19l5-8V6z" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5"/><rect x="27" y="4" width="10" height="4" fill="#0284c7"/><rect x="22" y="27" width="20" height="16" fill="#0369a1"/><text x="32" y="37" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#ffffff" text-anchor="middle">ÁGUA</text></svg>`
+    },
+    marca_compal_santana: {
+        cor: "#d97706", bg: "#fef3c7",
+        svg: `<svg viewBox="0 0 64 64"><rect x="20" y="10" width="24" height="48" rx="3" fill="#f59e0b"/><polygon points="20,10 32,4 44,10" fill="#d97706"/><circle cx="32" cy="36" r="8" fill="#ea580c"/><text x="32" y="24" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#ffffff" text-anchor="middle">SUMO</text></svg>`
+    },
+    marca_redbull: {
+        cor: "#1d4ed8", bg: "#dbeafe",
+        svg: `<svg viewBox="0 0 64 64"><rect x="21" y="8" width="22" height="50" rx="4" fill="#e2e8f0"/><polygon points="21,8 32,8 32,33 21,33" fill="#1e3a8a"/><polygon points="32,33 43,33 43,58 32,58" fill="#1e3a8a"/><circle cx="32" cy="33" r="5" fill="#facc15"/><text x="32" y="22" font-family="Arial,sans-serif" font-weight="900" font-size="5.5" fill="#dc2626" text-anchor="middle">RED BULL</text></svg>`
+    },
+    marca_whisky_mz: {
+        cor: "#92400e", bg: "#ffedd5",
+        svg: `<svg viewBox="0 0 64 64"><rect x="27" y="4" width="10" height="8" fill="#111827"/><rect x="20" y="12" width="24" height="46" rx="3" fill="#b45309"/><rect x="22" y="24" width="20" height="22" fill="#fef3c7" stroke="#92400e" stroke-width="1"/><text x="32" y="34" font-family="Arial,sans-serif" font-weight="900" font-size="6" fill="#dc2626" text-anchor="middle">WHISKY</text><text x="32" y="41" font-family="Arial,sans-serif" font-weight="800" font-size="5" fill="#111827" text-anchor="middle">RESERVA</text></svg>`
+    },
+    cerveja_garrafa: {
+        cor: "#d97706", bg: "#fef3c7",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2h6v3l2 4v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-4V2z"/><path d="M9 5h6"/><path d="M7 13h10"/></svg>`
+    },
+    cerveja_caneca: {
+        cor: "#b45309", bg: "#fde68a",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M5 8h12v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8z"/><path d="M5 8a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3"/></svg>`
+    },
+    refrigerante_lata: {
+        cor: "#dc2626", bg: "#fee2e2",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M6 8h12"/><path d="M6 16h12"/></svg>`
+    },
+    agua_garrafa: {
+        cor: "#0284c7", bg: "#e0f2fe",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2h4v2h-4z"/><path d="M8 6h8l1 3v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l1-3z"/></svg>`
+    },
+    vinho_garrafa: {
+        cor: "#7c3aed", bg: "#ede9fe",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></svg>`
+    },
+    destilado_whisky: {
+        cor: "#92400e", bg: "#ffedd5",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14l-1.5 15a2 2 0 0 1-2 1.8h-7a2 2 0 0 1-2-1.8L5 4z"/><path d="M6 11h12"/></svg>`
+    },
+    sumo_copo: {
+        cor: "#ea580c", bg: "#ffedd5",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8h12l-1.5 13h-9L6 8z"/><path d="M12 8l3-6h3"/></svg>`
+    },
+    cafe_xicara: {
+        cor: "#57534e", bg: "#f5f5f4",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/></svg>`
+    },
+    cocktail: {
+        cor: "#059669", bg: "#d1fae5",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 22h8"/><path d="M12 11v11"/><path d="m19 3-7 8-7-8Z"/></svg>`
+    },
+    energetico: {
+        cor: "#2563eb", bg: "#dbeafe",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="2"/><path d="M13 7l-3 5h4l-3 5"/></svg>`
+    },
+    prato_refeicao: {
+        cor: "#16a34a", bg: "#dcfce7",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>`
+    },
+    padrao_produto: {
+        cor: "#475569", bg: "#f1f5f9",
+        svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`
+    }
+};
 
-    // Refrigerantes & Águas
-    { palavras: ["coca-cola", "coca cola", "coca"], foto: "https://images.openfoodfacts.org/images/products/544/900/000/0996/front_en.868.400.jpg" },
-    { palavras: ["fanta laranja", "fanta"], foto: "https://images.openfoodfacts.org/images/products/544/900/001/1527/front_en.446.400.jpg" },
-    { palavras: ["sprite"], foto: "https://images.openfoodfacts.org/images/products/544/900/001/4535/front_en.356.400.jpg" },
-    { palavras: ["sparletta", "sparleto", "creme soda"], foto: "https://images.openfoodfacts.org/images/products/544/900/005/2926/front_en.28.400.jpg" },
-    { palavras: ["stoney"], foto: "https://images.openfoodfacts.org/images/products/544/900/003/3147/front_en.24.400.jpg" },
-    { palavras: ["agua vumba", "vumba", "agua namaacha", "namaacha", "agua"], foto: "https://images.openfoodfacts.org/images/products/327/408/000/5003/front_en.771.400.jpg" },
+const GS_REGRAS_BEBIDAS = [
+    // Marcas específicas com rótulo realista
+    { icon: "marca_2m", palavras: ["2m", "dois eme"] },
+    { icon: "marca_laurentina_preta", palavras: ["laurentina preta", "preta"] },
+    { icon: "marca_laurentina_clara", palavras: ["laurentina", "laurentina clara"] },
+    { icon: "marca_manica", palavras: ["manica"] },
+    { icon: "marca_heineken", palavras: ["heineken"] },
+    { icon: "marca_coca", palavras: ["coca", "coca-cola", "coca cola"] },
+    { icon: "marca_fanta", palavras: ["fanta"] },
+    { icon: "marca_sprite", palavras: ["sprite"] },
+    { icon: "marca_sparletta", palavras: ["sparletta", "sparleto", "creme soda", "stoney", "schweppes", "twist"] },
+    { icon: "marca_agua_mz", palavras: ["agua", "vumba", "namaacha", "fonte", "mineral", "aquavita", "pura"] },
+    { icon: "marca_compal_santana", palavras: ["sumo", "santana", "compal", "ceres", "frutree", "liquifruit", "tropika"] },
+    { icon: "marca_redbull", palavras: ["red bull", "dragon", "monster", "score", "booster", "energetico"] },
+    { icon: "marca_whisky_mz", palavras: ["tipo tinto", "kambaku", "r&r", "888", "tentacao", "whisky", "red label", "black label", "jack daniels", "jameson", "grants", "ballantines", "amarula", "gin", "vodka", "smirnoff"] },
 
-    // Energéticos & Sumos
-    { palavras: ["red bull"], foto: "https://images.openfoodfacts.org/images/products/900/249/010/0070/front_en.420.400.jpg" },
-    { palavras: ["monster"], foto: "https://images.openfoodfacts.org/images/products/506/033/563/5228/front_en.130.400.jpg" },
-    { palavras: ["compal"], foto: "https://images.openfoodfacts.org/images/products/560/101/201/1111/front_pt.45.400.jpg" },
-    { palavras: ["ceres"], foto: "https://images.openfoodfacts.org/images/products/600/124/020/0018/front_en.32.400.jpg" },
-
-    // Destilados Comuns em MZ
-    { palavras: ["red label", "johnnie walker"], foto: "https://images.openfoodfacts.org/images/products/500/026/701/4203/front_en.98.400.jpg" },
-    { palavras: ["black label"], foto: "https://images.openfoodfacts.org/images/products/500/026/702/3656/front_en.65.400.jpg" },
-    { palavras: ["jack daniels"], foto: "https://images.openfoodfacts.org/images/products/509/987/308/9798/front_en.74.400.jpg" },
-    { palavras: ["jameson"], foto: "https://images.openfoodfacts.org/images/products/501/100/700/3234/front_en.82.400.jpg" },
-    { palavras: ["amarula"], foto: "https://images.openfoodfacts.org/images/products/600/149/506/2324/front_en.45.400.jpg" },
-    { palavras: ["smirnoff"], foto: "https://images.openfoodfacts.org/images/products/541/031/698/1459/front_en.52.400.jpg" },
-    { palavras: ["gordons", "gin"], foto: "https://images.openfoodfacts.org/images/products/500/028/911/1018/front_en.60.400.jpg" }
+    // Categorias gerais
+    { icon: "cerveja_garrafa", palavras: ["impala", "txilar", "lite", "castle", "castelo", "corona", "budweiser", "savanna", "hunters", "flying fish", "brutal fruit", "cerveja", "mini"] },
+    { icon: "cerveja_caneca", palavras: ["fino", "caneca", "imperial", "pressao", "chopp", "balde", "torre"] },
+    { icon: "refrigerante_lata", palavras: ["pepsi", "7up", "mirinda", "lata", "refresco", "refrigerante", "gasosa"] },
+    { icon: "vinho_garrafa", palavras: ["vinho", "tinto", "branco", "rose", "espumante", "champanhe", "casal garcia", "periquita", "four cousins", "drostdy"] },
+    { icon: "cafe_xicara", palavras: ["cafe", "expresso", "bica", "galao", "cappuccino", "cha"] },
+    { icon: "cocktail", palavras: ["cocktail", "caipirinha", "caipiroska", "mojito", "margarita", "gin tonico"] }
 ];
 
-let fotoAutoDetetadaAtual = "";
-
-// 1. Busca automática por nome (instantânea)
-window.buscarFotoAutomaticaProduto = function(nome) {
-    const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-    if (!limpo) return "";
-    for (const item of GS_CATALOGO_FOTOS_MZ) {
-        if (item.palavras.some(p => limpo.includes(p))) {
-            return item.foto;
-        }
-    }
-    return "";
-};
-
-// 2. Busca automática pela internet via Código de Barras (Open Food Facts)
-window.buscarFotoPorCodigoBarrasOnline = async function(barcode) {
-    if (!barcode || barcode.length < 6 || !navigator.onLine) return "";
-    try {
-        const resp = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-        const data = await resp.json();
-        if (data && data.status === 1 && data.product) {
-            return data.product.image_front_small_url || data.product.image_url || "";
-        }
-    } catch (e) {}
-    return "";
-};
-
-    window.detetarIconeProduto = function(nome, categoria = "") {
+window.detetarIconeProduto = function(nome, categoria = "") {
     const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     const cat = (categoria || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
-    // 1. Procura nas regras de palavras-chave
     for (const regra of GS_REGRAS_BEBIDAS) {
         if (regra.palavras.some(p => limpo.includes(p))) return regra.icon;
     }
 
-    // 2. Se for da categoria Bebidas e não reconheceu a marca, põe lata/garrafa em vez do cubo!
     if (cat.includes("bebida") || cat.includes("bar") || cat.includes("garrafeira")) {
         return "refrigerante_lata";
     }
-
-    // 3. Se for da categoria Pratos/Comida
     if (cat.includes("prato") || cat.includes("comida") || cat.includes("cozinha") || cat.includes("lanche")) {
         return "prato_refeicao";
     }
-
     return "padrao_produto";
 };
    window.atualizarPreviewIconeCadastro = function() {
@@ -3307,7 +3368,9 @@ function renderizarHistoricoTurnos() {
     let item = stock[p];
     // Busca foto salva OU deteta automaticamente na hora até para produtos antigos!
     let fotoProduto = item.foto || window.buscarFotoAutomaticaProduto(p);
-    let iconId = item.icone || window.detetarIconeProduto(p, item.categoria);
+    let iconId = (item.icone && item.icone !== 'padrao_produto' && item.icone !== 'cerveja_garrafa' && item.icone !== 'refrigerante_lata') 
+    ? item.icone 
+    : window.detetarIconeProduto(p, item.categoria);
     let iconData = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
 
     let visualCardHtml = fotoProduto
