@@ -414,6 +414,20 @@
         .zrest-product-card:hover .zrest-prod-icon {
             transform: scale(1.1);
         }
+.zrest-prod-img {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 6px auto;
+            object-fit: contain;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 4px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s var(--ease-out-pro);
+        }
+        .zrest-product-card:hover .zrest-prod-img {
+            transform: scale(1.08);
+        }
         .zrest-prod-price { color: var(--success); font-weight: 900; font-size: 1.15em; }
         .zrest-prod-stock { font-size: 0.75em; color: var(--text-muted); font-weight: 700; margin-top: 4px; background: #f1f5f9; padding: 2px 8px; border-radius: 10px; display: inline-block; transition: background 0.2s; }
 
@@ -1761,6 +1775,68 @@
             palavras: ["cocktail", "caipirinha", "caipiroska", "mojito", "margarita", "gin tonico", "pina colada", "sangria", "daiquiri", "tequila sunrise"] 
         }
     ];
+// ----- CATÁLOGO AUTOMÁTICO DE FOTOS REAIS (PRODUTOS MOÇAMBICANOS & GERAIS) -----
+const GS_CATALOGO_FOTOS_MZ = [
+    // Cervejas Nacionais e Regionais
+    { palavras: ["2m", "dois eme"], foto: "https://images.openfoodfacts.org/images/products/600/123/456/7890/front_pt.3.400.jpg" },
+    { palavras: ["laurentina preta"], foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Laurentina_Preta_beer_bottle.jpg/320px-Laurentina_Preta_beer_bottle.jpg" },
+    { palavras: ["laurentina clara", "laurentina"], foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Laurentina_Clara.jpg/320px-Laurentina_Clara.jpg" },
+    { palavras: ["manica"], foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Manica_beer_Mozambique.jpg/320px-Manica_beer_Mozambique.jpg" },
+    { palavras: ["heineken"], foto: "https://images.openfoodfacts.org/images/products/871/200/002/5649/front_en.104.400.jpg" },
+    { palavras: ["corona"], foto: "https://images.openfoodfacts.org/images/products/750/106/419/1459/front_en.54.400.jpg" },
+    { palavras: ["castle lite", "lite"], foto: "https://images.openfoodfacts.org/images/products/600/332/601/0451/front_en.19.400.jpg" },
+    { palavras: ["savanna"], foto: "https://images.openfoodfacts.org/images/products/600/145/200/0123/front_en.15.400.jpg" },
+
+    // Refrigerantes & Águas
+    { palavras: ["coca-cola", "coca cola", "coca"], foto: "https://images.openfoodfacts.org/images/products/544/900/000/0996/front_en.868.400.jpg" },
+    { palavras: ["fanta laranja", "fanta"], foto: "https://images.openfoodfacts.org/images/products/544/900/001/1527/front_en.446.400.jpg" },
+    { palavras: ["sprite"], foto: "https://images.openfoodfacts.org/images/products/544/900/001/4535/front_en.356.400.jpg" },
+    { palavras: ["sparletta", "sparleto", "creme soda"], foto: "https://images.openfoodfacts.org/images/products/544/900/005/2926/front_en.28.400.jpg" },
+    { palavras: ["stoney"], foto: "https://images.openfoodfacts.org/images/products/544/900/003/3147/front_en.24.400.jpg" },
+    { palavras: ["agua vumba", "vumba", "agua namaacha", "namaacha", "agua"], foto: "https://images.openfoodfacts.org/images/products/327/408/000/5003/front_en.771.400.jpg" },
+
+    // Energéticos & Sumos
+    { palavras: ["red bull"], foto: "https://images.openfoodfacts.org/images/products/900/249/010/0070/front_en.420.400.jpg" },
+    { palavras: ["monster"], foto: "https://images.openfoodfacts.org/images/products/506/033/563/5228/front_en.130.400.jpg" },
+    { palavras: ["compal"], foto: "https://images.openfoodfacts.org/images/products/560/101/201/1111/front_pt.45.400.jpg" },
+    { palavras: ["ceres"], foto: "https://images.openfoodfacts.org/images/products/600/124/020/0018/front_en.32.400.jpg" },
+
+    // Destilados Comuns em MZ
+    { palavras: ["red label", "johnnie walker"], foto: "https://images.openfoodfacts.org/images/products/500/026/701/4203/front_en.98.400.jpg" },
+    { palavras: ["black label"], foto: "https://images.openfoodfacts.org/images/products/500/026/702/3656/front_en.65.400.jpg" },
+    { palavras: ["jack daniels"], foto: "https://images.openfoodfacts.org/images/products/509/987/308/9798/front_en.74.400.jpg" },
+    { palavras: ["jameson"], foto: "https://images.openfoodfacts.org/images/products/501/100/700/3234/front_en.82.400.jpg" },
+    { palavras: ["amarula"], foto: "https://images.openfoodfacts.org/images/products/600/149/506/2324/front_en.45.400.jpg" },
+    { palavras: ["smirnoff"], foto: "https://images.openfoodfacts.org/images/products/541/031/698/1459/front_en.52.400.jpg" },
+    { palavras: ["gordons", "gin"], foto: "https://images.openfoodfacts.org/images/products/500/028/911/1018/front_en.60.400.jpg" }
+];
+
+let fotoAutoDetetadaAtual = "";
+
+// 1. Busca automática por nome (instantânea)
+window.buscarFotoAutomaticaProduto = function(nome) {
+    const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    if (!limpo) return "";
+    for (const item of GS_CATALOGO_FOTOS_MZ) {
+        if (item.palavras.some(p => limpo.includes(p))) {
+            return item.foto;
+        }
+    }
+    return "";
+};
+
+// 2. Busca automática pela internet via Código de Barras (Open Food Facts)
+window.buscarFotoPorCodigoBarrasOnline = async function(barcode) {
+    if (!barcode || barcode.length < 6 || !navigator.onLine) return "";
+    try {
+        const resp = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+        const data = await resp.json();
+        if (data && data.status === 1 && data.product) {
+            return data.product.image_front_small_url || data.product.image_url || "";
+        }
+    } catch (e) {}
+    return "";
+};
 
     window.detetarIconeProduto = function(nome, categoria = "") {
     const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -1783,20 +1859,30 @@
 
     return "padrao_produto";
 };
-    window.atualizarPreviewIconeCadastro = function() {
-        const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
-        if (selManual !== 'auto') return;
-        const nome = document.getElementById('simplesProduto')?.value || '';
-        const cat = document.getElementById('simplesCategoria')?.value || '';
-        const iconId = window.detetarIconeProduto(nome, cat);
-        const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
-        const box = document.getElementById('previewIconeCadastro');
-        if (box) {
-            box.style.color = info.cor;
-            box.style.background = info.bg;
-            box.innerHTML = info.svg;
-        }
-    };
+   window.atualizarPreviewIconeCadastro = function() {
+    const nome = document.getElementById('simplesProduto')?.value || '';
+    const cat = document.getElementById('simplesCategoria')?.value || '';
+    const box = document.getElementById('previewIconeCadastro');
+    if (!box) return;
+
+    // Tenta encontrar foto real automaticamente
+    const fotoEncontrada = window.buscarFotoAutomaticaProduto(nome);
+    fotoAutoDetetadaAtual = fotoEncontrada;
+
+    if (fotoEncontrada) {
+        box.style.background = "#ffffff";
+        box.innerHTML = `<img src="${fotoEncontrada}" style="width:100%; height:100%; object-fit:contain; border-radius:10px;" onerror="this.style.display='none'">`;
+        return;
+    }
+
+    // Se não houver foto real, mostra o ícone vetorial como fallback
+    const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
+    const iconId = selManual === 'auto' ? window.detetarIconeProduto(nome, cat) : selManual;
+    const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+    box.style.color = info.cor;
+    box.style.background = info.bg;
+    box.innerHTML = info.svg;
+};
 
     window.mudarIconeManualCadastro = function() {
         const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
@@ -3218,21 +3304,25 @@ function renderizarHistoricoTurnos() {
         }
 
        prodsExibicao.forEach(p => {
-            let item = stock[p];
-            let iconId = item.icone || window.detetarIconeProduto(p, item.categoria);
-            let iconData = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+    let item = stock[p];
+    // Busca foto salva OU deteta automaticamente na hora até para produtos antigos!
+    let fotoProduto = item.foto || window.buscarFotoAutomaticaProduto(p);
+    let iconId = item.icone || window.detetarIconeProduto(p, item.categoria);
+    let iconData = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
 
-            grid.innerHTML += `
-                <div class="zrest-product-card" onclick="window.selecionarProdutoCardPOS('${p}')">
-                    <div class="zrest-prod-icon" style="background: ${iconData.bg}; color: ${iconData.cor};">
-                        ${iconData.svg}
-                    </div>
-                    <div class="zrest-prod-title" title="${p.toUpperCase()}">${p.toUpperCase()}</div>
-                    <div class="zrest-prod-price">${(item.preco_venda||0).toFixed(2)} MT</div>
-                    <div class="zrest-prod-stock">📦 Disp: ${item.qtd}</div>
-                </div>
-            `;
-        });
+    let visualCardHtml = fotoProduto
+        ? `<img src="${fotoProduto}" class="zrest-prod-img" alt="${p}" loading="lazy" onerror="this.outerHTML='<div class=\\'zrest-prod-icon\\' style=\\'background:${iconData.bg};color:${iconData.cor}\\'>${iconData.svg.replace(/"/g, '&quot;')}</div>'">`
+        : `<div class="zrest-prod-icon" style="background: ${iconData.bg}; color: ${iconData.cor};">${iconData.svg}</div>`;
+
+    grid.innerHTML += `
+        <div class="zrest-product-card" onclick="window.selecionarProdutoCardPOS('${p}')">
+            ${visualCardHtml}
+            <div class="zrest-prod-title" title="${p.toUpperCase()}">${p.toUpperCase()}</div>
+            <div class="zrest-prod-price">${(item.preco_venda||0).toFixed(2)} MT</div>
+            <div class="zrest-prod-stock">📦 Disp: ${item.qtd}</div>
+        </div>
+    `;
+});
         if (!deveExibirTodos && restantes > 0) {
             grid.innerHTML += `
                 <button type="button" class="zrest-btn-ver-mais" onclick="window.toggleExpandirProdutosPOS()">
@@ -3995,7 +4085,6 @@ window.salvarEntradaStock = async function() {
         let nomeProdBase = document.getElementById('simplesProduto').value.trim().toLowerCase();
         if(!nomeProdBase) return window.showToast("Digite o nome do produto.", "warning");
 
-        // NOVO: Capturar Tamanho e Cor e concatenar se existirem
         let tamanho = document.getElementById('simplesTamanho')?.value.trim() || '';
         let cor = document.getElementById('simplesCor')?.value.trim().toLowerCase() || '';
         
@@ -4023,11 +4112,30 @@ window.salvarEntradaStock = async function() {
             totalCusto = totalUnidades * custoUnit;
         }
 
-       let escolhaIcone = document.getElementById('simplesIconeManual')?.value || 'auto';
+        let escolhaIcone = document.getElementById('simplesIconeManual')?.value || 'auto';
         let iconeFinal = escolhaIcone === 'auto' ? window.detetarIconeProduto(nomeProdBase, cat) : escolhaIcone;
 
-        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput, tamanho, cor, icone: iconeFinal };
+        let fotoFinal = fotoAutoDetetadaAtual || window.buscarFotoAutomaticaProduto(nomeProdBase);
+        if (!fotoFinal && barcodeInput) {
+            fotoFinal = await window.buscarFotoPorCodigoBarrasOnline(barcodeInput);
+        }
+
+        if(!stock[prod]) {
+            stock[prod] = { 
+                qtd: 0, 
+                preco_total: 0, 
+                preco_venda: 0, 
+                min_alerta: minAlerta, 
+                categoria: cat, 
+                barcode: barcodeInput, 
+                tamanho, 
+                cor, 
+                icone: iconeFinal,
+                foto: fotoFinal || ""
+            };
+        }
         stock[prod].icone = iconeFinal;
+        if (fotoFinal) stock[prod].foto = fotoFinal;
 
         stock[prod].qtd += totalUnidades;
         stock[prod].preco_total += totalCusto;
@@ -4045,9 +4153,14 @@ window.salvarEntradaStock = async function() {
 
         await salvarStockFirestore({ [prod]: stock[prod] });
         registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
+        
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
         if(document.getElementById('simplesCor')) document.getElementById('simplesCor').value = '';
+        
+        fotoAutoDetetadaAtual = "";
+        window.atualizarPreviewIconeCadastro();
+
         filtrarEExibirProdutosVenda();
         window.showToast("Stock com variação atualizado com sucesso!", "success");
     } finally {
