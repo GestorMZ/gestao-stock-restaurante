@@ -759,20 +759,38 @@
             width: 48px;
             height: 48px;
         }
-        .zrest-prod-img {
-            width: 58px;
-            height: 58px;
+        .zrest-prod-media-box {
+            width: 100%;
+            height: 76px;
             margin: 0 auto 6px auto;
-            object-fit: contain;
-            border-radius: 12px;
-            background: #ffffff;
-            padding: 4px;
+            border-radius: 11px;
+            background: var(--surface-sub);
             border: 1px solid var(--border);
-            transition: transform 0.2s var(--ease-out-pro);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: border-color 0.2s var(--ease-out-pro), background-color 0.2s var(--ease-out-pro);
+        }
+        .zrest-prod-img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            border-radius: 8px;
+            display: block;
+            transition: transform 0.22s var(--ease-out-pro);
         }
         .zrest-product-card:hover .zrest-prod-icon,
         .zrest-product-card:hover .zrest-prod-img {
             transform: scale(1.07);
+        }
+        body.dark-mode .zrest-prod-media-box {
+            background: #111827;
+            border-color: #374151;
         }
         .zrest-prod-price { color: var(--success-dark); font-weight: 800; font-size: 1.08em; }
         
@@ -1752,7 +1770,7 @@
                     </div>
                     <div class="form-group">
                         <label>Categoria do Produto</label>
-                        <select id="simplesCategoria">
+                        <select id="simplesCategoria" onchange="window.atualizarPreviewIconeCadastro()">
                             <option value="bebidas">Bebidas / Restauração</option>
                             <option value="pratos">Pratos / Alimentos</option>
                             <option value="roupas">Roupas & Calçado</option>
@@ -1761,6 +1779,10 @@
                             <option value="computadores">Computadores & Eletrónicos</option>
                             <option value="outros">Outros Produtos</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagem GitHub / Pasta Produtos (Opcional)</label>
+                        <input type="text" id="simplesImagemUrl" placeholder="Auto (ex: 2m.png ou URL)" oninput="window.atualizarPreviewIconeCadastro()">
                     </div>
                 </div>
 
@@ -2183,6 +2205,14 @@
                 <div class="form-group"><label>Taxa IVA (%)</label><input type="number" id="cfgTaxaIva" value="16"></div>
             </div>
             <div class="form-group"><label>Slogan / Mensagem Recibo</label><input type="text" id="cfgSlogan"></div>
+            <div class="form-group">
+                <label style="color:var(--primary); font-weight:800;">Repositório / Pasta GitHub de Imagens (produtos)</label>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <input type="text" id="cfgGithubProdutosUrl" placeholder="Ex: https://github.com/usuario/repo/tree/main/produtos" style="flex:1;">
+                    <button type="button" class="btn-outline btn-sm" style="white-space:nowrap;" onclick="window.sincronizarImagensGithub(true)">Sincronizar</button>
+                </div>
+                <small id="lblStatusGithubImagens" style="display:block; margin-top:4px; color:var(--text-muted); font-size:0.78em;">Por defeito lê automaticamente da pasta <b>produtos/</b> do GitHub.</small>
+            </div>
             <div class="form-group"><label style="color:var(--danger); font-weight:800;">Chave Mestra Secreta</label><input type="text" id="cfgChaveMestra"></div>
             <button class="btn-primary btn-sm" onclick="window.guardarDadosEmpresa()" style="margin-top:6px;">Guardar Dados</button>
         </div>
@@ -2405,25 +2435,294 @@
     ];
 
     const GS_FOTOS_REAIS_MZ = [
-        { palavras: ["2m", "dois eme"], img: "produtos/2m.png" },
-        { palavras: ["laurentina preta"], img: "produtos/laurentina-preta.png" },
-        { palavras: ["laurentina"], img: "produtos/laurentina.png" },
-        { palavras: ["manica"], img: "produtos/manica.png" },
-        { palavras: ["coca", "coca-cola"], img: "produtos/coca.png" },
-        { palavras: ["fanta"], img: "produtos/fanta.png" },
-        { palavras: ["sprite"], img: "produtos/sprite.png" },
-        { palavras: ["vumba", "namaacha"], img: "produtos/agua.png" },
-        { palavras: ["santana"], img: "produtos/santana.png" },
-        { palavras: ["compal"], img: "produtos/compal.png" },
-        { palavras: ["red label"], img: "produtos/redlabel.png" }
+        { palavras: ["2m", "dois eme"], arquivos: ["2m.png", "2m.jpg", "2m.webp"] },
+        { palavras: ["laurentina preta"], arquivos: ["laurentina-preta.png", "laurentina_preta.png", "laurentina-preta.jpg"] },
+        { palavras: ["laurentina"], arquivos: ["laurentina.png", "laurentina-clara.png", "laurentina.jpg"] },
+        { palavras: ["manica"], arquivos: ["manica.png", "manica.jpg", "manica.webp"] },
+        { palavras: ["heineken"], arquivos: ["heineken.png", "heineken.jpg", "heineken.webp"] },
+        { palavras: ["impala"], arquivos: ["impala.png", "impala.jpg"] },
+        { palavras: ["castle", "castelo"], arquivos: ["castle.png", "castle-lite.png", "castle.jpg"] },
+        { palavras: ["savanna"], arquivos: ["savanna.png", "savanna.jpg"] },
+        { palavras: ["hunters"], arquivos: ["hunters.png", "hunters.jpg"] },
+        { palavras: ["corona"], arquivos: ["corona.png", "corona.jpg"] },
+        { palavras: ["coca", "coca-cola", "coca cola"], arquivos: ["coca.png", "coca-cola.png", "coca.jpg"] },
+        { palavras: ["fanta"], arquivos: ["fanta.png", "fanta.jpg"] },
+        { palavras: ["sprite"], arquivos: ["sprite.png", "sprite.jpg"] },
+        { palavras: ["sparletta", "sparleto"], arquivos: ["sparletta.png", "sparleto.png", "sparletta.jpg"] },
+        { palavras: ["agua", "vumba", "namaacha"], arquivos: ["agua.png", "vumba.png", "namaacha.png", "agua.jpg"] },
+        { palavras: ["santana"], arquivos: ["santana.png", "santana.jpg"] },
+        { palavras: ["compal"], arquivos: ["compal.png", "compal.jpg"] },
+        { palavras: ["ceres"], arquivos: ["ceres.png", "ceres.jpg"] },
+        { palavras: ["red bull", "redbull"], arquivos: ["redbull.png", "red-bull.png", "redbull.jpg"] },
+        { palavras: ["dragon"], arquivos: ["dragon.png", "dragon.jpg"] },
+        { palavras: ["monster"], arquivos: ["monster.png", "monster.jpg"] },
+        { palavras: ["red label"], arquivos: ["redlabel.png", "red-label.png", "redlabel.jpg"] },
+        { palavras: ["black label"], arquivos: ["blacklabel.png", "black-label.png", "blacklabel.jpg"] },
+        { palavras: ["jameson"], arquivos: ["jameson.png", "jameson.jpg"] },
+        { palavras: ["amarula"], arquivos: ["amarula.png", "amarula.jpg"] }
     ];
 
-    window.obterFotoRealProduto = function(nome) {
-        const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        for (const item of GS_FOTOS_REAIS_MZ) {
-            if (item.palavras.some(p => limpo.includes(p))) return item.img;
+    let githubProdutosIndex = {}; // { nomeNormalizado: urlCompleta }
+    let githubBaseRawAtual = "produtos/";
+
+    function normalizarTextoChaveProduto(str) {
+        return (str || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\.[a-z0-9]{2,5}$/i, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+    }
+
+    function extrairInfoRepoGithub(urlConfig) {
+        const rawInput = (urlConfig || "").trim();
+
+        // 1. Link explícito configurado pelo utilizador
+        if (rawInput) {
+            // Ex: https://github.com/user/repo/tree/main/produtos ou https://github.com/user/repo
+            const mGit = rawInput.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)(?:\/(?:tree|blob)\/([^\/]+)\/(.+))?\/?$/i);
+            if (mGit) {
+                const owner = mGit[1];
+                const repo = mGit[2].replace(/\.git$/i, "");
+                const branch = mGit[3] || "main";
+                const folder = (mGit[4] || "produtos").replace(/^\/+|\/+$/g, "");
+                return {
+                    owner,
+                    repo,
+                    branch,
+                    folder,
+                    rawBase: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${folder}/`
+                };
+            }
+
+            // Ex: https://raw.githubusercontent.com/user/repo/main/produtos/
+            const mRaw = rawInput.match(/^https?:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+?)\/?$/i);
+            if (mRaw) {
+                const owner = mRaw[1];
+                const repo = mRaw[2];
+                const branch = mRaw[3];
+                const folder = mRaw[4].replace(/^\/+|\/+$/g, "");
+                return {
+                    owner,
+                    repo,
+                    branch,
+                    folder,
+                    rawBase: `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${folder}/`
+                };
+            }
+
+            // Qualquer outro URL base personalizado
+            const baseComBarra = rawInput.endsWith("/") ? rawInput : rawInput + "/";
+            return { owner: null, repo: null, branch: null, folder: null, rawBase: baseComBarra };
         }
-        return "";
+
+        // 2. Auto-detetar se o app está hospedado no GitHub Pages (https://usuario.github.io/repositorio/)
+        try {
+            const host = window.location.hostname || "";
+            const pathParts = (window.location.pathname || "").split("/").filter(Boolean);
+            if (host.endsWith(".github.io") && pathParts.length > 0) {
+                const owner = host.replace(".github.io", "");
+                const repo = pathParts[0];
+                return {
+                    owner,
+                    repo,
+                    branch: "main",
+                    folder: "produtos",
+                    rawBase: "produtos/"
+                };
+            }
+        } catch (e) {}
+
+        return { owner: null, repo: null, branch: null, folder: "produtos", rawBase: "produtos/" };
+    }
+
+    window.sincronizarImagensGithub = async function(notificar = false) {
+        const cfgUrl = (document.getElementById('cfgGithubProdutosUrl')?.value ?? dadosEmpresa.githubProdutosUrl ?? "").trim();
+        const info = extrairInfoRepoGithub(cfgUrl);
+        githubBaseRawAtual = info.rawBase || "produtos/";
+        const lblStatus = document.getElementById('lblStatusGithubImagens');
+
+        if (!info.owner || !info.repo) {
+            if (lblStatus) {
+                lblStatus.innerHTML = `A carregar imagens locais/relativas de <b>${githubBaseRawAtual}</b>.`;
+            }
+            if (usuarioAtual) {
+                filtrarEExibirProdutosVenda();
+                renderizarStock();
+            }
+            if (modoCardapioClienteAtivo) window.renderizarProdutosMenuQR();
+            if (notificar) window.showToast("Pasta de imagens atualizada!", "info");
+            return;
+        }
+
+        if (lblStatus) lblStatus.innerText = "A ler ficheiros da pasta de produtos no GitHub...";
+
+        const pastasTentar = [info.folder, "produtos", "prodotos"].filter((v, i, a) => v && a.indexOf(v) === i);
+        const branchesTentar = [info.branch, "main", "master"].filter((v, i, a) => v && a.indexOf(v) === i);
+        let arquivosEncontrados = [];
+
+        for (const branch of branchesTentar) {
+            for (const pasta of pastasTentar) {
+                try {
+                    const apiUrl = `https://api.github.com/repos/${info.owner}/${info.repo}/contents/${pasta}?ref=${branch}`;
+                    const resp = await fetch(apiUrl);
+                    if (!resp.ok) continue;
+                    const lista = await resp.json();
+                    if (Array.isArray(lista)) {
+                        const imgs = lista.filter(f => f.type === "file" && /\.(png|jpe?g|webp|gif|svg)$/i.test(f.name));
+                        if (imgs.length > 0) {
+                            arquivosEncontrados = imgs;
+                            githubBaseRawAtual = `https://raw.githubusercontent.com/${info.owner}/${info.repo}/${branch}/${pasta}/`;
+                            break;
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (arquivosEncontrados.length > 0) break;
+        }
+
+        githubProdutosIndex = {};
+        arquivosEncontrados.forEach(f => {
+            const chave = normalizarTextoChaveProduto(f.name);
+            const urlFinal = f.download_url || (githubBaseRawAtual + encodeURIComponent(f.name));
+            if (chave) githubProdutosIndex[chave] = urlFinal;
+        });
+
+        const total = Object.keys(githubProdutosIndex).length;
+        if (lblStatus) {
+            lblStatus.innerHTML = total > 0
+                ? `<span style="color:var(--success); font-weight:700;">${total} imagem(ns) sincronizada(s) do GitHub (${info.owner}/${info.repo}).</span>`
+                : `A usar pasta base <b>${githubBaseRawAtual}</b> (nenhum ficheiro listado via API pública).`;
+        }
+
+        if (usuarioAtual) {
+            filtrarEExibirProdutosVenda();
+            renderizarStock();
+            window.atualizarPreviewIconeCadastro();
+        }
+        if (modoCardapioClienteAtivo) window.renderizarProdutosMenuQR();
+        if (notificar) {
+            window.showToast(
+                total > 0 ? `${total} imagens de produtos sincronizadas do GitHub!` : "Configuração de pasta GitHub guardada.",
+                total > 0 ? "success" : "info"
+            );
+        }
+    };
+
+    window.obterCandidatosImagemProduto = function(nome, itemStock = null) {
+        const candidatos = [];
+        const base = githubBaseRawAtual || "produtos/";
+        const adicionarUnico = (url) => {
+            if (!url) return;
+            const limpa = url.trim();
+            if (!limpa) return;
+            const resolvida = /^https?:\/\//i.test(limpa) || limpa.startsWith("data:") || limpa.startsWith("produtos/")
+                ? limpa
+                : base + limpa.replace(/^\/+/, "");
+            if (!candidatos.includes(resolvida)) candidatos.push(resolvida);
+        };
+
+        // 1. Imagem explícita definida no produto
+        if (itemStock && itemStock.imagemUrl) {
+            adicionarUnico(itemStock.imagemUrl);
+        }
+
+        const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const slug = normalizarTextoChaveProduto(nome);
+
+        // 2. Correspondência exata ou parcial com os ficheiros reais indexados da pasta 'produtos' no GitHub
+        if (slug && Object.keys(githubProdutosIndex).length > 0) {
+            if (githubProdutosIndex[slug]) {
+                adicionarUnico(githubProdutosIndex[slug]);
+            }
+            for (const chaveGit in githubProdutosIndex) {
+                if (chaveGit.length >= 2 && (slug.includes(chaveGit) || chaveGit.includes(slug))) {
+                    adicionarUnico(githubProdutosIndex[chaveGit]);
+                }
+            }
+        }
+
+        // 3. Correspondência nas palavras-chave de marcas conhecidas
+        for (const item of GS_FOTOS_REAIS_MZ) {
+            if (item.palavras.some(p => limpo.includes(p))) {
+                (item.arquivos || []).forEach(arq => adicionarUnico(base + arq));
+            }
+        }
+
+        // 4. Tentativa automática pelo nome do produto em formato slug dentro da pasta 'produtos' do GitHub
+        if (slug) {
+            adicionarUnico(`${base}${slug}.png`);
+            adicionarUnico(`${base}${slug}.jpg`);
+            adicionarUnico(`${base}${slug}.webp`);
+        }
+
+        return candidatos;
+    };
+
+    window.obterFotoRealProduto = function(nome, itemStock = null) {
+        const lista = window.obterCandidatosImagemProduto(nome, itemStock);
+        return lista.length > 0 ? lista[0] : "";
+    };
+
+    window.tratarErroImagemProduto = function(imgEl) {
+        if (!imgEl) return;
+        let fallbacks = [];
+        try {
+            fallbacks = JSON.parse(imgEl.getAttribute("data-fallbacks") || "[]");
+        } catch (e) {
+            fallbacks = [];
+        }
+
+        if (fallbacks.length > 0) {
+            const proximoUrl = fallbacks.shift();
+            imgEl.setAttribute("data-fallbacks", JSON.stringify(fallbacks));
+            imgEl.src = proximoUrl;
+            return;
+        }
+
+        // Esgotou todas as imagens reais: oculta o contentor da imagem e mostra o ícone vetorial SVG
+        const mediaBox = imgEl.closest(".zrest-prod-media-box");
+        if (mediaBox) {
+            mediaBox.style.display = "none";
+            if (mediaBox.nextElementSibling) {
+                mediaBox.nextElementSibling.style.display = "flex";
+            }
+        } else {
+            imgEl.style.display = "none";
+            if (imgEl.nextElementSibling) {
+                imgEl.nextElementSibling.style.display = "inline-flex";
+            }
+        }
+    };
+
+    window.gerarHtmlMidiaProduto = function(nome, itemStock = null, modoCompacto = false) {
+        const cat = itemStock?.categoria || "";
+        const iconId = itemStock?.icone || window.detetarIconeProduto(nome, cat);
+        const iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+        const candidatos = window.obterCandidatosImagemProduto(nome, itemStock);
+
+        if (modoCompacto) {
+            if (candidatos.length === 0) {
+                return `<span style="width:32px; height:32px; border-radius:8px; background:${iconInfo.bg}; color:${iconInfo.cor}; display:inline-flex; align-items:center; justify-content:center; padding:3px; flex-shrink:0;">${iconInfo.svg}</span>`;
+            }
+            const principal = candidatos[0];
+            const restantes = JSON.stringify(candidatos.slice(1)).replace(/"/g, "&quot;");
+            return `<img src="${principal}" data-fallbacks="${restantes}" alt="${nome}" style="width:32px; height:32px; object-fit:contain; border-radius:8px; background:#fff; border:1px solid var(--border); padding:2px; flex-shrink:0;" onerror="window.tratarErroImagemProduto(this)"><span style="display:none; width:32px; height:32px; border-radius:8px; background:${iconInfo.bg}; color:${iconInfo.cor}; align-items:center; justify-content:center; padding:3px; flex-shrink:0;">${iconInfo.svg}</span>`;
+        }
+
+        if (candidatos.length === 0) {
+            return `<div class="zrest-prod-icon" style="background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`;
+        }
+
+        const principal = candidatos[0];
+        const restantes = JSON.stringify(candidatos.slice(1)).replace(/"/g, "&quot;");
+        return `
+            <div class="zrest-prod-media-box">
+                <img src="${principal}" data-fallbacks="${restantes}" alt="${nome}" class="zrest-prod-img" loading="lazy" onerror="window.tratarErroImagemProduto(this)">
+            </div>
+            <div class="zrest-prod-icon" style="display:none; background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>
+        `;
     };
 
     window.detetarIconeProduto = function(nome, categoria = "") {
@@ -2447,17 +2746,26 @@
 
     window.atualizarPreviewIconeCadastro = function() {
         const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
-        if (selManual !== 'auto') return;
         const nome = document.getElementById('simplesProduto')?.value || '';
         const cat = document.getElementById('simplesCategoria')?.value || '';
-        const iconId = window.detetarIconeProduto(nome, cat);
-        const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+        const imgCustom = document.getElementById('simplesImagemUrl')?.value || '';
         const box = document.getElementById('previewIconeCadastro');
-        if (box) {
-            box.style.color = info.cor;
-            box.style.background = info.bg;
+        if (!box) return;
+
+        const iconId = selManual === 'auto' ? window.detetarIconeProduto(nome, cat) : selManual;
+        const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+        box.style.color = info.cor;
+        box.style.background = info.bg;
+
+        if (nome.trim() !== '' || imgCustom.trim() !== '') {
+            box.innerHTML = window.gerarHtmlMidiaProduto(nome, { categoria: cat, icone: iconId, imagemUrl: imgCustom }, true);
+        } else {
             box.innerHTML = info.svg;
         }
+    };
+
+    window.mudarIconeManualCadastro = function() {
+        window.atualizarPreviewIconeCadastro();
     };
 
     window.mudarIconeManualCadastro = function() {
@@ -2801,7 +3109,7 @@
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
 
     let caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
-    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16 };
+    let dadosEmpresa = { nome: "RESTAURANTE", nuit: "", endereco: "", telefone: "", slogan: "Obrigado pela preferência!", chaveMestra: "1234", aplicarIva: "sim", taxaIva: 16, githubProdutosUrl: "" };
 
     let usuarioAtual = null;
     let authUserFirebase = null;
@@ -3272,6 +3580,7 @@
             if (docSnap.exists()) {
                 dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
                 preencherCamposEmpresaModal();
+                window.sincronizarImagensGithub(false);
                 if (document.getElementById('nomeEmpresaHeader')) document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
             }
         }, (err) => console.error("Erro Dados Empresa:", err)));
@@ -4041,14 +4350,7 @@
             let classeStock = esgotado ? 'esgotado' : critico ? 'critico' : 'normal';
             let textoStock = esgotado ? 'Esgotado' : `${qtd} em stock`;
 
-            let iconId = item.icone || window.detetarIconeProduto(p, item.categoria || '');
-            let iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
-            let fotoReal = item.imagemUrl || window.obterFotoRealProduto(p);
-            
-            let midiaHtml = fotoReal 
-                ? `<img src="${fotoReal}" alt="${p}" class="zrest-prod-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                   <div class="zrest-prod-icon" style="display:none; background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`
-                : `<div class="zrest-prod-icon" style="background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`;
+            let midiaHtml = window.gerarHtmlMidiaProduto(p, item, false);
             
             let div = document.createElement('div');
             div.className = `zrest-product-card ${esgotado ? 'esgotado' : ''}`;
@@ -4791,6 +5093,7 @@
 
         let barcode = document.getElementById('simplesBarcode').value.trim();
         let categoria = document.getElementById('simplesCategoria').value || 'bebidas';
+        let imagemUrl = (document.getElementById('simplesImagemUrl')?.value || '').trim();
         let iconeManual = document.getElementById('simplesIconeManual').value || 'auto';
         let iconeFinal = iconeManual === 'auto' ? window.detetarIconeProduto(nomeProduto, categoria) : iconeManual;
 
@@ -4837,6 +5140,7 @@
                     minAlerta: minAlerta,
                     categoria: categoria,
                     barcode: barcode || existente.barcode || "",
+                    imagemUrl: imagemUrl || existente.imagemUrl || "",
                     icone: iconeFinal,
                     investidoTotal: invAnterior + custoTotalLote
                 };
@@ -4848,6 +5152,7 @@
                     minAlerta: minAlerta,
                     categoria: categoria,
                     barcode: barcode,
+                    imagemUrl: imagemUrl,
                     icone: iconeFinal,
                     investidoTotal: custoTotalLote
                 };
@@ -4863,6 +5168,7 @@
             document.getElementById('simplesProduto').value = '';
             document.getElementById('simplesCor').value = '';
             document.getElementById('simplesBarcode').value = '';
+            if (document.getElementById('simplesImagemUrl')) document.getElementById('simplesImagemUrl').value = '';
             document.getElementById('simplesQtd').value = '1';
             document.getElementById('simplesPrecoCusto').value = '';
             document.getElementById('simplesPrecoVendaUnit').value = '';
@@ -4944,12 +5250,7 @@
             let valAtualVenda = (item.qtd || 0) * (item.precoVendaUnit || 0);
             let lucroUnit = (item.precoVendaUnit || 0) - (item.custoMedio || 0);
             let lucroEstTotal = lucroUnit * (item.qtd || 0);
-            let iconId = item.icone || window.detetarIconeProduto(p, item.categoria || '');
-            let iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
-            let fotoReal = item.imagemUrl || window.obterFotoRealProduto(p);
-            let miniMidia = fotoReal
-                ? `<img src="${fotoReal}" alt="${p}" style="width:28px; height:28px; object-fit:contain; border-radius:7px; background:#fff; border:1px solid var(--border); padding:2px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"><span style="display:none; width:28px; height:28px; border-radius:7px; background:${iconInfo.bg}; color:${iconInfo.cor}; align-items:center; justify-content:center; padding:2px;">${iconInfo.svg}</span>`
-                : `<span style="width:28px; height:28px; border-radius:7px; background:${iconInfo.bg}; color:${iconInfo.cor}; display:inline-flex; align-items:center; justify-content:center; padding:2px;">${iconInfo.svg}</span>`;
+            let miniMidia = window.gerarHtmlMidiaProduto(p, item, true);
 
             tbody.innerHTML += `<tr>
                 <td><div style="display:flex; align-items:center; gap:8px;">${miniMidia}<b>${p}</b></div></td>
@@ -5304,6 +5605,7 @@
         document.getElementById('cfgEndereco').value = dadosEmpresa.endereco || "";
         document.getElementById('cfgTelefone').value = dadosEmpresa.telefone || "";
         document.getElementById('cfgSlogan').value = dadosEmpresa.slogan || "";
+        if (document.getElementById('cfgGithubProdutosUrl')) document.getElementById('cfgGithubProdutosUrl').value = dadosEmpresa.githubProdutosUrl || "";
         document.getElementById('cfgChaveMestra').value = dadosEmpresa.chaveMestra || "1234";
         document.getElementById('cfgAplicarIva').value = dadosEmpresa.aplicarIva || "sim";
         document.getElementById('cfgTaxaIva').value = dadosEmpresa.taxaIva !== undefined ? dadosEmpresa.taxaIva : 16;
@@ -5315,11 +5617,13 @@
         dadosEmpresa.endereco = document.getElementById('cfgEndereco').value;
         dadosEmpresa.telefone = document.getElementById('cfgTelefone').value;
         dadosEmpresa.slogan = document.getElementById('cfgSlogan').value;
+        dadosEmpresa.githubProdutosUrl = (document.getElementById('cfgGithubProdutosUrl')?.value || "").trim();
         dadosEmpresa.chaveMestra = document.getElementById('cfgChaveMestra').value || "1234";
         dadosEmpresa.aplicarIva = document.getElementById('cfgAplicarIva').value;
         dadosEmpresa.taxaIva = parseFloat(document.getElementById('cfgTaxaIva').value) || 0;
 
         await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), dadosEmpresa);
+        await window.sincronizarImagensGithub(false);
         registarAuditLog('Dados Empresa', `Dados fiscais atualizados por ${usuarioAtual.nome}`);
         window.showToast("Dados fiscais atualizados na nuvem!", "success");
     };
@@ -5467,6 +5771,8 @@
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "empresa"), (docSnap) => {
             if (docSnap.exists()) {
                 const info = docSnap.data();
+                dadosEmpresa.githubProdutosUrl = info.githubProdutosUrl || "";
+                window.sincronizarImagensGithub(false);
                 const nomePublico = (info.nome && info.nome.trim() !== "") ? info.nome.trim() : "CARDÁPIO DIGITAL";
                 document.getElementById('qrMenuNomeEmpresa').innerText = nomePublico.toUpperCase();
                 const sub = [info.endereco, info.telefone ? `Tel: ${info.telefone}` : ''].filter(Boolean).join(' • ');
@@ -5630,13 +5936,7 @@
             const item = stock[p];
             const preco = Number(item.precoVendaUnit || 0);
             const qtdDisp = Number(item.qtd || 0);
-            const iconId = item.icone || window.detetarIconeProduto(p, item.categoria || '');
-            const iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
-            const fotoReal = item.imagemUrl || window.obterFotoRealProduto(p);
-
-            const midiaHtml = fotoReal
-                ? `<img src="${fotoReal}" alt="${p}" class="zrest-prod-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="zrest-prod-icon" style="display:none; background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`
-                : `<div class="zrest-prod-icon" style="background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`;
+            const midiaHtml = window.gerarHtmlMidiaProduto(p, item, false);
 
             const card = document.createElement('div');
             card.className = 'zrest-product-card';
