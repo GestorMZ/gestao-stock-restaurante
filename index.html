@@ -1152,6 +1152,16 @@
         </div>
     </div>
 
+    <!-- MODAL ESCOLHER GARÇOM (CARDÁPIO DIGITAL) -->
+    <div id="modalEscolherGarcomQR" class="modal">
+        <div class="modal-content" style="max-width:460px;">
+            <span class="close-modal" onclick="window.fecharModalEscolherGarcomQR()">&times;</span>
+            <h3 style="margin-top:0; color:var(--primary);">Chamar Garçom (<span id="qrGarcomMesaTitulo">Mesa</span>)</h3>
+            <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Selecione o atendente que deseja chamar à sua mesa:</p>
+            <div id="qrListaGarconsContainer" style="display:flex; flex-direction:column; gap:10px; max-height:340px; overflow-y:auto;"></div>
+        </div>
+    </div>
+
     <!-- ECRÃ DE BLOQUEIO (FULLSCREEN FIXO SEM SCROLL) -->
     <div id="telaBloqueio" class="modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; z-index:99999; background:rgba(9, 13, 22, 0.96); backdrop-filter:blur(12px); align-items:center; justify-content:center; margin:0; overflow:hidden;">
         <div class="modal-content" style="max-width:380px; width:90%; text-align:center; padding:32px 26px; margin:auto; position:relative; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 1px solid var(--border);">
@@ -5407,6 +5417,9 @@
     let qrClienteMesa = "Mesa 1";
     let qrClienteCategoria = "todos";
     let qrClienteCarrinho = [];
+    let qrListaGarcons = [];
+    let qrBloqueiosMesas = {};
+    let qrMesasCarrinhos = {};
 
     window.iniciarModoCardapioCliente = function(empCode, mesaNome) {
         qrClienteEmpresa = empCode;
@@ -5419,19 +5432,53 @@
         document.getElementById('telaMenuDigitalCliente').style.display = 'block';
         document.getElementById('qrMenuMesaBadge').innerText = qrClienteMesa;
         document.getElementById('qrModalMesaTitulo').innerText = qrClienteMesa;
+        if (document.getElementById('qrGarcomMesaTitulo')) {
+            document.getElementById('qrGarcomMesaTitulo').innerText = qrClienteMesa;
+        }
 
+        // Carrega apenas o nome público e contactos do estabelecimento (sem exibir código de licença)
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "empresa"), (docSnap) => {
             if (docSnap.exists()) {
                 const info = docSnap.data();
-                document.getElementById('qrMenuNomeEmpresa').innerText = (info.nome || qrClienteEmpresa).toUpperCase();
+                const nomePublico = (info.nome && info.nome.trim() !== "") ? info.nome.trim() : "CARDÁPIO DIGITAL";
+                document.getElementById('qrMenuNomeEmpresa').innerText = nomePublico.toUpperCase();
                 const sub = [info.endereco, info.telefone ? `Tel: ${info.telefone}` : ''].filter(Boolean).join(' • ');
-                if (sub) document.getElementById('qrMenuInfoEmpresa').innerText = sub;
+                document.getElementById('qrMenuInfoEmpresa').innerText = sub || "Bem-vindo! Escolha os seus itens disponíveis e envie o pedido.";
+            } else {
+                document.getElementById('qrMenuNomeEmpresa').innerText = "CARDÁPIO DIGITAL";
             }
         });
 
+        // Escuta os produtos em stock em tempo real
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "stock"), (docSnap) => {
             stock = docSnap.exists() ? docSnap.data() : {};
             window.renderizarProdutosMenuQR();
+        });
+
+        // Escuta a equipa/garçons do estabelecimento
+        onSnapshot(doc(db, "empresas", qrClienteEmpresa), (docSnap) => {
+            if (docSnap.exists()) {
+                const dados = docSnap.data();
+                qrListaGarcons = Array.isArray(dados.usuarios) ? dados.usuarios.filter(u => u && u.nome) : [];
+                if (document.getElementById('modalEscolherGarcomQR')?.style.display === 'block') {
+                    window.renderizarListaGarconsQR();
+                }
+            }
+        });
+
+        // Escuta mesas abertas/ocupadas por cada garçom
+        onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
+            qrBloqueiosMesas = docSnap.exists() ? docSnap.data() : {};
+            if (document.getElementById('modalEscolherGarcomQR')?.style.display === 'block') {
+                window.renderizarListaGarconsQR();
+            }
+        });
+
+        onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
+            qrMesasCarrinhos = docSnap.exists() ? docSnap.data() : {};
+            if (document.getElementById('modalEscolherGarcomQR')?.style.display === 'block') {
+                window.renderizarListaGarconsQR();
+            }
         });
     };
 
@@ -5448,23 +5495,23 @@
         const termo = (document.getElementById('qrMenuPesquisa')?.value || '').toLowerCase();
         grid.innerHTML = '';
 
+        // Exibe apenas produtos disponíveis (stock > 0)
         const lista = Object.keys(stock).filter(p => {
             const it = stock[p];
+            if (!it || (it.qtd || 0) <= 0) return false;
             if (qrClienteCategoria !== 'todos' && (it.categoria || 'bebidas') !== qrClienteCategoria) return false;
             if (termo && !p.toLowerCase().includes(termo)) return false;
             return true;
         });
 
         if (lista.length === 0) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhum item disponível nesta categoria.</div>`;
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhum produto disponível nesta categoria no momento.</div>`;
             return;
         }
 
         lista.forEach(p => {
             const item = stock[p];
-            const qtd = item.qtd || 0;
             const preco = item.precoVendaUnit || 0;
-            const esgotado = qtd <= 0;
             const iconId = item.icone || window.detetarIconeProduto(p, item.categoria || '');
             const iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
             const fotoReal = item.imagemUrl || window.obterFotoRealProduto(p);
@@ -5474,15 +5521,13 @@
                 : `<div class="zrest-prod-icon" style="background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`;
 
             const card = document.createElement('div');
-            card.className = `zrest-product-card ${esgotado ? 'esgotado' : ''}`;
+            card.className = 'zrest-product-card';
             card.innerHTML = `
                 ${midiaHtml}
                 <div class="zrest-prod-title">${p}</div>
                 <div class="zrest-prod-price">${preco.toFixed(2)} MT</div>
                 <div style="margin-top:8px;">
-                    ${esgotado
-                        ? `<span class="zrest-prod-stock esgotado">Indisponível</span>`
-                        : `<button type="button" class="btn-primary btn-sm" style="width:100%; min-height:32px; font-size:12px;" onclick="window.adicionarItemClienteQR('${p.replace(/'/g, "\\'")}')">+ Adicionar</button>`}
+                    <button type="button" class="btn-primary btn-sm" style="width:100%; min-height:32px; font-size:12px;" onclick="window.adicionarItemClienteQR('${p.replace(/'/g, "\\'")}')">+ Adicionar</button>
                 </div>
             `;
             grid.appendChild(card);
@@ -5508,74 +5553,97 @@
                 subtotal: itemStock.precoVendaUnit || 0
             });
         }
-        window.atualizarResumoFlutuanteQR();
-        window.showToast(`${produto} adicionado ao seu pedido!`, "success");
+
+        window.atualizarBarraCarrinhoClienteQR();
+        window.showToast(`'${produto}' adicionado ao seu pedido!`, "success");
     };
 
-    window.atualizarResumoFlutuanteQR = function() {
-        const totalQtd = qrClienteCarrinho.reduce((acc, i) => acc + i.qtd, 0);
-        const totalVal = qrClienteCarrinho.reduce((acc, i) => acc + i.subtotal, 0);
-        document.getElementById('qrMenuQtdItens').innerText = totalQtd;
-        document.getElementById('qrMenuTotalPedido').innerText = totalVal.toFixed(2) + " MT";
-        document.getElementById('qrModalTotalTexto').innerText = totalVal.toFixed(2) + " MT";
+    window.atualizarBarraCarrinhoClienteQR = function() {
+        const qtdTotal = qrClienteCarrinho.reduce((acc, i) => acc + (i.qtd || 0), 0);
+        const totalVal = qrClienteCarrinho.reduce((acc, i) => acc + (i.subtotal || 0), 0);
+        const elQtd = document.getElementById('qrMenuQtdItens');
+        const elTotal = document.getElementById('qrMenuTotalPedido');
+        if (elQtd) elQtd.innerText = qtdTotal;
+        if (elTotal) elTotal.innerText = totalVal.toFixed(2) + " MT";
     };
 
-    window.abrirModalCarrinhoClienteQR = function() {
-        const listaEl = document.getElementById('qrModalListaItens');
-        listaEl.innerHTML = '';
-        if (qrClienteCarrinho.length === 0) {
-            listaEl.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:16px 0;">Ainda não adicionou itens ao pedido.</p>`;
-        } else {
-            qrClienteCarrinho.forEach((item, idx) => {
-                listaEl.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px dashed var(--border);">
-                        <div style="flex:1;">
-                            <div style="font-weight:800; font-size:13.5px;">${item.produto}</div>
-                            <div style="font-size:12px; color:var(--text-muted);">${item.vendaUnit.toFixed(2)} MT / un</div>
-                        </div>
-                        <div class="cart-qty-stepper">
-                            <button type="button" class="btn-qty-step" onclick="window.alterarQtdClienteQR(${idx}, -1)">-</button>
-                            <span class="cart-qty-val">${item.qtd}</span>
-                            <button type="button" class="btn-qty-step" onclick="window.alterarQtdClienteQR(${idx}, 1)">+</button>
-                        </div>
-                        <div style="font-weight:800; min-width:70px; text-align:right;" class="tabular-nums">${item.subtotal.toFixed(2)} MT</div>
-                    </div>
-                `;
-            });
-        }
-        window.atualizarResumoFlutuanteQR();
-        document.getElementById('modalCarrinhoClienteQR').style.display = 'block';
-    };
-
-    window.fecharModalCarrinhoClienteQR = function() {
-        document.getElementById('modalCarrinhoClienteQR').style.display = 'none';
-    };
-
-    window.alterarQtdClienteQR = function(idx, delta) {
+    window.alterarQtdItemClienteQR = function(idx, delta) {
         const item = qrClienteCarrinho[idx];
         if (!item) return;
         const maxStock = stock[item.produto]?.qtd || 0;
-        if (delta > 0 && item.qtd + 1 > maxStock) {
-            return window.showToast("Quantidade máxima disponível atingida.", "warning");
-        }
-        item.qtd += delta;
-        if (item.qtd <= 0) {
-            qrClienteCarrinho.splice(idx, 1);
-        } else {
+
+        if (delta > 0) {
+            if (item.qtd + 1 > maxStock) {
+                return window.showToast(`Stock máximo disponível: ${maxStock} un.`, "warning");
+            }
+            item.qtd += 1;
             item.subtotal = item.qtd * item.vendaUnit;
+        } else {
+            if (item.qtd <= 1) {
+                qrClienteCarrinho.splice(idx, 1);
+            } else {
+                item.qtd -= 1;
+                item.subtotal = item.qtd * item.vendaUnit;
+            }
         }
-        window.abrirModalCarrinhoClienteQR();
+        window.atualizarBarraCarrinhoClienteQR();
+        window.renderizarModalCarrinhoClienteQR();
+    };
+
+    window.renderizarModalCarrinhoClienteQR = function() {
+        const lista = document.getElementById('qrModalListaItens');
+        const elTotal = document.getElementById('qrModalTotalTexto');
+        if (!lista) return;
+
+        lista.innerHTML = '';
+        if (qrClienteCarrinho.length === 0) {
+            lista.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:16px 0;">Ainda não adicionou itens ao seu pedido.</p>`;
+            if (elTotal) elTotal.innerText = "0.00 MT";
+            return;
+        }
+
+        let total = 0;
+        qrClienteCarrinho.forEach((item, idx) => {
+            total += item.subtotal || 0;
+            lista.innerHTML += `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px dashed var(--border);">
+                    <div style="flex:1;">
+                        <div style="font-weight:800; font-size:0.92em;">${item.produto}</div>
+                        <div style="font-size:0.8em; color:var(--text-muted);">${(item.vendaUnit || 0).toFixed(2)} MT / un</div>
+                    </div>
+                    <div class="cart-qty-stepper">
+                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemClienteQR(${idx}, -1)">-</button>
+                        <span class="cart-qty-val">${item.qtd}</span>
+                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemClienteQR(${idx}, 1)">+</button>
+                    </div>
+                    <div style="font-weight:800; min-width:70px; text-align:right;" class="tabular-nums">${(item.subtotal || 0).toFixed(2)} MT</div>
+                </div>
+            `;
+        });
+        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
+    };
+
+    window.abrirModalCarrinhoClienteQR = function() {
+        window.renderizarModalCarrinhoClienteQR();
+        const modal = document.getElementById('modalCarrinhoClienteQR');
+        if (modal) modal.style.display = 'block';
+    };
+
+    window.fecharModalCarrinhoClienteQR = function() {
+        const modal = document.getElementById('modalCarrinhoClienteQR');
+        if (modal) modal.style.display = 'none';
     };
 
     window.enviarPedidoClienteQR = async function() {
         if (qrClienteCarrinho.length === 0) {
-            return window.showToast("Adicione pelo menos um item ao pedido!", "warning");
+            return window.showToast("Adicione pelo menos um produto antes de enviar o pedido!", "warning");
         }
-        const obs = document.getElementById('qrModalObsPedido')?.value.trim() || "";
-        const total = qrClienteCarrinho.reduce((acc, i) => acc + i.subtotal, 0);
-
         if (!window.iniciarProcessamento()) return;
+
         try {
+            const obs = (document.getElementById('qrModalObsPedido')?.value || '').trim();
+            const total = qrClienteCarrinho.reduce((acc, i) => acc + (i.subtotal || 0), 0);
+
             await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
                 tipo: "pedido",
                 status: "pendente",
@@ -5588,10 +5656,10 @@
             });
 
             qrClienteCarrinho = [];
-            if (document.getElementById('qrModalObsPedido')) document.getElementById('qrModalObsPedido').value = "";
-            window.atualizarResumoFlutuanteQR();
+            if (document.getElementById('qrModalObsPedido')) document.getElementById('qrModalObsPedido').value = '';
+            window.atualizarBarraCarrinhoClienteQR();
             window.fecharModalCarrinhoClienteQR();
-            window.showToast("Pedido enviado com sucesso! O balcão já recebeu.", "success");
+            window.showToast("Pedido enviado ao balcão com sucesso!", "success");
         } catch (e) {
             window.showToast("Erro ao enviar pedido: " + e.message, "error");
         } finally {
@@ -5599,20 +5667,109 @@
         }
     };
 
-    window.chamarGarcomQR = async function() {
+    window.chamarGarcomQR = function() {
+        const modal = document.getElementById('modalEscolherGarcomQR');
+        if (document.getElementById('qrGarcomMesaTitulo')) {
+            document.getElementById('qrGarcomMesaTitulo').innerText = qrClienteMesa;
+        }
+        window.renderizarListaGarconsQR();
+        if (modal) modal.style.display = 'block';
+    };
+
+    window.fecharModalEscolherGarcomQR = function() {
+        const modal = document.getElementById('modalEscolherGarcomQR');
+        if (modal) modal.style.display = 'none';
+    };
+
+    window.obterMesasAbertasGarcomQR = function(nomeGarcom) {
+        const alvo = (nomeGarcom || '').trim().toLowerCase();
+        if (!alvo) return [];
+        const mesasAbertas = new Set();
+
+        for (const mesa in qrBloqueiosMesas) {
+            if (mesa === 'Balcão') continue;
+            const resp = (qrBloqueiosMesas[mesa] || '').trim().toLowerCase();
+            if (resp === alvo) mesasAbertas.add(mesa);
+        }
+
+        for (const mesa in qrMesasCarrinhos) {
+            if (mesa === 'Balcão') continue;
+            const info = qrMesasCarrinhos[mesa];
+            if (info && typeof info === 'object' && !Array.isArray(info)) {
+                const resp = (info.operador || '').trim().toLowerCase();
+                const temItens = Array.isArray(info.itens) && info.itens.length > 0;
+                if (resp === alvo && temItens) mesasAbertas.add(mesa);
+            }
+        }
+
+        return Array.from(mesasAbertas);
+    };
+
+    window.renderizarListaGarconsQR = function() {
+        const container = document.getElementById('qrListaGarconsContainer');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (!qrListaGarcons || qrListaGarcons.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:16px; color:var(--text-muted);">
+                    <p style="margin-bottom:12px;">Nenhum garçom específico registado. Pode enviar uma chamada geral ao balcão.</p>
+                    <button type="button" class="btn-warning" onclick="window.confirmarChamadaGarcomQR('Balcão / Geral', false)">Chamar Atendimento Geral</button>
+                </div>
+            `;
+            return;
+        }
+
+        qrListaGarcons.forEach(u => {
+            const nome = u.nome;
+            const mesasAbertas = window.obterMesasAbertasGarcomQR(nome);
+            const isOcupado = mesasAbertas.length > 0;
+
+            const avatarHtml = u.foto
+                ? `<img src="${u.foto}" alt="${nome}" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid ${isOcupado ? 'var(--warning)' : 'var(--success)'}; flex-shrink:0;">`
+                : `<div style="width:44px; height:44px; border-radius:50%; background:${isOcupado ? 'var(--warning)' : 'var(--primary)'}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; flex-shrink:0;">${nome.charAt(0).toUpperCase()}</div>`;
+
+            const badgeStatus = isOcupado
+                ? `<span class="badge" style="background:var(--warning-soft); color:#b45309; border:1px solid #fde68a;">Ocupado (${mesasAbertas.join(', ')})</span>`
+                : `<span class="badge badge-entrada">Disponível</span>`;
+
+            const card = document.createElement('div');
+            card.style.cssText = `display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-radius:14px; border:1.5px solid ${isOcupado ? '#fde68a' : 'var(--border)'}; background:var(--surface-sub);`;
+            card.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+                    ${avatarHtml}
+                    <div style="min-width:0;">
+                        <div style="font-weight:800; font-size:0.98em; text-transform:uppercase; color:var(--dark);">${nome}</div>
+                        <div style="margin-top:4px;">${badgeStatus}</div>
+                    </div>
+                </div>
+                <button type="button" class="${isOcupado ? 'btn-warning' : 'btn-success'} btn-sm" style="white-space:nowrap;" onclick="window.confirmarChamadaGarcomQR('${nome.replace(/'/g, "\\'")}', ${isOcupado})">Chamar</button>
+            `;
+            container.appendChild(card);
+        });
+    };
+
+    window.confirmarChamadaGarcomQR = async function(nomeGarcom, isOcupado = false) {
         if (!window.iniciarProcessamento()) return;
         try {
+            const obsTexto = isOcupado
+                ? `Cliente chamou o garçom ${nomeGarcom.toUpperCase()} (atualmente ocupado noutra mesa)`
+                : `Cliente chamou o garçom ${nomeGarcom.toUpperCase()}`;
+
             await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
                 tipo: "chamada",
                 status: "pendente",
                 mesa: qrClienteMesa,
+                garcomDestino: nomeGarcom,
+                garcomOcupado: isOcupado,
                 itens: [],
-                observacao: "Cliente solicitou atendimento na mesa",
+                observacao: obsTexto,
                 total: 0,
                 timestamp: Date.now(),
                 data: new Date().toLocaleTimeString('pt-MZ', { hour: '2-digit', minute: '2-digit' })
             });
-            window.showToast(`Chamada enviada! Um atendente vai dirigir-se à ${qrClienteMesa}.`, "success");
+            window.fecharModalEscolherGarcomQR();
+            window.showToast(`Chamada enviada para ${nomeGarcom.toUpperCase()}! Aguarde na ${qrClienteMesa}.`, "success");
         } catch (e) {
             window.showToast("Erro ao chamar garçom: " + e.message, "error");
         } finally {
@@ -5644,16 +5801,20 @@
         } else {
             pedidosQR.forEach(p => {
                 const isChamada = p.tipo === 'chamada';
+                const garcomInfo = p.garcomDestino
+                    ? `<div style="font-size:0.84em; font-weight:800; color:var(--purple); margin-bottom:6px;">Garçom Escolhido: ${p.garcomDestino.toUpperCase()} ${p.garcomOcupado ? '(Ocupado)' : ''}</div>`
+                    : '';
                 const itensHtml = isChamada
-                    ? `<div style="font-weight:700; color:var(--warning-dark);">Cliente solicitou o garçom na mesa.</div>`
+                    ? `<div style="font-weight:700; color:var(--warning-dark);">${p.observacao || 'Cliente solicitou o garçom na mesa.'}</div>`
                     : (p.itens || []).map(i => `<div>• <b>${i.qtd}x</b> ${i.produto} (${(i.subtotal || 0).toFixed(2)} MT)</div>`).join('');
 
                 lista.innerHTML += `
                     <div style="background:var(--surface-sub); border:1.5px solid var(--border); border-radius:14px; padding:14px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                             <span style="font-weight:800; font-size:1.05em; color:var(--primary);">${p.mesa}</span>
                             <span class="badge">${p.data || ''}</span>
                         </div>
+                        ${garcomInfo}
                         <div style="font-size:0.9em; margin-bottom:8px;">${itensHtml}</div>
                         ${p.observacao && !isChamada ? `<div style="font-size:0.82em; color:var(--warning-dark); margin-bottom:8px;"><b>Obs:</b> ${p.observacao}</div>` : ''}
                         <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px;">
