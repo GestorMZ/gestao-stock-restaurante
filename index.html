@@ -207,8 +207,9 @@
         .tab-btn:hover { background: var(--light); color: var(--text-main); transform: translateY(-1px); box-shadow: none; }
         .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28); }
 
-        .tab-content { display: none; animation: fadeIn 0.2s var(--ease-out-pro); flex: 1; min-height: 0; flex-direction: column; }
-        .tab-content.active { display: flex; }
+        .tab-content { display: none; animation: fadeIn 0.2s var(--ease-out-pro); flex: 1; min-height: 0; }
+        .tab-content.active { display: block; }
+        #abaVendas.tab-content.active { display: flex; flex-direction: column; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
@@ -1273,6 +1274,10 @@
                         </div>
 
                         <div class="zrest-totals-main">
+                            <span>Total a Pagar</span>
+                            <span id="cartTotalTexto" style="color:var(--primary);">0.00 MT</span>
+                        </div>
+
                         <!-- Campos Opcionais de NUIT / WhatsApp -->
                         <div style="display:flex; gap:6px; margin-bottom:8px;">
                             <input type="text" id="cartNuitCliente" placeholder="NUIT Cliente (Opcional)" style="flex:1; font-size:12px; padding:6px 9px;">
@@ -2716,7 +2721,12 @@
                     if (Array.isArray(dadosDoc.usuarios)) {
                         dadosDoc.usuarios.forEach(u => { 
                             if (u.nome) {
-                                let permissoesPadrao = u.permissoes || (u.tipo === 'admin' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard'] : (u.tipo === 'gerente' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock'] : ['abaVendas']));
+                                let todasAbas = ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard'];
+                                let permissoesPadrao = u.tipo === 'admin'
+                                    ? todasAbas
+                                    : ((Array.isArray(u.permissoes) && u.permissoes.length > 0)
+                                        ? u.permissoes
+                                        : (u.tipo === 'gerente' ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock'] : ['abaVendas']));
                                 usuarios[u.nome.toLowerCase()] = { 
                                     senha: u.senha || "123", 
                                     tipo: u.tipo || "vendedor", 
@@ -2726,17 +2736,13 @@
                             }
                         });
                     }
+                    renderizarPerfisLogin();
                 }
-                renderizarPerfisLogin();
-                if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
-            }, (error) => {
-                console.error("Erro no listener de usuários:", error);
-            });
+            }, (err) => console.error("Erro Utilizadores:", err));
             unsubscribes.push(unsubUser);
-            window.showToast("Estabelecimento vinculado com sucesso!", "success");
-        } catch (erro) { 
-            console.error("Erro ao validar licença/perfis:", erro);
-            window.showToast("Erro ao carregar perfis da empresa: " + (erro.message || erro), "error"); 
+        } catch (erro) {
+            console.error("Erro ao carregar empresa:", erro);
+            window.showToast("Erro ao validar licença: " + erro.message, "error");
         } finally {
             window.fimProcessamento();
         }
@@ -2963,7 +2969,10 @@
     };
 
     function configurarPerfilPermissoes() {
-        let abasDisponiveis = usuarioAtual.permissoes || ['abaVendas'];
+        let todasAbas = ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard'];
+        let abasDisponiveis = (usuarioAtual && usuarioAtual.tipo === 'admin')
+            ? todasAbas
+            : ((usuarioAtual && Array.isArray(usuarioAtual.permissoes) && usuarioAtual.permissoes.length > 0) ? usuarioAtual.permissoes : ['abaVendas']);
         const mapaAbas = {
             'abaVendas': 'navTabVendas',
             'abaCaixa': 'navTabCaixa',
@@ -2991,7 +3000,8 @@
     }
 
     window.mudarAba = function(abaId, evt) {
-        if (usuarioAtual && usuarioAtual.permissoes && !usuarioAtual.permissoes.includes(abaId)) {
+        let isAdmin = usuarioAtual && usuarioAtual.tipo === 'admin';
+        if (!isAdmin && usuarioAtual && Array.isArray(usuarioAtual.permissoes) && !usuarioAtual.permissoes.includes(abaId)) {
             return window.showToast("Acesso restrito a esta aba pelo Administrador.", "error");
         }
 
@@ -3005,7 +3015,7 @@
         let abaElement = document.getElementById(abaId);
         if (abaElement) abaElement.classList.add('active');
         if(abaId === 'abaDashboard') window.atualizarDashboard();
-        if(abaId === 'abaUsuarios' && usuarioAtual && usuarioAtual.tipo === 'admin') renderizarUsuarios();
+        if(abaId === 'abaUsuarios' && isAdmin) renderizarUsuarios();
     };
 
     function processarFotoAvatar(file, callback) {
@@ -3966,6 +3976,230 @@
             prepararEImprimirRecibo(ultimaVenda);
         } else {
             window.showToast("Adicione produtos ou finalize uma venda para imprimir o recibo.", "warning");
+        }
+    };
+
+    function prepararEImprimirRecibo(venda) {
+        if (!venda) return;
+        let boxRecibo = document.getElementById('conteudoReciboFiscal');
+        let boxCozinha = document.getElementById('conteudoGuiaCozinha');
+        if (boxRecibo) boxRecibo.style.display = 'block';
+        if (boxCozinha) boxCozinha.style.display = 'none';
+
+        document.getElementById('reciboNomeEmpresa').innerText = (dadosEmpresa.nome || codigoEmpresa || "RESTAURANTE").toUpperCase();
+        document.getElementById('reciboNuit').innerText = dadosEmpresa.nuit ? `NUIT: ${dadosEmpresa.nuit}` : "NUIT: ---";
+        document.getElementById('reciboEndereco').innerText = dadosEmpresa.endereco || "";
+        document.getElementById('reciboTelefone').innerText = dadosEmpresa.telefone ? `Tel: ${dadosEmpresa.telefone}` : "";
+        document.getElementById('reciboTipoTituloDisplay').innerText = venda.isPreConta ? "PRÉ-CONTA / CONFERÊNCIA DE MESA" : "COMPROVATIVO DE VENDA (VD)";
+        document.getElementById('reciboData').innerText = venda.data || new Date().toLocaleString('pt-MZ');
+        document.getElementById('reciboMesa').innerText = venda.mesa || "Balcão";
+        document.getElementById('reciboVendedor').innerText = (venda.usuario || (usuarioAtual ? usuarioAtual.nome : "-")).toUpperCase();
+        document.getElementById('reciboNuitClienteDisplay').innerText = venda.nuitCliente || "Consumidor Final";
+        document.getElementById('reciboMetodo').innerText = venda.metodo || "Numerário";
+
+        let divItens = document.getElementById('reciboItens');
+        divItens.innerHTML = '';
+        (venda.itens || []).forEach(item => {
+            divItens.innerHTML += `<div style="display:flex; justify-content:space-between; margin:3px 0;">
+                <span>${item.qtd}x ${item.produto}</span>
+                <span>${(item.subtotal || 0).toFixed(2)} MT</span>
+            </div>`;
+        });
+
+        let total = venda.totalVenda || 0;
+        let desconto = venda.desconto || 0;
+        document.getElementById('reciboDesconto').innerText = desconto.toFixed(2);
+        document.getElementById('reciboDescontoRow').style.display = desconto > 0 ? 'block' : 'none';
+
+        let aplicarIva = dadosEmpresa.aplicarIva === 'sim' && (dadosEmpresa.taxaIva || 0) > 0;
+        if (aplicarIva) {
+            let taxa = parseFloat(dadosEmpresa.taxaIva) || 16;
+            let subLiq = total / (1 + (taxa / 100));
+            let valIva = total - subLiq;
+            document.getElementById('reciboSubtotalLiq').innerText = subLiq.toFixed(2);
+            document.getElementById('reciboTaxaIvaValor').innerText = taxa;
+            document.getElementById('reciboValIva').innerText = valIva.toFixed(2);
+            document.getElementById('reciboSubtotalRow').style.display = 'block';
+            document.getElementById('reciboIvaRow').style.display = 'block';
+        } else {
+            document.getElementById('reciboSubtotalRow').style.display = 'none';
+            document.getElementById('reciboIvaRow').style.display = 'none';
+        }
+
+        document.getElementById('reciboTotal').innerText = total.toFixed(2);
+        document.getElementById('reciboValorEntregue').innerText = (venda.valorEntregue || total).toFixed(2);
+        document.getElementById('reciboTroco').innerText = (venda.troco || 0).toFixed(2);
+        document.getElementById('reciboSlogan').innerText = dadosEmpresa.slogan || "Obrigado pela preferência!";
+
+        setTimeout(() => { window.print(); }, 100);
+    }
+    window.prepararEImprimirRecibo = prepararEImprimirRecibo;
+
+    window.imprimirGuiaCozinha = function() {
+        let carrinhoAtual = mesas[mesaSelecionada] || [];
+        if (carrinhoAtual.length === 0) return window.showToast("O carrinho está vazio!", "warning");
+
+        let boxRecibo = document.getElementById('conteudoReciboFiscal');
+        let boxCozinha = document.getElementById('conteudoGuiaCozinha');
+        if (boxRecibo) boxRecibo.style.display = 'none';
+        if (boxCozinha) boxCozinha.style.display = 'block';
+
+        document.getElementById('cozinhaMesa').innerText = mesaSelecionada;
+        document.getElementById('cozinhaData').innerText = new Date().toLocaleString('pt-MZ');
+        let divCozinha = document.getElementById('cozinhaItens');
+        divCozinha.innerHTML = '';
+        carrinhoAtual.forEach(item => {
+            divCozinha.innerHTML += `<div style="margin:5px 0;">[ ] ${item.qtd}x ${item.produto}</div>`;
+        });
+
+        if (bluetoothCharacteristic) {
+            let txt = "\x1B\x40\x1B\x61\x01PEDIDO DE COZINHA\n";
+            txt += `MESA: ${mesaSelecionada}\n${new Date().toLocaleString('pt-MZ')}\n--------------------------------\n\x1B\x61\x00`;
+            carrinhoAtual.forEach(i => { txt += `${i.qtd}x ${i.produto}\n`; });
+            txt += "--------------------------------\n\n\n";
+            enviarTextoBluetooth(txt);
+        }
+
+        setTimeout(() => {
+            window.print();
+            if (boxRecibo) boxRecibo.style.display = 'block';
+            if (boxCozinha) boxCozinha.style.display = 'none';
+        }, 100);
+    };
+
+    window.calcularPrecosEntrada = function() {
+        let modo = document.getElementById('simplesModoCompra')?.value || 'unidade';
+        let rowCaixa = document.getElementById('rowModoCaixa');
+        let rowUnidade = document.getElementById('rowModoUnidade');
+        if (rowCaixa) rowCaixa.style.display = (modo === 'caixa') ? 'flex' : 'none';
+        if (rowUnidade) rowUnidade.style.display = (modo === 'unidade') ? 'flex' : 'none';
+
+        let totalUnid = 0;
+        let custoTotal = 0;
+        if (modo === 'caixa') {
+            let caixas = parseFloat(document.getElementById('qtdCaixas')?.value) || 0;
+            let unidPorCaixa = parseFloat(document.getElementById('unidPorCaixa')?.value) || 0;
+            let precoCaixa = parseFloat(document.getElementById('precoCaixa')?.value) || 0;
+            totalUnid = caixas * unidPorCaixa;
+            custoTotal = caixas * precoCaixa;
+        } else {
+            totalUnid = parseFloat(document.getElementById('simplesQtd')?.value) || 0;
+            let custoUnitIn = parseFloat(document.getElementById('simplesPrecoCusto')?.value) || 0;
+            custoTotal = totalUnid * custoUnitIn;
+        }
+
+        let custoUnit = totalUnid > 0 ? (custoTotal / totalUnid) : 0;
+        let precoVenda = parseFloat(document.getElementById('simplesPrecoVendaUnit')?.value) || 0;
+        let lucroUnit = precoVenda - custoUnit;
+        let lucroTotal = lucroUnit * totalUnid;
+
+        let box = document.getElementById('boxCalculoLucro');
+        if (box) {
+            if (totalUnid > 0 && precoVenda > 0) {
+                box.style.display = 'block';
+                document.getElementById('resTotalUnid').innerText = totalUnid;
+                document.getElementById('resCustoUnit').innerText = custoUnit.toFixed(2);
+                document.getElementById('resLucroUnit').innerText = lucroUnit.toFixed(2) + " MT";
+                document.getElementById('resLucroTotalCaixa').innerText = lucroTotal.toFixed(2) + " MT";
+            } else {
+                box.style.display = 'none';
+            }
+        }
+    };
+
+    window.salvarEntradaStock = async function() {
+        let nomeBase = document.getElementById('simplesProduto').value.trim();
+        if (!nomeBase) return window.showToast("Introduza o nome do produto!", "warning");
+
+        let tamanho = document.getElementById('simplesTamanho').value;
+        let cor = document.getElementById('simplesCor').value.trim();
+        let extras = [tamanho, cor].filter(Boolean).join(' - ');
+        let nomeProduto = extras ? `${nomeBase} (${extras})` : nomeBase;
+
+        let barcode = document.getElementById('simplesBarcode').value.trim();
+        let categoria = document.getElementById('simplesCategoria').value || 'bebidas';
+        let iconeManual = document.getElementById('simplesIconeManual').value || 'auto';
+        let iconeFinal = iconeManual === 'auto' ? window.detetarIconeProduto(nomeProduto, categoria) : iconeManual;
+
+        let modo = document.getElementById('simplesModoCompra').value;
+        let qtdAdicionar = 0;
+        let custoTotalLote = 0;
+
+        if (modo === 'caixa') {
+            let caixas = parseFloat(document.getElementById('qtdCaixas').value) || 0;
+            let unidPorCaixa = parseFloat(document.getElementById('unidPorCaixa').value) || 0;
+            let precoCaixa = parseFloat(document.getElementById('precoCaixa').value) || 0;
+            qtdAdicionar = caixas * unidPorCaixa;
+            custoTotalLote = caixas * precoCaixa;
+        } else {
+            qtdAdicionar = parseFloat(document.getElementById('simplesQtd').value) || 0;
+            let custoUnitIn = parseFloat(document.getElementById('simplesPrecoCusto').value) || 0;
+            custoTotalLote = qtdAdicionar * custoUnitIn;
+        }
+
+        let precoVenda = parseFloat(document.getElementById('simplesPrecoVendaUnit').value);
+        let minAlerta = parseInt(document.getElementById('simplesMinAlerta').value) || 2;
+
+        if (qtdAdicionar <= 0) return window.showToast("A quantidade deve ser maior que zero!", "warning");
+        if (isNaN(precoVenda) || precoVenda < 0) return window.showToast("Defina um preço de venda válido!", "warning");
+
+        if (!window.iniciarProcessamento()) return;
+
+        try {
+            let existente = stock[nomeProduto];
+            let custoUnitNovo = custoTotalLote / qtdAdicionar;
+
+            if (existente) {
+                let qtdAntiga = existente.qtd || 0;
+                let valorStockAntigo = qtdAntiga * (existente.custoMedio || 0);
+                let novaQtdTotal = qtdAntiga + qtdAdicionar;
+                let novoCustoMedio = novaQtdTotal > 0 ? ((valorStockAntigo + custoTotalLote) / novaQtdTotal) : custoUnitNovo;
+                let invAnterior = (typeof existente.investidoTotal === 'number') ? existente.investidoTotal : valorStockAntigo;
+
+                stock[nomeProduto] = {
+                    ...existente,
+                    qtd: novaQtdTotal,
+                    custoMedio: novoCustoMedio,
+                    precoVendaUnit: precoVenda,
+                    minAlerta: minAlerta,
+                    categoria: categoria,
+                    barcode: barcode || existente.barcode || "",
+                    icone: iconeFinal,
+                    investidoTotal: invAnterior + custoTotalLote
+                };
+            } else {
+                stock[nomeProduto] = {
+                    qtd: qtdAdicionar,
+                    custoMedio: custoUnitNovo,
+                    precoVendaUnit: precoVenda,
+                    minAlerta: minAlerta,
+                    categoria: categoria,
+                    barcode: barcode,
+                    icone: iconeFinal,
+                    investidoTotal: custoTotalLote
+                };
+            }
+
+            await salvarStockFirestore({ [nomeProduto]: stock[nomeProduto] });
+            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), {
+                id: Date.now(), timestamp: Date.now(), data: new Date().toLocaleString('pt-MZ'),
+                tipo: 'ENTRADA', produto: nomeProduto, qtd: qtdAdicionar, usuario: usuarioAtual.nome, origem: 'Entrada de Stock'
+            });
+            registarAuditLog('Entrada de Stock', `+${qtdAdicionar} un de '${nomeProduto}'`);
+
+            document.getElementById('simplesProduto').value = '';
+            document.getElementById('simplesCor').value = '';
+            document.getElementById('simplesBarcode').value = '';
+            document.getElementById('simplesQtd').value = '1';
+            document.getElementById('simplesPrecoCusto').value = '';
+            document.getElementById('simplesPrecoVendaUnit').value = '';
+            document.getElementById('boxCalculoLucro').style.display = 'none';
+
+            window.showToast(`Stock de '${nomeProduto}' atualizado (+${qtdAdicionar} un)!`, "success");
+        } catch (e) {
+            window.showToast("Erro ao guardar stock: " + e.message, "error");
+        } finally {
+            window.fimProcessamento();
         }
     };
 
