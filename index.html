@@ -1197,6 +1197,12 @@
                         </button>
                     </div>
 
+                    <!-- Aviso de Bloqueio de Mesa por Responsável -->
+                    <div id="alertaMesaBloqueadaCarrinho" style="display:none; background:var(--warning-soft); border-bottom:1.5px solid #fde68a; color:#b45309; padding:8px 14px; font-size:12px; font-weight:700; align-items:center; gap:8px;">
+                        <svg class="icon-svg" style="width:16px; height:16px; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span id="textoMesaBloqueadaCarrinho">Mesa em uso por outro perfil.</span>
+                    </div>
+
                     <!-- Área Oculta para Adição Manual se necessário -->
                     <div style="display:none;">
                         <select id="cartSelectProduto"></select>
@@ -1300,7 +1306,7 @@
                             </button>
                         </div>
 
-                        <button class="zrest-pay-btn" onclick="window.finalizarVendaCarrinho()">
+                        <button id="btnFinalizarCobrarPOS" class="zrest-pay-btn" onclick="window.finalizarVendaCarrinho()">
                             <span>Finalizar & Cobrar</span>
                             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                         </button>
@@ -2764,20 +2770,22 @@
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
             bloqueiosMesas = docSnap.exists() ? docSnap.data() : {};
-            if (usuarioAtual) renderizarMesasGrid();
+            if (usuarioAtual) { renderizarMesasGrid(); window.renderizarCarrinho(); }
         }, (err) => console.error("Erro Bloqueios:", err)));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
-            if (docSnap.exists()) {
-                let dadosMesasRemotas = docSnap.data();
-                for(let m in dadosMesasRemotas) {
-                    if(m !== "Balcão") {
-                        let infoMesa = dadosMesasRemotas[m];
-                        if (Array.isArray(infoMesa)) { mesas[m] = infoMesa; } 
-                        else if (infoMesa && typeof infoMesa === 'object') {
-                            mesas[m] = infoMesa.itens || [];
-                            if (infoMesa.operador && !bloqueiosMesas[m]) bloqueiosMesas[m] = infoMesa.operador;
-                        }
+            let dadosMesasRemotas = docSnap.exists() ? docSnap.data() : {};
+            for (let m in mesas) {
+                if (m === "Balcão") continue;
+                let infoMesa = dadosMesasRemotas[m];
+                if (!infoMesa) {
+                    mesas[m] = [];
+                } else if (Array.isArray(infoMesa)) {
+                    mesas[m] = infoMesa;
+                } else if (typeof infoMesa === 'object') {
+                    mesas[m] = infoMesa.itens || [];
+                    if (infoMesa.operador && !bloqueiosMesas[m]) {
+                        bloqueiosMesas[m] = infoMesa.operador;
                     }
                 }
             }
@@ -2915,6 +2923,9 @@
             document.getElementById('telaLogin').style.display = 'none';
             document.getElementById('telaSistema').style.display = 'flex';
             document.body.classList.add('sistema-ativo');
+
+            mesaSelecionada = "Balcão";
+            if (document.getElementById('labelMesaAtual')) document.getElementById('labelMesaAtual').innerText = "Balcão";
             
             iniciarEscutadoresCompletosEmpresa();
             configurarPerfilPermissoes();
@@ -2937,6 +2948,8 @@
         if(usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
         if(timerInatividade) clearTimeout(timerInatividade);
         usuarioAtual = null;
+        mesaSelecionada = "Balcão";
+        if (document.getElementById('labelMesaAtual')) document.getElementById('labelMesaAtual').innerText = "Balcão";
         desconectarEscutadores();
         document.body.classList.remove('sistema-ativo');
         document.getElementById('telaSistema').style.display = 'none';
@@ -3585,6 +3598,19 @@
         if(opt && opt.value) document.getElementById('cartPrecoUnit').value = opt.getAttribute('data-preco');
     };
 
+    window.verificarPermissaoMesa = function(nomeMesa = mesaSelecionada) {
+        if (!usuarioAtual || !nomeMesa || nomeMesa === "Balcão") {
+            return { bloqueada: false, responsavel: usuarioAtual ? usuarioAtual.nome : "" };
+        }
+        let itens = mesas[nomeMesa] || [];
+        let operadorDono = (bloqueiosMesas[nomeMesa] || "").trim();
+        let emUso = itens.length > 0 && operadorDono !== "";
+        if (emUso && operadorDono.toLowerCase() !== usuarioAtual.nome.toLowerCase()) {
+            return { bloqueada: true, responsavel: operadorDono };
+        }
+        return { bloqueada: false, responsavel: operadorDono || usuarioAtual.nome };
+    };
+
     async function sincronizarMesaRemota(nomeMesa) {
         if(!codigoEmpresa || nomeMesa === "Balcão") return;
         let itens = mesas[nomeMesa] || [];
@@ -3594,9 +3620,10 @@
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [nomeMesa]: deleteField() }, { merge: true });
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [nomeMesa]: deleteField() }, { merge: true });
             } else {
-                bloqueiosMesas[nomeMesa] = usuarioAtual.nome;
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [nomeMesa]: usuarioAtual.nome }, { merge: true });
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [nomeMesa]: { itens: itens, operador: usuarioAtual.nome } }, { merge: true });
+                let donoResponsavel = bloqueiosMesas[nomeMesa] || usuarioAtual.nome;
+                bloqueiosMesas[nomeMesa] = donoResponsavel;
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [nomeMesa]: donoResponsavel }, { merge: true });
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [nomeMesa]: { itens: itens, operador: donoResponsavel } }, { merge: true });
             }
         } catch(e) {}
     }
@@ -3610,26 +3637,31 @@
             let itensCount = (mesas[m] || []).length;
             let ocupada = itensCount > 0;
             let sel = (m === mesaSelecionada) ? 'selecionada' : '';
+            let perm = window.verificarPermissaoMesa(m);
+            let bloqueadaOutro = perm.bloqueada;
             let operadorDono = bloqueiosMesas[m] || "";
-            let bloqueadaOutro = ocupada && operadorDono && operadorDono !== usuarioAtual.nome && usuarioAtual.tipo !== 'admin' && usuarioAtual.tipo !== 'gerente';
             
             let stClass = bloqueadaOutro ? 'bloqueada' : (ocupada ? 'ocupada' : '');
-            let badgeTexto = bloqueadaOutro ? `${operadorDono.toUpperCase()}` : (ocupada ? `${itensCount} un` : 'Livre');
+            let badgeTexto = bloqueadaOutro
+                ? `Bloq: ${operadorDono.toUpperCase()}`
+                : (ocupada ? `Sua (${itensCount} un)` : 'Livre');
 
             let div = document.createElement('div');
             div.className = `zrest-mesa-card ${stClass} ${sel}`;
+            if (bloqueadaOutro) {
+                div.title = `Mesa em uso por ${operadorDono.toUpperCase()} — Acesso bloqueado`;
+            }
             div.onclick = () => window.selecionarMesa(m);
-            div.innerHTML = `<div>${m}</div><div style="font-size:0.75em; opacity:0.85; font-weight:600; margin-top:2px;">${badgeTexto}</div>`;
+            div.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:4px;">${bloqueadaOutro ? '<svg style="width:12px; height:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' : ''}<span>${m}</span></div><div style="font-size:0.74em; opacity:0.9; font-weight:700; margin-top:2px;">${badgeTexto}</div>`;
             grid.appendChild(div);
         }
     }
 
     window.selecionarMesa = function(m) {
         if (m !== "Balcão") {
-            let operadorDono = bloqueiosMesas[m] || "";
-            let temItens = mesas[m] && mesas[m].length > 0;
-            if (temItens && operadorDono && operadorDono !== usuarioAtual.nome && usuarioAtual.tipo !== 'admin' && usuarioAtual.tipo !== 'gerente') {
-                return window.showToast(`Esta mesa está a ser atendida por ${operadorDono.toUpperCase()}.`, "warning");
+            let perm = window.verificarPermissaoMesa(m);
+            if (perm.bloqueada) {
+                return window.showToast(`Acesso bloqueado! A ${m} está em uso pelo perfil ${perm.responsavel.toUpperCase()}.`, "error");
             }
         }
         window.tocarSom('click');
@@ -3664,6 +3696,11 @@
             return window.showToast("O CAIXA ENCONTRA-SE FECHADO! Abra o caixa primeiro.", "error"); 
         }
 
+        let permMesa = window.verificarPermissaoMesa(mesaSelecionada);
+        if (permMesa.bloqueada) {
+            return window.showToast(`Acesso bloqueado! A ${mesaSelecionada} pertence ao perfil ${permMesa.responsavel.toUpperCase()}.`, "error");
+        }
+
         let produto = produtoParam || document.getElementById('cartSelectProduto').value;
         let qtd = qtdParam !== null ? parseFloat(qtdParam) : parseFloat(document.getElementById('cartQtd').value);
         let precoUnit = produtoParam ? (stock[produto]?.precoVendaUnit || 0) : parseFloat(document.getElementById('cartPrecoUnit').value);
@@ -3681,6 +3718,10 @@
 
             window.tocarSom('click');
             stock[produto].qtd -= qtd;
+
+            if (mesaSelecionada !== "Balcão" && !bloqueiosMesas[mesaSelecionada]) {
+                bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+            }
 
             let carrinhoAtual = mesas[mesaSelecionada] || [];
             let existente = carrinhoAtual.find(i => i.produto === produto && i.vendaUnit === precoUnit);
@@ -3702,6 +3743,11 @@
 
     // Controlo Rápido de Quantidade [- 2 +] dentro do Carrinho
     window.alterarQtdItemCarrinho = async function(idx, delta) {
+        let permMesa = window.verificarPermissaoMesa(mesaSelecionada);
+        if (permMesa.bloqueada) {
+            return window.showToast(`Acesso bloqueado! Apenas ${permMesa.responsavel.toUpperCase()} pode alterar itens desta mesa.`, "error");
+        }
+
         let carrinhoAtual = mesas[mesaSelecionada] || [];
         let item = carrinhoAtual[idx];
         if (!item) return;
@@ -3729,6 +3775,11 @@
     };
 
     window.removerItemCarrinho = async function(idx) {
+        let permMesa = window.verificarPermissaoMesa(mesaSelecionada);
+        if (permMesa.bloqueada) {
+            return window.showToast(`Acesso bloqueado! Apenas ${permMesa.responsavel.toUpperCase()} pode eliminar itens desta mesa.`, "error");
+        }
+
         let carrinhoAtual = mesas[mesaSelecionada] || [];
         let item = carrinhoAtual[idx];
         if (!item) return;
@@ -3754,6 +3805,28 @@
         let carrinhoAtual = mesas[mesaSelecionada] || [];
         let bruto = 0;
 
+        let permMesa = window.verificarPermissaoMesa(mesaSelecionada);
+        let alertaBloq = document.getElementById('alertaMesaBloqueadaCarrinho');
+        let txtBloq = document.getElementById('textoMesaBloqueadaCarrinho');
+        let btnCobrar = document.getElementById('btnFinalizarCobrarPOS');
+
+        if (permMesa.bloqueada) {
+            if (alertaBloq) alertaBloq.style.display = 'flex';
+            if (txtBloq) txtBloq.innerText = `${mesaSelecionada} em uso por ${permMesa.responsavel.toUpperCase()} — Acesso bloqueado para editar ou cobrar.`;
+            if (btnCobrar) {
+                btnCobrar.disabled = true;
+                btnCobrar.style.opacity = '0.5';
+                btnCobrar.style.cursor = 'not-allowed';
+            }
+        } else {
+            if (alertaBloq) alertaBloq.style.display = 'none';
+            if (btnCobrar) {
+                btnCobrar.disabled = false;
+                btnCobrar.style.opacity = '1';
+                btnCobrar.style.cursor = 'pointer';
+            }
+        }
+
         if(carrinhoAtual.length === 0) {
             container.innerHTML = `<div style="text-align:center; padding:34px 12px; color:var(--text-muted); font-size:0.88em; font-weight:600;">Carrinho vazio.<br>Toque num produto ao lado para adicionar.</div>`;
         } else {
@@ -3761,18 +3834,25 @@
                 bruto += (item.subtotal || 0);
                 let row = document.createElement('div');
                 row.className = 'zrest-cart-item-row';
+                let controlesHtml = permMesa.bloqueada
+                    ? `<span class="badge" style="background:var(--warning-soft); color:#b45309;">${item.qtd}x (Bloq.)</span>`
+                    : `<div class="cart-qty-stepper">
+                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, -1)">-</button>
+                        <span class="cart-qty-val">${item.qtd}</span>
+                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, 1)">+</button>
+                    </div>`;
+                let deleteBtnHtml = permMesa.bloqueada
+                    ? ''
+                    : `<button type="button" class="zrest-cart-item-delete" onclick="window.removerItemCarrinho(${idx})" title="Remover item">✕</button>`;
+
                 row.innerHTML = `
                     <div class="zrest-cart-item-info">
                         <div class="zrest-cart-item-name">${item.produto}</div>
                         <div class="zrest-cart-item-meta">${(item.vendaUnit || 0).toFixed(2)} MT / un</div>
                     </div>
-                    <div class="cart-qty-stepper">
-                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, -1)">-</button>
-                        <span class="cart-qty-val">${item.qtd}</span>
-                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, 1)">+</button>
-                    </div>
+                    ${controlesHtml}
                     <div class="zrest-cart-item-price">${(item.subtotal || 0).toFixed(2)} MT</div>
-                    <button type="button" class="zrest-cart-item-delete" onclick="window.removerItemCarrinho(${idx})" title="Remover item">✕</button>
+                    ${deleteBtnHtml}
                 `;
                 container.appendChild(row);
             });
@@ -3847,6 +3927,10 @@
 
     window.finalizarVendaCarrinho = async function() {
         if(!caixaEstado.aberto) return window.showToast("O Caixa está fechado! Abra o caixa primeiro.", "error");
+        let permMesa = window.verificarPermissaoMesa(mesaSelecionada);
+        if (permMesa.bloqueada) {
+            return window.showToast(`Acesso bloqueado! Apenas o perfil ${permMesa.responsavel.toUpperCase()} pode finalizar vendas da ${mesaSelecionada}.`, "error");
+        }
         let carrinhoAtual = mesas[mesaSelecionada] || [];
         if(carrinhoAtual.length === 0) return window.showToast("O carrinho está vazio!", "warning");
 
