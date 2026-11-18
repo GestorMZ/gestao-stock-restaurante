@@ -397,34 +397,32 @@
             word-break: break-word;
         }
 .zrest-prod-icon {
-    width: 68px;
-    height: 68px;
-    margin: 0 auto 6px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 14px;
-    padding: 4px;
-    transition: transform 0.2s var(--ease-out-pro);
-}
-.zrest-prod-icon svg {
-    width: 58px;
-    height: 58px;
-}
-.zrest-product-card:hover .zrest-prod-icon {
-    transform: scale(1.1);
-}
-.zrest-prod-img {
+            width: 68px;
+            height: 68px;
+            margin: 0 auto 6px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            padding: 4px;
+            transition: transform 0.2s var(--ease-out-pro);
+        }
+        .zrest-prod-icon svg {
+            width: 58px;
+            height: 58px;
+        }
+        .zrest-prod-img {
             width: 68px;
             height: 68px;
             margin: 0 auto 6px auto;
             object-fit: contain;
-            border-radius: 10px;
+            border-radius: 12px;
             background: #ffffff;
             padding: 4px;
             border: 1px solid var(--border);
             transition: transform 0.2s var(--ease-out-pro);
         }
+        .zrest-product-card:hover .zrest-prod-icon,
         .zrest-product-card:hover .zrest-prod-img {
             transform: scale(1.08);
         }
@@ -1647,8 +1645,60 @@
     const app = initializeApp(fbConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-// ----- BIBLIOTECA INTERNA DE ÍCONES DE BEBIDAS E PRODUTOS -----
+// ----- MOTOR VISUAL DE MARCAS MOÇAMBICANAS & PRODUTOS (OFFLINE & INSTANTÂNEO) -----
     const GS_BEBIDAS_ICONS = {
+        marca_2m: {
+            cor: "#b91c1c", bg: "#fef2f2",
+            svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#78350f"/><rect x="26" y="4" width="12" height="4" fill="#dc2626"/><rect x="22" y="26" width="20" height="20" rx="2" fill="#ffffff"/><circle cx="32" cy="36" r="8" fill="#dc2626"/><text x="32" y="39" font-family="Arial,sans-serif" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle">2M</text></svg>`
+        },
+        marca_laurentina_preta: {
+            cor: "#111827", bg: "#f3f4f6",
+            svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#1f2937"/><rect x="26" y="4" width="12" height="4" fill="#f59e0b"/><rect x="22" y="25" width="20" height="22" rx="2" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/><text x="32" y="35" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#fbbf24" text-anchor="middle">LAUREN</text><text x="32" y="42" font-family="Arial,sans-serif" font-weight="800" font-size="6" fill="#ffffff" text-anchor="middle">PRETA</text></svg>`
+        },
+        marca_laurentina_clara: {
+            cor: "#d97706", bg: "#fffbeb",
+            svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#92400e"/><rect x="26" y="4" width="12" height="4" fill="#fbbf24"/><rect x="22" y="25" width="20" height="22" rx="2" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/><text x="32" y="35" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#b45309" text-anchor="middle">LAUREN</text><text x="32" y="42" font-family="Arial,sans-serif" font-weight="800" font-size="6" fill="#dc2626" text-anchor="middle">CLARA</text></svg>`
+        },
+        marca_manica: {
+            cor: "#15803d", bg: "#f0fdf4",
+            svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#14532d"/><rect x="26" y="4" width="12" height="4" fill="#eab308"/><rect x="22" y="26" width="20" height="20" rx="2" fill="#facc15"/><text x="32" y="38" font-family="Arial,sans-serif" font-weight="900" font-size="7" fill="#14532d" text-anchor="middle">MANICA</text></svg>`
+        },
+        marca_heineken: {
+            cor: "#16a34a", bg: "#dcfce7",
+            svg: `<svg viewBox="0 0 64 64"><path d="M26 4h12v6l4 10v36a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V20l4-10V4z" fill="#16a34a"/><rect x="22" y="26" width="20" height="18" rx="9" fill="#ffffff"/><polygon points="32,28 33.5,32 37.5,32 34.2,34.5 35.5,38.5 32,36 28.5,38.5 29.8,34.5 26.5,32 30.5,32" fill="#dc2626"/><rect x="21" y="33" width="22" height="5" fill="#15803d"/><text x="32" y="37" font-family="Arial,sans-serif" font-weight="900" font-size="4.5" fill="#ffffff" text-anchor="middle">HEINEKEN</text></svg>`
+        },
+        marca_coca: {
+            cor: "#dc2626", bg: "#fee2e2",
+            svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#dc2626"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><rect x="20" y="55" width="24" height="3" rx="1" fill="#cbd5e1"/><path d="M18 32 Q32 26 46 32" stroke="#ffffff" stroke-width="2.5" fill="none"/><text x="32" y="42" font-family="Georgia,serif" font-style="italic" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle">Coca-Cola</text></svg>`
+        },
+        marca_fanta: {
+            cor: "#ea580c", bg: "#ffedd5",
+            svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#f97316"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><circle cx="32" cy="34" r="10" fill="#2563eb"/><text x="32" y="37" font-family="Arial,sans-serif" font-weight="900" font-size="8" fill="#ffffff" text-anchor="middle">FANTA</text></svg>`
+        },
+        marca_sprite: {
+            cor: "#059669", bg: "#d1fae5",
+            svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#10b981"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><polygon points="21,34 32,25 43,34 32,43" fill="#facc15"/><text x="32" y="36" font-family="Arial,sans-serif" font-weight="900" font-size="7.5" fill="#065f46" text-anchor="middle">SPRITE</text></svg>`
+        },
+        marca_sparletta: {
+            cor: "#16a34a", bg: "#dcfce7",
+            svg: `<svg viewBox="0 0 64 64"><rect x="18" y="10" width="28" height="46" rx="6" fill="#15803d"/><rect x="20" y="8" width="24" height="3" rx="1" fill="#cbd5e1"/><rect x="19" y="27" width="26" height="14" rx="3" fill="#ffffff"/><text x="32" y="36" font-family="Arial,sans-serif" font-weight="900" font-size="6.2" fill="#dc2626" text-anchor="middle">SPARLETTA</text></svg>`
+        },
+        marca_agua_mz: {
+            cor: "#0284c7", bg: "#e0f2fe",
+            svg: `<svg viewBox="0 0 64 64"><path d="M27 6h10v5l5 8v37a4 4 0 0 1-4 4H26a4 4 0 0 1-4-4V19l5-8V6z" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5"/><rect x="27" y="4" width="10" height="4" fill="#0284c7"/><rect x="22" y="27" width="20" height="16" fill="#0369a1"/><text x="32" y="37" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#ffffff" text-anchor="middle">ÁGUA</text></svg>`
+        },
+        marca_compal_santana: {
+            cor: "#d97706", bg: "#fef3c7",
+            svg: `<svg viewBox="0 0 64 64"><rect x="20" y="10" width="24" height="48" rx="3" fill="#f59e0b"/><polygon points="20,10 32,4 44,10" fill="#d97706"/><circle cx="32" cy="36" r="8" fill="#ea580c"/><text x="32" y="24" font-family="Arial,sans-serif" font-weight="900" font-size="6.5" fill="#ffffff" text-anchor="middle">SUMO</text></svg>`
+        },
+        marca_redbull: {
+            cor: "#1d4ed8", bg: "#dbeafe",
+            svg: `<svg viewBox="0 0 64 64"><rect x="21" y="8" width="22" height="50" rx="4" fill="#e2e8f0"/><polygon points="21,8 32,8 32,33 21,33" fill="#1e3a8a"/><polygon points="32,33 43,33 43,58 32,58" fill="#1e3a8a"/><circle cx="32" cy="33" r="5" fill="#facc15"/><text x="32" y="22" font-family="Arial,sans-serif" font-weight="900" font-size="5.5" fill="#dc2626" text-anchor="middle">RED BULL</text></svg>`
+        },
+        marca_whisky_mz: {
+            cor: "#92400e", bg: "#ffedd5",
+            svg: `<svg viewBox="0 0 64 64"><rect x="27" y="4" width="10" height="8" fill="#111827"/><rect x="20" y="12" width="24" height="46" rx="3" fill="#b45309"/><rect x="22" y="24" width="20" height="22" fill="#fef3c7" stroke="#92400e" stroke-width="1"/><text x="32" y="34" font-family="Arial,sans-serif" font-weight="900" font-size="6" fill="#dc2626" text-anchor="middle">WHISKY</text><text x="32" y="41" font-family="Arial,sans-serif" font-weight="800" font-size="5" fill="#111827" text-anchor="middle">RESERVA</text></svg>`
+        },
         cerveja_garrafa: {
             cor: "#d97706", bg: "#fef3c7",
             svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v3l2 4v11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9l2-4V2z"/><path d="M9 5h6"/><path d="M7 13h10"/></svg>`
@@ -1700,106 +1750,86 @@
     };
 
     const GS_REGRAS_BEBIDAS = [
-        // Cervejas Nacionais e Importadas (Garrafa)
-        { 
-            icon: "cerveja_garrafa", 
-            palavras: [
-                "2m", "dois eme", "manica", "laurentina", "laurentina preta", "laurentina clara", 
-                "impala", "txilar", "lite", "castle", "castelo", "heineken", "corona", 
-                "budweiser", "savanna", "hunters", "flying fish", "brutal fruit", "black label", 
-                "carling", "amstel", "stella", "sagres", "super bock", "cerveja", "mini", "550ml"
-            ] 
-        },
-        // Cerveja à Pressão / Balde
-        { 
-            icon: "cerveja_caneca", 
-            palavras: ["fino", "caneca", "imperial", "pressao", "chopp", "balde", "torre"] 
-        },
-        // Refrigerantes Locais e Latas
-        { 
-            icon: "refrigerante_lata", 
-            palavras: [
-                "coca", "coca-cola", "fanta", "sprite", "sparletta", "sparleto", "stoney", 
-                "schweppes", "twist", "creme soda", "pine nut", "iron brew", "mirinda", 
-                "pepsi", "7up", "lata", "refresco", "refrigerante", "gasosa", "2l", "1.5l", "pet"
-            ] 
-        },
-        // Energéticos Comuns em MZ
-        { 
-            icon: "energetico", 
-            palavras: ["red bull", "dragon", "monster", "score", "power", "booster", "play", "energetico", "switch"] 
-        },
-        // Águas Minerais de Moçambique
-        { 
-            icon: "agua_garrafa", 
-            palavras: ["agua", "vumba", "namaacha", "fonte", "mineral", "tonica", "soda", "aquavita", "pura"] 
-        },
-        // Vinhos (Portugueses / Sul-Africanos comuns em MZ)
-        { 
-            icon: "vinho_garrafa", 
-            palavras: [
-                "vinho", "tinto", "branco", "rose", "espumante", "champanhe", "casal garcia", 
-                "periquita", "papa figos", "esteva", "monte velho", "borba", "alentejo", 
-                "four cousins", "drostdy", "robertson", "nederburg", "taca", "garrafa vinho"
-            ] 
-        },
-        // Destilados, Aguardentes e Licores Nacionais/Locais
-        { 
-            icon: "destilado_whisky", 
-            palavras: [
-                "tipo tinto", "kambaku", "r&r", "888", "tentacao", "ponto final", "boss", 
-                "whisky", "red label", "black label", "double black", "gold label", "blue label",
-                "jack daniels", "jameson", "chivas", "grant", "ballantines", "vat 69", "j&b", "famous grouse",
-                "vodka", "absolut", "smirnoff", "ciroc", "russian bear", "count pushkin",
-                "gin", "gordons", "bombay", "tanqueray", "beefeater", "hendricks", "inverroche",
-                "amarula", "licor", "shot", "tequila", "olmeca", "jose cuervo", "rum", "bacardi", 
-                "captain morgan", "malibu", "hennessy", "conhaque", "brandy", "richelieu", "klipdrift", "viceroy"
-            ] 
-        },
-        // Sumos Nacionais e Regionais
-        { 
-            icon: "sumo_copo", 
-            palavras: [
-                "sumo", "santana", "ceres", "compal", "frutree", "liquifruit", "rhodes", 
-                "tropika", "yogi sip", "natural", "batido", "smoothie", "limonada", "ice tea", "lipton", "nectar"
-            ] 
-        },
-        // Cafetaria e Chá
-        { 
-            icon: "cafe_xicara", 
-            palavras: ["cafe", "expresso", "bica", "galao", "meia de leite", "cappuccino", "cha", "rooibos", "chocolate quente", "descafeinado", "latte"] 
-        },
-        // Cocktails
-        { 
-            icon: "cocktail", 
-            palavras: ["cocktail", "caipirinha", "caipiroska", "mojito", "margarita", "gin tonico", "pina colada", "sangria", "daiquiri", "tequila sunrise"] 
-        }
+        // Marcas específicas com rótulo realista
+        { icon: "marca_2m", palavras: ["2m", "dois eme"] },
+        { icon: "marca_laurentina_preta", palavras: ["laurentina preta", "preta"] },
+        { icon: "marca_laurentina_clara", palavras: ["laurentina", "laurentina clara"] },
+        { icon: "marca_manica", palavras: ["manica"] },
+        { icon: "marca_heineken", palavras: ["heineken"] },
+        { icon: "marca_coca", palavras: ["coca", "coca-cola", "coca cola"] },
+        { icon: "marca_fanta", palavras: ["fanta"] },
+        { icon: "marca_sprite", palavras: ["sprite"] },
+        { icon: "marca_sparletta", palavras: ["sparletta", "sparleto", "creme soda", "stoney", "schweppes", "twist", "pine nut", "iron brew"] },
+        { icon: "marca_agua_mz", palavras: ["agua", "vumba", "namaacha", "fonte", "mineral", "aquavita", "pura"] },
+        { icon: "marca_compal_santana", palavras: ["sumo", "santana", "compal", "ceres", "frutree", "liquifruit", "tropika", "yogi sip"] },
+        { icon: "marca_redbull", palavras: ["red bull", "dragon", "monster", "score", "booster", "energetico", "switch"] },
+        { icon: "marca_whisky_mz", palavras: ["tipo tinto", "kambaku", "r&r", "888", "tentacao", "ponto final", "whisky", "red label", "black label", "jack daniels", "jameson", "grants", "ballantines", "amarula", "gin", "vodka", "smirnoff"] },
+
+        // Categorias gerais
+        { icon: "cerveja_garrafa", palavras: ["impala", "txilar", "lite", "castle", "castelo", "corona", "budweiser", "savanna", "hunters", "flying fish", "brutal fruit", "cerveja", "mini", "550ml"] },
+        { icon: "cerveja_caneca", palavras: ["fino", "caneca", "imperial", "pressao", "chopp", "balde", "torre"] },
+        { icon: "refrigerante_lata", palavras: ["pepsi", "7up", "mirinda", "lata", "refresco", "refrigerante", "gasosa"] },
+        { icon: "vinho_garrafa", palavras: ["vinho", "tinto", "branco", "rose", "espumante", "champanhe", "casal garcia", "periquita", "four cousins", "drostdy"] },
+        { icon: "cafe_xicara", palavras: ["cafe", "expresso", "bica", "galao", "cappuccino", "cha"] },
+        { icon: "cocktail", palavras: ["cocktail", "caipirinha", "caipiroska", "mojito", "margarita", "gin tonico"] }
     ];
 
-   window.atualizarPreviewIconeCadastro = function() {
-    const nome = document.getElementById('simplesProduto')?.value || '';
-    const cat = document.getElementById('simplesCategoria')?.value || '';
-    const box = document.getElementById('previewIconeCadastro');
-    if (!box) return;
+    // Suporte opcional para pasta local produtos/*.png se existir no servidor
+    const GS_FOTOS_REAIS_MZ = [
+        { palavras: ["2m", "dois eme"], img: "produtos/2m.png" },
+        { palavras: ["laurentina preta"], img: "produtos/laurentina-preta.png" },
+        { palavras: ["laurentina"], img: "produtos/laurentina.png" },
+        { palavras: ["manica"], img: "produtos/manica.png" },
+        { palavras: ["coca", "coca-cola"], img: "produtos/coca.png" },
+        { palavras: ["fanta"], img: "produtos/fanta.png" },
+        { palavras: ["sprite"], img: "produtos/sprite.png" },
+        { palavras: ["vumba", "namaacha"], img: "produtos/agua.png" },
+        { palavras: ["santana"], img: "produtos/santana.png" },
+        { palavras: ["compal"], img: "produtos/compal.png" },
+        { palavras: ["red label"], img: "produtos/redlabel.png" }
+    ];
 
-    // Tenta encontrar foto real automaticamente
-    const fotoEncontrada = window.buscarFotoAutomaticaProduto(nome);
-    fotoAutoDetetadaAtual = fotoEncontrada;
+    window.obterFotoRealProduto = function(nome) {
+        const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+        for (const item of GS_FOTOS_REAIS_MZ) {
+            if (item.palavras.some(p => limpo.includes(p))) return item.img;
+        }
+        return "";
+    };
 
-    if (fotoEncontrada) {
-        box.style.background = "#ffffff";
-        box.innerHTML = `<img src="${fotoEncontrada}" style="width:100%; height:100%; object-fit:contain; border-radius:10px;" onerror="this.style.display='none'">`;
-        return;
-    }
+    window.detetarIconeProduto = function(nome, categoria = "") {
+        const limpo = (nome || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+        const cat = (categoria || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
-    // Se não houver foto real, mostra o ícone vetorial como fallback
-    const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
-    const iconId = selManual === 'auto' ? window.detetarIconeProduto(nome, cat) : selManual;
-    const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
-    box.style.color = info.cor;
-    box.style.background = info.bg;
-    box.innerHTML = info.svg;
-};
+        for (const regra of GS_REGRAS_BEBIDAS) {
+            if (regra.palavras.some(p => limpo.includes(p))) return regra.icon;
+        }
+
+        if (cat.includes("bebida") || cat.includes("bar") || cat.includes("garrafeira")) {
+            return "refrigerante_lata";
+        }
+
+        if (cat.includes("prato") || cat.includes("comida") || cat.includes("cozinha") || cat.includes("lanche")) {
+            return "prato_refeicao";
+        }
+
+        return "padrao_produto";
+    };
+
+    window.atualizarPreviewIconeCadastro = function() {
+        const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
+        if (selManual !== 'auto') return;
+        const nome = document.getElementById('simplesProduto')?.value || '';
+        const cat = document.getElementById('simplesCategoria')?.value || '';
+        const iconId = window.detetarIconeProduto(nome, cat);
+        const info = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+        const box = document.getElementById('previewIconeCadastro');
+        if (box) {
+            box.style.color = info.cor;
+            box.style.background = info.bg;
+            box.innerHTML = info.svg;
+        }
+    };
 
     window.mudarIconeManualCadastro = function() {
         const selManual = document.getElementById('simplesIconeManual')?.value || 'auto';
@@ -3221,27 +3251,27 @@ function renderizarHistoricoTurnos() {
         }
 
        prodsExibicao.forEach(p => {
-    let item = stock[p];
-    // Busca foto salva OU deteta automaticamente na hora até para produtos antigos!
-    let fotoProduto = item.foto || window.buscarFotoAutomaticaProduto(p);
-    let iconId = (item.icone && item.icone !== 'padrao_produto' && item.icone !== 'cerveja_garrafa' && item.icone !== 'refrigerante_lata') 
-    ? item.icone 
-    : window.detetarIconeProduto(p, item.categoria);
-    let iconData = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+            let item = stock[p];
+            let iconId = (item.icone && item.icone !== 'padrao_produto' && item.icone !== 'cerveja_garrafa' && item.icone !== 'refrigerante_lata')
+                ? item.icone
+                : window.detetarIconeProduto(p, item.categoria);
+            let iconData = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+            let fotoReal = item.foto || window.obterFotoRealProduto(p);
 
-    let visualCardHtml = fotoProduto
-        ? `<img src="${fotoProduto}" class="zrest-prod-img" alt="${p}" loading="lazy" onerror="this.outerHTML='<div class=\\'zrest-prod-icon\\' style=\\'background:${iconData.bg};color:${iconData.cor}\\'>${iconData.svg.replace(/"/g, '&quot;')}</div>'">`
-        : `<div class="zrest-prod-icon" style="background: ${iconData.bg}; color: ${iconData.cor};">${iconData.svg}</div>`;
+            let fallbackSvgHtml = `<div class="zrest-prod-icon" style="background: ${iconData.bg}; color: ${iconData.cor};">${iconData.svg}</div>`;
+            let visualCardHtml = fotoReal
+                ? `<img src="${fotoReal}" class="zrest-prod-img" alt="${p}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="zrest-prod-icon" style="display:none; background: ${iconData.bg}; color: ${iconData.cor};">${iconData.svg}</div>`
+                : fallbackSvgHtml;
 
-    grid.innerHTML += `
-        <div class="zrest-product-card" onclick="window.selecionarProdutoCardPOS('${p}')">
-            ${visualCardHtml}
-            <div class="zrest-prod-title" title="${p.toUpperCase()}">${p.toUpperCase()}</div>
-            <div class="zrest-prod-price">${(item.preco_venda||0).toFixed(2)} MT</div>
-            <div class="zrest-prod-stock">📦 Disp: ${item.qtd}</div>
-        </div>
-    `;
-});
+            grid.innerHTML += `
+                <div class="zrest-product-card" onclick="window.selecionarProdutoCardPOS('${p}')">
+                    ${visualCardHtml}
+                    <div class="zrest-prod-title" title="${p.toUpperCase()}">${p.toUpperCase()}</div>
+                    <div class="zrest-prod-price">${(item.preco_venda||0).toFixed(2)} MT</div>
+                    <div class="zrest-prod-stock">📦 Disp: ${item.qtd}</div>
+                </div>
+            `;
+        });
         if (!deveExibirTodos && restantes > 0) {
             grid.innerHTML += `
                 <button type="button" class="zrest-btn-ver-mais" onclick="window.toggleExpandirProdutosPOS()">
@@ -4004,6 +4034,7 @@ window.salvarEntradaStock = async function() {
         let nomeProdBase = document.getElementById('simplesProduto').value.trim().toLowerCase();
         if(!nomeProdBase) return window.showToast("Digite o nome do produto.", "warning");
 
+        // NOVO: Capturar Tamanho e Cor e concatenar se existirem
         let tamanho = document.getElementById('simplesTamanho')?.value.trim() || '';
         let cor = document.getElementById('simplesCor')?.value.trim().toLowerCase() || '';
         
@@ -4031,30 +4062,11 @@ window.salvarEntradaStock = async function() {
             totalCusto = totalUnidades * custoUnit;
         }
 
-        let escolhaIcone = document.getElementById('simplesIconeManual')?.value || 'auto';
+       let escolhaIcone = document.getElementById('simplesIconeManual')?.value || 'auto';
         let iconeFinal = escolhaIcone === 'auto' ? window.detetarIconeProduto(nomeProdBase, cat) : escolhaIcone;
 
-        let fotoFinal = fotoAutoDetetadaAtual || window.buscarFotoAutomaticaProduto(nomeProdBase);
-        if (!fotoFinal && barcodeInput) {
-            fotoFinal = await window.buscarFotoPorCodigoBarrasOnline(barcodeInput);
-        }
-
-        if(!stock[prod]) {
-            stock[prod] = { 
-                qtd: 0, 
-                preco_total: 0, 
-                preco_venda: 0, 
-                min_alerta: minAlerta, 
-                categoria: cat, 
-                barcode: barcodeInput, 
-                tamanho, 
-                cor, 
-                icone: iconeFinal,
-                foto: fotoFinal || ""
-            };
-        }
+        if(!stock[prod]) stock[prod] = { qtd: 0, preco_total: 0, preco_venda: 0, min_alerta: minAlerta, categoria: cat, barcode: barcodeInput, tamanho, cor, icone: iconeFinal };
         stock[prod].icone = iconeFinal;
-        if (fotoFinal) stock[prod].foto = fotoFinal;
 
         stock[prod].qtd += totalUnidades;
         stock[prod].preco_total += totalCusto;
@@ -4072,14 +4084,9 @@ window.salvarEntradaStock = async function() {
 
         await salvarStockFirestore({ [prod]: stock[prod] });
         registarAuditLog('Entrada Stock', `Entrada de ${totalUnidades} unid de '${prod}'`);
-        
         document.getElementById('simplesProduto').value = '';
         document.getElementById('simplesBarcode').value = '';
         if(document.getElementById('simplesCor')) document.getElementById('simplesCor').value = '';
-        
-        fotoAutoDetetadaAtual = "";
-        window.atualizarPreviewIconeCadastro();
-
         filtrarEExibirProdutosVenda();
         window.showToast("Stock com variação atualizado com sucesso!", "success");
     } finally {
