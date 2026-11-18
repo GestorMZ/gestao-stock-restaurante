@@ -903,7 +903,7 @@
 </div>
 
 <!-- MODAL DE SISTEMA CUSTOMIZADO -->
-<div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
+<div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:100005; background:rgba(0,0,0,0.85);">
     <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
         <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Mensagem</h3>
         <p id="customModalText" style="margin-bottom:20px; font-weight:600; white-space: pre-line;"></p>
@@ -3815,43 +3815,42 @@
         let carrinhoAtual = mesas[mesaSelecionada] || [];
         if(carrinhoAtual.length === 0) return window.showToast("O carrinho está vazio!", "warning");
 
+        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
+        let bruto = carrinhoAtual.reduce((acc, i) => acc + i.subtotal, 0);
+        let totalVenda = Math.max(0, bruto - desc);
+        let nuitCli = document.getElementById('cartNuitCliente').value.trim();
+
+        let modoTipo = document.getElementById('cartModoPagamentoTipo').value;
+        let metodo = "";
+        let clienteIdFiado = null, clienteNomeFiado = "";
+        let desdobramentoInfo = null;
+        let isCortesia = false;
+
+        if(modoTipo === 'Unico') {
+            metodo = document.getElementById('cartMetodoPagamento').value;
+            if(metodo === 'Cortesia') { isCortesia = true; totalVenda = 0; desc = bruto; }
+            if(metodo === 'Fiado') {
+                clienteIdFiado = parseInt(document.getElementById('cartSelectClienteFiado').value);
+                if(!clienteIdFiado) return window.showToast("Selecione um cliente para a conta a Fiado!", "warning");
+                let cli = clientes.find(c => c.id === clienteIdFiado);
+                clienteNomeFiado = cli ? cli.nome : "";
+            }
+        } else {
+            let din = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
+            let mpesa = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
+            let emola = parseFloat(document.getElementById('payDesdEmola').value) || 0;
+            let pos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
+            let soma = din + mpesa + emola + pos;
+            if(soma < totalVenda - 0.5) { 
+                return window.showToast(`Soma desdobrada (${soma.toFixed(2)} MT) inferior ao total!`, "warning"); 
+            }
+            metodo = `Desdobrado (Din:${din}, MP:${mpesa}, eM:${emola}, POS:${pos})`;
+            desdobramentoInfo = { din, mpesa, emola, pos };
+        }
+
         if (!window.iniciarProcessamento()) return;
 
         try {
-            let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
-            let bruto = carrinhoAtual.reduce((acc, i) => acc + i.subtotal, 0);
-            let totalVenda = Math.max(0, bruto - desc);
-            let nuitCli = document.getElementById('cartNuitCliente').value.trim();
-
-            let modoTipo = document.getElementById('cartModoPagamentoTipo').value;
-            let metodo = "";
-            let clienteIdFiado = null, clienteNomeFiado = "";
-            let desdobramentoInfo = null;
-            let isCortesia = false;
-
-            if(modoTipo === 'Unico') {
-                metodo = document.getElementById('cartMetodoPagamento').value;
-                if(metodo === 'Cortesia') { isCortesia = true; totalVenda = 0; desc = bruto; }
-                if(metodo === 'Fiado') {
-                    clienteIdFiado = parseInt(document.getElementById('cartSelectClienteFiado').value);
-                    if(!clienteIdFiado) { window.fimProcessamento(); return window.showToast("Selecione um cliente para a conta a Fiado!", "warning"); }
-                    let cli = clientes.find(c => c.id === clienteIdFiado);
-                    clienteNomeFiado = cli ? cli.nome : "";
-                }
-            } else {
-                let din = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
-                let mpesa = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
-                let emola = parseFloat(document.getElementById('payDesdEmola').value) || 0;
-                let pos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
-                let soma = din + mpesa + emola + pos;
-                if(soma < totalVenda - 0.5) { 
-                    window.fimProcessamento();
-                    return window.showToast(`Soma desdobrada (${soma.toFixed(2)} MT) inferior ao total!`, "warning"); 
-                }
-                metodo = `Desdobrado (Din:${din}, MP:${mpesa}, eM:${emola}, POS:${pos})`;
-                desdobramentoInfo = { din, mpesa, emola, pos };
-            }
-
             let entregue = parseFloat(document.getElementById('cartValorEntregue').value) || totalVenda;
             let troco = Math.max(0, entregue - totalVenda);
 
@@ -3868,7 +3867,7 @@
             if(metodo === 'Fiado' && clienteIdFiado) {
                 let cli = clientes.find(c => c.id === clienteIdFiado);
                 if(cli) cli.divida += totalVenda;
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes });
+                setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: clientes }).catch(()=>{});
             }
 
             let regVenda = {
@@ -3881,26 +3880,27 @@
             if (!navigator.onLine) {
                 window.salvarVendaOffline(regVenda);
             } else {
-                await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), regVenda);
+                const salvarComTimeout = Promise.race([
+                    addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), regVenda),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT_REDE")), 6000))
+                ]);
+                try {
+                    await salvarComTimeout;
+                } catch (errEnvio) {
+                    if (errEnvio && errEnvio.message === "TIMEOUT_REDE") {
+                        window.salvarVendaOffline(regVenda);
+                    } else {
+                        throw errEnvio;
+                    }
+                }
             }
 
             registarAuditLog('Venda Concluída', `Mesa: ${mesaSelecionada} | Total: ${totalVenda.toFixed(2)} MT | Método: ${metodo}`);
-            window.tocarSom('sucesso');
 
             let waTel = document.getElementById('cartTelefoneWa').value.trim();
-            if(waTel) {
-                let numWa = waTel.replace(/[^0-9]/g, '');
-                if(!numWa.startsWith('258')) numWa = '258' + numWa;
-                let textoItensWa = regVenda.itens.map(i => `• ${i.qtd}x ${i.produto} = ${i.subtotal.toFixed(2)} MT`).join('\n');
-                let msgWa = encodeURIComponent(`*${dadosEmpresa.nome.toUpperCase()}*\nRecibo Digital (${regVenda.data})\n------------------------------\n${textoItensWa}\n------------------------------\n*TOTAL PAGO: ${totalVenda.toFixed(2)} MT*\nForma de Pagamento: ${metodo}\n\nObrigado pela sua preferência!`);
-                window.open(`https://wa.me/${numWa}?text=${msgWa}`, '_blank');
-            }
-
-            if(bluetoothCharacteristic) window.imprimirBluetoothESCPOS(regVenda);
-            else if(await customConfirm("Venda Registada!\nDeseja imprimir o recibo?")) prepararEImprimirRecibo(regVenda);
 
             mesas[mesaSelecionada] = [];
-            await sincronizarMesaRemota(mesaSelecionada);
+            sincronizarMesaRemota(mesaSelecionada);
 
             document.getElementById('cartDesconto').value = 0;
             document.getElementById('cartValorEntregue').value = 0;
@@ -3914,6 +3914,24 @@
             }
             window.renderizarCarrinho();
             renderizarMesasGrid();
+
+            // Fecha o ecrã de carregamento antes de abrir qualquer diálogo ou impressão
+            window.fimProcessamento();
+            window.showToast("Venda finalizada com sucesso!", "success");
+
+            if(waTel) {
+                let numWa = waTel.replace(/[^0-9]/g, '');
+                if(!numWa.startsWith('258')) numWa = '258' + numWa;
+                let textoItensWa = regVenda.itens.map(i => `• ${i.qtd}x ${i.produto} = ${i.subtotal.toFixed(2)} MT`).join('\n');
+                let msgWa = encodeURIComponent(`*${dadosEmpresa.nome.toUpperCase()}*\nRecibo Digital (${regVenda.data})\n------------------------------\n${textoItensWa}\n------------------------------\n*TOTAL PAGO: ${totalVenda.toFixed(2)} MT*\nForma de Pagamento: ${metodo}\n\nObrigado pela sua preferência!`);
+                window.open(`https://wa.me/${numWa}?text=${msgWa}`, '_blank');
+            }
+
+            if(bluetoothCharacteristic) {
+                window.imprimirBluetoothESCPOS(regVenda);
+            } else if(await customConfirm("Venda Registada!\nDeseja imprimir o recibo?")) {
+                prepararEImprimirRecibo(regVenda);
+            }
         } catch(e) {
             console.error("Erro ao finalizar venda:", e);
             window.showToast("Erro ao registar venda: " + e.message, "error");
