@@ -1096,17 +1096,26 @@
                 <div>
                     <span style="display:inline-block; background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:999px; font-size:11.5px; font-weight:800; letter-spacing:0.04em; margin-bottom:6px;">CARDÁPIO DIGITAL INTERATIVO</span>
                     <h2 id="qrMenuNomeEmpresa" style="margin:0; color:#ffffff; font-size:1.5em;">RESTAURANTE</h2>
-                    <p id="qrMenuInfoEmpresa" style="margin:4px 0 0 0; font-size:0.84em; opacity:0.9;">Bem-vindo! Escolha os seus itens e envie o pedido.</p>
+                    <p id="qrMenuInfoEmpresa" style="margin:4px 0 0 0; font-size:0.84em; opacity:0.9;">Bem-vindo! Escolha a sua mesa, selecione os produtos disponíveis e envie o pedido.</p>
                 </div>
-                <div style="text-align:right;">
-                    <div style="background:#ffffff; color:var(--primary); padding:6px 14px; border-radius:12px; font-weight:800; font-size:0.95em; margin-bottom:8px;">
-                        Local: <span id="qrMenuMesaBadge">Mesa 1</span>
+                <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                    <div style="background:#ffffff; color:var(--primary); padding:5px 10px; border-radius:12px; font-weight:800; font-size:0.9em; display:flex; align-items:center; gap:6px;">
+                        <span>Mesa:</span>
+                        <select id="qrMenuSelectMesa" onchange="window.alterarMesaClienteQR(this.value)" style="width:auto; padding:4px 8px; border-radius:8px; border:1.5px solid #bfdbfe; font-size:13px; font-weight:800; color:var(--primary); background:#eff6ff; min-height:30px;">
+                            <option value="Mesa 1">Mesa 1</option>
+                        </select>
                     </div>
                     <button type="button" class="btn-warning btn-sm" onclick="window.chamarGarcomQR()" style="border-radius:10px; font-size:12px;">
                         Chamar Garçom
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Barra de Estado em Tempo Real do Pedido / Chamada do Cliente -->
+        <div id="qrClienteStatusPedidoBox" style="display:none; background:var(--success-soft); border:1.5px solid #6ee7b7; color:#065f46; padding:10px 14px; border-radius:12px; margin-bottom:10px; font-size:13px; font-weight:800; align-items:center; justify-content:space-between; gap:8px;">
+            <span id="qrClienteStatusPedidoTexto">Pedido enviado! Aguardando confirmação do atendente...</span>
+            <button type="button" onclick="document.getElementById('qrClienteStatusPedidoBox').style.display='none'" style="width:auto; min-height:24px; padding:2px 8px; font-size:11px; background:transparent; color:#065f46; border:1px solid #6ee7b7; box-shadow:none;">OK</button>
         </div>
 
         <div class="zrest-search-header" style="margin-bottom:10px; flex-wrap:wrap;">
@@ -1353,6 +1362,15 @@
             <button id="btnAcaoCaixaHeader" class="btn-success btn-sm" onclick="window.mudarAba('abaCaixa', event)">Abrir Caixa</button>
         </div>
 
+        <!-- Banner Global de Alerta de Pedidos / Chamadas do Cardápio Digital QR (visível em qualquer aba) -->
+        <div id="bannerPedidosQR" class="qr-alert-banner">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span id="textoBannerPedidosQR">Novo pedido recebido pelo Cardápio Digital QR!</span>
+            </div>
+            <button type="button" class="btn-primary btn-sm" style="min-height:30px; padding:4px 12px; font-size:12px;" onclick="window.abrirModalPedidosQR()">Ver & Aceitar</button>
+        </div>
+
         <div id="boxAlertaStockGlobal" class="alerta-stock-box">
             Alerta de Stock Crítico: Existem produtos com quantidade abaixo do limite mínimo!
         </div>
@@ -1389,15 +1407,6 @@
             
             <div id="alertaCaixaFechadoVendas" class="alerta-caixa-bloqueio" style="margin-bottom: 10px;">
                 O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
-            </div>
-
-            <!-- Banner de Pedidos / Chamadas do Cardápio Digital QR -->
-            <div id="bannerPedidosQR" class="qr-alert-banner">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    <span id="textoBannerPedidosQR">Novo pedido recebido pelo Cardápio Digital QR!</span>
-                </div>
-                <button type="button" class="btn-primary btn-sm" style="min-height:30px; padding:4px 12px; font-size:12px;" onclick="window.abrirModalPedidosQR()">Ver Pedidos QR</button>
             </div>
 
             <!-- Seleção de Mesas Horizontal -->
@@ -2772,7 +2781,7 @@
         let menuFlag = urlParams.get('menu');
 
         if (empUrl && (mesaUrl || menuFlag === '1')) {
-            window.iniciarModoCardapioCliente(empUrl.trim().toUpperCase(), mesaUrl || 'Mesa 1');
+            window.iniciarModoCardapioCliente(empUrl.trim().toUpperCase(), mesaUrl || '');
             return;
         }
 
@@ -2815,6 +2824,9 @@
     let timerInatividade = null;
     let html5QrCodeScanner = null;
     let isScannerOpen = false;
+    let modoCardapioClienteAtivo = false;
+    let qrUltimoPedidoId = null;
+    let qrAlertaJaExibidoIds = new Set();
 
     // ----- GESTÃO DE AUTENTICAÇÃO E REGISTO -----
     window.mostrarRegisto = function() {
@@ -2874,6 +2886,7 @@
     };
 
     onAuthStateChanged(auth, (user) => {
+        if (modoCardapioClienteAtivo) return;
         if (user) {
             authUserFirebase = user;
             document.getElementById('lblEmailLogado').innerText = user.email;
@@ -3170,7 +3183,19 @@
 
             if (usuarioAtual) {
                 atualizarBannerPedidosQR();
-                if (pedidosQR.length > antesCount) {
+                const novosPedidos = pedidosQR.filter(p => !qrAlertaJaExibidoIds.has(p.idDoc));
+                if (novosPedidos.length > 0) {
+                    novosPedidos.forEach(p => qrAlertaJaExibidoIds.add(p.idDoc));
+                    const maisRecente = novosPedidos[0];
+                    const descAlerta = maisRecente.tipo === 'chamada'
+                        ? `Cliente na ${maisRecente.mesa} chamou o garçom!`
+                        : `Novo pedido do cliente na ${maisRecente.mesa}!`;
+                    window.tocarSom('alerta');
+                    setTimeout(() => window.tocarSom('sucesso'), 260);
+                    window.showToast(descAlerta, "warning");
+                    window.abrirModalPedidosQR();
+                } else if (pedidosQR.length > antesCount && pedidosQR.length > 0) {
+                    window.tocarSom('alerta');
                     window.showToast(`Novo pedido/chamada via Cardápio QR (${pedidosQR[0].mesa})!`, "info");
                 }
             }
@@ -5378,7 +5403,9 @@
     window.abrirModalQRMenu = function() {
         let modal = document.getElementById('modalQRMenu');
         let selMesa = document.getElementById('selectMesaQRGenerator');
-        if (selMesa && mesaSelecionada) selMesa.value = mesaSelecionada;
+        if (selMesa) {
+            selMesa.value = (mesaSelecionada && mesaSelecionada !== 'Balcão') ? mesaSelecionada : 'Mesa 1';
+        }
         window.atualizarQRMenuMesa();
         if (modal) modal.style.display = 'block';
     };
@@ -5388,7 +5415,7 @@
         let qrArea = document.getElementById('qrcodeArea');
         if (!qrArea) return;
         qrArea.innerHTML = "";
-        let mesaEscolhida = document.getElementById('selectMesaQRGenerator')?.value || mesaSelecionada || 'Mesa 1';
+        let mesaEscolhida = document.getElementById('selectMesaQRGenerator')?.value || 'Mesa 1';
         let link = window.location.href.split('?')[0] + "?empresa=" + encodeURIComponent(codigoEmpresa) + "&mesa=" + encodeURIComponent(mesaEscolhida);
         let textSpan = document.getElementById('textLinkMenu');
         if (textSpan) textSpan.innerText = link;
@@ -5415,6 +5442,7 @@
     // ----- CARDÁPIO DIGITAL INTERATIVO (MODO CLIENTE) & RECEÇÃO NO POS -----
     let qrClienteEmpresa = "";
     let qrClienteMesa = "Mesa 1";
+    let qrClienteMesaInicialUrl = "";
     let qrClienteCategoria = "todos";
     let qrClienteCarrinho = [];
     let qrListaGarcons = [];
@@ -5422,19 +5450,18 @@
     let qrMesasCarrinhos = {};
 
     window.iniciarModoCardapioCliente = function(empCode, mesaNome) {
+        modoCardapioClienteAtivo = true;
         qrClienteEmpresa = empCode;
-        qrClienteMesa = mesaNome;
+        qrClienteMesaInicialUrl = (mesaNome || '').trim();
+        qrClienteMesa = qrClienteMesaInicialUrl || "Mesa 1";
 
         document.getElementById('telaFirebaseAuth').style.display = 'none';
         document.getElementById('telaRegisto').style.display = 'none';
         document.getElementById('telaLogin').style.display = 'none';
         document.getElementById('telaSistema').style.display = 'none';
         document.getElementById('telaMenuDigitalCliente').style.display = 'block';
-        document.getElementById('qrMenuMesaBadge').innerText = qrClienteMesa;
-        document.getElementById('qrModalMesaTitulo').innerText = qrClienteMesa;
-        if (document.getElementById('qrGarcomMesaTitulo')) {
-            document.getElementById('qrGarcomMesaTitulo').innerText = qrClienteMesa;
-        }
+
+        window.atualizarSeletorMesasClienteQR();
 
         // Carrega apenas o nome público e contactos do estabelecimento (sem exibir código de licença)
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "empresa"), (docSnap) => {
@@ -5443,13 +5470,13 @@
                 const nomePublico = (info.nome && info.nome.trim() !== "") ? info.nome.trim() : "CARDÁPIO DIGITAL";
                 document.getElementById('qrMenuNomeEmpresa').innerText = nomePublico.toUpperCase();
                 const sub = [info.endereco, info.telefone ? `Tel: ${info.telefone}` : ''].filter(Boolean).join(' • ');
-                document.getElementById('qrMenuInfoEmpresa').innerText = sub || "Bem-vindo! Escolha os seus itens disponíveis e envie o pedido.";
+                document.getElementById('qrMenuInfoEmpresa').innerText = sub || "Bem-vindo! Escolha a sua mesa, selecione os produtos disponíveis e envie o pedido.";
             } else {
                 document.getElementById('qrMenuNomeEmpresa').innerText = "CARDÁPIO DIGITAL";
             }
         });
 
-        // Escuta os produtos em stock em tempo real
+        // Escuta os produtos em stock em tempo real (apenas disponíveis)
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "stock"), (docSnap) => {
             stock = docSnap.exists() ? docSnap.data() : {};
             window.renderizarProdutosMenuQR();
@@ -5469,6 +5496,7 @@
         // Escuta mesas abertas/ocupadas por cada garçom
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
             qrBloqueiosMesas = docSnap.exists() ? docSnap.data() : {};
+            window.atualizarSeletorMesasClienteQR();
             if (document.getElementById('modalEscolherGarcomQR')?.style.display === 'block') {
                 window.renderizarListaGarconsQR();
             }
@@ -5476,10 +5504,99 @@
 
         onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
             qrMesasCarrinhos = docSnap.exists() ? docSnap.data() : {};
+            window.atualizarSeletorMesasClienteQR();
             if (document.getElementById('modalEscolherGarcomQR')?.style.display === 'block') {
                 window.renderizarListaGarconsQR();
             }
         });
+
+        // Escuta atualizações do último pedido/chamada enviado pelo cliente
+        onSnapshot(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), (snapshot) => {
+            if (!qrUltimoPedidoId) return;
+            const docAtual = snapshot.docs.find(d => d.id === qrUltimoPedidoId);
+            if (!docAtual) return;
+            const dados = docAtual.data();
+            const boxStatus = document.getElementById('qrClienteStatusPedidoBox');
+            const txtStatus = document.getElementById('qrClienteStatusPedidoTexto');
+            if (!boxStatus || !txtStatus) return;
+
+            if (dados.status === 'aceite') {
+                boxStatus.style.display = 'flex';
+                boxStatus.style.background = 'var(--success-soft)';
+                boxStatus.style.borderColor = '#10b981';
+                boxStatus.style.color = '#065f46';
+                const atendente = dados.aceitePor ? ` por ${dados.aceitePor.toUpperCase()}` : '';
+                txtStatus.innerText = dados.tipo === 'chamada'
+                    ? `Chamada aceite${atendente}! O garçom está a caminho da ${dados.mesa}.`
+                    : `Pedido aceite${atendente}! Já foi lançado na ${dados.mesa}.`;
+            } else if (dados.status === 'dispensado' || dados.status === 'concluido') {
+                boxStatus.style.display = 'flex';
+                boxStatus.style.background = 'var(--warning-soft)';
+                boxStatus.style.borderColor = '#f59e0b';
+                boxStatus.style.color = '#92400e';
+                txtStatus.innerText = `Solicitação na ${dados.mesa} foi encerrada pelo atendimento.`;
+            }
+        });
+    };
+
+    window.verificarMesaOcupadaQR = function(nomeMesa) {
+        if (!nomeMesa || nomeMesa === 'Balcão') return false;
+        const info = qrMesasCarrinhos[nomeMesa];
+        const temItens = Array.isArray(info)
+            ? info.length > 0
+            : (info && typeof info === 'object' && Array.isArray(info.itens) && info.itens.length > 0);
+        return temItens;
+    };
+
+    window.atualizarSeletorMesasClienteQR = function() {
+        const sel = document.getElementById('qrMenuSelectMesa');
+        if (!sel) return;
+
+        const todasMesas = [];
+        for (let i = 1; i <= 10; i++) todasMesas.push(`Mesa ${i}`);
+        todasMesas.push('Balcão');
+
+        // Se a mesa atual não foi fixada explicitamente via URL ou é Balcão, prioriza a primeira mesa livre
+        if (!qrClienteMesaInicialUrl || qrClienteMesaInicialUrl === 'Balcão') {
+            if (qrClienteMesa === 'Balcão' || window.verificarMesaOcupadaQR(qrClienteMesa)) {
+                const primeiraLivre = todasMesas.find(m => m !== 'Balcão' && !window.verificarMesaOcupadaQR(m));
+                if (primeiraLivre && !qrClienteMesaInicialUrl) {
+                    qrClienteMesa = primeiraLivre;
+                }
+            }
+        }
+
+        sel.innerHTML = '';
+        todasMesas.forEach(m => {
+            const ocupada = window.verificarMesaOcupadaQR(m);
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.textContent = m === 'Balcão'
+                ? 'Balcão (Retirada)'
+                : (ocupada ? `${m} (Em atendimento)` : `${m} (Disponível)`);
+            if (m === qrClienteMesa) opt.selected = true;
+            sel.appendChild(opt);
+        });
+
+        if (document.getElementById('qrModalMesaTitulo')) {
+            document.getElementById('qrModalMesaTitulo').innerText = qrClienteMesa;
+        }
+        if (document.getElementById('qrGarcomMesaTitulo')) {
+            document.getElementById('qrGarcomMesaTitulo').innerText = qrClienteMesa;
+        }
+    };
+
+    window.alterarMesaClienteQR = function(novaMesa) {
+        if (!novaMesa) return;
+        qrClienteMesa = novaMesa;
+        qrClienteMesaInicialUrl = novaMesa;
+        if (document.getElementById('qrModalMesaTitulo')) {
+            document.getElementById('qrModalMesaTitulo').innerText = qrClienteMesa;
+        }
+        if (document.getElementById('qrGarcomMesaTitulo')) {
+            document.getElementById('qrGarcomMesaTitulo').innerText = qrClienteMesa;
+        }
+        window.showToast(`Mesa selecionada: ${qrClienteMesa}`, "info");
     };
 
     window.filtrarCategoriaMenuQR = function(cat, evt) {
@@ -5495,10 +5612,10 @@
         const termo = (document.getElementById('qrMenuPesquisa')?.value || '').toLowerCase();
         grid.innerHTML = '';
 
-        // Exibe apenas produtos disponíveis (stock > 0)
+        // Exibe EXCLUSIVAMENTE produtos disponíveis (stock > 0 e não desativados)
         const lista = Object.keys(stock).filter(p => {
             const it = stock[p];
-            if (!it || (it.qtd || 0) <= 0) return false;
+            if (!it || Number(it.qtd || 0) <= 0 || it.disponivel === false) return false;
             if (qrClienteCategoria !== 'todos' && (it.categoria || 'bebidas') !== qrClienteCategoria) return false;
             if (termo && !p.toLowerCase().includes(termo)) return false;
             return true;
@@ -5511,7 +5628,8 @@
 
         lista.forEach(p => {
             const item = stock[p];
-            const preco = item.precoVendaUnit || 0;
+            const preco = Number(item.precoVendaUnit || 0);
+            const qtdDisp = Number(item.qtd || 0);
             const iconId = item.icone || window.detetarIconeProduto(p, item.categoria || '');
             const iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
             const fotoReal = item.imagemUrl || window.obterFotoRealProduto(p);
@@ -5526,6 +5644,7 @@
                 ${midiaHtml}
                 <div class="zrest-prod-title">${p}</div>
                 <div class="zrest-prod-price">${preco.toFixed(2)} MT</div>
+                <div class="zrest-prod-stock normal" style="margin-top:4px;">Disponível (${qtdDisp})</div>
                 <div style="margin-top:8px;">
                     <button type="button" class="btn-primary btn-sm" style="width:100%; min-height:32px; font-size:12px;" onclick="window.adicionarItemClienteQR('${p.replace(/'/g, "\\'")}')">+ Adicionar</button>
                 </div>
@@ -5644,7 +5763,7 @@
             const obs = (document.getElementById('qrModalObsPedido')?.value || '').trim();
             const total = qrClienteCarrinho.reduce((acc, i) => acc + (i.subtotal || 0), 0);
 
-            await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
+            const docRef = await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
                 tipo: "pedido",
                 status: "pendente",
                 mesa: qrClienteMesa,
@@ -5654,6 +5773,17 @@
                 timestamp: Date.now(),
                 data: new Date().toLocaleTimeString('pt-MZ', { hour: '2-digit', minute: '2-digit' })
             });
+
+            qrUltimoPedidoId = docRef.id;
+            const boxStatus = document.getElementById('qrClienteStatusPedidoBox');
+            const txtStatus = document.getElementById('qrClienteStatusPedidoTexto');
+            if (boxStatus && txtStatus) {
+                boxStatus.style.display = 'flex';
+                boxStatus.style.background = 'var(--primary-soft)';
+                boxStatus.style.borderColor = '#93c5fd';
+                boxStatus.style.color = '#1e3a8a';
+                txtStatus.innerText = `Pedido enviado (${qrClienteMesa})! Aguardando confirmação do atendente...`;
+            }
 
             qrClienteCarrinho = [];
             if (document.getElementById('qrModalObsPedido')) document.getElementById('qrModalObsPedido').value = '';
@@ -5686,19 +5816,16 @@
         if (!alvo) return [];
         const mesasAbertas = new Set();
 
-        for (const mesa in qrBloqueiosMesas) {
-            if (mesa === 'Balcão') continue;
-            const resp = (qrBloqueiosMesas[mesa] || '').trim().toLowerCase();
-            if (resp === alvo) mesasAbertas.add(mesa);
-        }
-
+        // Garçom fica OCUPADO sempre que tiver uma mesa aberta com itens no carrinho
         for (const mesa in qrMesasCarrinhos) {
             if (mesa === 'Balcão') continue;
             const info = qrMesasCarrinhos[mesa];
             if (info && typeof info === 'object' && !Array.isArray(info)) {
-                const resp = (info.operador || '').trim().toLowerCase();
+                const resp = (info.operador || qrBloqueiosMesas[mesa] || '').trim().toLowerCase();
                 const temItens = Array.isArray(info.itens) && info.itens.length > 0;
-                if (resp === alvo && temItens) mesasAbertas.add(mesa);
+                if (resp === alvo && temItens) {
+                    mesasAbertas.add(mesa);
+                }
             }
         }
 
@@ -5756,7 +5883,7 @@
                 ? `Cliente chamou o garçom ${nomeGarcom.toUpperCase()} (atualmente ocupado noutra mesa)`
                 : `Cliente chamou o garçom ${nomeGarcom.toUpperCase()}`;
 
-            await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
+            const docRef = await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
                 tipo: "chamada",
                 status: "pendente",
                 mesa: qrClienteMesa,
@@ -5768,6 +5895,18 @@
                 timestamp: Date.now(),
                 data: new Date().toLocaleTimeString('pt-MZ', { hour: '2-digit', minute: '2-digit' })
             });
+
+            qrUltimoPedidoId = docRef.id;
+            const boxStatus = document.getElementById('qrClienteStatusPedidoBox');
+            const txtStatus = document.getElementById('qrClienteStatusPedidoTexto');
+            if (boxStatus && txtStatus) {
+                boxStatus.style.display = 'flex';
+                boxStatus.style.background = 'var(--primary-soft)';
+                boxStatus.style.borderColor = '#93c5fd';
+                boxStatus.style.color = '#1e3a8a';
+                txtStatus.innerText = `Chamada enviada para ${nomeGarcom.toUpperCase()} (${qrClienteMesa})! Aguarde confirmação...`;
+            }
+
             window.fecharModalEscolherGarcomQR();
             window.showToast(`Chamada enviada para ${nomeGarcom.toUpperCase()}! Aguarde na ${qrClienteMesa}.`, "success");
         } catch (e) {
@@ -5788,7 +5927,7 @@
         }
         banner.style.display = 'flex';
         const mesasStr = [...new Set(pedidosQR.map(p => p.mesa))].join(', ');
-        txt.innerText = `${pedidosQR.length} solicitação(ões) pendente(s) via QR Code (${mesasStr})`;
+        txt.innerText = `${pedidosQR.length} pedido(s)/chamada(s) pendente(s) via Cardápio QR (${mesasStr})`;
     }
 
     window.abrirModalPedidosQR = function() {
@@ -5808,20 +5947,25 @@
                     ? `<div style="font-weight:700; color:var(--warning-dark);">${p.observacao || 'Cliente solicitou o garçom na mesa.'}</div>`
                     : (p.itens || []).map(i => `<div>• <b>${i.qtd}x</b> ${i.produto} (${(i.subtotal || 0).toFixed(2)} MT)</div>`).join('');
 
+                const acoesHtml = isChamada
+                    ? `<button type="button" class="btn-outline btn-sm" onclick="window.dispensarPedidoQR('${p.idDoc}')">Dispensar</button>
+                       <button type="button" class="btn-success btn-sm" onclick="window.aceitarChamadaQR('${p.idDoc}')">Aceitar Chamada</button>`
+                    : `<button type="button" class="btn-outline btn-sm" onclick="window.dispensarPedidoQR('${p.idDoc}')">Dispensar</button>
+                       <button type="button" class="btn-success btn-sm" onclick="window.aceitarPedidoQR('${p.idDoc}')">Aceitar & Lançar na Mesa</button>`;
+
                 lista.innerHTML += `
                     <div style="background:var(--surface-sub); border:1.5px solid var(--border); border-radius:14px; padding:14px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <span style="font-weight:800; font-size:1.05em; color:var(--primary);">${p.mesa}</span>
+                            <span style="font-weight:800; font-size:1.05em; color:var(--primary);">${p.mesa} — ${isChamada ? 'Chamada de Garçom' : 'Pedido do Cliente'}</span>
                             <span class="badge">${p.data || ''}</span>
                         </div>
                         ${garcomInfo}
                         <div style="font-size:0.9em; margin-bottom:8px;">${itensHtml}</div>
                         ${p.observacao && !isChamada ? `<div style="font-size:0.82em; color:var(--warning-dark); margin-bottom:8px;"><b>Obs:</b> ${p.observacao}</div>` : ''}
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap;">
                             ${!isChamada ? `<b class="tabular-nums" style="color:var(--success);">Total: ${(p.total || 0).toFixed(2)} MT</b>` : '<span></span>'}
                             <div style="display:flex; gap:8px;">
-                                <button type="button" class="btn-outline btn-sm" onclick="window.dispensarPedidoQR('${p.idDoc}')">Dispensar</button>
-                                ${!isChamada ? `<button type="button" class="btn-success btn-sm" onclick="window.aceitarPedidoQR('${p.idDoc}')">Aceitar & Lançar na Mesa</button>` : ''}
+                                ${acoesHtml}
                             </div>
                         </div>
                     </div>
@@ -5833,6 +5977,22 @@
 
     window.fecharModalPedidosQR = function() {
         document.getElementById('modalPedidosQR').style.display = 'none';
+    };
+
+    window.aceitarChamadaQR = async function(idDoc) {
+        const chamada = pedidosQR.find(p => p.idDoc === idDoc);
+        if (!chamada) return;
+        try {
+            await setDoc(doc(db, "empresas", codigoEmpresa, "pedidos_qr", idDoc), {
+                status: "aceite",
+                aceitePor: usuarioAtual ? usuarioAtual.nome : "operador",
+                aceiteEm: Date.now()
+            }, { merge: true });
+            window.abrirModalPedidosQR();
+            window.showToast(`Chamada da ${chamada.mesa} aceite por ${(usuarioAtual?.nome || '').toUpperCase()}!`, "success");
+        } catch (e) {
+            window.showToast("Erro ao aceitar chamada: " + e.message, "error");
+        }
     };
 
     window.aceitarPedidoQR = async function(idDoc) {
@@ -5882,7 +6042,8 @@
             await sincronizarMesaRemota(mesaDestino);
             await setDoc(doc(db, "empresas", codigoEmpresa, "pedidos_qr", idDoc), {
                 status: "aceite",
-                aceitePor: usuarioAtual.nome
+                aceitePor: usuarioAtual.nome,
+                aceiteEm: Date.now()
             }, { merge: true });
 
             mesaSelecionada = mesaDestino;
@@ -5891,7 +6052,7 @@
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
             window.fecharModalPedidosQR();
-            window.showToast(`Pedido lançado na ${mesaDestino} com sucesso!`, "success");
+            window.showToast(`Pedido aceite e lançado na ${mesaDestino} com sucesso!`, "success");
         } catch (e) {
             window.showToast("Erro ao aceitar pedido QR: " + e.message, "error");
         } finally {
@@ -5902,13 +6063,13 @@
     window.dispensarPedidoQR = async function(idDoc) {
         try {
             await setDoc(doc(db, "empresas", codigoEmpresa, "pedidos_qr", idDoc), {
-                status: "concluido",
+                status: "dispensado",
                 tratadoPor: usuarioAtual ? usuarioAtual.nome : "operador"
             }, { merge: true });
             window.abrirModalPedidosQR();
-            window.showToast("Solicitação concluída.", "info");
+            window.showToast("Solicitação dispensada.", "info");
         } catch (e) {
-            window.showToast("Erro ao atualizar pedido: " + e.message, "error");
+            window.showToast("Erro ao dispensar pedido: " + e.message, "error");
         }
     };
 
