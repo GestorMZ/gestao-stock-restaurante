@@ -492,6 +492,171 @@
         .zrest-cat-btn:hover { background: #e2e8f0; transform: translateY(-1px); box-shadow: none; }
         .zrest-cat-btn.active { background: var(--dark); color: white; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16); }
 
+        /* Barra de Atalhos Favoritos Fixos */
+        .zrest-fav-bar {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            overflow-x: auto;
+            padding: 6px 10px;
+            background: var(--surface-sub);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            scrollbar-width: thin;
+            flex-shrink: 0;
+        }
+        .zrest-fav-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--warning-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            padding-right: 4px;
+        }
+        .zrest-fav-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+            border-radius: 999px;
+            padding: 5px 11px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            min-height: 30px;
+            width: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            transition: all 0.18s var(--ease-out-pro);
+        }
+        .zrest-fav-chip:hover {
+            border-color: var(--warning);
+            background: var(--warning-soft);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.18);
+        }
+        .zrest-fav-chip.esgotado {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+
+        /* Botão Estrela de Favorito no Card */
+        .btn-fav-star {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 26px;
+            height: 26px;
+            min-height: 26px;
+            padding: 0;
+            border-radius: 50%;
+            background: var(--surface-sub);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            box-shadow: none;
+            transition: all 0.18s var(--ease-out-pro);
+        }
+        .btn-fav-star:hover {
+            background: var(--warning-soft);
+            border-color: var(--warning);
+            color: var(--warning-dark);
+            transform: scale(1.1);
+            box-shadow: none;
+        }
+        .btn-fav-star.ativo {
+            background: var(--warning);
+            border-color: var(--warning-dark);
+            color: #ffffff;
+        }
+
+        /* Indicador de Leitor USB / Bluetooth */
+        .scanner-usb-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .scanner-usb-pill.lendo {
+            background: var(--success);
+            color: #ffffff;
+            border-color: var(--success-dark);
+        }
+
+        /* Banner de Pedidos QR em Tempo Real */
+        .qr-alert-banner {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: linear-gradient(90deg, #eff6ff, #dbeafe);
+            border: 1.5px solid #93c5fd;
+            color: #1e3a8a;
+            padding: 8px 14px;
+            border-radius: 11px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        /* Cardápio Digital Interativo (Modo Cliente QR) */
+        .qr-menu-wrapper {
+            max-width: 760px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 95px;
+        }
+        .qr-menu-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+        .qr-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .qr-floating-cart {
+            position: fixed;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 28px);
+            max-width: 730px;
+            background: var(--dark);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.38);
+            z-index: 950;
+        }
+
         /* Grid de Produtos Zrest com Scroll Interno e Semáforo de Stock */
         .zrest-product-grid {
             display: grid;
@@ -855,6 +1020,13 @@
         body.dark-mode .alerta-caixa-bloqueio { background: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
         body.dark-mode .box-calculo-lucro,
         body.dark-mode .box-detalhes-perfil { background: #172554 !important; border-color: #1e40af !important; color: #bfdbfe !important; }
+        body.dark-mode .zrest-fav-bar { background: #0f172a; border-color: #1f2937; }
+        body.dark-mode .zrest-fav-chip { background: #1f2937; border-color: #374151; color: #f3f4f6; }
+        body.dark-mode .zrest-fav-chip:hover { background: #451a03; border-color: #f59e0b; color: #fde68a; }
+        body.dark-mode .btn-fav-star { background: #111827; border-color: #374151; color: #9ca3af; }
+        body.dark-mode .btn-fav-star.ativo { background: #f59e0b; border-color: #d97706; color: #ffffff; }
+        body.dark-mode .scanner-usb-pill { background: #172554; border-color: #1e40af; color: #93c5fd; }
+        body.dark-mode .qr-alert-banner { background: #172554; border-color: #2563eb; color: #dbeafe; }
         body.dark-mode #toast-container .toast { background: #1f2937; border-color: #374151; }
 
         @media (max-width: 1100px) {
@@ -916,6 +1088,69 @@
 </div>
 
 <div class="container">
+
+    <!-- ECRÃ MODO CLIENTE: CARDÁPIO DIGITAL INTERATIVO (QR CODE) -->
+    <div id="telaMenuDigitalCliente" class="qr-menu-wrapper" style="display:none;">
+        <div class="qr-menu-header">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+                <div>
+                    <span style="display:inline-block; background:rgba(255,255,255,0.2); padding:4px 10px; border-radius:999px; font-size:11.5px; font-weight:800; letter-spacing:0.04em; margin-bottom:6px;">CARDÁPIO DIGITAL INTERATIVO</span>
+                    <h2 id="qrMenuNomeEmpresa" style="margin:0; color:#ffffff; font-size:1.5em;">RESTAURANTE</h2>
+                    <p id="qrMenuInfoEmpresa" style="margin:4px 0 0 0; font-size:0.84em; opacity:0.9;">Bem-vindo! Escolha os seus itens e envie o pedido.</p>
+                </div>
+                <div style="text-align:right;">
+                    <div style="background:#ffffff; color:var(--primary); padding:6px 14px; border-radius:12px; font-weight:800; font-size:0.95em; margin-bottom:8px;">
+                        Local: <span id="qrMenuMesaBadge">Mesa 1</span>
+                    </div>
+                    <button type="button" class="btn-warning btn-sm" onclick="window.chamarGarcomQR()" style="border-radius:10px; font-size:12px;">
+                        Chamar Garçom
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="zrest-search-header" style="margin-bottom:10px; flex-wrap:wrap;">
+            <div class="zrest-cat-scroll" style="flex:1;">
+                <button class="zrest-cat-btn qr-cat-btn active" onclick="window.filtrarCategoriaMenuQR('todos', event)">Todas</button>
+                <button class="zrest-cat-btn qr-cat-btn" onclick="window.filtrarCategoriaMenuQR('bebidas', event)">Bebidas</button>
+                <button class="zrest-cat-btn qr-cat-btn" onclick="window.filtrarCategoriaMenuQR('pratos', event)">Pratos</button>
+                <button class="zrest-cat-btn qr-cat-btn" onclick="window.filtrarCategoriaMenuQR('outros', event)">Outros</button>
+            </div>
+            <input type="text" id="qrMenuPesquisa" placeholder="Procurar no menu..." oninput="window.renderizarProdutosMenuQR()" style="width:180px; border-radius:999px; padding:8px 14px; font-size:13px;">
+        </div>
+
+        <div id="qrMenuGridProdutos" class="qr-menu-grid"></div>
+
+        <!-- Barra Flutuante de Pedido do Cliente -->
+        <div class="qr-floating-cart" id="qrFloatingCartBar">
+            <div>
+                <div style="font-size:12px; opacity:0.8;">O Seu Pedido (<span id="qrMenuQtdItens">0</span> itens)</div>
+                <div style="font-size:18px; font-weight:800;" class="tabular-nums" id="qrMenuTotalPedido">0.00 MT</div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn-outline btn-sm" style="color:#ffffff; border-color:rgba(255,255,255,0.35);" onclick="window.abrirModalCarrinhoClienteQR()">Ver Pedido</button>
+                <button type="button" class="btn-success btn-sm" onclick="window.enviarPedidoClienteQR()">Enviar Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CARRINHO DO CLIENTE (CARDÁPIO DIGITAL) -->
+    <div id="modalCarrinhoClienteQR" class="modal">
+        <div class="modal-content" style="max-width:460px;">
+            <span class="close-modal" onclick="window.fecharModalCarrinhoClienteQR()">&times;</span>
+            <h3 style="margin-top:0;">Resumo do Seu Pedido (<span id="qrModalMesaTitulo">Mesa</span>)</h3>
+            <div id="qrModalListaItens" style="max-height:280px; overflow-y:auto; margin:12px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:8px 0;"></div>
+            <div class="form-group">
+                <label>Observação para Cozinha / Bar (Opcional)</label>
+                <input type="text" id="qrModalObsPedido" placeholder="Ex: Sem gelo, bem passado, talheres extra...">
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:1.15em; font-weight:800; margin:12px 0;" class="tabular-nums">
+                <span>Total Estimado:</span>
+                <span id="qrModalTotalTexto" style="color:var(--success);">0.00 MT</span>
+            </div>
+            <button type="button" class="btn-success" onclick="window.enviarPedidoClienteQR()">Confirmar & Enviar ao Balcão</button>
+        </div>
+    </div>
 
     <!-- ECRÃ DE BLOQUEIO (FULLSCREEN FIXO SEM SCROLL) -->
     <div id="telaBloqueio" class="modal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100vw; height:100vh; z-index:99999; background:rgba(9, 13, 22, 0.96); backdrop-filter:blur(12px); align-items:center; justify-content:center; margin:0; overflow:hidden;">
@@ -1146,6 +1381,15 @@
                 O CAIXA ENCONTRA-SE FECHADO! Abra o caixa na aba "Caixa & Turnos" para poder realizar vendas.
             </div>
 
+            <!-- Banner de Pedidos / Chamadas do Cardápio Digital QR -->
+            <div id="bannerPedidosQR" class="qr-alert-banner">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span id="textoBannerPedidosQR">Novo pedido recebido pelo Cardápio Digital QR!</span>
+                </div>
+                <button type="button" class="btn-primary btn-sm" style="min-height:30px; padding:4px 12px; font-size:12px;" onclick="window.abrirModalPedidosQR()">Ver Pedidos QR</button>
+            </div>
+
             <!-- Seleção de Mesas Horizontal -->
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px; flex-shrink:0;">
                 <h4 style="margin:0; font-size:0.92em; display:flex; align-items:center; gap:6px;">
@@ -1173,13 +1417,20 @@
                             <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('computadores', event)">Computadores</button>
                             <button class="zrest-cat-btn" onclick="window.filtrarCategoriaPOS('outros', event)">Outros</button>
                         </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <input type="text" id="cartPesquisaProduto" placeholder="Pesquisar produto..." oninput="window.filtrarEExibirProdutosVenda()" style="width: 175px; border-radius: 999px; padding: 8px 14px; font-size: 13px;">
-                            <button type="button" class="btn-purple" style="width: 38px; height: 38px; min-height: 38px; padding:0; border-radius: 50%;" onclick="window.abrirModalScannerBarcode()" title="Ler Código de Barras">
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <span id="badgeLeitorUsbAtivo" class="scanner-usb-pill" title="Leitor USB / Bluetooth HID pronto para leitura automática">
+                                <svg style="width:13px; height:13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="8" y1="7" x2="8" y2="17"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="16" y1="7" x2="16" y2="17"/></svg>
+                                <span>USB/BT</span>
+                            </span>
+                            <input type="text" id="cartPesquisaProduto" placeholder="Pesquisar ou bipar..." oninput="window.filtrarEExibirProdutosVenda()" onkeydown="window.tratarEnterPesquisaPOS(event)" style="width: 165px; border-radius: 999px; padding: 8px 14px; font-size: 13px;">
+                            <button type="button" class="btn-purple" style="width: 38px; height: 38px; min-height: 38px; padding:0; border-radius: 50%;" onclick="window.abrirModalScannerBarcode()" title="Ler Código de Barras por Câmara">
                                 <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
                             </button>
                         </div>
                     </div>
+
+                    <!-- Barra Fixa de Atalhos Favoritos -->
+                    <div id="barraFavoritosPOS" class="zrest-fav-bar"></div>
 
                     <!-- Grid de Produtos -->
                     <div id="gridProdutosVendaPOS" class="zrest-product-grid"></div>
@@ -1828,11 +2079,41 @@
 </div>
 
 <div id="modalQRMenu" class="modal">
-    <div class="modal-content" style="max-width:400px; text-align:center;">
+    <div class="modal-content" style="max-width:420px; text-align:center;">
         <span class="close-modal" onclick="window.fecharModalQRMenu()">&times;</span>
         <h3 style="margin-top:0;">Menu Digital / Cardápio QR</h3>
-        <div id="qrcodeArea" style="display:flex; justify-content:center; margin:20px 0;"></div>
-        <p style="font-size:0.85em; color:var(--text-muted); word-break:break-all;">Link: <span id="textLinkMenu"></span></p>
+        <div class="form-group" style="text-align:left; margin-bottom:10px;">
+            <label>Mesa / Ponto para Gerar QR Code</label>
+            <select id="selectMesaQRGenerator" onchange="window.atualizarQRMenuMesa()">
+                <option value="Balcão">Balcão</option>
+                <option value="Mesa 1">Mesa 1</option>
+                <option value="Mesa 2">Mesa 2</option>
+                <option value="Mesa 3">Mesa 3</option>
+                <option value="Mesa 4">Mesa 4</option>
+                <option value="Mesa 5">Mesa 5</option>
+                <option value="Mesa 6">Mesa 6</option>
+                <option value="Mesa 7">Mesa 7</option>
+                <option value="Mesa 8">Mesa 8</option>
+                <option value="Mesa 9">Mesa 9</option>
+                <option value="Mesa 10">Mesa 10</option>
+            </select>
+        </div>
+        <div id="qrcodeArea" style="display:flex; justify-content:center; margin:16px 0;"></div>
+        <p style="font-size:0.82em; color:var(--text-muted); word-break:break-all; margin-bottom:14px;">Link: <span id="textLinkMenu"></span></p>
+        <div style="display:flex; gap:8px; justify-content:center;">
+            <button type="button" class="btn-primary btn-sm" onclick="window.abrirPreviewCardapioQR()">Abrir Cardápio Interativo</button>
+            <button type="button" class="btn-outline btn-sm" onclick="window.copiarLinkCardapioQR()">Copiar Link</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE RECEÇÃO DE PEDIDOS DO CARDÁPIO DIGITAL QR -->
+<div id="modalPedidosQR" class="modal">
+    <div class="modal-content" style="max-width:540px;">
+        <span class="close-modal" onclick="window.fecharModalPedidosQR()">&times;</span>
+        <h3 style="margin-top:0; color:var(--primary);">Pedidos & Chamadas via Cardápio QR</h3>
+        <p style="font-size:0.85em; color:var(--text-muted); margin-bottom:14px;">Aceite os pedidos enviados pelos clientes nas mesas para lançá-los diretamente na conta.</p>
+        <div id="listaPedidosQRModal" style="display:flex; flex-direction:column; gap:12px; max-height:420px; overflow-y:auto;"></div>
     </div>
 </div>
 
@@ -2362,6 +2643,100 @@
     window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); window.sincronizarVendasOffline(); });
     window.addEventListener('offline', () => { window.atualizarEstadoConexao(); window.tocarSom('alerta'); });
 
+    // ----- MOTOR DE LEITOR DE CÓDIGO DE BARRAS USB / BLUETOOTH (PISTOLA HID) -----
+    let hidBarcodeBuffer = "";
+    let hidLastKeyTimestamp = 0;
+
+    document.addEventListener('keydown', function(e) {
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        const activeId = document.activeElement ? document.activeElement.id : '';
+        const isInputFocado = ['INPUT', 'SELECT', 'TEXTAREA'].includes(activeTag);
+
+        // Ignorar teclas modificadoras
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+        const agora = Date.now();
+        const intervalo = agora - hidLastKeyTimestamp;
+
+        if (e.key === 'Enter') {
+            if (hidBarcodeBuffer.length >= 3 && intervalo < 80) {
+                e.preventDefault();
+                e.stopPropagation();
+                const codigoLido = hidBarcodeBuffer;
+                hidBarcodeBuffer = "";
+                window.executarLeituraHardwareBarcode(codigoLido);
+                return;
+            }
+            hidBarcodeBuffer = "";
+            return;
+        }
+
+        if (e.key.length === 1) {
+            if (intervalo > 65) {
+                hidBarcodeBuffer = "";
+            }
+            hidBarcodeBuffer += e.key;
+            hidLastKeyTimestamp = agora;
+
+            // Se não estiver focado em input e acumulou leitura rápida, sinalizar no badge
+            if (!isInputFocado && hidBarcodeBuffer.length >= 3) {
+                const badgeUsb = document.getElementById('badgeLeitorUsbAtivo');
+                if (badgeUsb) badgeUsb.classList.add('lendo');
+            }
+        }
+    }, true);
+
+    window.executarLeituraHardwareBarcode = function(codigo) {
+        const badgeUsb = document.getElementById('badgeLeitorUsbAtivo');
+        if (badgeUsb) {
+            badgeUsb.classList.add('lendo');
+            setTimeout(() => badgeUsb.classList.remove('lendo'), 600);
+        }
+
+        // Se o ecrã do sistema estiver visível
+        const telaSistema = document.getElementById('telaSistema');
+        if (!telaSistema || telaSistema.style.display === 'none') return;
+
+        // Se estiver na aba de Stock, preencher automaticamente o campo de código de barras
+        const abaStock = document.getElementById('abaStock');
+        if (abaStock && abaStock.classList.contains('active')) {
+            const inputBarcodeStock = document.getElementById('simplesBarcode');
+            if (inputBarcodeStock) {
+                inputBarcodeStock.value = codigo.trim();
+                inputBarcodeStock.focus();
+                window.showToast(`Código de barras lido: ${codigo.trim()}`, "success");
+            }
+            return;
+        }
+
+        // Caso contrário (Balcão / Vendas), adicionar produto diretamente ao carrinho
+        window.processarCodigoBarrasLido(codigo);
+    };
+
+    window.tratarEnterPesquisaPOS = function(e) {
+        if (e.key !== 'Enter') return;
+        const input = document.getElementById('cartPesquisaProduto');
+        if (!input) return;
+        const termo = input.value.trim();
+        if (!termo) return;
+
+        e.preventDefault();
+        const termoLower = termo.toLowerCase();
+        let match = null;
+        for (let p in stock) {
+            if ((stock[p].barcode && stock[p].barcode.toLowerCase() === termoLower) || p.toLowerCase() === termoLower) {
+                match = p;
+                break;
+            }
+        }
+        if (match) {
+            window.selecionarProdutoCardPOS(match);
+            input.value = '';
+            filtrarEExibirProdutosVenda();
+            window.showToast(`Produto '${match}' adicionado!`, "success");
+        }
+    };
+
     // ----- SUPORTE GLOBAL TECLA ENTER -----
     document.addEventListener('DOMContentLoaded', () => {
         window.atualizarEstadoConexao();
@@ -2383,6 +2758,14 @@
         
         const urlParams = new URLSearchParams(window.location.search);
         let empUrl = urlParams.get('empresa');
+        let mesaUrl = urlParams.get('mesa');
+        let menuFlag = urlParams.get('menu');
+
+        if (empUrl && (mesaUrl || menuFlag === '1')) {
+            window.iniciarModoCardapioCliente(empUrl.trim().toUpperCase(), mesaUrl || 'Mesa 1');
+            return;
+        }
+
         if (empUrl) {
             codigoEmpresa = empUrl.trim().toUpperCase();
             localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
@@ -2393,7 +2776,7 @@
 
     // ----- VARIÁVEIS DE ESTADO DO SISTEMA -----
     let codigoEmpresa = "";
-    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [];
+    let usuarios = {}, stock = {}, historico = [], clientes = [], despesas = [], movimentacoesStock = [], turnosCaixa = [], auditLogs = [], pedidosQR = [];
     let mesas = { "Balcão": [] };
     let bloqueiosMesas = {}; 
     for(let i=1; i<=10; i++) mesas[`Mesa ${i}`] = [];
@@ -2765,8 +3148,23 @@
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "stock"), (docSnap) => {
             stock = docSnap.exists() ? docSnap.data() : {};
-            if (usuarioAtual) { atualizarDropdownProdutosCart(); filtrarEExibirProdutosVenda(); renderizarStock(); verificarAlertasStock(); }
+            if (usuarioAtual) { atualizarDropdownProdutosCart(); renderizarBarraFavoritosPOS(); filtrarEExibirProdutosVenda(); renderizarStock(); verificarAlertasStock(); }
         }, (err) => console.error("Erro Stock:", err)));
+
+        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "pedidos_qr"), (snapshot) => {
+            let antesCount = pedidosQR.length;
+            pedidosQR = snapshot.docs
+                .map(d => ({ idDoc: d.id, ...d.data() }))
+                .filter(p => p.status === 'pendente');
+            pedidosQR.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+            if (usuarioAtual) {
+                atualizarBannerPedidosQR();
+                if (pedidosQR.length > antesCount) {
+                    window.showToast(`Novo pedido/chamada via Cardápio QR (${pedidosQR[0].mesa})!`, "info");
+                }
+            }
+        }, (err) => console.error("Erro Pedidos QR:", err)));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
             bloqueiosMesas = docSnap.exists() ? docSnap.data() : {};
@@ -2948,6 +3346,7 @@
             configurarPerfilPermissoes();
             renderizarMesasGrid();
             atualizarDropdownProdutosCart();
+            renderizarBarraFavoritosPOS();
             filtrarEExibirProdutosVenda();
             renderizarStock();
             renderizarMovimentacoesStock();
@@ -3502,6 +3901,54 @@
     }
 
     // ----- MOTOR DE PRODUTOS E CARRINHO POS -----
+    window.alternarFavoritoProduto = async function(produto, evt) {
+        if (evt) {
+            evt.stopPropagation();
+            evt.preventDefault();
+        }
+        if (!stock[produto]) return;
+        window.tocarSom('click');
+        const novoEstado = !stock[produto].favorito;
+        stock[produto].favorito = novoEstado;
+
+        renderizarBarraFavoritosPOS();
+        filtrarEExibirProdutosVenda();
+        renderizarStock();
+
+        await salvarStockFirestore({ [produto]: { favorito: novoEstado } });
+        window.showToast(
+            novoEstado ? `'${produto}' fixado nos Favoritos!` : `'${produto}' removido dos Favoritos.`,
+            novoEstado ? "success" : "info"
+        );
+    };
+
+    function renderizarBarraFavoritosPOS() {
+        const bar = document.getElementById('barraFavoritosPOS');
+        if (!bar) return;
+
+        const favoritos = Object.keys(stock).filter(p => stock[p] && stock[p].favorito === true);
+        bar.innerHTML = `<span class="zrest-fav-label">★ Favoritos:</span>`;
+
+        if (favoritos.length === 0) {
+            bar.innerHTML += `<span style="font-size:11.5px; color:var(--text-muted); font-weight:600;">Toque na estrela (☆) de um produto abaixo para fixar atalhos rápidos aqui.</span>`;
+            return;
+        }
+
+        favoritos.forEach(p => {
+            const item = stock[p];
+            const qtd = item.qtd || 0;
+            const preco = item.precoVendaUnit || 0;
+            const esgotado = qtd <= 0;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `zrest-fav-chip ${esgotado ? 'esgotado' : ''}`;
+            btn.onclick = () => window.selecionarProdutoCardPOS(p);
+            btn.innerHTML = `<span>${p}</span><span style="color:var(--success-dark); font-weight:800;">${preco.toFixed(0)} MT</span>`;
+            bar.appendChild(btn);
+        });
+    }
+
     window.filtrarCategoriaPOS = function(cat, evt) {
         window.tocarSom('click');
         categoriaPOSSelecionada = cat;
@@ -3577,12 +4024,21 @@
                 div.classList.add('card-added-pulse');
                 window.selecionarProdutoCardPOS(p);
             };
+            const isFav = item.favorito === true;
+            const btnFav = document.createElement('button');
+            btnFav.type = 'button';
+            btnFav.className = `btn-fav-star ${isFav ? 'ativo' : ''}`;
+            btnFav.title = isFav ? 'Remover dos Favoritos' : 'Fixar nos Favoritos';
+            btnFav.innerHTML = isFav ? '★' : '☆';
+            btnFav.onclick = (e) => window.alternarFavoritoProduto(p, e);
+
             div.innerHTML = `
                 ${midiaHtml}
                 <div class="zrest-prod-title">${p}</div>
                 <div class="zrest-prod-price">${preco.toFixed(2)} MT</div>
                 <div class="zrest-prod-stock ${classeStock}">${textoStock}</div>
             `;
+            div.appendChild(btnFav);
             grid.appendChild(div);
         });
 
@@ -4471,6 +4927,7 @@
                 <td class="col-gerente"><small style="color:var(--text-muted);">Inv: ${invItem.toFixed(0)} MT</small><br><b style="color:var(--primary);">Atu: ${valAtualVenda.toFixed(0)} MT</b></td>
                 <td class="col-gerente" style="color:${lucroEstTotal >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:bold;">${lucroEstTotal.toFixed(2)} MT</td>
                 <td class="col-gerente">
+                    <button class="btn-outline btn-sm" style="${item.favorito ? 'border-color:var(--warning); color:var(--warning-dark); background:var(--warning-soft);' : ''}" onclick="window.alternarFavoritoProduto('${p}', event)" title="Fixar nos Favoritos">${item.favorito ? '★' : '☆'}</button>
                     <button class="btn-warning btn-sm" onclick="window.ajustarStockManual('${p}')">Editar</button>
                     <button class="btn-saida btn-sm" onclick="window.apagarProdutoStock('${p}')">Eliminar</button>
                 </td>
@@ -4910,16 +5367,389 @@
 
     window.abrirModalQRMenu = function() {
         let modal = document.getElementById('modalQRMenu');
+        let selMesa = document.getElementById('selectMesaQRGenerator');
+        if (selMesa && mesaSelecionada) selMesa.value = mesaSelecionada;
+        window.atualizarQRMenuMesa();
+        if (modal) modal.style.display = 'block';
+    };
+    window.fecharModalQRMenu = function() { document.getElementById('modalQRMenu').style.display = 'none'; };
+
+    window.atualizarQRMenuMesa = function() {
         let qrArea = document.getElementById('qrcodeArea');
-        if (!modal || !qrArea) return;
+        if (!qrArea) return;
         qrArea.innerHTML = "";
-        let link = window.location.href.split('?')[0] + "?empresa=" + codigoEmpresa + "&mesa=" + encodeURIComponent(mesaSelecionada);
+        let mesaEscolhida = document.getElementById('selectMesaQRGenerator')?.value || mesaSelecionada || 'Mesa 1';
+        let link = window.location.href.split('?')[0] + "?empresa=" + encodeURIComponent(codigoEmpresa) + "&mesa=" + encodeURIComponent(mesaEscolhida);
         let textSpan = document.getElementById('textLinkMenu');
         if (textSpan) textSpan.innerText = link;
         new QRCode(qrArea, { text: link, width: 180, height: 180 });
-        modal.style.display = 'block';
     };
-    window.fecharModalQRMenu = function() { document.getElementById('modalQRMenu').style.display = 'none'; };
+
+    window.abrirPreviewCardapioQR = function() {
+        let link = document.getElementById('textLinkMenu')?.innerText;
+        if (link) window.open(link, '_blank');
+    };
+
+    window.copiarLinkCardapioQR = function() {
+        let link = document.getElementById('textLinkMenu')?.innerText;
+        if (!link) return;
+        let temp = document.createElement('textarea');
+        temp.value = link;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        window.showToast("Link do Cardápio Digital copiado!", "success");
+    };
+
+    // ----- CARDÁPIO DIGITAL INTERATIVO (MODO CLIENTE) & RECEÇÃO NO POS -----
+    let qrClienteEmpresa = "";
+    let qrClienteMesa = "Mesa 1";
+    let qrClienteCategoria = "todos";
+    let qrClienteCarrinho = [];
+
+    window.iniciarModoCardapioCliente = function(empCode, mesaNome) {
+        qrClienteEmpresa = empCode;
+        qrClienteMesa = mesaNome;
+
+        document.getElementById('telaFirebaseAuth').style.display = 'none';
+        document.getElementById('telaRegisto').style.display = 'none';
+        document.getElementById('telaLogin').style.display = 'none';
+        document.getElementById('telaSistema').style.display = 'none';
+        document.getElementById('telaMenuDigitalCliente').style.display = 'block';
+        document.getElementById('qrMenuMesaBadge').innerText = qrClienteMesa;
+        document.getElementById('qrModalMesaTitulo').innerText = qrClienteMesa;
+
+        onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "empresa"), (docSnap) => {
+            if (docSnap.exists()) {
+                const info = docSnap.data();
+                document.getElementById('qrMenuNomeEmpresa').innerText = (info.nome || qrClienteEmpresa).toUpperCase();
+                const sub = [info.endereco, info.telefone ? `Tel: ${info.telefone}` : ''].filter(Boolean).join(' • ');
+                if (sub) document.getElementById('qrMenuInfoEmpresa').innerText = sub;
+            }
+        });
+
+        onSnapshot(doc(db, "empresas", qrClienteEmpresa, "dados", "stock"), (docSnap) => {
+            stock = docSnap.exists() ? docSnap.data() : {};
+            window.renderizarProdutosMenuQR();
+        });
+    };
+
+    window.filtrarCategoriaMenuQR = function(cat, evt) {
+        qrClienteCategoria = cat;
+        document.querySelectorAll('.qr-cat-btn').forEach(b => b.classList.remove('active'));
+        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+        window.renderizarProdutosMenuQR();
+    };
+
+    window.renderizarProdutosMenuQR = function() {
+        const grid = document.getElementById('qrMenuGridProdutos');
+        if (!grid) return;
+        const termo = (document.getElementById('qrMenuPesquisa')?.value || '').toLowerCase();
+        grid.innerHTML = '';
+
+        const lista = Object.keys(stock).filter(p => {
+            const it = stock[p];
+            if (qrClienteCategoria !== 'todos' && (it.categoria || 'bebidas') !== qrClienteCategoria) return false;
+            if (termo && !p.toLowerCase().includes(termo)) return false;
+            return true;
+        });
+
+        if (lista.length === 0) {
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted); font-weight:700;">Nenhum item disponível nesta categoria.</div>`;
+            return;
+        }
+
+        lista.forEach(p => {
+            const item = stock[p];
+            const qtd = item.qtd || 0;
+            const preco = item.precoVendaUnit || 0;
+            const esgotado = qtd <= 0;
+            const iconId = item.icone || window.detetarIconeProduto(p, item.categoria || '');
+            const iconInfo = GS_BEBIDAS_ICONS[iconId] || GS_BEBIDAS_ICONS.padrao_produto;
+            const fotoReal = item.imagemUrl || window.obterFotoRealProduto(p);
+
+            const midiaHtml = fotoReal
+                ? `<img src="${fotoReal}" alt="${p}" class="zrest-prod-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="zrest-prod-icon" style="display:none; background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`
+                : `<div class="zrest-prod-icon" style="background:${iconInfo.bg}; color:${iconInfo.cor};">${iconInfo.svg}</div>`;
+
+            const card = document.createElement('div');
+            card.className = `zrest-product-card ${esgotado ? 'esgotado' : ''}`;
+            card.innerHTML = `
+                ${midiaHtml}
+                <div class="zrest-prod-title">${p}</div>
+                <div class="zrest-prod-price">${preco.toFixed(2)} MT</div>
+                <div style="margin-top:8px;">
+                    ${esgotado
+                        ? `<span class="zrest-prod-stock esgotado">Indisponível</span>`
+                        : `<button type="button" class="btn-primary btn-sm" style="width:100%; min-height:32px; font-size:12px;" onclick="window.adicionarItemClienteQR('${p.replace(/'/g, "\\'")}')">+ Adicionar</button>`}
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    };
+
+    window.adicionarItemClienteQR = function(produto) {
+        const itemStock = stock[produto];
+        if (!itemStock || (itemStock.qtd || 0) <= 0) return;
+
+        const existente = qrClienteCarrinho.find(i => i.produto === produto);
+        if (existente) {
+            if (existente.qtd + 1 > itemStock.qtd) {
+                return window.showToast(`Limite disponível atingido (${itemStock.qtd} un).`, "warning");
+            }
+            existente.qtd += 1;
+            existente.subtotal = existente.qtd * existente.vendaUnit;
+        } else {
+            qrClienteCarrinho.push({
+                produto: produto,
+                qtd: 1,
+                vendaUnit: itemStock.precoVendaUnit || 0,
+                subtotal: itemStock.precoVendaUnit || 0
+            });
+        }
+        window.atualizarResumoFlutuanteQR();
+        window.showToast(`${produto} adicionado ao seu pedido!`, "success");
+    };
+
+    window.atualizarResumoFlutuanteQR = function() {
+        const totalQtd = qrClienteCarrinho.reduce((acc, i) => acc + i.qtd, 0);
+        const totalVal = qrClienteCarrinho.reduce((acc, i) => acc + i.subtotal, 0);
+        document.getElementById('qrMenuQtdItens').innerText = totalQtd;
+        document.getElementById('qrMenuTotalPedido').innerText = totalVal.toFixed(2) + " MT";
+        document.getElementById('qrModalTotalTexto').innerText = totalVal.toFixed(2) + " MT";
+    };
+
+    window.abrirModalCarrinhoClienteQR = function() {
+        const listaEl = document.getElementById('qrModalListaItens');
+        listaEl.innerHTML = '';
+        if (qrClienteCarrinho.length === 0) {
+            listaEl.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:16px 0;">Ainda não adicionou itens ao pedido.</p>`;
+        } else {
+            qrClienteCarrinho.forEach((item, idx) => {
+                listaEl.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 0; border-bottom:1px dashed var(--border);">
+                        <div style="flex:1;">
+                            <div style="font-weight:800; font-size:13.5px;">${item.produto}</div>
+                            <div style="font-size:12px; color:var(--text-muted);">${item.vendaUnit.toFixed(2)} MT / un</div>
+                        </div>
+                        <div class="cart-qty-stepper">
+                            <button type="button" class="btn-qty-step" onclick="window.alterarQtdClienteQR(${idx}, -1)">-</button>
+                            <span class="cart-qty-val">${item.qtd}</span>
+                            <button type="button" class="btn-qty-step" onclick="window.alterarQtdClienteQR(${idx}, 1)">+</button>
+                        </div>
+                        <div style="font-weight:800; min-width:70px; text-align:right;" class="tabular-nums">${item.subtotal.toFixed(2)} MT</div>
+                    </div>
+                `;
+            });
+        }
+        window.atualizarResumoFlutuanteQR();
+        document.getElementById('modalCarrinhoClienteQR').style.display = 'block';
+    };
+
+    window.fecharModalCarrinhoClienteQR = function() {
+        document.getElementById('modalCarrinhoClienteQR').style.display = 'none';
+    };
+
+    window.alterarQtdClienteQR = function(idx, delta) {
+        const item = qrClienteCarrinho[idx];
+        if (!item) return;
+        const maxStock = stock[item.produto]?.qtd || 0;
+        if (delta > 0 && item.qtd + 1 > maxStock) {
+            return window.showToast("Quantidade máxima disponível atingida.", "warning");
+        }
+        item.qtd += delta;
+        if (item.qtd <= 0) {
+            qrClienteCarrinho.splice(idx, 1);
+        } else {
+            item.subtotal = item.qtd * item.vendaUnit;
+        }
+        window.abrirModalCarrinhoClienteQR();
+    };
+
+    window.enviarPedidoClienteQR = async function() {
+        if (qrClienteCarrinho.length === 0) {
+            return window.showToast("Adicione pelo menos um item ao pedido!", "warning");
+        }
+        const obs = document.getElementById('qrModalObsPedido')?.value.trim() || "";
+        const total = qrClienteCarrinho.reduce((acc, i) => acc + i.subtotal, 0);
+
+        if (!window.iniciarProcessamento()) return;
+        try {
+            await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
+                tipo: "pedido",
+                status: "pendente",
+                mesa: qrClienteMesa,
+                itens: [...qrClienteCarrinho],
+                observacao: obs,
+                total: total,
+                timestamp: Date.now(),
+                data: new Date().toLocaleTimeString('pt-MZ', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            qrClienteCarrinho = [];
+            if (document.getElementById('qrModalObsPedido')) document.getElementById('qrModalObsPedido').value = "";
+            window.atualizarResumoFlutuanteQR();
+            window.fecharModalCarrinhoClienteQR();
+            window.showToast("Pedido enviado com sucesso! O balcão já recebeu.", "success");
+        } catch (e) {
+            window.showToast("Erro ao enviar pedido: " + e.message, "error");
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    window.chamarGarcomQR = async function() {
+        if (!window.iniciarProcessamento()) return;
+        try {
+            await addDoc(collection(db, "empresas", qrClienteEmpresa, "pedidos_qr"), {
+                tipo: "chamada",
+                status: "pendente",
+                mesa: qrClienteMesa,
+                itens: [],
+                observacao: "Cliente solicitou atendimento na mesa",
+                total: 0,
+                timestamp: Date.now(),
+                data: new Date().toLocaleTimeString('pt-MZ', { hour: '2-digit', minute: '2-digit' })
+            });
+            window.showToast(`Chamada enviada! Um atendente vai dirigir-se à ${qrClienteMesa}.`, "success");
+        } catch (e) {
+            window.showToast("Erro ao chamar garçom: " + e.message, "error");
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    function atualizarBannerPedidosQR() {
+        const banner = document.getElementById('bannerPedidosQR');
+        const txt = document.getElementById('textoBannerPedidosQR');
+        if (!banner || !txt) return;
+
+        if (pedidosQR.length === 0) {
+            banner.style.display = 'none';
+            return;
+        }
+        banner.style.display = 'flex';
+        const mesasStr = [...new Set(pedidosQR.map(p => p.mesa))].join(', ');
+        txt.innerText = `${pedidosQR.length} solicitação(ões) pendente(s) via QR Code (${mesasStr})`;
+    }
+
+    window.abrirModalPedidosQR = function() {
+        const lista = document.getElementById('listaPedidosQRModal');
+        if (!lista) return;
+        lista.innerHTML = '';
+
+        if (pedidosQR.length === 0) {
+            lista.innerHTML = `<p style="text-align:center; color:var(--text-muted);">Sem pedidos ou chamadas pendentes.</p>`;
+        } else {
+            pedidosQR.forEach(p => {
+                const isChamada = p.tipo === 'chamada';
+                const itensHtml = isChamada
+                    ? `<div style="font-weight:700; color:var(--warning-dark);">Cliente solicitou o garçom na mesa.</div>`
+                    : (p.itens || []).map(i => `<div>• <b>${i.qtd}x</b> ${i.produto} (${(i.subtotal || 0).toFixed(2)} MT)</div>`).join('');
+
+                lista.innerHTML += `
+                    <div style="background:var(--surface-sub); border:1.5px solid var(--border); border-radius:14px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-weight:800; font-size:1.05em; color:var(--primary);">${p.mesa}</span>
+                            <span class="badge">${p.data || ''}</span>
+                        </div>
+                        <div style="font-size:0.9em; margin-bottom:8px;">${itensHtml}</div>
+                        ${p.observacao && !isChamada ? `<div style="font-size:0.82em; color:var(--warning-dark); margin-bottom:8px;"><b>Obs:</b> ${p.observacao}</div>` : ''}
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px;">
+                            ${!isChamada ? `<b class="tabular-nums" style="color:var(--success);">Total: ${(p.total || 0).toFixed(2)} MT</b>` : '<span></span>'}
+                            <div style="display:flex; gap:8px;">
+                                <button type="button" class="btn-outline btn-sm" onclick="window.dispensarPedidoQR('${p.idDoc}')">Dispensar</button>
+                                ${!isChamada ? `<button type="button" class="btn-success btn-sm" onclick="window.aceitarPedidoQR('${p.idDoc}')">Aceitar & Lançar na Mesa</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        document.getElementById('modalPedidosQR').style.display = 'block';
+    };
+
+    window.fecharModalPedidosQR = function() {
+        document.getElementById('modalPedidosQR').style.display = 'none';
+    };
+
+    window.aceitarPedidoQR = async function(idDoc) {
+        if (!caixaEstado.aberto) {
+            return window.showToast("Abra o caixa antes de aceitar pedidos!", "error");
+        }
+        const pedido = pedidosQR.find(p => p.idDoc === idDoc);
+        if (!pedido) return;
+
+        const mesaDestino = pedido.mesa || "Balcão";
+        const permMesa = window.verificarPermissaoMesa(mesaDestino);
+        if (permMesa.bloqueada) {
+            return window.showToast(`A ${mesaDestino} está bloqueada pelo perfil ${permMesa.responsavel.toUpperCase()}.`, "error");
+        }
+
+        if (!window.iniciarProcessamento()) return;
+        try {
+            let updatesStock = {};
+            let carrinhoMesa = mesas[mesaDestino] || [];
+
+            for (const item of (pedido.itens || [])) {
+                if (!stock[item.produto] || (stock[item.produto].qtd || 0) < item.qtd) {
+                    window.showToast(`Stock insuficiente para '${item.produto}'.`, "error");
+                    return;
+                }
+            }
+
+            for (const item of (pedido.itens || [])) {
+                stock[item.produto].qtd -= item.qtd;
+                updatesStock[item.produto] = { qtd: stock[item.produto].qtd };
+
+                const existente = carrinhoMesa.find(c => c.produto === item.produto && c.vendaUnit === item.vendaUnit);
+                if (existente) {
+                    existente.qtd += item.qtd;
+                    existente.subtotal += item.subtotal;
+                } else {
+                    carrinhoMesa.push({ ...item });
+                }
+            }
+
+            if (mesaDestino !== "Balcão" && !bloqueiosMesas[mesaDestino]) {
+                bloqueiosMesas[mesaDestino] = usuarioAtual.nome;
+            }
+
+            mesas[mesaDestino] = carrinhoMesa;
+            await salvarStockFirestore(updatesStock);
+            await sincronizarMesaRemota(mesaDestino);
+            await setDoc(doc(db, "empresas", codigoEmpresa, "pedidos_qr", idDoc), {
+                status: "aceite",
+                aceitePor: usuarioAtual.nome
+            }, { merge: true });
+
+            mesaSelecionada = mesaDestino;
+            document.getElementById('labelMesaAtual').innerText = mesaDestino;
+            renderizarMesasGrid();
+            window.renderizarCarrinho();
+            filtrarEExibirProdutosVenda();
+            window.fecharModalPedidosQR();
+            window.showToast(`Pedido lançado na ${mesaDestino} com sucesso!`, "success");
+        } catch (e) {
+            window.showToast("Erro ao aceitar pedido QR: " + e.message, "error");
+        } finally {
+            window.fimProcessamento();
+        }
+    };
+
+    window.dispensarPedidoQR = async function(idDoc) {
+        try {
+            await setDoc(doc(db, "empresas", codigoEmpresa, "pedidos_qr", idDoc), {
+                status: "concluido",
+                tratadoPor: usuarioAtual ? usuarioAtual.nome : "operador"
+            }, { merge: true });
+            window.abrirModalPedidosQR();
+            window.showToast("Solicitação concluída.", "info");
+        } catch (e) {
+            window.showToast("Erro ao atualizar pedido: " + e.message, "error");
+        }
+    };
 
     // ----- IMPRESSORA BLUETOOTH ESC/POS -----
     window.conectarImpressoraBluetooth = async function() {
