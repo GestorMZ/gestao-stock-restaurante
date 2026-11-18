@@ -1912,8 +1912,8 @@
         <p id="reciboSubtotalRow" style="margin:2px 0; text-align:right;">Subtotal Líquido: <span id="reciboSubtotalLiq">0.00</span> MT</p>
         <p id="reciboIvaRow" style="margin:2px 0; text-align:right;">IVA (<span id="reciboTaxaIvaValor">16</span>%): <span id="reciboValIva">0.00</span> MT</p>
         <h4 style="text-align:right; margin:5px 0; font-size:13px;">TOTAL: <span id="reciboTotal"></span> MT</h4>
-        <p style="margin:2px 0; text-align:right;">Valor Entregue: <span id="reciboValorEntregue">0.00</span> MT</p>
-        <p style="margin:2px 0; text-align:right; font-weight:bold;">Troco: <span id="reciboTroco">0.00</span> MT</p>
+        <p id="reciboValorEntregueRow" style="margin:2px 0; text-align:right;">Valor Entregue: <span id="reciboValorEntregue">0.00</span> MT</p>
+        <p id="reciboTrocoRow" style="margin:2px 0; text-align:right; font-weight:bold;">Troco: <span id="reciboTroco">0.00</span> MT</p>
         <p style="margin:5px 0;">--------------------------------</p>
         <p id="reciboSlogan" style="text-align:center; font-size:10px; margin-top:10px;">Obrigado pela preferência!</p>
     </div>
@@ -2259,6 +2259,7 @@
             document.getElementById('customModalInput').style.display = 'none';
             document.getElementById('customModalBtnCancel').style.display = 'none';
             let btnOK = document.getElementById('customModalBtnOK');
+            btnOK.innerText = 'OK';
             btnOK.onclick = () => {
                 document.getElementById('customModalOverlay').style.display = 'none';
                 resolve();
@@ -2266,21 +2267,26 @@
         });
     };
 
-    window.customConfirm = function(msg) {
+    window.customConfirm = function(msg, okLabel = 'OK') {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
             document.getElementById('customModalTitle').innerText = 'Confirmação';
             document.getElementById('customModalText').innerText = msg;
             document.getElementById('customModalInput').style.display = 'none';
             document.getElementById('customModalBtnCancel').style.display = 'block';
-            document.getElementById('customModalBtnOK').onclick = () => {
+            let btnOK = document.getElementById('customModalBtnOK');
+            btnOK.innerText = okLabel;
+            btnOK.onclick = () => {
+                btnOK.innerText = 'OK';
                 document.getElementById('customModalOverlay').style.display = 'none';
                 resolve(true);
             };
             document.getElementById('customModalBtnCancel').onclick = () => {
+                btnOK.innerText = 'OK';
                 document.getElementById('customModalOverlay').style.display = 'none';
                 resolve(false);
             };
+            setTimeout(() => btnOK.focus(), 50);
         });
     };
 
@@ -3750,56 +3756,85 @@
 
         if(carrinhoAtual.length === 0) {
             container.innerHTML = `<div style="text-align:center; padding:34px 12px; color:var(--text-muted); font-size:0.88em; font-weight:600;">Carrinho vazio.<br>Toque num produto ao lado para adicionar.</div>`;
-        }
-
-        carrinhoAtual.forEach((item, idx) => {
-            bruto += item.subtotal;
-            container.innerHTML += `
-                <div class="zrest-cart-item-row">
+        } else {
+            carrinhoAtual.forEach((item, idx) => {
+                bruto += (item.subtotal || 0);
+                let row = document.createElement('div');
+                row.className = 'zrest-cart-item-row';
+                row.innerHTML = `
                     <div class="zrest-cart-item-info">
-                        <div class="zrest-cart-item-name" title="${item.produto}">${item.produto}</div>
-                        <div class="zrest-cart-item-meta tabular-nums">${item.vendaUnit.toFixed(2)} MT/un</div>
+                        <div class="zrest-cart-item-name">${item.produto}</div>
+                        <div class="zrest-cart-item-meta">${(item.vendaUnit || 0).toFixed(2)} MT / un</div>
                     </div>
                     <div class="cart-qty-stepper">
-                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, -1)" title="Diminuir">−</button>
+                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, -1)">-</button>
                         <span class="cart-qty-val">${item.qtd}</span>
-                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, 1)" title="Aumentar">+</button>
+                        <button type="button" class="btn-qty-step" onclick="window.alterarQtdItemCarrinho(${idx}, 1)">+</button>
                     </div>
-                    <div class="zrest-cart-item-price">${item.subtotal.toFixed(2)}</div>
-                    <button class="zrest-cart-item-delete" onclick="window.removerItemCarrinho(${idx})" title="Remover item">✕</button>
-                </div>`;
-        });
+                    <div class="zrest-cart-item-price">${(item.subtotal || 0).toFixed(2)} MT</div>
+                    <button type="button" class="zrest-cart-item-delete" onclick="window.removerItemCarrinho(${idx})" title="Remover item">✕</button>
+                `;
+                container.appendChild(row);
+            });
+        }
 
-        let desc = parseFloat(document.getElementById('cartDesconto').value) || 0;
+        let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
         let total = Math.max(0, bruto - desc);
-        
-        document.getElementById('cartTotalTexto').innerText = total.toFixed(2) + " MT";
+        let elTotal = document.getElementById('cartTotalTexto');
+        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
+
         window.calcularTroco();
-        if(document.getElementById('cartModoPagamentoTipo').value === 'Desdobrado') window.calcularTotaisDesdobrados();
+        if (document.getElementById('cartModoPagamentoTipo')?.value === 'Desdobrado') {
+            window.calcularTotaisDesdobrados();
+        }
     };
 
     window.calcularTotaisDesdobrados = function() {
-        let totalStr = document.getElementById('cartTotalTexto').innerText.replace(' MT', '');
+        let totalStr = document.getElementById('cartTotalTexto')?.innerText.replace(' MT', '') || '0';
         let total = parseFloat(totalStr) || 0;
-        let din = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
-        let mpesa = parseFloat(document.getElementById('payDesdMpesa').value) || 0;
-        let emola = parseFloat(document.getElementById('payDesdEmola').value) || 0;
-        let pos = parseFloat(document.getElementById('payDesdPOS').value) || 0;
-
+        let din = parseFloat(document.getElementById('payDesdDinheiro')?.value) || 0;
+        let mpesa = parseFloat(document.getElementById('payDesdMpesa')?.value) || 0;
+        let emola = parseFloat(document.getElementById('payDesdEmola')?.value) || 0;
+        let pos = parseFloat(document.getElementById('payDesdPOS')?.value) || 0;
         let soma = din + mpesa + emola + pos;
         let falta = Math.max(0, total - soma);
-        document.getElementById('lblSomaDesdobrado').innerText = soma.toFixed(2) + " MT";
-        document.getElementById('lblFaltaDesdobrado').innerText = falta.toFixed(2) + " MT";
+
+        let lblSoma = document.getElementById('lblSomaDesdobrado');
+        let lblFalta = document.getElementById('lblFaltaDesdobrado');
+        if (lblSoma) lblSoma.innerText = soma.toFixed(2) + " MT";
+        if (lblFalta) lblFalta.innerText = falta.toFixed(2) + " MT";
     };
 
-    window.setValorEntregueRapido = function(tipo) {
+    window.setValorEntregueRapido = async function(tipo) {
+        let carrinhoAtual = mesas[mesaSelecionada] || [];
+        if (carrinhoAtual.length === 0) {
+            return window.showToast("Adicione produtos ao carrinho primeiro!", "warning");
+        }
+
         window.tocarSom('click');
         let totalStr = document.getElementById('cartTotalTexto').innerText.replace(' MT', '');
         let total = parseFloat(totalStr) || 0;
         let inputEntregue = document.getElementById('cartValorEntregue');
-        if (tipo === 'exato') inputEntregue.value = total.toFixed(2);
-        else { let atual = parseFloat(inputEntregue.value) || 0; inputEntregue.value = (atual + tipo).toFixed(2); }
+
+        if (tipo === 'exato') {
+            inputEntregue.value = total.toFixed(2);
+        } else {
+            let atual = parseFloat(inputEntregue.value) || 0;
+            inputEntregue.value = (atual + tipo).toFixed(2);
+        }
         window.calcularTroco();
+
+        let entregue = parseFloat(inputEntregue.value) || 0;
+        if (total > 0 && entregue >= total - 0.01) {
+            let trocoCalc = Math.max(0, entregue - total);
+            let confirmarCobrar = await customConfirm(
+                `Total a Pagar: ${total.toFixed(2)} MT\nValor Entregue: ${entregue.toFixed(2)} MT\nTroco a Devolver: ${trocoCalc.toFixed(2)} MT\n\nDeseja terminar a venda e cobrar agora?`,
+                'Terminar & Cobrar'
+            );
+            if (confirmarCobrar) {
+                await window.finalizarVendaCarrinho();
+            }
+        }
     };
 
     window.calcularTroco = function() {
@@ -3825,15 +3860,33 @@
         let clienteIdFiado = null, clienteNomeFiado = "";
         let desdobramentoInfo = null;
         let isCortesia = false;
+        let entregue = 0;
 
         if(modoTipo === 'Unico') {
             metodo = document.getElementById('cartMetodoPagamento').value;
-            if(metodo === 'Cortesia') { isCortesia = true; totalVenda = 0; desc = bruto; }
-            if(metodo === 'Fiado') {
+            if(metodo === 'Cortesia') {
+                isCortesia = true;
+                totalVenda = 0;
+                desc = bruto;
+                entregue = 0;
+            } else if(metodo === 'Fiado') {
                 clienteIdFiado = parseInt(document.getElementById('cartSelectClienteFiado').value);
                 if(!clienteIdFiado) return window.showToast("Selecione um cliente para a conta a Fiado!", "warning");
                 let cli = clientes.find(c => c.id === clienteIdFiado);
                 clienteNomeFiado = cli ? cli.nome : "";
+                entregue = 0;
+            } else if (totalVenda > 0) {
+                let rawEntregue = document.getElementById('cartValorEntregue').value.trim();
+                let entregueInformado = parseFloat(rawEntregue);
+                if (rawEntregue === '' || isNaN(entregueInformado) || entregueInformado <= 0) {
+                    document.getElementById('cartValorEntregue').focus();
+                    return window.showToast("Introduza o Valor Entregue pelo cliente antes de finalizar a venda!", "error");
+                }
+                if (entregueInformado < totalVenda - 0.01) {
+                    document.getElementById('cartValorEntregue').focus();
+                    return window.showToast(`Valor Entregue (${entregueInformado.toFixed(2)} MT) é inferior ao Total (${totalVenda.toFixed(2)} MT)!`, "error");
+                }
+                entregue = entregueInformado;
             }
         } else {
             let din = parseFloat(document.getElementById('payDesdDinheiro').value) || 0;
@@ -3846,12 +3899,12 @@
             }
             metodo = `Desdobrado (Din:${din}, MP:${mpesa}, eM:${emola}, POS:${pos})`;
             desdobramentoInfo = { din, mpesa, emola, pos };
+            entregue = soma;
         }
 
         if (!window.iniciarProcessamento()) return;
 
         try {
-            let entregue = parseFloat(document.getElementById('cartValorEntregue').value) || totalVenda;
             let troco = Math.max(0, entregue - totalVenda);
 
             let totalCusto = 0;
@@ -3965,7 +4018,8 @@
             let nuitCli = document.getElementById('cartNuitCliente').value.trim();
             let modoTipo = document.getElementById('cartModoPagamentoTipo').value;
             let metodo = modoTipo === 'Unico' ? document.getElementById('cartMetodoPagamento').value : 'Desdobrado';
-            let entregue = parseFloat(document.getElementById('cartValorEntregue').value) || totalVenda;
+            let entregueInput = parseFloat(document.getElementById('cartValorEntregue').value) || 0;
+            let entregue = entregueInput > 0 ? entregueInput : totalVenda;
             let troco = Math.max(0, entregue - totalVenda);
 
             let reciboAtual = {
@@ -4045,8 +4099,17 @@
         }
 
         document.getElementById('reciboTotal').innerText = total.toFixed(2);
-        document.getElementById('reciboValorEntregue').innerText = (venda.valorEntregue || total).toFixed(2);
-        document.getElementById('reciboTroco').innerText = (venda.troco || 0).toFixed(2);
+        let rowEntregue = document.getElementById('reciboValorEntregueRow');
+        let rowTroco = document.getElementById('reciboTrocoRow');
+        if (venda.isPreConta) {
+            if (rowEntregue) rowEntregue.style.display = 'none';
+            if (rowTroco) rowTroco.style.display = 'none';
+        } else {
+            if (rowEntregue) rowEntregue.style.display = 'block';
+            if (rowTroco) rowTroco.style.display = 'block';
+            document.getElementById('reciboValorEntregue').innerText = (venda.valorEntregue ?? total).toFixed(2);
+            document.getElementById('reciboTroco').innerText = (venda.troco || 0).toFixed(2);
+        }
         document.getElementById('reciboSlogan').innerText = dadosEmpresa.slogan || "Obrigado pela preferência!";
 
         setTimeout(() => { window.print(); }, 100);
