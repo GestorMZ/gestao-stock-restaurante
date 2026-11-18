@@ -1054,11 +1054,11 @@
             <div style="background:var(--card-bg); padding:18px; border-radius:16px; border:1px solid var(--border); box-shadow:0 2px 8px rgba(0,0,0,0.02);">
                 <div class="form-group">
                     <label>Utilizador Selecionado</label>
-                    <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite" class="enter-trigger" data-action="window.fazerLogin()">
+                    <input type="text" id="loginUser" placeholder="Selecione um perfil acima ou digite" oninput="window.verificarAutoLoginPerfil()" class="enter-trigger" data-action="window.fazerLogin()">
                 </div>
                 <div class="form-group">
                     <label>Palavra-passe do Perfil</label>
-                    <input type="password" id="loginPass" placeholder="Digite a palavra-passe do perfil" class="enter-trigger" data-action="window.fazerLogin()">
+                    <input type="password" id="loginPass" placeholder="Digite a palavra-passe do perfil" oninput="window.verificarAutoLoginPerfil()" class="enter-trigger" data-action="window.fazerLogin()">
                 </div>
                 <button onclick="window.fazerLogin()" style="margin-top:6px; font-size:1em; padding:13px;">Entrar no Terminal</button>
             </div>
@@ -2896,12 +2896,29 @@
         if(elPass) elPass.focus();
         document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
+        window.verificarAutoLoginPerfil();
+    };
+
+    // Verifica em tempo real se a palavra-passe digitada corresponde ao perfil selecionado
+    window.verificarAutoLoginPerfil = function() {
+        if (usuarioAtual || !codigoEmpresa) return;
+        let elUser = document.getElementById('loginUser');
+        let elPass = document.getElementById('loginPass');
+        if (!elUser || !elPass) return;
+
+        let u = elUser.value.trim().toLowerCase();
+        let p = String(elPass.value).trim();
+
+        if (u && p && usuarios[u] && String(usuarios[u].senha).trim() === p) {
+            window.fazerLogin();
+        }
     };
 
     window.fazerLogin = async function() {
+        if (usuarioAtual) return;
         let u = document.getElementById('loginUser').value.trim().toLowerCase();
         let p = document.getElementById('loginPass').value;
-        if(!codigoEmpresa) return window.showToast("Insira o Código do Restaurante.", "warning");
+        if(!codigoEmpresa) return window.showToast("Introduza o Código do Restaurante.", "warning");
 
         if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
             window.tocarSom('sucesso');
