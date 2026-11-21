@@ -62,6 +62,7 @@
         html {
             overflow-x: hidden;
             -webkit-text-size-adjust: 100%;
+            overscroll-behavior-y: none;
         }
 
         body { 
@@ -72,6 +73,7 @@
             color: var(--text-main); 
             transition: background-color 0.25s var(--ease-out-pro), color 0.25s var(--ease-out-pro);
             -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
             min-height: 100vh;
             min-height: 100dvh;
             overflow-x: hidden;
@@ -80,33 +82,54 @@
             flex-direction: column;
         }
 
-        /* Modo App Shell (100vh Fixo) quando o sistema principal está ativo em Desktop */
-        @media (min-width: 1101px) {
-            body.sistema-ativo {
-                height: 100vh;
-                overflow: hidden;
-            }
-            body.sistema-ativo .container {
-                height: calc(100vh - 20px);
-                min-height: 0;
-                overflow: hidden;
-            }
-            body.sistema-ativo #telaSistema {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                min-height: 0;
-                overflow: hidden;
-            }
-            body.sistema-ativo .tab-content {
-                flex: 1;
-                min-height: 0;
+        /* ============================================================
+           MODO COMPUTADOR (DESKTOP WORKSPACE COMPLETO)
+           ============================================================ */
+        body.view-desktop.sistema-ativo {
+            height: 100vh;
+            overflow: hidden;
+        }
+        body.view-desktop.sistema-ativo .container {
+            height: calc(100vh - 20px);
+            min-height: 0;
+            overflow: hidden;
+        }
+        body.view-desktop.sistema-ativo #telaSistema {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        body.view-desktop.sistema-ativo .tab-content {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        body.view-desktop.sistema-ativo #abaVendas.tab-content.active {
+            overflow: hidden;
+            padding-right: 0;
+        }
+
+        /* Quando o utilizador ativa o Modo Computador num ecrã estreito de telemóvel */
+        @media (max-width: 960px) {
+            body.view-desktop {
+                overflow-x: auto;
                 overflow-y: auto;
-                padding-right: 4px;
+                height: auto !important;
             }
-            body.sistema-ativo #abaVendas.tab-content.active {
-                overflow: hidden;
-                padding-right: 0;
+            body.view-desktop .container {
+                min-width: 1060px;
+                height: auto !important;
+                min-height: 100dvh;
+                overflow: visible !important;
+            }
+            body.view-desktop.sistema-ativo #telaSistema,
+            body.view-desktop.sistema-ativo .tab-content,
+            body.view-desktop.sistema-ativo #abaVendas.tab-content.active {
+                overflow: visible !important;
+                height: auto !important;
             }
         }
 
@@ -297,6 +320,43 @@
             border-color: var(--primary);
             color: var(--primary);
             box-shadow: 0 3px 10px rgba(37, 99, 235, 0.12);
+        }
+
+        /* Botão de Alternância Modo Computador / Modo Celular */
+        .btn-view-mode-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 38px;
+            min-height: 38px;
+            padding: 0 12px;
+            border-radius: 10px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1.5px solid #bfdbfe;
+            font-size: 12px;
+            font-weight: 800;
+            width: auto;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.2s var(--ease-out-pro);
+        }
+        .btn-view-mode-toggle:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+        }
+        body.dark-mode .btn-view-mode-toggle {
+            background: #172554;
+            color: #93c5fd;
+            border-color: #1e40af;
+        }
+        body.dark-mode .btn-view-mode-toggle:hover {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
         }
 
         /* Badge de Estado da Rede */
@@ -689,9 +749,43 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 146px;
-            transition: all 0.2s var(--ease-out-pro);
+            transition: transform 0.16s var(--ease-out-pro), border-color 0.16s var(--ease-out-pro), box-shadow 0.16s var(--ease-out-pro);
             position: relative;
             overflow: hidden;
+            content-visibility: auto;
+            contain-intrinsic-size: 146px;
+        }
+        .zrest-product-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3.5px;
+            background: var(--primary); opacity: 0; transition: opacity 0.2s var(--ease-out-pro);
+        }
+        .zrest-product-card:hover { border-color: var(--primary); box-shadow: 0 10px 22px rgba(37, 99, 235, 0.14); transform: translateY(-2px); }
+        .zrest-product-card:hover::before { opacity: 1; }
+        .zrest-product-card:active { transform: scale(0.95); }
+
+        /* Badge de Quantidade no Carrinho diretamente no Card */
+        .card-qtd-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 999px;
+            z-index: 3;
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
+            display: none;
+            pointer-events: none;
+        }
+        .zrest-product-card.no-carrinho {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+        body.dark-mode .zrest-product-card.no-carrinho {
+            border-color: var(--primary);
+            background: #172554;
         }
         .zrest-product-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3.5px;
@@ -1013,78 +1107,60 @@
         body.dark-mode .zrest-cart-item-row { border-color: #1f2937; }
         body.dark-mode .cart-qty-stepper { background: #1f2937; border-color: #374151; }
         body.dark-mode .btn-qty-step { background: #111827; border-color: #374151; color: #f9fafb; }
-        body.dark-mode .cart-qty-val { color: #ffffff; }
-        body.dark-mode .zrest-totals-main { color: #ffffff; }
-        body.dark-mode .btn-atacho-fast { background: #1f2937; color: #e5e7eb; border-color: #374151; }
-        body.dark-mode .btn-atacho-fast:hover { background: var(--primary); color: white; border-color: var(--primary); }
-
-        body.dark-mode .caixa-aberto,
-        body.dark-mode .box-caixa-abrir { background: #064e3b !important; color: #a7f3d0 !important; border-color: #047857 !important; }
-        body.dark-mode .box-caixa-abrir h4 { color: #a7f3d0 !important; }
-        body.dark-mode .caixa-fechado { background: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
-        body.dark-mode .alerta-stock-box,
-        body.dark-mode .box-caixa-fecho { background: #451a03 !important; color: #fde68a !important; border-color: #92400e !important; }
-        body.dark-mode .box-caixa-fecho h4 { color: #fde68a !important; }
-        body.dark-mode .alerta-caixa-bloqueio { background: #7f1d1d !important; color: #fecaca !important; border-color: #991b1b !important; }
-        body.dark-mode .box-calculo-lucro,
-        body.dark-mode .box-detalhes-perfil { background: #172554 !important; border-color: #1e40af !important; color: #bfdbfe !important; }
-        body.dark-mode .zrest-fav-bar { background: #0f172a; border-color: #1f2937; }
-        body.dark-mode .zrest-fav-chip { background: #1f2937; border-color: #374151; color: #f3f4f6; }
-        body.dark-mode .zrest-fav-chip:hover { background: #451a03; border-color: #f59e0b; color: #fde68a; }
-        body.dark-mode .btn-fav-star { background: #111827; border-color: #374151; color: #9ca3af; }
-        body.dark-mode .btn-fav-star.ativo { background: #f59e0b; border-color: #d97706; color: #ffffff; }
-        body.dark-mode .scanner-usb-pill { background: #172554; border-color: #1e40af; color: #93c5fd; }
-        body.dark-mode .qr-alert-banner { background: #172554; border-color: #2563eb; color: #dbeafe; }
-        body.dark-mode #toast-container .toast { background: #1f2937; border-color: #374151; }
-
-        /* Barra Flutuante Mobile POS (Oculta em Desktop/Tablet) */
+        /* Barra Flutuante Mobile POS (Oculta em Modo Computador) */
         .mobile-pos-floating-bar {
             display: none;
         }
-        .btn-mobile-scroll-top {
+        .mobile-cart-backdrop {
+            display: none;
+        }
+        .mobile-drawer-handle {
+            display: none;
+        }
+        .btn-mobile-fechar-cart {
             display: none;
         }
 
         /* ============================================================
-           ADAPTAÇÃO PARA TABLETS (iPad / Android Tablet: 769px - 1100px)
-           Mantém o layout lado a lado de caixa POS ajustado ao ecrã
+           ADAPTAÇÃO PARA TABLETS EM MODO COMPUTADOR (769px - 1100px)
            ============================================================ */
         @media (min-width: 769px) and (max-width: 1100px) {
-            body {
+            body.view-desktop {
                 padding: 8px 10px;
             }
-            .container {
+            body.view-desktop .container {
                 padding: 12px 14px;
             }
-            input, select {
+            body.view-desktop input,
+            body.view-desktop select {
                 font-size: 16px;
             }
-            .zrest-pos-wrapper {
+            body.view-desktop .zrest-pos-wrapper {
                 flex-direction: row;
                 align-items: flex-start;
                 gap: 12px;
             }
-            .zrest-search-header {
+            body.view-desktop .zrest-search-header {
                 flex-wrap: wrap;
                 gap: 8px;
             }
-            .zrest-right-panel {
+            body.view-desktop .zrest-right-panel {
                 width: 340px;
                 position: sticky;
                 top: 8px;
                 max-height: calc(100dvh - 20px);
                 overflow-y: auto;
             }
-            .zrest-product-grid {
+            body.view-desktop .zrest-product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(134px, 1fr));
                 max-height: calc(100dvh - 245px);
                 overflow-y: auto;
             }
-            .zrest-product-card {
+            body.view-desktop .zrest-product-card {
                 min-height: 140px;
                 padding: 10px 8px;
             }
-            .cards-grid {
+            body.view-desktop .cards-grid {
                 grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
                 gap: 10px;
             }
@@ -1100,233 +1176,333 @@
         }
 
         /* ============================================================
-           ADAPTAÇÃO PARA TELEMÓVEIS & IPHONES (<= 768px)
-           Suporte Safe-Area Notch/Dynamic Island, Anti-Zoom e Barra POS
+           MODO CELULAR (TUDO 100% VISÍVEL — ZERO OMISSÕES)
+           Ativado automaticamente no telemóvel ou via botão "Modo Celular"
            ============================================================ */
-        @media (max-width: 768px) {
-            body {
-                padding: calc(6px + env(safe-area-inset-top)) 6px calc(16px + env(safe-area-inset-bottom)) 6px;
-            }
-            body.sistema-ativo.aba-vendas-ativa {
-                padding-bottom: calc(82px + env(safe-area-inset-bottom));
-            }
-            .container {
-                padding: 10px 10px;
-                border-radius: 14px;
-                min-height: calc(100dvh - 14px);
-            }
+        body.view-mobile {
+            padding: calc(6px + env(safe-area-inset-top)) 6px calc(16px + env(safe-area-inset-bottom)) 6px;
+            height: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        body.view-mobile.sistema-ativo.aba-vendas-ativa {
+            padding-bottom: calc(82px + env(safe-area-inset-bottom));
+        }
+        body.view-mobile .container {
+            padding: 10px 10px;
+            border-radius: 14px;
+            min-height: calc(100dvh - 12px);
+            height: auto;
+            overflow: visible;
+        }
 
-            /* Previne zoom automático do Safari no iPhone ao tocar em inputs */
-            input, select {
-                font-size: 16px !important;
-            }
+        /* Previne zoom automático do Safari no iPhone ao tocar em inputs */
+        body.view-mobile input,
+        body.view-mobile select {
+            font-size: 16px !important;
+        }
 
-            .form-row {
-                flex-direction: column;
-                gap: 6px;
-                margin-bottom: 10px;
-            }
-            .form-group {
-                min-width: 100%;
-                width: 100%;
-            }
+        body.view-mobile .form-row {
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        body.view-mobile .form-group {
+            min-width: 100%;
+            width: 100%;
+        }
 
-            /* Cabeçalho Superior Compacto e Adaptável */
-            .header-usuario {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 10px;
-                gap: 8px;
+        /* Cabeçalho Superior Completo: Tudo visível e organizado em 2 linhas limpas */
+        body.view-mobile .header-usuario {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 9px 10px;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        body.view-mobile .header-usuario > div:first-child {
+            width: 100%;
+            min-width: 0;
+            gap: 9px !important;
+        }
+        body.view-mobile .header-usuario > div:last-child {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 6px !important;
+            padding-top: 6px;
+            border-top: 1px dashed var(--border);
+        }
+        body.view-mobile .btn-icon-header {
+            width: 36px;
+            height: 36px;
+            min-height: 36px;
+            border-radius: 9px;
+        }
+        body.view-mobile .btn-view-mode-toggle {
+            height: 36px;
+            min-height: 36px;
+            padding: 0 10px;
+            font-size: 11.5px;
+        }
+        /* Mantém o texto Online/Offline 100% visível no celular */
+        body.view-mobile .status-rede-pill {
+            font-size: 11px;
+            padding: 5px 9px;
+        }
+        body.view-mobile .status-rede-pill span:last-child {
+            display: inline !important;
+        }
+        body.view-mobile .status-caixa-banner {
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 12px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+        }
+        body.view-mobile .qr-alert-banner {
+            flex-wrap: wrap;
+            font-size: 12px;
+            padding: 8px 10px;
+        }
+
+        /* Navegação por Abas com Deslize Horizontal Suave */
+        body.view-mobile .tabs-nav {
+            gap: 6px;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+        body.view-mobile .tab-btn {
+            padding: 8px 12px;
+            font-size: 12.5px;
+            min-height: 38px;
+        }
+
+        /* Mesas e Pesquisa POS Completas (sem omitir USB/BT nem Scanner) */
+        body.view-mobile .zrest-mesas-container {
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+            gap: 6px;
+        }
+        body.view-mobile .zrest-mesa-card {
+            min-width: 86px;
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+        body.view-mobile .zrest-pos-wrapper {
+            flex-direction: column;
+            gap: 10px;
+        }
+        body.view-mobile .zrest-left-panel {
+            width: 100%;
+            gap: 8px;
+        }
+        body.view-mobile .zrest-search-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            padding: 8px 9px;
+            border-radius: 12px;
+        }
+        body.view-mobile .zrest-search-header > div:last-child {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        body.view-mobile #cartPesquisaProduto {
+            width: auto !important;
+            flex: 1;
+            min-width: 0;
+            padding: 8px 12px !important;
+            min-height: 38px;
+        }
+        /* Mantém o badge USB/BT 100% visível no celular */
+        body.view-mobile #badgeLeitorUsbAtivo {
+            display: inline-flex !important;
+            font-size: 10.5px;
+            padding: 4px 8px;
+        }
+        body.view-mobile .zrest-fav-bar {
+            padding: 6px 8px;
+            gap: 6px;
+        }
+
+        /* Grelha de Produtos Simétrica (2 colunas em retrato, 3 em ecrãs largos) */
+        body.view-mobile .zrest-product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            max-height: none;
+            overflow-y: visible;
+            padding-right: 0;
+        }
+        body.view-mobile .zrest-product-card {
+            min-height: 138px;
+            padding: 10px 8px;
+            border-radius: 13px;
+        }
+        body.view-mobile .zrest-prod-media-box {
+            height: 62px;
+        }
+        body.view-mobile .zrest-prod-title {
+            font-size: 12.5px;
+        }
+        body.view-mobile .zrest-prod-price {
+            font-size: 0.98em;
+        }
+
+        /* Bottom-Sheet Drawer Nativo para o Carrinho & Checkout no Modo Celular */
+        body.view-mobile .mobile-cart-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.62);
+            z-index: 1090;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.24s ease;
+            display: block;
+        }
+        body.view-mobile .mobile-cart-backdrop.aberto {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        body.view-mobile .zrest-right-panel {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            max-height: 92dvh;
+            height: auto;
+            border-radius: 22px 22px 0 0;
+            z-index: 1100;
+            transform: translateY(105%);
+            transition: transform 0.28s var(--ease-out-pro);
+            box-shadow: 0 -14px 40px rgba(15, 23, 42, 0.32);
+            padding-bottom: env(safe-area-inset-bottom);
+            will-change: transform;
+        }
+        body.view-mobile .zrest-right-panel.mobile-cart-open {
+            transform: translateY(0);
+        }
+        body.view-mobile .mobile-drawer-handle {
+            display: block;
+            width: 42px;
+            height: 4.5px;
+            border-radius: 999px;
+            background: var(--border);
+            margin: 8px auto 2px auto;
+            flex-shrink: 0;
+        }
+        body.view-mobile .btn-mobile-fechar-cart {
+            display: inline-flex !important;
+        }
+        body.view-mobile .zrest-cart-items {
+            max-height: 36dvh;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Barra Flutuante Inferior no POS (Modo Celular) */
+        body.view-mobile.sistema-ativo.aba-vendas-ativa .mobile-pos-floating-bar {
+            display: flex;
+            position: fixed;
+            left: 8px;
+            right: 8px;
+            bottom: calc(8px + env(safe-area-inset-bottom));
+            background: var(--dark);
+            color: #ffffff;
+            padding: 9px 12px;
+            border-radius: 15px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.36);
+            z-index: 900;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            cursor: pointer;
+        }
+        body.dark-mode.view-mobile.sistema-ativo.aba-vendas-ativa .mobile-pos-floating-bar {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        /* Cards Financeiros & Stock no Modo Celular */
+        body.view-mobile .cards-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+        body.view-mobile .card-stat {
+            padding: 12px;
+        }
+        body.view-mobile .card-stat .valor-card {
+            font-size: 1.15em;
+        }
+
+        /* Tabelas no Modo Celular: Todas as colunas visíveis com deslize horizontal fluido */
+        body.view-mobile .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        body.view-mobile table th,
+        body.view-mobile table td {
+            white-space: nowrap;
+            padding: 10px 10px;
+        }
+
+        /* Modais Responsivos no Modo Celular */
+        body.view-mobile .modal-content {
+            width: calc(100% - 20px);
+            max-width: 100%;
+            margin: 14px auto;
+            padding: 18px 15px;
+            border-radius: 16px;
+            max-height: 90dvh;
+            overflow-y: auto;
+        }
+
+        /* Notificações Toast no Modo Celular */
+        body.view-mobile #toast-container {
+            top: calc(10px + env(safe-area-inset-top));
+            right: 10px;
+            left: 10px;
+        }
+        body.view-mobile .toast {
+            width: 100%;
+            font-size: 0.85em;
+            padding: 11px 14px;
+        }
+
+        /* Menu Digital QR em Telemóveis */
+        body.view-mobile .qr-floating-cart {
+            bottom: calc(10px + env(safe-area-inset-bottom));
+            width: calc(100% - 20px);
+            padding: 10px 12px;
+            flex-wrap: wrap;
+        }
+        body.view-mobile .grid-perfis-login {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 380px) {
+            body.view-mobile .cards-grid {
+                grid-template-columns: 1fr;
             }
-            .header-usuario > div:last-child {
-                justify-content: space-between;
-                width: 100%;
+            body.view-mobile .zrest-product-grid {
+                gap: 7px;
             }
-            .status-rede-pill {
-                font-size: 11px;
-                padding: 5px 9px;
-            }
-            .status-caixa-banner {
-                flex-wrap: wrap;
-                gap: 8px;
+            body.view-mobile .zrest-cart-item-price {
+                min-width: 58px;
                 font-size: 12px;
-                padding: 8px 10px;
-            }
-            .qr-alert-banner {
-                flex-wrap: wrap;
-                font-size: 12px;
-                padding: 8px 10px;
-            }
-
-            /* Navegação por Abas com Deslize Horizontal Suave */
-            .tabs-nav {
-                gap: 6px;
-                padding-bottom: 6px;
-                -webkit-overflow-scrolling: touch;
-            }
-            .tab-btn {
-                padding: 8px 12px;
-                font-size: 12.5px;
-                min-height: 40px;
-            }
-
-            /* Mesas e Pesquisa POS em Telemóvel */
-            .zrest-mesas-container {
-                -webkit-overflow-scrolling: touch;
-                padding-bottom: 6px;
-                gap: 6px;
-            }
-            .zrest-mesa-card {
-                min-width: 84px;
-                padding: 7px 10px;
-                font-size: 12px;
-            }
-            .zrest-pos-wrapper {
-                flex-direction: column;
-                gap: 12px;
-            }
-            .zrest-left-panel {
-                width: 100%;
-            }
-            .zrest-search-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-                padding: 8px 10px;
-            }
-            .zrest-search-header > div:last-child {
-                width: 100%;
-                justify-content: space-between;
-            }
-            #cartPesquisaProduto {
-                width: auto !important;
-                flex: 1;
-                min-width: 0;
-            }
-            #badgeLeitorUsbAtivo {
-                display: none;
-            }
-
-            /* Grelha de Produtos Simétrica (2 colunas no telemóvel) */
-            .zrest-product-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 9px;
-                max-height: none;
-                overflow-y: visible;
-                padding-right: 0;
-            }
-            .zrest-product-card {
-                min-height: 138px;
-                padding: 10px 8px;
-                border-radius: 13px;
-            }
-            .zrest-prod-media-box {
-                height: 64px;
-            }
-            .zrest-prod-title {
-                font-size: 12.5px;
-            }
-            .zrest-prod-price {
-                font-size: 1em;
-            }
-
-            /* Painel de Carrinho & Checkout */
-            .zrest-right-panel {
-                width: 100%;
-                height: auto;
-                position: static;
-                min-height: auto;
-                border-radius: 14px;
-            }
-            .zrest-cart-items {
-                max-height: 290px;
-            }
-            .btn-mobile-scroll-top {
-                display: inline-flex !important;
-            }
-
-            /* Barra Flutuante Inferior no POS Mobile */
-            body.sistema-ativo.aba-vendas-ativa .mobile-pos-floating-bar {
-                display: flex;
-                position: fixed;
-                left: 8px;
-                right: 8px;
-                bottom: calc(8px + env(safe-area-inset-bottom));
-                background: var(--dark);
-                color: #ffffff;
-                padding: 10px 14px;
-                border-radius: 15px;
-                align-items: center;
-                justify-content: space-between;
-                gap: 10px;
-                box-shadow: 0 12px 32px rgba(15, 23, 42, 0.36);
-                z-index: 900;
-                border: 1px solid rgba(255, 255, 255, 0.12);
-            }
-            body.dark-mode.sistema-ativo.aba-vendas-ativa .mobile-pos-floating-bar {
-                background: #1e293b;
-                border-color: #334155;
-            }
-
-            /* Cards Financeiros & Stock */
-            .cards-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 9px;
-            }
-            .card-stat {
-                padding: 12px;
-            }
-            .card-stat .valor-card {
-                font-size: 1.15em;
-            }
-
-            /* Modais Responsivos para iPhone e Android */
-            .modal-content {
-                width: calc(100% - 20px);
-                max-width: 100%;
-                margin: 14px auto;
-                padding: 18px 15px;
-                border-radius: 16px;
-                max-height: 90dvh;
-                overflow-y: auto;
-            }
-
-            /* Notificações Toast */
-            #toast-container {
-                top: calc(10px + env(safe-area-inset-top));
-                right: 10px;
-                left: 10px;
-            }
-            .toast {
-                width: 100%;
-                font-size: 0.85em;
-                padding: 11px 14px;
-            }
-
-            /* Menu Digital QR em Telemóveis */
-            .qr-floating-cart {
-                bottom: calc(10px + env(safe-area-inset-bottom));
-                width: calc(100% - 20px);
-                padding: 10px 12px;
-                flex-wrap: wrap;
-            }
-            .grid-perfis-login {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
             }
         }
 
-        /* Ecrãs muito estreitos (iPhone SE / 360px) */
-        @media (max-width: 380px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-            .zrest-product-grid {
-                gap: 7px;
-            }
-            .zrest-cart-item-price {
-                min-width: 58px;
-                font-size: 12px;
+        @media (min-width: 520px) and (max-width: 860px) {
+            body.view-mobile .zrest-product-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
     </style>
@@ -1369,6 +1545,14 @@
 </div>
 
 <div class="container">
+
+    <!-- BARRA RÁPIDA DE MODO DE VISUALIZAÇÃO NOS ECRÃS DE ENTRADA -->
+    <div id="barraModoPreLogin" style="display:flex; justify-content:flex-end; margin-bottom:6px;">
+        <button type="button" class="btn-view-mode-toggle btn-toggle-view-mode-sync" onclick="window.alternarModoVisualizacao()" title="Alternar entre Modo Celular e Modo Computador">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span class="lbl-view-mode-sync">Modo PC</span>
+        </button>
+    </div>
 
     <!-- ECRÃ MODO CLIENTE: CARDÁPIO DIGITAL INTERATIVO (QR CODE) -->
     <div id="telaMenuDigitalCliente" class="qr-menu-wrapper" style="display:none;">
@@ -1619,6 +1803,11 @@
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                 <span id="statusRedeBadge" class="status-rede-pill status-online"><span class="dot"></span><span>A verificar...</span></span>
                 
+                <button type="button" id="btnToggleViewMode" class="btn-view-mode-toggle btn-toggle-view-mode-sync" onclick="window.alternarModoVisualizacao()" title="Alternar entre Modo Celular e Modo Computador">
+                    <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <span class="lbl-view-mode-sync">Modo PC</span>
+                </button>
+
                 <button class="btn-icon-header" onclick="window.alternarModoNoturno()" title="Alternar Tema Claro / Escuro">
                     <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
                 </button>
@@ -1722,9 +1911,9 @@
                                 <svg style="width:13px; height:13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="8" y1="7" x2="8" y2="17"/><line x1="12" y1="7" x2="12" y2="17"/><line x1="16" y1="7" x2="16" y2="17"/></svg>
                                 <span>USB/BT</span>
                             </span>
-                            <input type="text" id="cartPesquisaProduto" placeholder="Pesquisar ou bipar..." oninput="window.filtrarEExibirProdutosVenda()" onkeydown="window.tratarEnterPesquisaPOS(event)" style="width: 165px; border-radius: 999px; padding: 8px 14px; font-size: 13px;">
-                            <button type="button" class="btn-purple" style="width: 38px; height: 38px; min-height: 38px; padding:0; border-radius: 50%;" onclick="window.abrirModalScannerBarcode()" title="Ler Código de Barras por Câmara">
-                                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+                            <input type="text" id="cartPesquisaProduto" placeholder="Pesquisar ou bipar..." oninput="window.pesquisarProdutosPOSDebounced()" onkeydown="window.tratarEnterPesquisaPOS(event)" style="width: 165px; border-radius: 999px; padding: 8px 14px; font-size: 13px;">
+                            <button type="button" class="btn-purple" style="width: 38px; height: 38px; min-height: 38px; padding:0; border-radius: 50%; flex-shrink:0;" onclick="window.abrirModalScannerBarcode()" title="Ler Código de Barras por Câmara">
+                                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -1737,18 +1926,19 @@
 
                 </div>
 
-                <!-- PAINEL DIREITO: Carrinho e Checkout -->
+                <!-- PAINEL DIREITO: Carrinho e Checkout (Bottom Sheet no Modo Celular) -->
+                <div id="mobileCartBackdrop" class="mobile-cart-backdrop" onclick="window.fecharCarrinhoMobile()"></div>
                 <div class="zrest-right-panel" id="painelCarrinhoPOS">
-                    
+                    <div class="mobile-drawer-handle" onclick="window.fecharCarrinhoMobile()"></div>
                     <div class="zrest-cart-header">
                         <h4>Atendimento: <span id="labelMesaAtual" style="color:var(--dark);">Balcão</span></h4>
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <button type="button" class="btn-outline btn-sm btn-mobile-scroll-top" onclick="window.scrollParaProdutosMobile()" style="min-height:30px; padding:4px 9px; font-size:12px;">
-                                ↑ Produtos
-                            </button>
                             <button class="btn-outline btn-sm" onclick="window.abrirModalDivisaoConta()" style="min-height:30px; padding:4px 10px; font-size:12px;">
                                 <svg class="icon-svg" style="width:14px; height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 <span>Dividir</span>
+                            </button>
+                            <button type="button" class="btn-saida btn-sm btn-mobile-fechar-cart" onclick="window.fecharCarrinhoMobile()" style="min-height:30px; padding:4px 10px; font-size:12px;">
+                                ✕ Fechar
                             </button>
                         </div>
                     </div>
@@ -2308,15 +2498,15 @@
 </div>
 
 <!-- BARRA FLUTUANTE RÁPIDA DO CARRINHO NO TELEMÓVEL / IPHONE -->
-<div id="mobilePosFloatingBar" class="mobile-pos-floating-bar">
+<div id="mobilePosFloatingBar" class="mobile-pos-floating-bar" onclick="window.abrirCarrinhoMobile()">
     <div style="min-width:0;">
-        <div style="font-size:11.5px; opacity:0.85; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+        <div style="font-size:11.5px; opacity:0.88; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
             <span id="mobileBarMesaTexto">Balcão</span> • <span id="mobileBarQtdItens">0</span> un
         </div>
         <div id="mobileBarTotalTexto" class="tabular-nums" style="font-size:17px; font-weight:800; color:#34d399;">0.00 MT</div>
     </div>
-    <button type="button" class="btn-success btn-sm" onclick="window.scrollParaCarrinhoMobile()" style="min-height:38px; padding:6px 14px; font-size:13px; border-radius:11px; white-space:nowrap;">
-        Ver Carrinho & Pagar ↓
+    <button type="button" class="btn-success btn-sm" onclick="event.stopPropagation(); window.abrirCarrinhoMobile();" style="min-height:38px; padding:6px 14px; font-size:13px; border-radius:11px; white-space:nowrap;">
+        Ver Carrinho & Pagar ↑
     </button>
 </div>
 
@@ -3173,58 +3363,153 @@
             input.style.display = 'block';
             input.type = isPassword ? 'password' : 'text';
             input.value = defaultVal;
-            input.focus();
-
             document.getElementById('customModalBtnCancel').style.display = 'block';
-            document.getElementById('customModalBtnOK').onclick = () => {
+            let btnOK = document.getElementById('customModalBtnOK');
+            btnOK.innerText = 'Confirmar';
+            btnOK.onclick = () => {
+                const val = input.value;
+                btnOK.innerText = 'OK';
+                input.style.display = 'none';
                 document.getElementById('customModalOverlay').style.display = 'none';
-                resolve(input.value);
+                resolve(val);
             };
             document.getElementById('customModalBtnCancel').onclick = () => {
+                btnOK.innerText = 'OK';
+                input.style.display = 'none';
                 document.getElementById('customModalOverlay').style.display = 'none';
                 resolve(null);
             };
+            setTimeout(() => input.focus(), 50);
         });
     };
 
-    window.tocarSom = function(tipo) {
-        try {
-            let ctx = new (window.AudioContext || window.webkitAudioContext)();
-            let osc = ctx.createOscillator();
-            let gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+    // ----- MOTOR DE MODO COMPUTADOR / MODO CELULAR (IGUAL GEMINI, ZERO OMISSÕES) -----
+    let modoVisualizacaoPreferido = localStorage.getItem('gs_view_mode') || 'auto';
 
-            if (tipo === 'sucesso') {
-                osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-                osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
-                gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-                osc.start(); osc.stop(ctx.currentTime + 0.2);
-            } else if (tipo === 'click') {
-                osc.frequency.setValueAtTime(440, ctx.currentTime);
-                gain.gain.setValueAtTime(0.05, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
-                osc.start(); osc.stop(ctx.currentTime + 0.03);
-            } else if (tipo === 'alerta') {
-                osc.frequency.setValueAtTime(220, ctx.currentTime);
-                gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-                osc.start(); osc.stop(ctx.currentTime + 0.25);
-            }
-        } catch(e) {}
+    window.aplicarModoVisualizacao = function(modo) {
+        const isMobileTarget = (modo === 'mobile');
+        document.body.classList.toggle('view-mobile', isMobileTarget);
+        document.body.classList.toggle('view-desktop', !isMobileTarget);
+
+        if (!isMobileTarget && typeof window.fecharCarrinhoMobile === 'function') {
+            window.fecharCarrinhoMobile();
+        }
+
+        const svgComputador = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>`;
+        const svgCelular = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`;
+
+        document.querySelectorAll('.btn-toggle-view-mode-sync').forEach(btn => {
+            btn.innerHTML = isMobileTarget
+                ? `${svgComputador}<span class="lbl-view-mode-sync">Modo PC</span>`
+                : `${svgCelular}<span class="lbl-view-mode-sync">Modo Celular</span>`;
+            btn.title = isMobileTarget
+                ? 'Atualmente em Modo Celular — Clique para abrir em Modo Computador'
+                : 'Atualmente em Modo Computador — Clique para abrir em Modo Celular';
+        });
     };
+
+    window.detectarEAplicarModoAutomatico = function() {
+        if (modoVisualizacaoPreferido === 'mobile' || modoVisualizacaoPreferido === 'desktop') {
+            window.aplicarModoVisualizacao(modoVisualizacaoPreferido);
+        } else {
+            const isSmallScreen = window.innerWidth <= 860;
+            window.aplicarModoVisualizacao(isSmallScreen ? 'mobile' : 'desktop');
+        }
+    };
+
+    window.alternarModoVisualizacao = function() {
+        const atualmenteMobile = document.body.classList.contains('view-mobile');
+        const proximoModo = atualmenteMobile ? 'desktop' : 'mobile';
+        modoVisualizacaoPreferido = proximoModo;
+        localStorage.setItem('gs_view_mode', proximoModo);
+        window.aplicarModoVisualizacao(proximoModo);
+        if (typeof window.showToast === 'function') {
+            window.showToast(
+                proximoModo === 'desktop' ? 'Modo Computador ativado (Ecrã Completo)' : 'Modo Celular ativado (Tudo Visível)',
+                'info'
+            );
+        }
+    };
+
+    window.detectarEAplicarModoAutomatico();
+    window.addEventListener('resize', () => {
+        if (modoVisualizacaoPreferido === 'auto') {
+            window.detectarEAplicarModoAutomatico();
+        }
+    });
 
     window.atualizarEstadoConexao = function() {
         const badge = document.getElementById('statusRedeBadge');
         if (!badge) return;
-        if (!navigator.onLine) {
+        if (navigator.onLine) {
+            badge.className = 'status-rede-pill status-online';
+            badge.innerHTML = '<span class="dot"></span><span>Online</span>';
+        } else {
             badge.className = 'status-rede-pill status-offline';
-            badge.innerHTML = '<span class="dot"></span><span>Offline (Local)</span>';
-            return;
+            badge.innerHTML = '<span class="dot"></span><span>Offline</span>';
         }
-        badge.className = 'status-rede-pill status-online';
-        badge.innerHTML = '<span class="dot"></span><span>Online (Nuvem)</span>';
+    };
+
+    let _sharedAudioCtx = null;
+    window.tocarSom = function(tipo) {
+        try {
+            if (navigator.vibrate) {
+                if (tipo === 'click') navigator.vibrate(10);
+                else if (tipo === 'sucesso') navigator.vibrate([18, 30, 18]);
+                else if (tipo === 'alerta') navigator.vibrate([40, 40, 40]);
+            }
+            if (!_sharedAudioCtx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) _sharedAudioCtx = new AudioCtx();
+            }
+            if (!_sharedAudioCtx) return;
+            if (_sharedAudioCtx.state === 'suspended') _sharedAudioCtx.resume().catch(() => {});
+
+            let osc = _sharedAudioCtx.createOscillator();
+            let gain = _sharedAudioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(_sharedAudioCtx.destination);
+
+            if (tipo === 'sucesso') {
+                osc.frequency.setValueAtTime(523.25, _sharedAudioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, _sharedAudioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.14, _sharedAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, _sharedAudioCtx.currentTime + 0.18);
+                osc.start(); osc.stop(_sharedAudioCtx.currentTime + 0.18);
+            } else if (tipo === 'click') {
+                osc.frequency.setValueAtTime(480, _sharedAudioCtx.currentTime);
+                gain.gain.setValueAtTime(0.04, _sharedAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.008, _sharedAudioCtx.currentTime + 0.025);
+                osc.start(); osc.stop(_sharedAudioCtx.currentTime + 0.025);
+            } else if (tipo === 'alerta') {
+                osc.frequency.setValueAtTime(220, _sharedAudioCtx.currentTime);
+                gain.gain.setValueAtTime(0.18, _sharedAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, _sharedAudioCtx.currentTime + 0.22);
+                osc.start(); osc.stop(_sharedAudioCtx.currentTime + 0.22);
+            }
+        } catch(e) {}
+    };
+    window.abrirCarrinhoMobile = function() {
+        const painel = document.getElementById('painelCarrinhoPOS');
+        const backdrop = document.getElementById('mobileCartBackdrop');
+        if (painel) painel.classList.add('mobile-cart-open');
+        if (backdrop) backdrop.classList.add('aberto');
+        window.tocarSom('click');
+    };
+
+    window.fecharCarrinhoMobile = function() {
+        const painel = document.getElementById('painelCarrinhoPOS');
+        const backdrop = document.getElementById('mobileCartBackdrop');
+        if (painel) painel.classList.remove('mobile-cart-open');
+        if (backdrop) backdrop.classList.remove('aberto');
+    };
+
+    window.scrollParaCarrinhoMobile = function() {
+        window.abrirCarrinhoMobile();
+    };
+
+    window.scrollParaProdutosMobile = function() {
+        window.fecharCarrinhoMobile();
     };
 
     window.addEventListener('online', () => { window.atualizarEstadoConexao(); window.tocarSom('sucesso'); window.sincronizarVendasOffline(); });
@@ -3936,6 +4221,7 @@
 
             document.getElementById('telaLogin').style.display = 'none';
             document.getElementById('telaSistema').style.display = 'flex';
+            if (document.getElementById('barraModoPreLogin')) document.getElementById('barraModoPreLogin').style.display = 'none';
             document.body.classList.add('sistema-ativo', 'aba-vendas-ativa');
 
             mesaSelecionada = "Balcão";
@@ -3959,17 +4245,8 @@
         document.body.classList.remove('sistema-ativo', 'aba-vendas-ativa');
         document.getElementById('telaSistema').style.display = 'none';
         document.getElementById('telaLogin').style.display = 'block';
+        if (document.getElementById('barraModoPreLogin')) document.getElementById('barraModoPreLogin').style.display = 'flex';
         document.getElementById('loginPass').value = '';
-    };
-
-    window.scrollParaCarrinhoMobile = function() {
-        const painel = document.getElementById('painelCarrinhoPOS');
-        if (painel) painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    window.scrollParaProdutosMobile = function() {
-        const topo = document.getElementById('abaVendas');
-        if (topo) topo.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     window.configurarPerfilPermissoes = function() {
@@ -4033,39 +4310,82 @@
 
         let abaElement = document.getElementById(abaId);
         if (abaElement) abaElement.classList.add('active');
+
         document.body.classList.toggle('aba-vendas-ativa', abaId === 'abaVendas');
-        if(abaId === 'abaDashboard') window.atualizarDashboard();
-        if(abaId === 'abaUsuarios' && isAdmin) renderizarUsuarios();
+        if (abaId !== 'abaVendas') {
+            window.fecharCarrinhoMobile();
+        }
     };
 
-    // ----- GESTÃO DE MESAS E BLOQUEIO POR RESPONSÁVEL -----
-    function verificarBloqueioMesaAtual(mesa = mesaSelecionada) {
-        if (!mesa || mesa === "Balcão") return { bloqueada: false, responsavel: "" };
-        const resp = (bloqueiosMesas[mesa] || "").trim().toLowerCase();
+    function verificarBloqueioMesaAtual() {
+        if (!mesaSelecionada || mesaSelecionada === "Balcão") return { bloqueada: false, responsavel: "" };
+        const itens = mesas[mesaSelecionada] || [];
+        const resp = (bloqueiosMesas[mesaSelecionada] || "").trim().toLowerCase();
         const opAtual = (usuarioAtual?.nome || "").trim().toLowerCase();
-        const temItens = Array.isArray(mesas[mesa]) && mesas[mesa].length > 0;
-        if (resp && temItens && opAtual && resp !== opAtual) {
+        if (itens.length > 0 && resp && opAtual && resp !== opAtual && usuarioAtual?.tipo !== 'admin') {
             return { bloqueada: true, responsavel: resp };
         }
         return { bloqueada: false, responsavel: resp };
     }
 
+    function atualizarDropdownProdutosCart() {
+        const sel = document.getElementById('cartSelectProduto');
+        if (!sel) return;
+        sel.innerHTML = '';
+        Object.keys(stock).sort().forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.innerText = `${p} - ${Number(stock[p]?.precoVenda || 0).toFixed(2)} MT`;
+            sel.appendChild(opt);
+        });
+    }
+
+    window.filtrarCategoriaPOS = function(cat, evt) {
+        categoriaPOSSelecionada = cat;
+        expandirTodosProdutosPOS = false;
+        document.querySelectorAll('.zrest-left-panel .zrest-cat-btn').forEach(b => b.classList.remove('active'));
+        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+        filtrarEExibirProdutosVenda();
+    };
+
+    window.alternarExpandirProdutosPOS = function() {
+        expandirTodosProdutosPOS = !expandirTodosProdutosPOS;
+        filtrarEExibirProdutosVenda();
+    };
+
+    const _timersSyncMesa = {};
+    function sincronizarMesaFirestoreDebounced(mesa) {
+        if (!codigoEmpresa || !mesa || mesa === "Balcão") return;
+        if (_timersSyncMesa[mesa]) clearTimeout(_timersSyncMesa[mesa]);
+        _timersSyncMesa[mesa] = setTimeout(() => {
+            sincronizarMesaFirestore(mesa);
+        }, 350);
+    }
+
     async function sincronizarMesaFirestore(mesa) {
         if (!codigoEmpresa || !mesa || mesa === "Balcão") return;
+        if (_timersSyncMesa[mesa]) {
+            clearTimeout(_timersSyncMesa[mesa]);
+            delete _timersSyncMesa[mesa];
+        }
         const itensMesa = mesas[mesa] || [];
         const opAtual = (usuarioAtual?.nome || "").trim().toLowerCase();
         try {
             if (itensMesa.length > 0) {
                 const respAtual = bloqueiosMesas[mesa] || opAtual;
                 bloqueiosMesas[mesa] = respAtual;
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [mesa]: respAtual }, { merge: true });
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), {
-                    [mesa]: { itens: itensMesa, operador: respAtual, atualizadoEm: Date.now() }
-                }, { merge: true });
+                await Promise.all([
+                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [mesa]: respAtual }, { merge: true }),
+                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), {
+                        [mesa]: { itens: itensMesa, operador: respAtual, atualizadoEm: Date.now() }
+                    }, { merge: true })
+                ]);
             } else {
                 delete bloqueiosMesas[mesa];
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [mesa]: deleteField() }, { merge: true });
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesa]: deleteField() }, { merge: true });
+                await Promise.all([
+                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [mesa]: deleteField() }, { merge: true }),
+                    setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), { [mesa]: deleteField() }, { merge: true })
+                ]);
             }
         } catch (e) {
             console.error("Erro ao sincronizar mesa:", e);
@@ -4140,42 +4460,48 @@
             return;
         }
         barra.style.display = 'flex';
-        let html = `<span class="zrest-fav-label">★ Favoritos:</span>`;
+        barra.innerHTML = `<span class="zrest-fav-label">★ Favoritos:</span>`;
         favs.forEach(p => {
-            const item = stock[p];
-            const esgotado = (item.qtd || 0) <= 0;
-            const pEsc = p.replace(/'/g, "\\'");
-            html += `<button type="button" class="zrest-fav-chip ${esgotado ? 'esgotado' : ''}" onclick="window.selecionarProdutoCardPOS('${pEsc}')">
-                <span>${p}</span>
-                <span style="color:var(--success-dark); font-weight:800;">${Number(item.precoVenda || 0).toFixed(0)} MT</span>
-            </button>`;
+            const it = stock[p];
+            const esgotado = Number(it.qtd || 0) <= 0;
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = `zrest-fav-chip ${esgotado ? 'esgotado' : ''}`;
+            chip.onclick = () => window.selecionarProdutoCardPOS(p);
+            chip.innerHTML = `<span>${p}</span><span style="color:var(--success-dark);">${Number(it.precoVenda || 0).toFixed(0)} MT</span>`;
+            barra.appendChild(chip);
         });
-        barra.innerHTML = html;
     }
 
-    // ----- GRELHA DE PRODUTOS E CARRINHO POS -----
-    window.filtrarCategoriaPOS = function(cat, evt) {
-        categoriaPOSSelecionada = cat;
-        expandirTodosProdutosPOS = false;
-        document.querySelectorAll('#abaVendas .zrest-cat-btn').forEach(b => b.classList.remove('active'));
-        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
-        filtrarEExibirProdutosVenda();
+    let _timerPesquisaPOS = null;
+    window.pesquisarProdutosPOSDebounced = function() {
+        if (_timerPesquisaPOS) clearTimeout(_timerPesquisaPOS);
+        _timerPesquisaPOS = setTimeout(() => {
+            filtrarEExibirProdutosVenda();
+        }, 110);
     };
 
-    window.alternarExpandirProdutosPOS = function() {
-        expandirTodosProdutosPOS = !expandirTodosProdutosPOS;
-        filtrarEExibirProdutosVenda();
-    };
+    function atualizarBadgesQuantidadeCardsPOS() {
+        const grid = document.getElementById('gridProdutosVendaPOS');
+        if (!grid) return;
+        const carrinhoAtual = mesas[mesaSelecionada] || [];
+        const mapaQtds = {};
+        carrinhoAtual.forEach(it => { mapaQtds[it.produto] = it.qtd; });
 
-    function atualizarDropdownProdutosCart() {
-        const sel = document.getElementById('cartSelectProduto');
-        if (!sel) return;
-        sel.innerHTML = '';
-        Object.keys(stock).sort().forEach(p => {
-            const opt = document.createElement('option');
-            opt.value = p;
-            opt.innerText = `${p} (${Number(stock[p].precoVenda || 0).toFixed(2)} MT)`;
-            sel.appendChild(opt);
+        grid.querySelectorAll('.zrest-product-card').forEach(card => {
+            const prod = card.getAttribute('data-prod');
+            const badge = card.querySelector('.card-qtd-badge');
+            const qtd = mapaQtds[prod] || 0;
+            if (qtd > 0) {
+                card.classList.add('no-carrinho');
+                if (badge) {
+                    badge.style.display = 'inline-block';
+                    badge.innerText = `${qtd}x`;
+                }
+            } else {
+                card.classList.remove('no-carrinho');
+                if (badge) badge.style.display = 'none';
+            }
         });
     }
 
@@ -4206,8 +4532,13 @@
             return;
         }
 
+        const carrinhoAtual = mesas[mesaSelecionada] || [];
+        const mapaQtds = {};
+        carrinhoAtual.forEach(it => { mapaQtds[it.produto] = it.qtd; });
+
         const limite = (!termo && !expandirTodosProdutosPOS && lista.length > 24) ? 24 : lista.length;
         const visiveis = lista.slice(0, limite);
+        const frag = document.createDocumentFragment();
 
         visiveis.forEach(p => {
             const item = stock[p];
@@ -4216,17 +4547,19 @@
             const preco = Number(item.precoVenda || 0);
             const esgotado = qtdAtual <= 0;
             const critico = !esgotado && qtdAtual <= minAlerta;
+            const qtdNoCarrinho = mapaQtds[p] || 0;
 
             let stockClass = esgotado ? 'esgotado' : (critico ? 'critico' : 'normal');
             let stockLabel = esgotado ? 'Esgotado' : `${qtdAtual} un`;
             const pEsc = p.replace(/'/g, "\\'");
 
             const card = document.createElement('div');
-            card.className = `zrest-product-card ${esgotado ? 'esgotado' : ''}`;
+            card.className = `zrest-product-card ${esgotado ? 'esgotado' : ''} ${qtdNoCarrinho > 0 ? 'no-carrinho' : ''}`;
             card.setAttribute('data-prod', p);
             card.onclick = () => window.selecionarProdutoCardPOS(p, card);
 
             card.innerHTML = `
+                <span class="card-qtd-badge" style="display:${qtdNoCarrinho > 0 ? 'inline-block' : 'none'};">${qtdNoCarrinho}x</span>
                 <button type="button" class="btn-fav-star ${item.favorito ? 'ativo' : ''}" onclick="window.alternarFavoritoProduto('${pEsc}', event)" title="Fixar nos Favoritos">★</button>
                 <div>
                     ${window.gerarHtmlMidiaProduto(p, item, false)}
@@ -4237,8 +4570,10 @@
                     <span class="zrest-prod-stock ${stockClass}">${stockLabel}</span>
                 </div>
             `;
-            grid.appendChild(card);
+            frag.appendChild(card);
         });
+
+        grid.appendChild(frag);
 
         if (lista.length > 24 && !termo) {
             const btnMore = document.createElement('button');
@@ -4306,7 +4641,7 @@
         window.tocarSom('click');
         renderizarMesasGrid();
         window.renderizarCarrinho();
-        sincronizarMesaFirestore(mesaSelecionada);
+        sincronizarMesaFirestoreDebounced(mesaSelecionada);
     };
 
     window.alterarQtdItemCarrinho = function(idx, delta) {
@@ -4334,7 +4669,7 @@
         window.tocarSom('click');
         renderizarMesasGrid();
         window.renderizarCarrinho();
-        sincronizarMesaFirestore(mesaSelecionada);
+        sincronizarMesaFirestoreDebounced(mesaSelecionada);
     };
 
     window.removerItemCarrinho = function(idx) {
@@ -4347,7 +4682,7 @@
         window.tocarSom('click');
         renderizarMesasGrid();
         window.renderizarCarrinho();
-        sincronizarMesaFirestore(mesaSelecionada);
+        sincronizarMesaFirestoreDebounced(mesaSelecionada);
     };
 
     window.renderizarCarrinho = function() {
@@ -4410,6 +4745,8 @@
         if (elMobMesa) elMobMesa.innerText = mesaSelecionada;
         if (elMobQtd) elMobQtd.innerText = qtdTotalItens;
         if (elMobTotal) elMobTotal.innerText = total.toFixed(2) + " MT";
+
+        atualizarBadgesQuantidadeCardsPOS();
 
         window.calcularTroco();
         if (document.getElementById('cartModoPagamentoTipo')?.value === 'Desdobrado') {
@@ -4639,6 +4976,7 @@
             if (document.getElementById('payDesdPOS')) document.getElementById('payDesdPOS').value = 0;
 
             await sincronizarMesaFirestore(mesaSelecionada);
+            window.fecharCarrinhoMobile();
             renderizarMesasGrid();
             window.renderizarCarrinho();
             filtrarEExibirProdutosVenda();
