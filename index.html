@@ -2380,9 +2380,22 @@
             <p id="fechoZPeriodo" style="margin:2px 0; font-size:10px;"></p>
         </div>
         <p style="margin:5px 0;">--------------------------------</p>
-        <div id="fechoZDetalhes" style="font-size:11px; line-height:1.55;"></div>
+       <div id="fechoZDetalhes" style="font-size:11px; line-height:1.55;"></div>
         <p style="margin:5px 0;">--------------------------------</p>
         <p style="text-align:center; font-size:10px;">Assinatura Operador / Gerência</p>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMAÇÃO E ALERTAS PERSONALIZADOS -->
+<div id="customModalOverlay" class="modal" style="z-index: 100002; align-items: center; justify-content: center;">
+    <div class="modal-content" style="max-width: 400px; text-align: center; margin: auto;">
+        <h3 id="customModalTitle" style="margin-top: 0; color: var(--primary);">Aviso</h3>
+        <p id="customModalText" style="font-size: 0.95em; color: var(--text-main); white-space: pre-line; margin-bottom: 16px;"></p>
+        <input type="text" id="customModalInput" style="display: none; margin-bottom: 16px; text-align: center;">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button type="button" id="customModalBtnOK" class="btn-success" style="flex: 1;">OK</button>
+            <button type="button" id="customModalBtnCancel" class="btn-dark" style="flex: 1; display: none;">Cancelar</button>
+        </div>
     </div>
 </div>
 
@@ -5246,13 +5259,21 @@
         window.print();
     };
 
-    window.fecharCaixaTurnoCEGO = async function() {
-        if (!caixaEstado.aberto) return window.showToast("O caixa já se encontra fechado.", "warning");
-        let valStr = document.getElementById('inputFechoValorContado').value;
+   window.fecharCaixaTurnoCEGO = async function() {
+        if (!caixaEstado || !caixaEstado.aberto) {
+            return window.showToast("O caixa já se encontra fechado.", "warning");
+        }
+        let inputContado = document.getElementById('inputFechoValorContado');
+        let valStr = inputContado ? inputContado.value.trim() : '';
         if (valStr === '' || isNaN(parseFloat(valStr))) {
             return window.showToast("Introduza o valor em Numerário contado na gaveta!", "warning");
         }
-        if (!await customConfirm("Tem a certeza que deseja encerrar o turno atual e emitir o Relatório Fecho Z?", "Encerrar Turno")) return;
+
+        let confirmar = await customConfirm(
+            "Tem a certeza que deseja encerrar o turno atual e emitir o Relatório Fecho Z?",
+            "Encerrar Turno"
+        );
+        if (!confirmar) return;
 
         let contado = parseFloat(valStr) || 0;
         let mpesaContado = parseFloat(document.getElementById('inputFechoMpesaContado')?.value) || 0;
@@ -5267,7 +5288,7 @@
             id: agora.getTime(),
             abertura: caixaEstado.dataAbertura || '-',
             fecho: agora.toLocaleString('pt-PT'),
-            operador: usuarioAtual.nome,
+            operador: usuarioAtual ? usuarioAtual.nome : 'Operador',
             fundoInicial: resumo.fundo,
             vendasDinheiro: resumo.vendasNum,
             vendasMpesa: resumo.vendasMpesa,
@@ -5285,17 +5306,31 @@
 
         if (!window.iniciarProcessamento()) return;
         try {
+            // 1. Grava o histórico do turno e encerra o estado do caixa no Firestore
             await addDoc(collection(db, "empresas", codigoEmpresa, "turnos"), registoTurno);
-            prepararImpressaoRelatorioFechoZ(registoTurno);
-            window.print();
+            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), {
+                aberto: false,
+                fundo: 0,
+                timestampAbertura: null,
+                dataAbertura: null,
+                usuarioAbertura: ""
+            });
 
-            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), { aberto: false, fundo: 0 });
-            document.getElementById('inputFechoValorContado').value = '';
+            // 2. Atualiza o estado local e a interface imediatamente
+            caixaEstado = { aberto: false, fundo: 0, timestampAbertura: null, dataAbertura: null, usuarioAbertura: "" };
+            renderizarEstadoCaixa();
+
+            if (inputContado) inputContado.value = '';
             if (document.getElementById('inputFechoMpesaContado')) document.getElementById('inputFechoMpesaContado').value = '';
             if (document.getElementById('inputFechoEmolaContado')) document.getElementById('inputFechoEmolaContado').value = '';
             if (document.getElementById('inputFechoPosContado')) document.getElementById('inputFechoPosContado').value = '';
+
             registarAuditLog('Fecho Caixa', `Contado: ${contado.toFixed(2)} MT | Diferença: ${diferenca.toFixed(2)} MT`);
             window.showToast("🔒 Turno encerrado e registado no histórico!", "success");
+
+            // 3. Prepara e imprime o Relatório Z após concluir a gravação
+            prepararImpressaoRelatorioFechoZ(registoTurno);
+            setTimeout(() => { window.print(); }, 250);
         } catch (e) {
             window.showToast("Erro ao encerrar caixa: " + e.message, "error");
         } finally {
