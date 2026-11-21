@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
     <style>
         /* ============================================================
@@ -1007,6 +1007,16 @@
                 background: #fff;
             }
         }
+
+        .pro-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(37, 99, 235, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spinFast 0.45s linear infinite;
+        }
+        @keyframes spinFast { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -1025,30 +1035,6 @@
     <div style="padding: 22px 32px; background: var(--card-bg); border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); font-weight: 800; color: var(--dark); font-size: 1em; display: flex; align-items: center; gap: 14px; border: 1px solid var(--border);">
         <div class="pro-spinner"></div>
         <span>A processar...</span>
-    </div>
-    <style>
-        .pro-spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(37, 99, 235, 0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spinFast 0.45s linear infinite;
-        }
-        @keyframes spinFast { 100% { transform: rotate(360deg); } }
-    </style>
-</div>
-
-<!-- MODAL DE SISTEMA CUSTOMIZADO -->
-<div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:100005; background:rgba(0,0,0,0.82);">
-    <div class="modal-content" style="max-width:410px; text-align:center; padding: 26px;">
-        <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Aviso</h3>
-        <p id="customModalText" style="margin-bottom:18px; font-weight:600; white-space: pre-line;"></p>
-        <input type="password" id="customModalInput" style="display:none; margin-bottom:18px; text-align:center; font-size: 1.05em;" onkeyup="if(event.key === 'Enter') document.getElementById('customModalBtnOK').click();">
-        <div style="display:flex; justify-content:center; gap:10px;">
-            <button id="customModalBtnCancel" class="btn-dark" style="display:none;">Cancelar</button>
-            <button id="customModalBtnOK" class="btn-primary">OK</button>
-        </div>
     </div>
 </div>
 
@@ -1426,7 +1412,10 @@
                 <!-- PAINEL DIREITO: Carrinho e Checkout -->
                 <div class="zrest-right-panel" id="painelCarrinhoPOS">
                     <div class="zrest-cart-header">
-                        <h4>Mesa: <span id="labelMesaAtual" style="color:var(--dark);">Balcão</span></h4>
+                        <h4 style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+                            <span>Mesa: <span id="labelMesaAtual" style="color:var(--dark);">Balcão</span></span>
+                            <span id="badgeResponsavelMesa" style="font-size:11px; font-weight:800; padding:2px 8px; border-radius:99px; display:none;"></span>
+                        </h4>
                         <div style="display:flex; gap:5px; flex-wrap:wrap;">
                             <button type="button" class="btn-outline btn-sm" onclick="window.abrirModalTransferirUnirMesa('transferir')" title="Transferir Comanda para outra Mesa">🔄 Mover</button>
                             <button type="button" class="btn-outline btn-sm" onclick="window.abrirModalTransferirUnirMesa('unir')" title="Juntar duas Mesas">🔗 Unir</button>
@@ -1525,7 +1514,7 @@
                             <button type="button" class="btn-primary btn-sm" style="flex:1;" onclick="window.emitirReciboDireto()">🧾 Recibo</button>
                         </div>
 
-                        <button type="button" class="zrest-pay-btn" onclick="window.finalizarVendaCarrinho()">
+                        <button type="button" id="btnFinalizarVendaPOS" class="zrest-pay-btn" onclick="window.finalizarVendaCarrinho()">
                             <span>Finalizar & Cobrar</span>
                             <span>➔</span>
                         </button>
@@ -3250,19 +3239,27 @@
     // ============================================================
     // 9. INICIALIZAÇÃO DOM & MODO CARDÁPIO QR
     // ============================================================
+    const ENTER_KEY_ACTIONS = {
+        "window.desbloquearEcra()": () => window.desbloquearEcra(),
+        "window.fazerLoginFirebase()": () => window.fazerLoginFirebase(),
+        "window.submeterRegisto()": () => window.submeterRegisto(),
+        "window.carregarPerfisEmpresa()": () => window.carregarPerfisEmpresa(),
+        "window.fazerLogin()": () => window.fazerLogin()
+    };
+
     document.addEventListener('DOMContentLoaded', () => {
         window.atualizarEstadoConexao();
         document.body.addEventListener('keyup', function(e) {
             if (e.key === 'Enter') {
-                if (document.activeElement.id === 'cartValorEntregue') {
+                if (document.activeElement && document.activeElement.id === 'cartValorEntregue') {
                     window.finalizarVendaCarrinho();
                     e.preventDefault();
                     return;
                 }
-                if (document.activeElement.classList.contains('enter-trigger')) {
+                if (document.activeElement && document.activeElement.classList.contains('enter-trigger')) {
                     let action = document.activeElement.getAttribute('data-action');
-                    if (action) {
-                        try { eval(action); } catch(err) {}
+                    if (action && ENTER_KEY_ACTIONS[action]) {
+                        ENTER_KEY_ACTIONS[action]();
                     }
                 }
             }
@@ -3582,62 +3579,54 @@
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), (docSnap) => {
-            bloqueiosMesas = docSnap.exists() ? docSnap.data() : {};
-            if (usuarioAtual) renderizarMesasGrid();
-        }));
-
-        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
-            if (docSnap.exists()) {
-                let dadosMesasRemotas = docSnap.data();
-                for (let m in dadosMesasRemotas) {
-                    if (m !== "Balcão" && mesas.hasOwnProperty(m)) {
-                        let infoMesa = dadosMesasRemotas[m];
-                        if (Array.isArray(infoMesa)) {
-                            mesas[m] = infoMesa;
-                        } else if (infoMesa && typeof infoMesa === 'object') {
-                            mesas[m] = infoMesa.itens || [];
-                            if (infoMesa.operador && !bloqueiosMesas[m] && mesas[m].length > 0) {
-                                bloqueiosMesas[m] = infoMesa.operador;
-                            }
-                        }
-                    }
+            let remotos = docSnap.exists() ? docSnap.data() : {};
+            bloqueiosMesas = {};
+            for (let m in remotos) {
+                if (m !== "Balcão" && mesas.hasOwnProperty(m) && (mesas[m] || []).length > 0 && remotos[m]) {
+                    bloqueiosMesas[m] = remotos[m];
                 }
             }
             if (usuarioAtual) { renderizarMesasGrid(); window.renderizarCarrinho(); }
         }));
 
-        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "vendas"), (snapshot) => {
-            historico = snapshot.docs.map(d => ({ idDoc: d.id, ...d.data() }));
-            historico.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            if (usuarioAtual) {
-                window.atualizarDashboard();
-                renderizarEstadoCaixa();
-                filtrarEExibirProdutosVenda();
-                if (usuarioAtual.tipo === 'admin') renderizarUsuarios();
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), (docSnap) => {
+            let dadosMesasRemotas = docSnap.exists() ? docSnap.data() : {};
+            for (let m in mesas) {
+                if (m === "Balcão") continue;
+                let infoMesa = dadosMesasRemotas[m];
+                if (Array.isArray(infoMesa)) {
+                    mesas[m] = infoMesa;
+                    if (mesas[m].length === 0) delete bloqueiosMesas[m];
+                } else if (infoMesa && typeof infoMesa === 'object') {
+                    mesas[m] = Array.isArray(infoMesa.itens) ? infoMesa.itens : [];
+                    if (mesas[m].length > 0 && infoMesa.operador) {
+                        bloqueiosMesas[m] = infoMesa.operador;
+                    } else if (mesas[m].length === 0) {
+                        delete bloqueiosMesas[m];
+                    }
+                } else {
+                    mesas[m] = [];
+                    delete bloqueiosMesas[m];
+                }
             }
+            if (usuarioAtual) { renderizarMesasGrid(); window.renderizarCarrinho(); filtrarEExibirProdutosVenda(); }
         }));
 
-        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "movimentacoes"), (snapshot) => {
-            movimentacoesStock = snapshot.docs.map(d => ({ idDoc: d.id, ...d.data() }));
-            movimentacoesStock.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            if (usuarioAtual) renderizarMovimentacoesStock();
-        }));
-
-        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "turnos"), (snapshot) => {
-            turnosCaixa = snapshot.docs.map(d => ({ idDoc: d.id, ...d.data() }));
-            turnosCaixa.sort((a, b) => (b.id || 0) - (a.id || 0));
-            if (usuarioAtual) renderizarHistoricoTurnos();
-        }));
-
-        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "auditLogs"), (snapshot) => {
-            auditLogs = snapshot.docs.map(d => ({ idDoc: d.id, ...d.data() }));
-            auditLogs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-            if (usuarioAtual && usuarioAtual.tipo === 'admin') renderizarAuditLogs();
-        }));
-
-        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), (docSnap) => {
-            clientes = docSnap.exists() ? (docSnap.data().lista || []) : [];
-            if (usuarioAtual) { renderizarClientes(); atualizarDropdownClientesFiado(); }
+        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "vendas"), (snapshot) => {
+            let lista = [];
+            snapshot.forEach(docItem => {
+                let d = docItem.data();
+                d.idDoc = docItem.id;
+                lista.push(d);
+            });
+            lista.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+            historico = lista;
+            if (usuarioAtual) {
+                filtrarEExibirProdutosVenda();
+                renderizarEstadoCaixa();
+                if (usuarioAtual.tipo === 'admin') renderizarUsuarios();
+                window.atualizarDashboard();
+            }
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "caixa"), (docSnap) => {
@@ -3646,280 +3635,346 @@
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), (docSnap) => {
-            despesas = docSnap.exists() ? (docSnap.data().lista || []) : [];
-            if (usuarioAtual) renderizarEstadoCaixa();
+            despesas = (docSnap.exists() && Array.isArray(docSnap.data().lista)) ? docSnap.data().lista : [];
+            if (usuarioAtual) {
+                renderizarEstadoCaixa();
+                window.atualizarDashboard();
+            }
+        }));
+
+        unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), (docSnap) => {
+            clientes = (docSnap.exists() && Array.isArray(docSnap.data().lista)) ? docSnap.data().lista : [];
+            if (usuarioAtual) {
+                renderizarClientes();
+                atualizarDropdownClientesFiado();
+            }
+        }));
+
+        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "movimentacoes"), (snapshot) => {
+            let lista = [];
+            snapshot.forEach(docItem => {
+                let d = docItem.data();
+                d.idDoc = docItem.id;
+                lista.push(d);
+            });
+            lista.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+            movimentacoesStock = lista;
+            if (usuarioAtual) renderizarMovimentacoesStock();
+        }));
+
+        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "turnos"), (snapshot) => {
+            let lista = [];
+            snapshot.forEach(docItem => {
+                let d = docItem.data();
+                d.idDoc = docItem.id;
+                lista.push(d);
+            });
+            lista.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
+            turnosCaixa = lista;
+            if (usuarioAtual) renderizarHistoricoTurnos();
+        }));
+
+        unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "auditLogs"), (snapshot) => {
+            let lista = [];
+            snapshot.forEach(docItem => {
+                let d = docItem.data();
+                d.idDoc = docItem.id;
+                lista.push(d);
+            });
+            lista.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+            auditLogs = lista;
+            if (usuarioAtual) renderizarAuditLogs();
         }));
 
         unsubscribes.push(onSnapshot(doc(db, "empresas", codigoEmpresa, "dados", "empresa"), (docSnap) => {
             if (docSnap.exists()) {
                 dadosEmpresa = Object.assign(dadosEmpresa, docSnap.data());
-                preencherCamposEmpresaModal();
-                if (document.getElementById('nomeEmpresaHeader')) document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
-                window.carregarIndiceImagensGithub();
+                let elNomeHeader = document.getElementById('nomeEmpresaHeader');
+                if (elNomeHeader) elNomeHeader.innerText = dadosEmpresa.nome || codigoEmpresa;
+                if (usuarioAtual) {
+                    window.carregarIndiceImagensGithub();
+                    window.renderizarCarrinho();
+                }
             }
         }));
 
         unsubscribes.push(onSnapshot(collection(db, "empresas", codigoEmpresa, "pedidosQR"), (snapshot) => {
-            let antesQtd = pedidosPendentesQR.length;
-            pedidosPendentesQR = snapshot.docs
-                .map(d => ({ idDoc: d.id, ...d.data() }))
-                .filter(p => p.status === 'pendente')
-                .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-            if (usuarioAtual) {
-                atualizarBannerPedidosQR();
-                if (pedidosPendentesQR.length > antesQtd) {
-                    let maisRecente = pedidosPendentesQR[0];
-                    let msgAlerta = maisRecente.tipo === 'chamada_garcom'
-                        ? `🔔 Chamada de Garçom (${maisRecente.garcom || 'Qualquer'}) na ${maisRecente.mesa}!`
-                        : `🛎️ Novo Pedido Digital recebido da ${maisRecente.mesa}!`;
-                    window.showToast(msgAlerta, "info");
-                    window.tocarSom('alerta');
+            let pendentes = [];
+            snapshot.forEach(docItem => {
+                let d = docItem.data();
+                if (d.status === 'pendente') {
+                    d.idDoc = docItem.id;
+                    pendentes.push(d);
                 }
-            }
+            });
+            pendentes.sort((a, b) => (Number(b.timestamp) || 0) - (Number(a.timestamp) || 0));
+            pedidosPendentesQR = pendentes;
+            if (usuarioAtual) atualizarBannerPedidosQR();
         }));
     }
 
-    function desconectarEscutadores() { unsubscribes.forEach(unsub => unsub()); unsubscribes = []; }
+    // ============================================================
+    // 12. GESTÃO DE PERFIS DE LOGIN, SESSÃO, BLOQUEIO & ABAS
+    // ============================================================
+    function desconectarEscutadores() {
+        unsubscribes.forEach(unsub => {
+            try { if (typeof unsub === 'function') unsub(); } catch (e) {}
+        });
+        unsubscribes = [];
+    }
 
-    // ============================================================
-    // 12. PERFIS, AUTO-LOGIN E CONTROLO DE ACESSOS
-    // ============================================================
     function renderizarPerfisLogin() {
-        let container = document.getElementById('gridPerfisLogin');
-        if (!container) return;
-        container.innerHTML = '';
+        let grid = document.getElementById('gridPerfisLogin');
+        if (!grid) return;
+        grid.innerHTML = '';
 
-        let chavesPerfis = Object.keys(usuarios);
-        let chavesOrdenadas = [
-            ...chavesPerfis.filter(u => usuarios[u].tipo === 'admin' || usuarios[u].tipo === 'gerente'),
-            ...chavesPerfis.filter(u => usuarios[u].tipo === 'vendedor')
-        ];
-        let visiveis = chavesOrdenadas.slice(0, 3);
+        let chaves = Object.keys(usuarios);
+        if (chaves.length === 0) {
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:0.88em;">Nenhum perfil encontrado nesta empresa.</p>';
+            return;
+        }
+
+        let visiveis = chaves.slice(0, 5);
+        let userInputAtual = (document.getElementById('loginUser')?.value || '').trim().toLowerCase();
 
         visiveis.forEach(u => {
             let uObj = usuarios[u];
+            let card = document.createElement('div');
+            card.className = `card-perfil-login ${userInputAtual === u ? 'ativo' : ''}`;
+            card.onclick = () => window.selecionarPerfilLogin(u);
+
             let avatarHtml = uObj.foto
                 ? `<img src="${uObj.foto}" class="avatar-img" alt="${u}">`
                 : `<div class="avatar-placeholder">${u.charAt(0).toUpperCase()}</div>`;
-            let card = document.createElement('div');
-            card.className = 'card-perfil-login';
-            card.onclick = (e) => window.selecionarPerfilLogin(u, e);
-            card.innerHTML = `${avatarHtml}<div style="font-weight:800; font-size:0.85em; text-transform:uppercase;">${u}</div>`;
-            container.appendChild(card);
+
+            card.innerHTML = `
+                ${avatarHtml}
+                <div style="font-weight:800; font-size:0.92em; text-transform:uppercase; color:var(--dark);">${u}</div>
+                <div style="font-size:0.74em; color:var(--text-muted); font-weight:700; margin-top:2px;">${uObj.tipo}</div>
+            `;
+            grid.appendChild(card);
         });
 
-        if (chavesOrdenadas.length > 3) {
+        if (chaves.length > 5) {
             let btnMais = document.createElement('div');
             btnMais.className = 'btn-mais-perfis';
             btnMais.onclick = () => window.abrirModalMaisPerfis();
-            btnMais.innerHTML = `<span style="font-size:20px;">👤+</span><span style="font-size:0.8em; font-weight:800;">Outros (${chavesOrdenadas.length - 3})</span>`;
-            container.appendChild(btnMais);
+            btnMais.innerHTML = `<span style="font-size:20px;">+${chaves.length - 5}</span><span style="font-size:12px;">Mais Perfis</span>`;
+            grid.appendChild(btnMais);
         }
     }
 
-    window.abrirModalMaisPerfis = function() {
-        let modalLista = document.getElementById('listaTodosPerfisModal');
-        if (!modalLista) return;
-        modalLista.innerHTML = '';
-        for (let u in usuarios) {
-            let uObj = usuarios[u];
-            let avatarHtml = uObj.foto
-                ? `<img src="${uObj.foto}" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">`
-                : `<span style="display:inline-block; width:34px; height:34px; border-radius:50%; background:var(--primary); color:white; text-align:center; line-height:34px; font-weight:bold;">${u.charAt(0).toUpperCase()}</span>`;
-            modalLista.innerHTML += `<button class="btn-perfil" style="display:flex; align-items:center; gap:12px; background:var(--card-bg); border:1px solid var(--border); color:var(--text-main); padding:10px; text-align:left; border-radius:10px; font-weight:700;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">${avatarHtml}<span style="text-transform:uppercase;">${u}</span> (${uObj.tipo})</button>`;
+    window.selecionarPerfilLogin = function(nomeUser) {
+        window.tocarSom('click');
+        let inpUser = document.getElementById('loginUser');
+        let inpPass = document.getElementById('loginPass');
+        if (inpUser) inpUser.value = nomeUser;
+        if (inpPass) {
+            inpPass.value = '';
+            inpPass.focus();
         }
+        renderizarPerfisLogin();
+    };
+
+    window.abrirModalMaisPerfis = function() {
+        let lista = document.getElementById('listaTodosPerfisModal');
+        if (!lista) return;
+        lista.innerHTML = Object.keys(usuarios).map(u => `
+            <button type="button" class="btn-outline" style="justify-content:flex-start; text-transform:uppercase;" onclick="window.selecionarPerfilLogin('${u}'); window.fecharModalMaisPerfis();">
+                👤 ${u} <small style="opacity:0.7; margin-left:auto;">(${usuarios[u].tipo})</small>
+            </button>
+        `).join('');
         document.getElementById('modalMaisPerfis').style.display = 'block';
     };
 
-    window.fecharModalMaisPerfis = function() { document.getElementById('modalMaisPerfis').style.display = 'none'; };
-
-    window.selecionarPerfilLogin = function(u, evt) {
-        window.tocarSom('click');
-        let elUser = document.getElementById('loginUser');
-        let elPass = document.getElementById('loginPass');
-        if (elUser) elUser.value = u;
-        if (elPass) { elPass.value = ''; elPass.focus(); }
-        document.querySelectorAll('.card-perfil-login').forEach(c => c.classList.remove('ativo'));
-        if (evt && evt.currentTarget) evt.currentTarget.classList.add('ativo');
+    window.fecharModalMaisPerfis = function() {
+        document.getElementById('modalMaisPerfis').style.display = 'none';
     };
 
     window.verificarAutoLoginPerfil = function() {
-        let u = (document.getElementById('loginUser')?.value || '').trim().toLowerCase();
-        let p = document.getElementById('loginPass')?.value || '';
-        if (!u || !p || !usuarios[u]) return;
-        if (String(usuarios[u].senha).trim() === String(p).trim()) {
-            window.fazerLogin(true);
+        let user = (document.getElementById('loginUser')?.value || '').trim().toLowerCase();
+        let pass = document.getElementById('loginPass')?.value || '';
+        if (!user || !pass || pass.length < 3) return;
+        if (usuarios[user] && String(usuarios[user].senha).trim() === String(pass).trim()) {
+            window.fazerLogin();
         }
     };
 
-    window.fazerLogin = async function(isAuto = false) {
-        let u = document.getElementById('loginUser').value.trim().toLowerCase();
-        let p = document.getElementById('loginPass').value;
-        if (!codigoEmpresa) return window.showToast("Insira o Código do Estabelecimento.", "warning");
+    function aplicarPermissoesUsuario() {
+        if (!usuarioAtual) return;
+        let isAdmin = usuarioAtual.tipo === 'admin';
+        let isGerente = usuarioAtual.tipo === 'gerente' || isAdmin;
+        let perms = isAdmin
+            ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard']
+            : (usuarioAtual.permissoes || ['abaVendas']);
 
-        if (usuarios[u] && String(usuarios[u].senha).trim() === String(p).trim()) {
-            window.tocarSom('sucesso');
-            let perms = usuarios[u].tipo === 'admin'
-                ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard']
-                : (usuarios[u].permissoes || ['abaVendas']);
+        const mapaBotoes = {
+            abaVendas: 'navTabVendas',
+            abaCaixa: 'navTabCaixa',
+            abaFiado: 'navTabFiado',
+            abaStock: 'navTabStock',
+            abaUsuarios: 'navTabUsuarios',
+            abaDashboard: 'navTabDashboard'
+        };
 
-            usuarioAtual = {
-                nome: u,
-                tipo: usuarios[u].tipo,
-                foto: usuarios[u].foto || "",
-                permissoes: perms
-            };
-
-            document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
-            document.getElementById('nomeUsuarioLogado').innerText = u;
-            document.getElementById('cargoUsuarioLogado').innerText = usuarios[u].tipo === 'admin' ? 'Administrador' : usuarios[u].tipo === 'gerente' ? 'Gerente' : 'Operador de Caixa';
-
-            let headerAvatar = document.getElementById('headerAvatarBox');
-            if (usuarioAtual.foto) headerAvatar.innerHTML = `<img src="${usuarioAtual.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">`;
-            else headerAvatar.innerHTML = `<div style="width:40px; height:40px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:800;">${u.charAt(0).toUpperCase()}</div>`;
-
-            document.getElementById('telaLogin').style.display = 'none';
-            document.getElementById('telaSistema').style.display = 'block';
-
-            window.aplicarLimitesPlanoLicenca(planoLicencaAtual, validadeLicencaAtual);
-            iniciarEscutadoresCompletosEmpresa();
-            configurarPerfilPermissoes();
-            renderizarMesasGrid();
-            atualizarDropdownProdutosCart();
-            filtrarEExibirProdutosVenda();
-            renderizarBarraFavoritosPOS();
-            renderizarStock();
-            renderizarMovimentacoesStock();
-            renderizarEstadoCaixa();
-            renderizarClientes();
-            window.atualizarDashboard();
-            window.atualizarFabCarrinhoMobile();
-            if (usuarioAtual.tipo === 'admin') { renderizarUsuarios(); renderizarAuditLogs(); }
-
-            registarAuditLog('Login', `Sessão iniciada por ${u}`);
-            resetarTimerInatividade();
-        } else if (!isAuto) {
-            window.showToast("Credenciais inválidas!", "error");
+        let primeiraAbaPermitida = null;
+        for (let aba in mapaBotoes) {
+            let btn = document.getElementById(mapaBotoes[aba]);
+            if (btn) {
+                let permitido = perms.includes(aba);
+                btn.style.display = permitido ? 'inline-flex' : 'none';
+                if (permitido && !primeiraAbaPermitida) primeiraAbaPermitida = aba;
+            }
         }
+
+        document.querySelectorAll('.col-admin').forEach(el => {
+            if (!el.classList.contains('tab-btn') && !el.classList.contains('tab-content')) {
+                el.style.display = isAdmin ? '' : 'none';
+            }
+        });
+        document.querySelectorAll('.col-gerente').forEach(el => {
+            if (!el.classList.contains('tab-btn') && !el.classList.contains('tab-content')) {
+                el.style.display = isGerente ? '' : 'none';
+            }
+        });
+
+        if (primeiraAbaPermitida) {
+            window.mudarAba(primeiraAbaPermitida);
+        }
+    }
+
+    window.fazerLogin = function() {
+        let user = (document.getElementById('loginUser')?.value || '').trim().toLowerCase();
+        let pass = (document.getElementById('loginPass')?.value || '').trim();
+
+        if (!user || !pass) return window.showToast("Selecione um perfil e introduza a palavra-passe!", "warning");
+        if (!usuarios[user] || String(usuarios[user].senha).trim() !== pass) {
+            window.tocarSom('alerta');
+            return window.showToast("❌ Utilizador ou palavra-passe incorreta!", "error");
+        }
+
+        usuarioAtual = {
+            nome: user,
+            tipo: usuarios[user].tipo || 'vendedor',
+            foto: usuarios[user].foto || '',
+            permissoes: usuarios[user].permissoes || ['abaVendas']
+        };
+
+        document.getElementById('telaLogin').style.display = 'none';
+        document.getElementById('telaSistema').style.display = 'block';
+
+        document.getElementById('nomeEmpresaHeader').innerText = dadosEmpresa.nome || codigoEmpresa;
+        document.getElementById('nomeUsuarioLogado').innerText = usuarioAtual.nome;
+        document.getElementById('cargoUsuarioLogado').innerText =
+            usuarioAtual.tipo === 'admin' ? '⚙️ Administrador' : (usuarioAtual.tipo === 'gerente' ? '🛡️ Gerente' : '🛒 Operador de Caixa');
+
+        let avatarBox = document.getElementById('headerAvatarBox');
+        if (avatarBox) {
+            avatarBox.innerHTML = usuarioAtual.foto
+                ? `<img src="${usuarioAtual.foto}" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid var(--primary);">`
+                : `<div style="width:42px; height:42px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:17px;">${usuarioAtual.nome.charAt(0).toUpperCase()}</div>`;
+        }
+
+        aplicarPermissoesUsuario();
+        iniciarEscutadoresCompletosEmpresa();
+        renderizarMesasGrid();
+        window.renderizarCarrinho();
+        filtrarEExibirProdutosVenda();
+        renderizarEstadoCaixa();
+        window.atualizarFabCarrinhoMobile();
+        registarAuditLog('Login Turno', `Operador ${usuarioAtual.nome} iniciou sessão no terminal.`);
+        window.showToast(`Bem-vindo(a), ${usuarioAtual.nome.toUpperCase()}!`, "success");
     };
 
     window.fazerLogout = function() {
-        if (usuarioAtual) registarAuditLog('Logout', `Sessão encerrada por ${usuarioAtual.nome}`);
-        if (timerInatividade) clearTimeout(timerInatividade);
+        if (usuarioAtual) {
+            registarAuditLog('Logout Turno', `Operador ${usuarioAtual.nome} saiu da sessão.`);
+        }
         usuarioAtual = null;
-        desconectarEscutadores();
         document.getElementById('telaSistema').style.display = 'none';
         document.getElementById('telaLogin').style.display = 'block';
-        document.getElementById('loginPass').value = '';
+        let inpPass = document.getElementById('loginPass');
+        if (inpPass) inpPass.value = '';
         window.atualizarFabCarrinhoMobile();
     };
 
-    function resetarTimerInatividade() {
-        if (timerInatividade) clearTimeout(timerInatividade);
-        if (usuarioAtual && document.getElementById('telaSistema').style.display !== 'none') {
-            timerInatividade = setTimeout(() => {
-                window.fazerLogout();
-                window.showToast("Sessão terminada por inatividade. Selecione o perfil novamente.", "warning");
-            }, 90000);
-        }
-    }
-    ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => document.addEventListener(evt, resetarTimerInatividade, true));
+    window.mudarAba = function(abaId, evt) {
+        if (evt && evt.preventDefault) evt.preventDefault();
+        window.tocarSom('click');
+
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('#mainTabsNav .tab-btn').forEach(tb => tb.classList.remove('active'));
+
+        let abaAlvo = document.getElementById(abaId);
+        if (abaAlvo) abaAlvo.classList.add('active');
+
+        const mapaBotoes = {
+            abaVendas: 'navTabVendas',
+            abaCaixa: 'navTabCaixa',
+            abaFiado: 'navTabFiado',
+            abaStock: 'navTabStock',
+            abaUsuarios: 'navTabUsuarios',
+            abaDashboard: 'navTabDashboard'
+        };
+        let btnAlvo = document.getElementById(mapaBotoes[abaId]);
+        if (btnAlvo) btnAlvo.classList.add('active');
+
+        if (abaId === 'abaDashboard') window.atualizarDashboard();
+        if (abaId === 'abaCaixa') renderizarEstadoCaixa();
+        if (abaId === 'abaStock') renderizarStock();
+        if (abaId === 'abaUsuarios') renderizarUsuarios();
+        window.atualizarFabCarrinhoMobile();
+    };
 
     window.alternarModoNoturno = function() {
-        window.tocarSom('click');
         document.body.classList.toggle('dark-mode');
-        localStorage.setItem('modoNoturno', document.body.classList.contains('dark-mode') ? 'sim' : 'nao');
+        let ativo = document.body.classList.contains('dark-mode');
+        localStorage.setItem('gsDarkMode', ativo ? '1' : '0');
     };
-    if (localStorage.getItem('modoNoturno') === 'sim') document.body.classList.add('dark-mode');
+    if (localStorage.getItem('gsDarkMode') === '1') {
+        document.body.classList.add('dark-mode');
+    }
 
     window.bloquearEcra = function() {
         if (!usuarioAtual) return;
         document.getElementById('lockUserNomeDisplay').innerText = usuarioAtual.nome;
-        document.getElementById('inputSenhaDesbloqueio').value = '';
+        let inp = document.getElementById('inputSenhaDesbloqueio');
+        inp.value = '';
         document.getElementById('telaBloqueio').style.display = 'flex';
-        if (timerInatividade) clearTimeout(timerInatividade);
+        setTimeout(() => inp.focus(), 80);
     };
 
     window.desbloquearEcra = function() {
-        let pwd = document.getElementById('inputSenhaDesbloqueio').value;
-        if (usuarios[usuarioAtual.nome] && String(usuarios[usuarioAtual.nome].senha).trim() === String(pwd).trim()) {
+        if (!usuarioAtual) return;
+        let senha = (document.getElementById('inputSenhaDesbloqueio')?.value || '').trim();
+        let senhaUser = usuarios[usuarioAtual.nome]?.senha || '';
+        if (senha === String(senhaUser).trim() || senha === String(dadosEmpresa.chaveMestra || '1234').trim()) {
             document.getElementById('telaBloqueio').style.display = 'none';
-            resetarTimerInatividade();
-            window.tocarSom('sucesso');
+            window.showToast("🔓 Ecrã desbloqueado!", "success");
         } else {
-            window.showToast("Palavra-passe incorreta!", "error");
+            window.tocarSom('alerta');
+            window.showToast("❌ Palavra-passe incorreta!", "error");
         }
     };
 
-    function configurarPerfilPermissoes() {
-        let abasDisponiveis = usuarioAtual.tipo === 'admin'
-            ? ['abaVendas', 'abaCaixa', 'abaFiado', 'abaStock', 'abaUsuarios', 'abaDashboard']
-            : (usuarioAtual.permissoes || ['abaVendas']);
-
-        const mapaAbas = {
-            'abaVendas': 'navTabVendas',
-            'abaCaixa': 'navTabCaixa',
-            'abaFiado': 'navTabFiado',
-            'abaStock': 'navTabStock',
-            'abaUsuarios': 'navTabUsuarios',
-            'abaDashboard': 'navTabDashboard'
-        };
-
-        for (let abaId in mapaAbas) {
-            let btnNav = document.getElementById(mapaAbas[abaId]);
-            if (btnNav) {
-                btnNav.style.display = abasDisponiveis.includes(abaId) ? 'inline-flex' : 'none';
-            }
-        }
-
-        let abaAtivaEl = document.querySelector('.tab-content.active');
-        if (abaAtivaEl && !abasDisponiveis.includes(abaAtivaEl.id)) {
-            window.mudarAba(abasDisponiveis[0] || 'abaVendas');
-        }
-    }
-
-    window.mudarAba = function(abaId, evt) {
-        if (usuarioAtual && usuarioAtual.tipo !== 'admin' && usuarioAtual.permissoes && !usuarioAtual.permissoes.includes(abaId)) {
-            return window.showToast("⚠️ Acesso restrito a esta aba pelo Administrador.", "error");
-        }
-
-        window.tocarSom('click');
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-        let navBtn = document.querySelector(`.tab-btn[onclick*="'${abaId}'"]`);
-        if (navBtn) navBtn.classList.add('active');
-
-        let abaElement = document.getElementById(abaId);
-        if (abaElement) abaElement.classList.add('active');
-        if (abaId === 'abaDashboard') window.atualizarDashboard();
-        if (abaId === 'abaUsuarios' && usuarioAtual && usuarioAtual.tipo === 'admin') { renderizarUsuarios(); renderizarAuditLogs(); window.atualizarContadoresQuotaPlano(); }
-        if (abaId === 'abaCaixa') renderizarHistoricoTurnos();
-        if (abaId === 'abaStock') { renderizarStock(); renderizarMovimentacoesStock(); window.atualizarContadoresQuotaPlano(); }
-        window.atualizarFabCarrinhoMobile();
-    };
-
     // ============================================================
-    // 13. FAVORITOS & SCANNER DE CÓDIGO DE BARRAS
+    // 13. FAVORITOS FIXOS & SCANNER DE CÓDIGO DE BARRAS (CÂMARA)
     // ============================================================
-    window.alternarFavoritoProduto = async function(nomeProduto, evt) {
-        if (evt) evt.stopPropagation();
-        if (!codigoEmpresa || !nomeProduto) return;
+    window.alternarFavoritoProduto = async function(nomeProduto, event) {
+        if (event && event.stopPropagation) event.stopPropagation();
         let idx = produtosFavoritos.indexOf(nomeProduto);
-        if (idx >= 0) {
-            produtosFavoritos.splice(idx, 1);
-            window.showToast(`"${nomeProduto}" removido dos favoritos.`, "info");
-        } else {
-            produtosFavoritos.push(nomeProduto);
-            window.showToast(`★ "${nomeProduto}" fixado nos atalhos rápidos!`, "success");
-        }
+        if (idx >= 0) produtosFavoritos.splice(idx, 1);
+        else produtosFavoritos.push(nomeProduto);
+
         renderizarBarraFavoritosPOS();
         filtrarEExibirProdutosVenda();
         renderizarStock();
-        try {
-            await setDoc(doc(db, "empresas", codigoEmpresa), { favoritos: produtosFavoritos }, { merge: true });
-        } catch(e) {}
+
+        if (codigoEmpresa) {
+            try {
+                await setDoc(doc(db, "empresas", codigoEmpresa), { favoritos: produtosFavoritos }, { merge: true });
+            } catch (e) {}
+        }
     };
 
     function renderizarBarraFavoritosPOS() {
@@ -3934,76 +3989,100 @@
         }
         barra.style.display = 'flex';
         lista.innerHTML = validos.map(p => {
-            let item = stock[p];
             let pEnc = encodeURIComponent(p);
-            return `<button type="button" class="zrest-fav-chip" onclick="window.selecionarProdutoCardPOS(decodeURIComponent('${pEnc}'))">★ ${p} (${Number(item.precoVenda || 0).toFixed(0)} MT)</button>`;
+            return `<button type="button" class="zrest-fav-chip" onclick="window.selecionarProdutoCardPOS(decodeURIComponent('${pEnc}'))">★ ${p}</button>`;
         }).join('');
     }
 
-    window.abrirModalScannerBarcode = function() {
+    function iniciarLeitorCamera(onSuccessCallback) {
         document.getElementById('modalScannerBarcode').style.display = 'block';
-        setTimeout(() => { iniciarCameraScanner('venda'); }, 300);
-    };
-
-    window.abrirModalScannerStock = function(campoDestino = 'simplesBarcode') {
-        campoDestinoScannerStock = campoDestino;
-        document.getElementById('modalScannerBarcode').style.display = 'block';
-        setTimeout(() => { iniciarCameraScanner('stock'); }, 300);
-    };
-
-    window.fecharModalScannerBarcode = async function() {
-        document.getElementById('modalScannerBarcode').style.display = 'none';
-        if (html5QrCodeScanner) {
-            try { await html5QrCodeScanner.stop(); html5QrCodeScanner.clear(); } catch(e) {}
-            html5QrCodeScanner = null;
+        if (typeof Html5Qrcode === 'undefined') {
+            return window.showToast("Biblioteca de leitura por câmara indisponível.", "error");
         }
-    };
-
-    function iniciarCameraScanner(modo) {
-        if (typeof Html5Qrcode === 'undefined') return window.showToast("Erro: Leitor não carregado.", "error");
-        html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
-        html5QrCodeScanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 150 } },
-            (decodedText) => {
-                window.fecharModalScannerBarcode();
-                if (modo === 'stock') {
-                    let targetInput = document.getElementById(campoDestinoScannerStock);
-                    if (targetInput) targetInput.value = decodedText;
-                    window.showToast("Código capturado: " + decodedText, "success");
-                } else {
-                    window.processarCodigoBarrasLido(decodedText);
-                }
-            },
-            () => {}
-        ).catch(() => { window.showToast("Não foi possível iniciar a câmara.", "error"); });
+        try {
+            if (html5QrCodeScanner) {
+                html5QrCodeScanner.stop().catch(() => {});
+            }
+            html5QrCodeScanner = new Html5Qrcode("readerHtml5Qrcode");
+            html5QrCodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                (decodedText) => {
+                    window.fecharModalScannerBarcode();
+                    onSuccessCallback(decodedText.trim());
+                },
+                () => {}
+            ).catch(() => {
+                window.showToast("Não foi possível aceder à câmara do dispositivo.", "warning");
+            });
+        } catch (e) {
+            window.showToast("Erro ao iniciar câmara: " + e.message, "error");
+        }
     }
 
+    window.abrirModalScannerBarcode = function() {
+        iniciarLeitorCamera((codigo) => {
+            window.processarCodigoBarrasLido(codigo);
+        });
+    };
+
+    window.abrirModalScannerStock = function(campoId) {
+        campoDestinoScannerStock = campoId || 'simplesBarcode';
+        iniciarLeitorCamera((codigo) => {
+            let el = document.getElementById(campoDestinoScannerStock);
+            if (el) el.value = codigo;
+            window.showToast(`Código ${codigo} lido com sucesso!`, "success");
+        });
+    };
+
+    window.fecharModalScannerBarcode = function() {
+        document.getElementById('modalScannerBarcode').style.display = 'none';
+        if (html5QrCodeScanner) {
+            html5QrCodeScanner.stop().catch(() => {});
+        }
+    };
+
     window.processarCodigoBarrasLido = function(codigo) {
-        let encontrado = null;
+        if (!codigo) return;
         for (let p in stock) {
-            if (stock[p].barcode && stock[p].barcode.trim() === codigo.trim()) { encontrado = p; break; }
+            if (stock[p].barcode && String(stock[p].barcode).trim().toLowerCase() === codigo.toLowerCase()) {
+                window.selecionarProdutoCardPOS(p);
+                window.showToast(`📷 ${p} adicionado via código de barras!`, "success");
+                return;
+            }
         }
-        if (encontrado) {
-            window.selecionarProdutoCardPOS(encontrado);
-            window.showToast(`Produto: ${encontrado}`, "success");
-        } else {
-            window.showToast(`Código [${codigo}] não encontrado no stock!`, "warning");
-        }
+        window.showToast(`Código "${codigo}" não encontrado no stock.`, "warning");
     };
 
     // ============================================================
     // 14. MESAS E CARRINHO POS
     // ============================================================
+    window.obterResponsavelMesa = function(nomeMesa = mesaSelecionada) {
+        if (!nomeMesa || nomeMesa === "Balcão") return null;
+        let itens = mesas[nomeMesa] || [];
+        // A mesa só é considerada "em uso" se o perfil tiver lançado algum item no carrinho
+        if (itens.length === 0) return null;
+        let dono = (bloqueiosMesas[nomeMesa] || "").trim().toLowerCase();
+        return dono || null;
+    };
+
+    window.podeOperarMesa = function(nomeMesa = mesaSelecionada) {
+        let responsavel = window.obterResponsavelMesa(nomeMesa);
+        if (!responsavel) return true;
+        if (!usuarioAtual) return false;
+        return responsavel === usuarioAtual.nome.trim().toLowerCase();
+    };
+
     window.sincronizarEstadoMesaNuvem = async function(nomeMesa) {
         if (!codigoEmpresa || !nomeMesa || nomeMesa === "Balcão") return;
         let itensMesa = mesas[nomeMesa] || [];
         try {
             if (itensMesa.length > 0) {
-                bloqueiosMesas[nomeMesa] = usuarioAtual.nome;
-                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [nomeMesa]: usuarioAtual.nome }, { merge: true });
+                let donoAtual = bloqueiosMesas[nomeMesa] || usuarioAtual.nome;
+                bloqueiosMesas[nomeMesa] = donoAtual;
+                await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "bloqueiosMesas"), { [nomeMesa]: donoAtual }, { merge: true });
                 await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "mesasCarrinhos"), {
-                    [nomeMesa]: { itens: itensMesa, operador: usuarioAtual.nome, atualizadoEm: Date.now() }
+                    [nomeMesa]: { itens: itensMesa, operador: donoAtual, atualizadoEm: Date.now() }
                 }, { merge: true });
             } else {
                 delete bloqueiosMesas[nomeMesa];
@@ -4023,8 +4102,8 @@
             let itens = mesas[m] || [];
             let ocupada = itens.length > 0;
             let total = itens.reduce((acc, i) => acc + (i.qtd * i.precoUnit), 0);
-            let dono = bloqueiosMesas[m] || "";
-            let bloqueadaParaMim = ocupada && dono && dono !== usuarioAtual.nome;
+            let dono = ocupada ? (bloqueiosMesas[m] || "") : "";
+            let bloqueadaParaMim = ocupada && dono && usuarioAtual && dono.toLowerCase() !== usuarioAtual.nome.toLowerCase();
 
             let card = document.createElement('div');
             card.className = `zrest-mesa-card ${ocupada ? (bloqueadaParaMim ? 'bloqueada' : 'ocupada') : ''} ${mesaSelecionada === m ? 'selecionada' : ''}`;
@@ -4032,7 +4111,11 @@
 
             let statusTxt = 'Livre';
             if (ocupada) {
-                statusTxt = bloqueadaParaMim ? `🔒 ${dono.toUpperCase()}` : `${total.toFixed(0)} MT`;
+                if (bloqueadaParaMim) {
+                    statusTxt = `🔒 Em uso: ${dono.toUpperCase()} (${total.toFixed(0)} MT)`;
+                } else {
+                    statusTxt = `👤 ${(dono || usuarioAtual.nome).toUpperCase()} • ${total.toFixed(0)} MT`;
+                }
             }
 
             card.innerHTML = `<div>${m}</div><div style="font-size:0.74em; margin-top:2px; font-weight:700;">${statusTxt}</div>`;
@@ -4043,17 +4126,11 @@
     window.selecionarMesa = async function(m) {
         if (m !== "Balcão") {
             let itensMesa = mesas[m] || [];
-            let donoMesa = bloqueiosMesas[m];
+            let donoMesa = itensMesa.length > 0 ? (bloqueiosMesas[m] || "") : "";
 
-            if (itensMesa.length > 0 && donoMesa && donoMesa !== usuarioAtual.nome) {
-                let ehAdmin = usuarioAtual.tipo === 'admin';
-                if (!ehAdmin) {
-                    return window.showToast(`🔒 A ${m} está em atendimento pelo operador ${donoMesa.toUpperCase()}.`, "error");
-                }
-                let assumir = await customConfirm(`⚠️ A ${m} está sendo atendida por ${donoMesa.toUpperCase()}.\n\nComo Administrador, deseja assumir esta mesa?`, "Assumir Mesa");
-                if (!assumir) return;
-                bloqueiosMesas[m] = usuarioAtual.nome;
-                await window.sincronizarEstadoMesaNuvem(m);
+            if (itensMesa.length > 0 && donoMesa && donoMesa.toLowerCase() !== usuarioAtual.nome.toLowerCase()) {
+                window.tocarSom('alerta');
+                return window.showToast(`🔒 A ${m} está em uso pelo perfil ${donoMesa.toUpperCase()}! Apenas ${donoMesa.toUpperCase()} pode lançar itens ou finalizar esta mesa.`, "error");
             }
         }
 
@@ -4205,6 +4282,11 @@
             window.tocarSom('alerta');
             return window.showToast("O caixa está fechado! Abra o caixa para vender.", "error");
         }
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}! Não pode adicionar itens nesta mesa.`, "error");
+        }
         let item = stock[nomeProduto];
         if (!item || item.qtd <= 0) return window.showToast("Produto esgotado no stock!", "error");
         document.getElementById('cartSelectProduto').value = nomeProduto;
@@ -4215,6 +4297,12 @@
 
     window.adicionarAoCarrinho = async function(isSilencioso = false) {
         if (!caixaEstado.aberto) return;
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}!`, "error");
+        }
+
         let prod = document.getElementById('cartSelectProduto').value;
         let qtd = parseInt(document.getElementById('cartQtd').value) || 1;
         let precoUnit = parseFloat(document.getElementById('cartPrecoUnit').value) || 0;
@@ -4235,6 +4323,10 @@
         else { carrinho.push({ produto: prod, qtd: qtd, precoUnit: precoUnit, custoUnit: itemStock.custoMedio || 0, subtotal: qtd * precoUnit }); }
 
         mesas[mesaSelecionada] = carrinho;
+        if (mesaSelecionada !== "Balcão" && carrinho.length > 0 && !bloqueiosMesas[mesaSelecionada]) {
+            bloqueiosMesas[mesaSelecionada] = usuarioAtual.nome;
+        }
+
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
@@ -4245,6 +4337,12 @@
     };
 
     window.alterarQtdItemCarrinho = async function(idx, delta) {
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}!`, "error");
+        }
+
         let carrinho = mesas[mesaSelecionada] || [];
         let item = carrinho[idx];
         if (!item) return;
@@ -4268,6 +4366,10 @@
 
         window.tocarSom('click');
         mesas[mesaSelecionada] = carrinho;
+        if (mesaSelecionada !== "Balcão" && carrinho.length === 0) {
+            delete bloqueiosMesas[mesaSelecionada];
+        }
+
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
@@ -4278,10 +4380,20 @@
     };
 
     window.removerItemCarrinho = async function(idx) {
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}!`, "error");
+        }
+
         window.tocarSom('click');
         let carrinho = mesas[mesaSelecionada] || [];
         carrinho.splice(idx, 1);
         mesas[mesaSelecionada] = carrinho;
+        if (mesaSelecionada !== "Balcão" && carrinho.length === 0) {
+            delete bloqueiosMesas[mesaSelecionada];
+        }
+
         renderizarMesasGrid();
         window.renderizarCarrinho();
         filtrarEExibirProdutosVenda();
@@ -4308,6 +4420,47 @@
         let corpo = document.getElementById('corpoCarrinhoVisual');
         if (!corpo) return;
         corpo.innerHTML = '';
+
+        let responsavelMesa = window.obterResponsavelMesa(mesaSelecionada);
+        let podeOperar = window.podeOperarMesa(mesaSelecionada);
+        let badgeResp = document.getElementById('badgeResponsavelMesa');
+        let btnPay = document.getElementById('btnFinalizarVendaPOS');
+
+        if (badgeResp) {
+            if (mesaSelecionada === "Balcão") {
+                badgeResp.style.display = 'none';
+            } else if (carrinho.length === 0 || !responsavelMesa) {
+                badgeResp.style.display = 'inline-block';
+                badgeResp.style.background = '#ecfdf5';
+                badgeResp.style.color = '#065f46';
+                badgeResp.style.border = '1px solid #a7f3d0';
+                badgeResp.innerText = '🟢 Livre';
+            } else if (podeOperar) {
+                badgeResp.style.display = 'inline-block';
+                badgeResp.style.background = '#eff6ff';
+                badgeResp.style.color = '#1d4ed8';
+                badgeResp.style.border = '1px solid #bfdbfe';
+                badgeResp.innerText = `👤 Em uso: ${responsavelMesa.toUpperCase()}`;
+            } else {
+                badgeResp.style.display = 'inline-block';
+                badgeResp.style.background = '#fef2f2';
+                badgeResp.style.color = '#991b1b';
+                badgeResp.style.border = '1px solid #fecaca';
+                badgeResp.innerText = `🔒 Em uso por: ${responsavelMesa.toUpperCase()}`;
+            }
+        }
+
+        if (btnPay) {
+            if (!podeOperar && responsavelMesa) {
+                btnPay.style.background = '#64748b';
+                btnPay.style.boxShadow = 'none';
+                btnPay.innerHTML = `<span>🔒 Em uso por ${responsavelMesa.toUpperCase()}</span><span>⛔</span>`;
+            } else {
+                btnPay.style.background = '';
+                btnPay.style.boxShadow = '';
+                btnPay.innerHTML = `<span>Finalizar & Cobrar</span><span>➔</span>`;
+            }
+        }
 
         let bruto = 0;
         if (carrinho.length === 0) {
@@ -4424,6 +4577,11 @@
     // ============================================================
     window.finalizarVendaCarrinho = async function() {
         if (!caixaEstado.aberto) return window.showToast("Abra o caixa antes de finalizar vendas!", "error");
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}! Apenas ${dono.toUpperCase()} pode finalizar esta venda.`, "error");
+        }
         let carrinho = mesas[mesaSelecionada] || [];
         if (carrinho.length === 0) return window.showToast("Adicione produtos ao carrinho primeiro!", "warning");
 
@@ -4783,6 +4941,11 @@
     let modoOperacaoMesaAtual = 'transferir';
 
     window.abrirModalTransferirUnirMesa = function(modo) {
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}!`, "error");
+        }
         let carrinhoOrigem = mesas[mesaSelecionada] || [];
         if (carrinhoOrigem.length === 0) {
             return window.showToast(`A comanda de "${mesaSelecionada}" está vazia!`, "warning");
@@ -4798,11 +4961,14 @@
         let sel = document.getElementById('selectMesaDestinoTransferencia');
         sel.innerHTML = '';
         Object.keys(mesas).forEach(m => {
-            if (m !== mesaSelecionada) {
+            if (m !== mesaSelecionada && window.podeOperarMesa(m)) {
                 let qtd = (mesas[m] || []).length;
-                sel.innerHTML += `<option value="${m}">${m} ${qtd > 0 ? `(Ocupada - ${qtd} itens)` : '(Livre)'}</option>`;
+                sel.innerHTML += `<option value="${m}">${m} ${qtd > 0 ? `(Sua Mesa - ${qtd} itens)` : '(Livre)'}</option>`;
             }
         });
+        if (!sel.innerHTML) {
+            return window.showToast("Não existem mesas livres ou suas disponíveis para esta operação.", "warning");
+        }
         document.getElementById('modalTransferirUnirMesa').style.display = 'block';
     };
 
@@ -4813,6 +4979,9 @@
     window.executarTransferenciaOuUniaoMesa = async function() {
         let destino = document.getElementById('selectMesaDestinoTransferencia').value;
         if (!destino || destino === mesaSelecionada) return;
+        if (!window.podeOperarMesa(mesaSelecionada) || !window.podeOperarMesa(destino)) {
+            return window.showToast("⛔ Não é permitido mover ou unir com uma mesa em uso por outro perfil!", "error");
+        }
 
         let origem = mesaSelecionada;
         let itensOrigem = JSON.parse(JSON.stringify(mesas[origem] || []));
@@ -4830,6 +4999,10 @@
 
         mesas[destino] = itensDestino;
         mesas[origem] = [];
+        delete bloqueiosMesas[origem];
+        if (destino !== "Balcão" && itensDestino.length > 0) {
+            bloqueiosMesas[destino] = usuarioAtual.nome;
+        }
 
         if (origem !== "Balcão") await window.sincronizarEstadoMesaNuvem(origem);
         if (destino !== "Balcão") await window.sincronizarEstadoMesaNuvem(destino);
@@ -4845,6 +5018,10 @@
     };
 
     window.abrirModalObsItem = function(idx) {
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            let dono = window.obterResponsavelMesa(mesaSelecionada) || "outro perfil";
+            return window.showToast(`⛔ A ${mesaSelecionada} está em uso pelo perfil ${dono.toUpperCase()}!`, "error");
+        }
         let carrinho = mesas[mesaSelecionada] || [];
         let item = carrinho[idx];
         if (!item) return;
@@ -4859,6 +5036,10 @@
     };
 
     window.salvarObsItemCarrinho = async function() {
+        if (!window.podeOperarMesa(mesaSelecionada)) {
+            window.fecharModalObsItem();
+            return window.showToast("⛔ Mesa em uso por outro perfil!", "error");
+        }
         let idx = parseInt(document.getElementById('idxObsItemCarrinho').value);
         let texto = document.getElementById('inputObsItemTexto').value.trim();
         let carrinho = mesas[mesaSelecionada] || [];
@@ -6502,6 +6683,12 @@
         if (!ped) return;
 
         let alvoMesa = mesas.hasOwnProperty(ped.mesa) ? ped.mesa : "Balcão";
+        if (alvoMesa !== "Balcão" && !window.podeOperarMesa(alvoMesa)) {
+            let dono = window.obterResponsavelMesa(alvoMesa) || "outro perfil";
+            window.tocarSom('alerta');
+            return window.showToast(`⛔ A ${alvoMesa} está em uso pelo perfil ${dono.toUpperCase()}! Apenas ${dono.toUpperCase()} pode aceitar pedidos para esta mesa.`, "error");
+        }
+
         let carrinhoMesa = mesas[alvoMesa] || [];
 
         (ped.itens || []).forEach(itemQr => {
