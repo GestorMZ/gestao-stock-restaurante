@@ -2,92 +2,324 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>GS Master - Gestão Central de Licenças</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-soft: #eff6ff;
             --success: #059669;
+            --success-dark: #047857;
             --danger: #dc2626;
+            --danger-dark: #b91c1c;
             --warning: #d97706;
+            --purple: #7c3aed;
             --dark: #0f172a;
-            --light: #f8fafc;
-            --border: #cbd5e1;
+            --light: #f1f5f9;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --muted: #64748b;
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--light); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        h2, h3 { margin-top: 0; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--light);
+            margin: 0;
+            padding: 16px;
+            color: var(--dark);
+            line-height: 1.45;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            border: 1px solid var(--border);
+        }
+
+        h2, h3, h4 { margin-top: 0; font-weight: 800; letter-spacing: -0.02em; }
+
+        /* ----- TOASTS ----- */
+        #toastContainer {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: calc(100vw - 32px);
+        }
+        .toast {
+            background: var(--dark);
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+            border-left: 5px solid var(--primary);
+            animation: slideIn 0.2s ease-out;
+        }
+        .toast-success { border-left-color: var(--success); }
+        .toast-warning { border-left-color: var(--warning); }
+        .toast-error { border-left-color: var(--danger); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ----- FORMULÁRIOS & BOTÕES ----- */
         .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
-        .form-group { flex: 1; min-width: 200px; }
-        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.85em; color: #64748b; text-transform: uppercase; }
-        input, select, button { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; box-sizing: border-box; font-weight: 600; }
-        button { background: var(--primary); color: white; cursor: pointer; border: none; font-weight: 800; transition: 0.15s; }
-        button:hover { opacity: 0.9; }
+        .form-group { flex: 1; min-width: 190px; }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            font-size: 0.78em;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            background: #fff;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+        }
+
+        button {
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        button:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        button:active { transform: scale(0.98); }
+
         .btn-success { background: var(--success); }
+        .btn-success:hover { background: var(--success-dark); }
         .btn-danger { background: var(--danger); }
-        .btn-warning { background: var(--warning); color: white; }
-        .table-responsive { overflow-x: auto; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; color: #64748b; font-size: 0.75em; text-transform: uppercase; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75em; font-weight: 700; }
+        .btn-danger:hover { background: var(--danger-dark); }
+        .btn-warning { background: var(--warning); color: #fff; }
+        .btn-purple { background: var(--purple); color: #fff; }
+        .btn-dark { background: var(--dark); color: #fff; }
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--dark); }
+        .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
+        .btn-sm { width: auto; padding: 7px 11px; font-size: 12px; border-radius: 9px; }
+
+        /* ----- KPI CARDS ----- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 18px 0 24px 0;
+        }
+        .kpi-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--primary);
+            border-radius: 14px;
+            padding: 16px;
+        }
+        .kpi-card.verde { border-left-color: var(--success); }
+        .kpi-card.roxo { border-left-color: var(--purple); }
+        .kpi-card.laranja { border-left-color: var(--warning); }
+        .kpi-card.vermelho { border-left-color: var(--danger); }
+        .kpi-card small {
+            display: block;
+            font-size: 0.74em;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .kpi-card .kpi-val {
+            font-size: 1.45em;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            color: var(--dark);
+        }
+
+        /* ----- TABELA E BADGES ----- */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 14px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th {
+            background: var(--light);
+            color: var(--muted);
+            font-size: 0.74em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        tr:hover td { background: #f8fafc; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75em;
+            font-weight: 800;
+            white-space: nowrap;
+        }
         .badge-ativo { background: #d1fae5; color: #065f46; }
+        .badge-expirar { background: #fef3c7; color: #92400e; }
         .badge-suspenso { background: #fee2e2; color: #991b1b; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 24px; border-radius: 12px; max-width: 500px; width: 100%; }
+        .badge-basico { background: #e0f2fe; color: #0369a1; }
+        .badge-standard { background: #ede9fe; color: #6d28d9; }
+        .badge-pro { background: #fef3c7; color: #b45309; }
+        .badge-trial { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        /* ----- MODAIS ----- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 24px;
+            border-radius: 18px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 720px) {
+            body { padding: 10px; }
+            .container { padding: 16px; }
+            .form-row { flex-direction: column; }
+            input, select, textarea { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
 
+<div id="toastContainer"></div>
+
 <div class="container">
-    <h2>🛠️ GS Master - Painel Central de Licenças</h2>
-    <p style="color: #64748b;">Gere os pacotes, prazos, edite ou remova acessos dos clientes do GS Point.</p>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2 style="margin-bottom: 4px;">🛠️ GS Master - Painel Central de Licenças</h2>
+            <p style="color: var(--muted); margin: 0; font-size: 0.92em;">Gestão sincronizada com o <b>GS Point Pro</b> (Pacotes Básico, Standard e Pro, renovações, limites e cobranças).</p>
+        </div>
+        <button id="btnLogoutMasterHeader" class="btn-dark btn-sm" style="display:none;" onclick="fazerLogoutMaster()">Terminar Sessão</button>
+    </div>
 
     <!-- LOGIN MASTER -->
-    <div id="loginMasterBox" style="max-width: 400px; margin: 40px auto; background: #fff; padding: 20px; border: 1px solid var(--border); border-radius: 12px;">
-        <h3>Login Master</h3>
+    <div id="loginMasterBox" style="max-width: 420px; margin: 40px auto; background: var(--light); padding: 24px; border: 1px solid var(--border); border-radius: 16px;">
+        <h3 style="margin-bottom: 6px;">🔐 Acesso Administrador Master</h3>
+        <p style="font-size: 0.85em; color: var(--muted); margin-bottom: 16px;">Entre com a sua conta de gestor central para emitir ou gerir licenças.</p>
         <div class="form-group" style="margin-bottom: 12px;">
             <label>E-mail Admin</label>
-            <input type="email" id="masterEmail" placeholder="admin@gspoint.com">
+            <input type="email" id="masterEmail" placeholder="admin@gspoint.com" onkeyup="if(event.key==='Enter') fazerLoginMaster()">
         </div>
         <div class="form-group" style="margin-bottom: 16px;">
             <label>Palavra-passe</label>
-            <input type="password" id="masterSenha" placeholder="******">
+            <input type="password" id="masterSenha" placeholder="******" onkeyup="if(event.key==='Enter') fazerLoginMaster()">
         </div>
-        <button onclick="fazerLoginMaster()">Entrar no Painel Master</button>
+        <button onclick="fazerLoginMaster()">Entrar no Painel Master ➔</button>
     </div>
 
     <!-- PAINEL DE CONTROLO -->
     <div id="painelMasterConteudo" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
-            <h3 style="margin: 0;">Emitir Nova Licença / Pacote</h3>
-            <button onclick="fazerLogoutMaster()" style="width: auto; padding: 8px 16px; background: var(--dark);">Terminar Sessão</button>
+
+        <!-- INDICADORES GERAIS (KPIS) -->
+        <div class="kpi-grid">
+            <div class="kpi-card verde">
+                <small>✅ Licenças Ativas</small>
+                <div class="kpi-val" id="kpiAtivas">0</div>
+            </div>
+            <div class="kpi-card roxo">
+                <small>💰 Receita Mensal (MRR)</small>
+                <div class="kpi-val" id="kpiReceitaMensal">0 MT</div>
+            </div>
+            <div class="kpi-card laranja">
+                <small>⏳ A Expirar (≤ 3 Dias)</small>
+                <div class="kpi-val" id="kpiExpirarBreve">0</div>
+            </div>
+            <div class="kpi-card vermelho">
+                <small>🔴 Expiradas / Suspensas</small>
+                <div class="kpi-val" id="kpiExpiradas">0</div>
+            </div>
         </div>
 
-        <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-top: 14px; border: 1px solid var(--border);">
+        <!-- EMISSÃO DE NOVA LICENÇA -->
+        <div style="background: var(--light); padding: 18px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px;">
+            <h3 style="margin-bottom: 12px;">➕ Emitir Nova Licença / Pacote</h3>
             <div class="form-row">
-                <div class="form-group">
-                    <label>Nome do Cliente / Restaurante</label>
+                <div class="form-group" style="flex: 1.3;">
+                    <label>Nome do Cliente / Estabelecimento</label>
                     <input type="text" id="novoNomeCliente" placeholder="Ex: Restaurante Sabor da Cidade">
                 </div>
                 <div class="form-group">
-                    <label>Selecionar Pacote</label>
+                    <label>WhatsApp / Telefone do Cliente</label>
+                    <input type="tel" id="novoTelCliente" placeholder="Ex: 84 123 4567">
+                </div>
+                <div class="form-group" style="flex: 1.4;">
+                    <label>Selecionar Pacote GS Point Pro</label>
                     <select id="selectPacoteMaster" onchange="atualizarLimitesPacote()">
-                        <option value="pacote_um">Pacote 1 (2 Mesas / 2 Usuários)</option>
-                        <option value="pacote_dois">Pacote 2 (5 Mesas / 5 Usuários)</option>
-                        <option value="pacote_tres">Pacote 3 (10 Mesas / 15 Usuários)</option>
+                        <option value="basico">Modo Básico — 800 MT/mês (2 Mesas • 2 Users • 400 Prod.)</option>
+                        <option value="standard" selected>Modo Standard — 1.200 MT/mês (5 Mesas • 5 Users • 800 Prod.)</option>
+                        <option value="pro">Modo Pro — 1.700 MT/mês (10 Mesas • 10 Users • +5.000 Prod.)</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Limite de Mesas</label>
-                    <input type="number" id="inputLimMesas" value="2">
+                    <label>Mensalidade (MT)</label>
+                    <input type="number" id="inputValorMensal" value="1200" min="0" step="50">
                 </div>
                 <div class="form-group">
-                    <label>Limite de Usuários</label>
-                    <input type="number" id="inputLimUsers" value="2">
+                    <label>Limite de Mesas</label>
+                    <input type="number" id="inputLimMesas" value="5" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Limite de Utilizadores</label>
+                    <input type="number" id="inputLimUsers" value="5" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Limite de Produtos</label>
+                    <input type="number" id="inputLimProdutos" value="800" min="1">
                 </div>
                 <div class="form-group">
                     <label>Data de Validade</label>
@@ -98,75 +330,131 @@
             <button class="btn-success" onclick="gerarNovaLicenca()">Gerar e Registar Licença 🚀</button>
         </div>
 
-        <h3 style="margin-top: 30px;">Licenças Emitidas Ativas</h3>
+        <!-- BARRA DE PESQUISA E FILTROS -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+            <h3 style="margin: 0;">📋 Licenças Emitidas (<span id="lblTotalFiltradas">0</span>)</h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; max-width: 680px; justify-content: flex-end;">
+                <input type="text" id="filtroBuscaMaster" placeholder="🔍 Procurar empresa, código ou telefone..." oninput="renderizarTabelaLicencas()" style="max-width: 270px; padding: 9px 12px;">
+                <select id="filtroEstadoMaster" onchange="renderizarTabelaLicencas()" style="max-width: 190px; padding: 9px 12px;">
+                    <option value="todos">Estado: Todos</option>
+                    <option value="ativos">🟢 Apenas Ativas</option>
+                    <option value="expirar">⏳ A Expirar (≤ 3 dias)</option>
+                    <option value="expiradas">🔴 Expiradas / Suspensas</option>
+                    <option value="trial">🧪 Contas de Teste (Trial)</option>
+                </select>
+                <select id="filtroPlanoMaster" onchange="renderizarTabelaLicencas()" style="max-width: 170px; padding: 9px 12px;">
+                    <option value="todos">Pacote: Todos</option>
+                    <option value="basico">Modo Básico (800 MT)</option>
+                    <option value="standard">Modo Standard (1.200 MT)</option>
+                    <option value="pro">Modo Pro (1.700 MT)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- TABELA DE LICENÇAS -->
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>Código / Empresa</th>
-                        <th>Pacote</th>
-                        <th>Limites (Mesas / Users)</th>
+                        <th>Código / Estabelecimento</th>
+                        <th>Pacote & Valor</th>
+                        <th>Quotas (Mesas / Users / Prod.)</th>
                         <th>Validade</th>
                         <th>Estado</th>
-                        <th>Ações</th>
+                        <th>Ações Rápidas</th>
                     </tr>
                 </thead>
                 <tbody id="tabelaLicencasMaster">
-                    <!-- Preenchido via JS -->
+                    <tr><td colspan="6" style="text-align:center; color:var(--muted);">A carregar licenças...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- MODAL DE EDIÇÃO -->
+<!-- MODAL DE EDIÇÃO COMPLETA -->
 <div id="modalEditar" class="modal">
     <div class="modal-content">
         <h3>✏️ Editar Licença: <span id="editCodigoLbl" style="color:var(--primary)"></span></h3>
         <input type="hidden" id="editCodigoId">
-        
-        <div class="form-group" style="margin-bottom:12px;">
-            <label>Nome da Empresa / Cliente</label>
-            <input type="text" id="editNomeCliente">
-        </div>
-        <div class="form-row" style="margin-bottom:12px;">
+
+        <div class="form-row" style="margin-bottom: 10px;">
             <div class="form-group">
-                <label>Limite de Mesas</label>
-                <input type="number" id="editLimMesas">
+                <label>Nome da Empresa / Cliente</label>
+                <input type="text" id="editNomeCliente">
             </div>
             <div class="form-group">
-                <label>Limite de Utilizadores</label>
-                <input type="number" id="editLimUsers">
+                <label>WhatsApp / Telefone</label>
+                <input type="tel" id="editTelCliente" placeholder="84 000 0000">
             </div>
         </div>
-        <div class="form-group" style="margin-bottom:20px;">
+
+        <div class="form-row" style="margin-bottom: 10px;">
+            <div class="form-group">
+                <label>Pacote Ativo (Upgrade / Downgrade)</label>
+                <select id="editPacoteSelect" onchange="atualizarLimitesEdicao()">
+                    <option value="basico">Modo Básico — 800 MT/mês</option>
+                    <option value="standard">Modo Standard — 1.200 MT/mês</option>
+                    <option value="pro">Modo Pro — 1.700 MT/mês</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Mensalidade (MT)</label>
+                <input type="number" id="editValorMensal" min="0" step="50">
+            </div>
+        </div>
+
+        <div class="form-row" style="margin-bottom: 10px;">
+            <div class="form-group" style="min-width: 110px;">
+                <label>Mesas</label>
+                <input type="number" id="editLimMesas" min="1">
+            </div>
+            <div class="form-group" style="min-width: 110px;">
+                <label>Utilizadores</label>
+                <input type="number" id="editLimUsers" min="1">
+            </div>
+            <div class="form-group" style="min-width: 110px;">
+                <label>Produtos</label>
+                <input type="number" id="editLimProdutos" min="1">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 10px;">
             <label>Data de Validade</label>
             <input type="date" id="editValidade">
         </div>
 
+        <div class="form-group" style="margin-bottom: 18px;">
+            <label>Mensagem Personalizada de Bloqueio (Opcional)</label>
+            <input type="text" id="editMsgBloqueio" placeholder="Deixe vazio para usar a mensagem automática do pacote">
+        </div>
+
         <div style="display:flex; gap:10px;">
-            <button class="btn-success" onclick="guardarEdicaoLicenca()">Guardar Alterações</button>
-            <button style="background:var(--dark);" onclick="fecharModalEditar()">Cancelar</button>
+            <button class="btn-success" onclick="guardarEdicaoLicenca()">💾 Guardar Alterações</button>
+            <button class="btn-dark" onclick="fecharModalEditar()">Cancelar</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL CUSTOMIZADO (ESTILO DA IMAGEM) -->
-<div id="customModalOverlay" class="modal" style="display:none; align-items:center; justify-content:center; z-index:10000; background:rgba(0,0,0,0.85);">
-    <div class="modal-content" style="max-width:400px; text-align:center; padding: 30px;">
+<!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO E AVISOS -->
+<div id="customModalOverlay" class="modal" style="z-index:10000; background:rgba(15,23,42,0.85);">
+    <div class="modal-content" style="max-width:420px; text-align:center; padding: 28px;">
         <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Aviso do Sistema</h3>
         <div id="customModalText" style="margin-bottom:20px; font-weight:600; line-height: 1.5; text-align: left;"></div>
-        <button id="customModalBtnOK" class="btn-primary" style="background: var(--primary); padding: 12px; border-radius: 10px; font-weight: 800;">OK</button>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button id="customModalBtnCancel" class="btn-dark" style="display:none;">Cancelar</button>
+            <button id="customModalBtnOK" class="btn-primary">OK</button>
+        </div>
     </div>
 </div>
 
 <!-- Scripts Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getFirestore, collection, setDoc, doc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, setDoc, doc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    let fbConfig = {
+    const fbConfig = {
         apiKey: "AIzaSyD-o0URCIdhrv7j_ftbTQ5ZlHzGCrw0QL4",
         authDomain: "gestao-restaurante-a74e4.firebaseapp.com",
         projectId: "gestao-restaurante-a74e4"
@@ -176,156 +464,405 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Função de Alerta Customizado idêntica à imagem
-    window.customAlertHtml = function(htmlContent) {
+    // Definição oficial dos pacotes sincronizados com o GS Point Pro
+    const PACOTES_OFICIAIS = {
+        basico:   { id: 'basico',   nome: 'Modo Básico',   preco: 800,  mesas: 2,  users: 2,  produtos: 400,  badge: 'badge-basico' },
+        standard: { id: 'standard', nome: 'Modo Standard', preco: 1200, mesas: 5,  users: 5,  produtos: 800,  badge: 'badge-standard' },
+        pro:      { id: 'pro',      nome: 'Modo Pro',      preco: 1700, mesas: 10, users: 10, produtos: 5000, badge: 'badge-pro' }
+    };
+
+    let listaLicencasCache = [];
+    let unsubLicencas = null;
+
+    // Notificações Toast
+    window.showToast = function(msg, tipo = 'info') {
+        const container = document.getElementById('toastContainer');
+        const el = document.createElement('div');
+        el.className = `toast toast-${tipo}`;
+        el.innerText = msg;
+        container.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 250); }, 3200);
+    };
+
+    // Modal de Alerta HTML
+    window.customAlertHtml = function(htmlContent, titulo = 'Aviso do Sistema') {
         return new Promise(resolve => {
-            document.getElementById('customModalOverlay').style.display = 'flex';
+            document.getElementById('customModalTitle').innerText = titulo;
             document.getElementById('customModalText').innerHTML = htmlContent;
-            document.getElementById('customModalBtnOK').onclick = () => {
+            document.getElementById('customModalBtnCancel').style.display = 'none';
+            const btnOk = document.getElementById('customModalBtnOK');
+            btnOk.innerText = 'OK';
+            document.getElementById('customModalOverlay').style.display = 'flex';
+            btnOk.onclick = () => {
                 document.getElementById('customModalOverlay').style.display = 'none';
-                resolve();
+                resolve(true);
+            };
+        });
+    };
+
+    // Modal de Confirmação
+    window.customConfirmHtml = function(htmlContent, titulo = 'Confirmar Ação', okText = 'Confirmar') {
+        return new Promise(resolve => {
+            document.getElementById('customModalTitle').innerText = titulo;
+            document.getElementById('customModalText').innerHTML = htmlContent;
+            const btnCancel = document.getElementById('customModalBtnCancel');
+            const btnOk = document.getElementById('customModalBtnOK');
+            btnCancel.style.display = 'inline-flex';
+            btnOk.innerText = okText;
+            document.getElementById('customModalOverlay').style.display = 'flex';
+
+            btnOk.onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve(true);
+            };
+            btnCancel.onclick = () => {
+                document.getElementById('customModalOverlay').style.display = 'none';
+                resolve(false);
             };
         });
     };
 
     window.fazerLoginMaster = async function() {
-        let email = document.getElementById('masterEmail').value;
+        let email = document.getElementById('masterEmail').value.trim();
         let senha = document.getElementById('masterSenha').value;
+        if (!email || !senha) return window.showToast("Preencha o e-mail e a palavra-passe.", "warning");
         try {
             await signInWithEmailAndPassword(auth, email, senha);
+            window.showToast("Sessão Master iniciada!", "success");
         } catch (e) {
-            alert("Erro no login: " + e.message);
+            window.showToast("Erro no login: " + e.message, "error");
         }
     };
 
-    window.fazerLogoutMaster = function() { signOut(auth); };
+    window.fazerLogoutMaster = function() {
+        if (unsubLicencas) { unsubLicencas(); unsubLicencas = null; }
+        signOut(auth);
+    };
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('loginMasterBox').style.display = 'none';
             document.getElementById('painelMasterConteudo').style.display = 'block';
-            carregarLicencasMaster();
-            
+            document.getElementById('btnLogoutMasterHeader').style.display = 'inline-flex';
+            iniciarEscutaLicencasMaster();
+
             let d = new Date();
             d.setDate(d.getDate() + 30);
             document.getElementById('inputValidadeLicenca').value = d.toISOString().split('T')[0];
         } else {
             document.getElementById('loginMasterBox').style.display = 'block';
             document.getElementById('painelMasterConteudo').style.display = 'none';
+            document.getElementById('btnLogoutMasterHeader').style.display = 'none';
         }
     });
 
     window.atualizarLimitesPacote = function() {
-        let pac = document.getElementById('selectPacoteMaster').value;
-        let m = 2, u = 2;
-        if(pac === 'pacote_dois') { m = 5; u = 5; }
-        if(pac === 'pacote_tres') { m = 10; u = 15; }
-        document.getElementById('inputLimMesas').value = m;
-        document.getElementById('inputLimUsers').value = u;
+        let pacKey = document.getElementById('selectPacoteMaster').value;
+        let p = PACOTES_OFICIAIS[pacKey] || PACOTES_OFICIAIS.standard;
+        document.getElementById('inputValorMensal').value = p.preco;
+        document.getElementById('inputLimMesas').value = p.mesas;
+        document.getElementById('inputLimUsers').value = p.users;
+        document.getElementById('inputLimProdutos').value = p.produtos;
+    };
+
+    window.atualizarLimitesEdicao = function() {
+        let pacKey = document.getElementById('editPacoteSelect').value;
+        let p = PACOTES_OFICIAIS[pacKey] || PACOTES_OFICIAIS.standard;
+        document.getElementById('editValorMensal').value = p.preco;
+        document.getElementById('editLimMesas').value = p.mesas;
+        document.getElementById('editLimUsers').value = p.users;
+        document.getElementById('editLimProdutos').value = p.produtos;
     };
 
     window.gerarNovaLicenca = async function() {
         let nome = document.getElementById('novoNomeCliente').value.trim();
-        let pacote = document.getElementById('selectPacoteMaster').value;
-        let mesas = parseInt(document.getElementById('inputLimMesas').value) || 2;
-        let users = parseInt(document.getElementById('inputLimUsers').value) || 2;
+        let telefone = document.getElementById('novoTelCliente').value.trim();
+        let planoKey = document.getElementById('selectPacoteMaster').value;
+        let planoObj = PACOTES_OFICIAIS[planoKey] || PACOTES_OFICIAIS.standard;
+
+        let mensalidade = parseFloat(document.getElementById('inputValorMensal').value) || planoObj.preco;
+        let mesas = parseInt(document.getElementById('inputLimMesas').value) || planoObj.mesas;
+        let users = parseInt(document.getElementById('inputLimUsers').value) || planoObj.users;
+        let produtos = parseInt(document.getElementById('inputLimProdutos').value) || planoObj.produtos;
         let validade = document.getElementById('inputValidadeLicenca').value;
 
-        if(!nome) return alert("Insira o nome do cliente.");
+        if (!nome) return window.showToast("Insira o nome do cliente / estabelecimento.", "warning");
+        if (!validade) return window.showToast("Selecione a data de validade.", "warning");
 
         let randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
-        let prefixo = nome.replace(/\s+/g, '').substring(0, 4).toUpperCase();
+        let prefixo = nome.replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase() || 'EMP';
         let codigoLicenca = `LIC-${prefixo}-${randomStr}`;
 
         try {
+            // Grava no formato exato lido pelo GS Point Pro
             await setDoc(doc(db, "licencas", codigoLicenca), {
                 nomeCliente: nome,
-                tipoPacote: pacote,
+                telefoneCliente: telefone,
+                plano: planoObj.id,
+                tipoPacote: planoObj.id,
+                mensalidade: mensalidade,
                 limiteMesas: mesas,
                 limiteUsuarios: users,
+                limiteProdutos: produtos,
                 validade: validade,
                 status: "ativo",
+                tipo: "pago",
                 criadoEm: new Date().toISOString()
             });
 
             await setDoc(doc(db, "empresas", codigoLicenca), {
-                usuarios: [{ nome: "admin", senha: "123", tipo: "admin", foto: "", permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"] }]
+                usuarios: [{
+                    nome: "admin",
+                    senha: "123",
+                    tipo: "admin",
+                    foto: "",
+                    permissoes: ["abaVendas", "abaCaixa", "abaFiado", "abaStock", "abaUsuarios", "abaDashboard"]
+                }]
             });
+
             await setDoc(doc(db, "empresas", codigoLicenca, "dados", "empresa"), {
-                nome: nome, chaveMestra: "1234", aplicarIva: "nao", taxaIva: 0
+                nome: nome,
+                telefone: telefone,
+                chaveMestra: "1234",
+                aplicarIva: "nao",
+                taxaIva: 0
             });
 
             document.getElementById('novoNomeCliente').value = '';
-            carregarLicencasMaster();
+            document.getElementById('novoTelCliente').value = '';
 
-            // Mostra o popup exatamente igual à imagem que enviou
             let avisoHtml = `
-                <div style="font-size: 1.1em; font-weight: bold; margin-bottom: 12px; text-align: center;">✅ CONTA CRIADA COM SUCESSO!</div>
-                <div style="margin-bottom: 8px;">🏢 <b>CÓDIGO:</b> <span style="color:var(--primary);">${codigoLicenca}</span></div>
-                <div style="margin-bottom: 8px;">👤 <b>UTILIZADOR:</b> admin</div>
-                <div style="margin-bottom: 12px;">🔑 <b>SENHA:</b> 123</div>
-                <div style="text-align: center; font-size: 0.95em; color: #64748b; border-top: 1px solid #e2e8f0; pt: 10px; margin-top: 10px;">Válido até: <b>${validade}</b></div>
+                <div style="font-size: 1.08em; font-weight: 800; margin-bottom: 12px; text-align: center; color: var(--success);">✅ LICENÇA EMITIDA COM SUCESSO!</div>
+                <div style="margin-bottom: 6px;">🏢 <b>CÓDIGO:</b> <span style="color:var(--primary);">${codigoLicenca}</span></div>
+                <div style="margin-bottom: 6px;">👑 <b>PACOTE:</b> ${planoObj.nome} (${mensalidade} MT/mês)</div>
+                <div style="margin-bottom: 6px;">👤 <b>UTILIZADOR:</b> admin</div>
+                <div style="margin-bottom: 10px;">🔑 <b>SENHA:</b> 123</div>
+                <div style="text-align: center; font-size: 0.9em; color: var(--muted); border-top: 1px solid var(--border); padding-top: 8px;">Válido até: <b>${validade}</b></div>
             `;
             await window.customAlertHtml(avisoHtml);
-
-        } catch(e) {
-            alert("Erro ao criar licença: " + e.message);
+        } catch (e) {
+            window.showToast("Erro ao criar licença: " + e.message, "error");
         }
     };
 
-    async function carregarLicencasMaster() {
-        let tbody = document.getElementById('tabelaLicencasMaster');
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">A carregar licenças...</td></tr>';
-        
-        try {
-            let snap = await getDocs(collection(db, "licencas"));
-            tbody.innerHTML = '';
-            if(snap.empty) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b;">Nenhuma licença emitida.</td></tr>';
-                return;
-            }
-
-            snap.forEach(d => {
-                let l = d.data();
-                let id = d.id;
-                let badgeClass = l.status === 'ativo' ? 'badge-ativo' : 'badge-suspenso';
-
-                tbody.innerHTML += `<tr>
-                    <td><b>${id}</b><br><small style="color:#64748b;">${l.nomeCliente || 'Sem nome'}</small></td>
-                    <td>${(l.tipoPacote || 'pacote_um').toUpperCase()}</td>
-                    <td>${l.limiteMesas || 2} mesas / ${l.limiteUsuarios || 2} users</td>
-                    <td>${l.validade || 'Indefinido'}</td>
-                    <td><span class="badge ${badgeClass}">${(l.status || 'ativo').toUpperCase()}</span></td>
-                    <td>
-                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            <button class="btn-warning" style="padding:6px 10px; font-size:12px; width:auto;" onclick="abrirModalEditar('${id}', '${l.nomeCliente || ''}', ${l.limiteMesas || 2}, ${l.limiteUsuarios || 2}, '${l.validade || ''}')">Editar</button>
-                            <button class="btn-danger" style="padding:6px 10px; font-size:12px; width:auto;" onclick="mudarStatusLicenca('${id}', '${l.status === 'ativo' ? 'suspenso' : 'ativo'}')">${l.status === 'ativo' ? 'Suspender' : 'Ativar'}</button>
-                            <button class="btn-danger" style="background:#7f1d1d; padding:6px 10px; font-size:12px; width:auto;" onclick="eliminarEmpresa('${id}')">Eliminar</button>
-                        </div>
-                    </td>
-                </tr>`;
-            });
-        } catch(e) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Erro ao carregar dados.</td></tr>';
-        }
+    function normalizarPlanoLicenca(l) {
+        let raw = String(l.plano || l.tipoPacote || '').toLowerCase();
+        if (raw.includes('pro') || raw === 'pacote_tres' || Number(l.mensalidade) >= 1700) return PACOTES_OFICIAIS.pro;
+        if (raw.includes('standard') || raw === 'pacote_dois' || Number(l.mensalidade) === 1200) return PACOTES_OFICIAIS.standard;
+        return PACOTES_OFICIAIS.basico;
     }
+
+    function calcularDiasRestantes(validadeStr) {
+        if (!validadeStr) return 999;
+        let hojeZero = new Date(new Date().toISOString().split('T')[0] + 'T00:00:00');
+        let dataVal = new Date(validadeStr + 'T00:00:00');
+        return Math.ceil((dataVal - hojeZero) / (1000 * 60 * 60 * 24));
+    }
+
+    function iniciarEscutaLicencasMaster() {
+        if (unsubLicencas) unsubLicencas();
+        unsubLicencas = onSnapshot(collection(db, "licencas"), (snap) => {
+            listaLicencasCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            listaLicencasCache.sort((a, b) => (b.criadoEm || '').localeCompare(a.criadoEm || ''));
+            atualizarKPIsMaster();
+            renderizarTabelaLicencas();
+        }, (err) => {
+            window.showToast("Erro ao sincronizar licenças: " + err.message, "error");
+        });
+    }
+
+    function atualizarKPIsMaster() {
+        let ativas = 0, mrr = 0, expirarBreve = 0, expiradas = 0;
+
+        listaLicencasCache.forEach(l => {
+            let dias = calcularDiasRestantes(l.validade);
+            let isSuspenso = l.status === 'suspenso';
+            let isExpirado = isSuspenso || dias < 0;
+            let planoObj = normalizarPlanoLicenca(l);
+            let valor = Number(l.mensalidade || planoObj.preco);
+
+            if (isExpirado) {
+                expiradas++;
+            } else {
+                ativas++;
+                if (l.tipo !== 'trial') mrr += valor;
+                if (dias <= 3) expirarBreve++;
+            }
+        });
+
+        document.getElementById('kpiAtivas').innerText = ativas;
+        document.getElementById('kpiReceitaMensal').innerText = mrr.toLocaleString('pt-PT') + " MT";
+        document.getElementById('kpiExpirarBreve').innerText = expirarBreve;
+        document.getElementById('kpiExpiradas').innerText = expiradas;
+    }
+
+    window.renderizarTabelaLicencas = function() {
+        let tbody = document.getElementById('tabelaLicencasMaster');
+        let busca = (document.getElementById('filtroBuscaMaster')?.value || '').toLowerCase().trim();
+        let filtroEstado = document.getElementById('filtroEstadoMaster')?.value || 'todos';
+        let filtroPlano = document.getElementById('filtroPlanoMaster')?.value || 'todos';
+
+        let filtradas = listaLicencasCache.filter(l => {
+            let planoObj = normalizarPlanoLicenca(l);
+            let dias = calcularDiasRestantes(l.validade);
+            let isExpirado = (l.status === 'suspenso') || dias < 0;
+
+            let matchTexto = !busca ||
+                l.id.toLowerCase().includes(busca) ||
+                (l.nomeCliente || '').toLowerCase().includes(busca) ||
+                (l.telefoneCliente || '').toLowerCase().includes(busca);
+
+            let matchPlano = filtroPlano === 'todos' || planoObj.id === filtroPlano;
+
+            let matchEstado = true;
+            if (filtroEstado === 'ativos') matchEstado = !isExpirado;
+            else if (filtroEstado === 'expirar') matchEstado = !isExpirado && dias <= 3;
+            else if (filtroEstado === 'expiradas') matchEstado = isExpirado;
+            else if (filtroEstado === 'trial') matchEstado = l.tipo === 'trial';
+
+            return matchTexto && matchPlano && matchEstado;
+        });
+
+        document.getElementById('lblTotalFiltradas').innerText = filtradas.length;
+        tbody.innerHTML = '';
+
+        if (filtradas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:24px;">Nenhuma licença encontrada com os filtros selecionados.</td></tr>';
+            return;
+        }
+
+        filtradas.forEach(l => {
+            let planoObj = normalizarPlanoLicenca(l);
+            let dias = calcularDiasRestantes(l.validade);
+            let isSuspenso = l.status === 'suspenso';
+            let isExpiradoData = dias < 0;
+            let mensalidade = Number(l.mensalidade || planoObj.preco);
+            let mesasLim = l.limiteMesas || planoObj.mesas;
+            let usersLim = l.limiteUsuarios || planoObj.users;
+            let prodsLim = l.limiteProdutos || planoObj.produtos;
+            let prodsTxt = prodsLim >= 5000 ? '+5.000' : prodsLim;
+
+            let badgeEstado = `<span class="badge badge-ativo">🟢 ATIVO (${dias}d)</span>`;
+            if (isSuspenso) badgeEstado = `<span class="badge badge-suspenso">🔴 SUSPENSO</span>`;
+            else if (isExpiradoData) badgeEstado = `<span class="badge badge-suspenso">🔴 EXPIRADO (${Math.abs(dias)}d)</span>`;
+            else if (dias <= 3) badgeEstado = `<span class="badge badge-expirar">⏳ EXPIRA EM ${dias}d</span>`;
+
+            let trialTag = l.tipo === 'trial' ? `<span class="badge badge-trial" style="margin-left:4px;">TRIAL</span>` : '';
+
+            // Link WhatsApp inteligente (envia credenciais ou aviso de renovação)
+            let telLimpo = (l.telefoneCliente || '').replace(/\D/g, '');
+            let msgWa = isExpiradoData || isSuspenso || dias <= 3
+                ? `Olá ${l.nomeCliente || ''}! A sua licença *${l.id}* (${planoObj.nome}) do *GS Point Pro* vence em *${l.validade}*. Valor de renovação: *${mensalidade} MT* (M-Pesa: 84 903 0686 / e-Mola: 87 406 3572).`
+                : `Olá ${l.nomeCliente || ''}! Seguem os dados da sua licença *GS Point Pro*:\n• Código: *${l.id}*\n• Pacote: *${planoObj.nome}*\n• Validade: *${l.validade}*\n• Utilizador: admin | Senha: 123`;
+            let waHref = telLimpo
+                ? `https://wa.me/${telLimpo.startsWith('258') ? telLimpo : '258' + telLimpo}?text=${encodeURIComponent(msgWa)}`
+                : `https://wa.me/?text=${encodeURIComponent(msgWa)}`;
+
+            tbody.innerHTML += `<tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <b>${l.id}</b>
+                        <button type="button" class="btn-outline btn-sm" style="padding:2px 7px; font-size:11px;" onclick="copiarCodigoLicenca('${l.id}')" title="Copiar Código">📋</button>
+                        ${trialTag}
+                    </div>
+                    <div style="font-size:12.5px; color:var(--dark); font-weight:700; margin-top:2px;">${l.nomeCliente || 'Sem nome'}</div>
+                    ${l.telefoneCliente ? `<small style="color:var(--muted);">📱 ${l.telefoneCliente}</small>` : ''}
+                </td>
+                <td>
+                    <span class="badge ${planoObj.badge}">${planoObj.nome.toUpperCase()}</span>
+                    <div style="font-weight:800; margin-top:4px; color:var(--dark);">${mensalidade} MT<small style="color:var(--muted);">/mês</small></div>
+                </td>
+                <td style="font-size:12.5px; font-weight:700;">
+                    🪑 ${mesasLim} mesas<br>
+                    👤 ${usersLim} utilizadores<br>
+                    📦 ${prodsTxt} produtos
+                </td>
+                <td><b>${l.validade || 'Indefinido'}</b></td>
+                <td>${badgeEstado}</td>
+                <td>
+                    <div style="display:flex; gap:5px; flex-wrap:wrap; max-width: 260px;">
+                        <button class="btn-success btn-sm" onclick="renovarLicenca30Dias('${l.id}')" title="Renovar por +30 dias e ativar">🔄 +30d</button>
+                        <a href="${waHref}" target="_blank" style="text-decoration:none;"><button type="button" class="btn-purple btn-sm">📲 WA</button></a>
+                        <button class="btn-warning btn-sm" onclick="abrirModalEditar('${l.id}')">✏️ Editar</button>
+                        <button class="btn-outline btn-sm" onclick="mudarStatusLicenca('${l.id}', '${isSuspenso ? 'ativo' : 'suspenso'}')">${isSuspenso ? 'Ativar' : 'Suspender'}</button>
+                        <button class="btn-danger btn-sm" onclick="eliminarEmpresa('${l.id}')">🗑️</button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+    };
+
+    window.copiarCodigoLicenca = function(codigo) {
+        let aux = document.createElement('input');
+        aux.value = codigo;
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand('copy');
+        document.body.removeChild(aux);
+        window.showToast(`Código ${codigo} copiado!`, "success");
+    };
+
+    window.renovarLicenca30Dias = async function(id) {
+        let lic = listaLicencasCache.find(x => x.id === id);
+        if (!lic) return;
+        let planoObj = normalizarPlanoLicenca(lic);
+        let mensalidade = Number(lic.mensalidade || planoObj.preco);
+
+        // Se ainda não expirou, soma 30 dias a partir da validade atual; se já expirou, soma 30 dias a partir de hoje
+        let hojeStr = new Date().toISOString().split('T')[0];
+        let baseDate = (lic.validade && lic.validade > hojeStr) ? new Date(lic.validade + 'T00:00:00') : new Date(hojeStr + 'T00:00:00');
+        baseDate.setDate(baseDate.getDate() + 30);
+        let novaValidade = baseDate.toISOString().split('T')[0];
+
+        let ok = await window.customConfirmHtml(
+            `Confirmar renovação de <b>+30 dias</b> para <b>${lic.nomeCliente || id}</b>?<br><br>` +
+            `• Pacote: <b>${planoObj.nome} (${mensalidade} MT)</b><br>` +
+            `• Nova Validade: <b style="color:var(--success);">${novaValidade}</b>`,
+            "Renovar Licença",
+            "✅ Confirmar Renovação"
+        );
+        if (!ok) return;
+
+        try {
+            await setDoc(doc(db, "licencas", id), {
+                status: "ativo",
+                tipo: "pago",
+                plano: planoObj.id,
+                mensalidade: mensalidade,
+                validade: novaValidade,
+                ultimaRenovacao: new Date().toISOString()
+            }, { merge: true });
+            window.showToast(`Licença ${id} renovada até ${novaValidade}!`, "success");
+        } catch (e) {
+            window.showToast("Erro ao renovar: " + e.message, "error");
+        }
+    };
 
     window.mudarStatusLicenca = async function(id, novoStatus) {
         try {
             await setDoc(doc(db, "licencas", id), { status: novoStatus }, { merge: true });
-            carregarLicencasMaster();
-        } catch(e) {
-            alert("Erro ao alterar status: " + e.message);
+            window.showToast(`Estado alterado para ${novoStatus.toUpperCase()}.`, "info");
+        } catch (e) {
+            window.showToast("Erro ao alterar status: " + e.message, "error");
         }
     };
 
-    window.abrirModalEditar = function(id, nome, mesas, users, validade) {
+    window.abrirModalEditar = function(id) {
+        let l = listaLicencasCache.find(x => x.id === id);
+        if (!l) return;
+        let planoObj = normalizarPlanoLicenca(l);
+
         document.getElementById('editCodigoId').value = id;
         document.getElementById('editCodigoLbl').innerText = id;
-        document.getElementById('editNomeCliente').value = nome;
-        document.getElementById('editLimMesas').value = mesas;
-        document.getElementById('editLimUsers').value = users;
-        document.getElementById('editValidade').value = validade;
+        document.getElementById('editNomeCliente').value = l.nomeCliente || '';
+        document.getElementById('editTelCliente').value = l.telefoneCliente || '';
+        document.getElementById('editPacoteSelect').value = planoObj.id;
+        document.getElementById('editValorMensal').value = l.mensalidade || planoObj.preco;
+        document.getElementById('editLimMesas').value = l.limiteMesas || planoObj.mesas;
+        document.getElementById('editLimUsers').value = l.limiteUsuarios || planoObj.users;
+        document.getElementById('editLimProdutos').value = l.limiteProdutos || planoObj.produtos;
+        document.getElementById('editValidade').value = l.validade || '';
+        document.getElementById('editMsgBloqueio').value = l.mensagemBloqueio || '';
         document.getElementById('modalEditar').style.display = 'flex';
     };
 
@@ -336,41 +873,56 @@
     window.guardarEdicaoLicenca = async function() {
         let id = document.getElementById('editCodigoId').value;
         let nome = document.getElementById('editNomeCliente').value.trim();
-        let mesas = parseInt(document.getElementById('editLimMesas').value) || 2;
-        let users = parseInt(document.getElementById('editLimUsers').value) || 2;
+        let telefone = document.getElementById('editTelCliente').value.trim();
+        let planoKey = document.getElementById('editPacoteSelect').value;
+        let planoObj = PACOTES_OFICIAIS[planoKey] || PACOTES_OFICIAIS.basico;
+        let mensalidade = parseFloat(document.getElementById('editValorMensal').value) || planoObj.preco;
+        let mesas = parseInt(document.getElementById('editLimMesas').value) || planoObj.mesas;
+        let users = parseInt(document.getElementById('editLimUsers').value) || planoObj.users;
+        let produtos = parseInt(document.getElementById('editLimProdutos').value) || planoObj.produtos;
         let validade = document.getElementById('editValidade').value;
+        let msgBloqueio = document.getElementById('editMsgBloqueio').value.trim();
 
         try {
             await setDoc(doc(db, "licencas", id), {
                 nomeCliente: nome,
+                telefoneCliente: telefone,
+                plano: planoObj.id,
+                tipoPacote: planoObj.id,
+                mensalidade: mensalidade,
                 limiteMesas: mesas,
                 limiteUsuarios: users,
-                validade: validade
+                limiteProdutos: produtos,
+                validade: validade,
+                mensagemBloqueio: msgBloqueio
             }, { merge: true });
 
             await setDoc(doc(db, "empresas", id, "dados", "empresa"), {
-                nome: nome
+                nome: nome,
+                telefone: telefone
             }, { merge: true });
 
-            alert("✅ Licença atualizada com sucesso!");
+            window.showToast("✅ Licença atualizada com sucesso!", "success");
             fecharModalEditar();
-            carregarLicencasMaster();
-        } catch(e) {
-            alert("Erro ao atualizar: " + e.message);
+        } catch (e) {
+            window.showToast("Erro ao atualizar: " + e.message, "error");
         }
     };
 
     window.eliminarEmpresa = async function(id) {
-        if(!confirm(`⚠️ TEM A CERTEZA que deseja ELIMINAR permanentemente a licença e dados da empresa '${id}'? Esta ação não pode ser desfeita.`)) return;
+        let ok = await window.customConfirmHtml(
+            `⚠️ <b>TEM A CERTEZA</b> que deseja <b>ELIMINAR</b> permanentemente a licença e os dados da empresa <b>${id}</b>?<br><br>Esta ação não pode ser desfeita.`,
+            "Eliminar Licença",
+            "🗑️ Sim, Eliminar"
+        );
+        if (!ok) return;
 
         try {
             await deleteDoc(doc(db, "licencas", id));
             await deleteDoc(doc(db, "empresas", id));
-            
-            alert("🗑️ Empresa e licença eliminadas com sucesso.");
-            carregarLicencasMaster();
-        } catch(e) {
-            alert("Erro ao eliminar empresa: " + e.message);
+            window.showToast("🗑️ Empresa e licença eliminadas com sucesso.", "info");
+        } catch (e) {
+            window.showToast("Erro ao eliminar empresa: " + e.message, "error");
         }
     };
 </script>
