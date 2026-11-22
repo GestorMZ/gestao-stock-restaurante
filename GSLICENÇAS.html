@@ -775,7 +775,7 @@
         <section id="sec-alertas" style="display:none;">
             <div class="card-box">
                 <h3 style="margin-bottom: 6px;">⏳ Licenças Expiradas ou Prestes a Expirar (≤ 5 Dias)</h3>
-                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Envie lembretes de renovação via WhatsApp com um clique ou renove por +30 dias após confirmar o M-Pesa / e-Mola.</p>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Envie lembretes de renovação via WhatsApp com um clique ou renove após confirmar o M-Pesa / e-Mola.</p>
                 <div id="containerListaAlertas" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px;"></div>
             </div>
         </section>
@@ -978,7 +978,6 @@
     let unsubLicencas = null;
     let unsubHistorico = null;
 
-    // Tema Escuro persistente
     if (localStorage.getItem('gs_master_dark') === '1') {
         document.body.classList.add('dark-mode');
         setTimeout(() => {
@@ -993,7 +992,6 @@
         document.getElementById('btnTemaMaster').innerText = isDark ? '☀️ Modo Claro' : '🌙 Modo Escuro';
     };
 
-    // Navegação entre abas
     const TITULOS_ABAS = {
         dashboard: '📊 Visão Geral & Métricas',
         licencas: '📋 Gestão Central de Licenças',
@@ -1013,7 +1011,6 @@
         document.getElementById('tituloPaginaAtual').innerText = TITULOS_ABAS[aba] || 'GS Master Pro';
     };
 
-    // Toast
     window.showToast = function(msg, tipo = 'info') {
         const container = document.getElementById('toastContainer');
         const el = document.createElement('div');
@@ -1023,7 +1020,6 @@
         setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 250); }, 3200);
     };
 
-    // Modais Customizados
     window.customAlertHtml = function(htmlContent, titulo = 'Aviso do Sistema') {
         return new Promise(resolve => {
             document.getElementById('customModalTitle').innerText = titulo;
@@ -1053,7 +1049,6 @@
         });
     };
 
-    // Autenticação
     window.fazerLoginMaster = async function() {
         let email = document.getElementById('masterEmail').value.trim();
         let senha = document.getElementById('masterSenha').value;
@@ -1086,7 +1081,6 @@
         }
     });
 
-    // Controlo de Formulário de Emissão
     window.definirDiasValidade = function(dias, btnEl = null) {
         let d = new Date();
         d.setDate(d.getDate() + dias);
@@ -1257,26 +1251,81 @@
         return Math.ceil((dataVal - hojeZero) / (1000 * 60 * 60 * 24));
     }
 
+    function converterDataParaOrdenacao(valorData) {
+        if (!valorData) return '';
+        if (typeof valorData === 'string') return valorData;
+        if (typeof valorData === 'object' && typeof valorData.toDate === 'function') {
+            return valorData.toDate().toISOString();
+        }
+        if (typeof valorData === 'object' && typeof valorData.seconds === 'number') {
+            return new Date(valorData.seconds * 1000).toISOString();
+        }
+        return String(valorData);
+    }
+
     function iniciarEscutaLicencasMaster() {
-        if (unsubLicencas) unsubLicencas();
-        unsubLicencas = onSnapshot(collection(db, "licencas"), (snap) => {
-            listaLicencasCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            listaLicencasCache.sort((a, b) => (b.criadoEm || '').localeCompare(a.criadoEm || ''));
-            atualizarKPIsEDashboard();
-            renderizarTabelaLicencas();
-            renderizarAbaAlertas();
-        }, (err) => {
-            window.showToast("Erro ao sincronizar licenças: " + err.message, "error");
-        });
+        if (unsubLicencas) {
+            unsubLicencas();
+            unsubLicencas = null;
+        }
+
+        const tbody = document.getElementById('tabelaLicencasMaster');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:24px;">A sincronizar licenças com o Firestore...</td></tr>';
+        }
+
+        unsubLicencas = onSnapshot(
+            collection(db, "licencas"),
+            (snap) => {
+                try {
+                    listaLicencasCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    listaLicencasCache.sort((a, b) =>
+                        converterDataParaOrdenacao(b.criadoEm).localeCompare(converterDataParaOrdenacao(a.criadoEm))
+                    );
+                    atualizarKPIsEDashboard();
+                    renderizarTabelaLicencas();
+                    renderizarAbaAlertas();
+                } catch (errProcessamento) {
+                    console.error("Erro ao processar licenças:", errProcessamento);
+                    window.showToast("Erro ao processar dados das licenças: " + errProcessamento.message, "error");
+                    if (tbody) {
+                        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:24px;">Erro ao processar dados: ${errProcessamento.message}</td></tr>`;
+                    }
+                }
+            },
+            (err) => {
+                console.error("Erro no onSnapshot de licenças:", err);
+                window.showToast("Erro ao carregar licenças: " + err.message, "error");
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--danger); padding:24px;">Falha ao ler licenças (${err.code || 'erro'}): ${err.message}</td></tr>`;
+                }
+            }
+        );
     }
 
     function iniciarEscutaHistoricoMaster() {
-        if (unsubHistorico) unsubHistorico();
-        unsubHistorico = onSnapshot(collection(db, "historico_licencas"), (snap) => {
-            listaHistoricoCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            listaHistoricoCache.sort((a, b) => (b.dataHora || '').localeCompare(a.dataHora || ''));
-            renderizarHistoricoFinanceiro();
-        });
+        if (unsubHistorico) {
+            unsubHistorico();
+            unsubHistorico = null;
+        }
+
+        unsubHistorico = onSnapshot(
+            collection(db, "historico_licencas"),
+            (snap) => {
+                try {
+                    listaHistoricoCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    listaHistoricoCache.sort((a, b) =>
+                        converterDataParaOrdenacao(b.dataHora).localeCompare(converterDataParaOrdenacao(a.dataHora))
+                    );
+                    renderizarHistoricoFinanceiro();
+                } catch (errHist) {
+                    console.error("Erro ao processar histórico:", errHist);
+                }
+            },
+            (err) => {
+                console.warn("Aviso ao ler histórico financeiro:", err.message);
+            }
+        );
     }
 
     function atualizarKPIsEDashboard() {
@@ -1323,11 +1372,9 @@
         document.getElementById('kpiExpiradas').innerText = expiradas;
         document.getElementById('kpiReceitaRisco').innerText = `${receitaRisco.toLocaleString('pt-PT')} MT em atraso`;
 
-        // Badges Sidebar
         document.getElementById('badgeTotalSidebar').innerText = listaLicencasCache.length;
         document.getElementById('badgeAlertasSidebar').innerText = expirarBreve + expiradas;
 
-        // Barras de Distribuição
         let totalPagantes = countBasico + countStandard + countPro || 1;
         document.getElementById('lblDistBasico').innerText = `${countBasico} clientes (${valBasico.toLocaleString('pt-PT')} MT)`;
         document.getElementById('barDistBasico').style.width = `${Math.round((countBasico / totalPagantes) * 100)}%`;
@@ -1338,7 +1385,6 @@
         document.getElementById('lblDistPro').innerText = `${countPro} clientes (${valPro.toLocaleString('pt-PT')} MT)`;
         document.getElementById('barDistPro').style.width = `${Math.round((countPro / totalPagantes) * 100)}%`;
 
-        // Radar Urgente (Top 4)
         const radarEl = document.getElementById('listaRadarUrgente');
         urgentes.sort((a, b) => a.dias - b.dias);
         if (urgentes.length === 0) {
@@ -1511,7 +1557,7 @@
         listaHistoricoCache.forEach(h => {
             let v = Number(h.valor || 0);
             totalGeral += v;
-            if ((h.dataHora || '').startsWith(mesAtualPrefix)) totalMes += v;
+            if (converterDataParaOrdenacao(h.dataHora).startsWith(mesAtualPrefix)) totalMes += v;
         });
 
         document.getElementById('kpiTotalHistorico').innerText = totalGeral.toLocaleString('pt-PT') + ' MT';
@@ -1524,7 +1570,8 @@
         }
 
         tbody.innerHTML = listaHistoricoCache.map(h => {
-            let dt = h.dataHora ? new Date(h.dataHora).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' }) : '--';
+            let iso = converterDataParaOrdenacao(h.dataHora);
+            let dt = iso ? new Date(iso).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' }) : '--';
             return `<tr>
                 <td style="font-size:12.5px;">${dt}</td>
                 <td><b>${h.nomeCliente || '--'}</b><br><small style="color:var(--text-muted);">${h.codigoLicenca || ''}</small></td>
@@ -1536,7 +1583,6 @@
         }).join('');
     }
 
-    // Modal Renovação Avançada
     window.abrirModalRenovar = function(id) {
         let lic = listaLicencasCache.find(x => x.id === id);
         if (!lic) return;
