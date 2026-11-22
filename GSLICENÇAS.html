@@ -3,105 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>GS Master - Gestão Central de Licenças</title>
+    <title>GS Master Pro — Gestão Central de Licenças</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
-            --primary-soft: #eff6ff;
+            --primary-soft: rgba(37, 99, 235, 0.12);
             --success: #059669;
             --success-dark: #047857;
+            --success-soft: rgba(5, 150, 105, 0.12);
             --danger: #dc2626;
             --danger-dark: #b91c1c;
+            --danger-soft: rgba(220, 38, 38, 0.12);
             --warning: #d97706;
+            --warning-soft: rgba(217, 119, 6, 0.14);
             --purple: #7c3aed;
-            --dark: #0f172a;
-            --light: #f1f5f9;
-            --card: #ffffff;
+            --purple-soft: rgba(124, 58, 237, 0.12);
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-subtle: #f8fafc;
+            --bg-sidebar: #0f172a;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
             --border: #e2e8f0;
-            --muted: #64748b;
+            --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+        }
+
+        body.dark-mode {
+            --bg-body: #090d16;
+            --bg-card: #111827;
+            --bg-subtle: #1e293b;
+            --bg-sidebar: #060911;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--light);
+            background: var(--bg-body);
             margin: 0;
-            padding: 16px;
-            color: var(--dark);
+            padding: 0;
+            color: var(--text-main);
             line-height: 1.45;
+            transition: background 0.2s ease, color 0.2s ease;
         }
-
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            background: var(--card);
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-            border: 1px solid var(--border);
-        }
-
-        h2, h3, h4 { margin-top: 0; font-weight: 800; letter-spacing: -0.02em; }
 
         /* ----- TOASTS ----- */
         #toastContainer {
             position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 20000;
+            top: 18px;
+            right: 18px;
+            z-index: 30000;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-width: calc(100vw - 32px);
+            gap: 10px;
+            max-width: calc(100vw - 36px);
         }
         .toast {
-            background: var(--dark);
+            background: #0f172a;
             color: #fff;
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 13px 18px;
+            border-radius: 14px;
             font-size: 13.5px;
             font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
             border-left: 5px solid var(--primary);
-            animation: slideIn 0.2s ease-out;
+            animation: slideIn 0.22s ease-out;
         }
         .toast-success { border-left-color: var(--success); }
         .toast-warning { border-left-color: var(--warning); }
         .toast-error { border-left-color: var(--danger); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ----- LOGIN SCREEN ----- */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: radial-gradient(circle at top right, #1e3a8a 0%, #0f172a 55%, #060911 100%);
+        }
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 24px;
+            padding: 34px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            margin-bottom: 14px;
+        }
+
+        /* ----- LAYOUT PRINCIPAL (SIDEBAR + MAIN) ----- */
+        .app-shell {
+            display: none;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 265px;
+            background: var(--bg-sidebar);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 22px 16px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 900;
+            border-right: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 10px 22px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 18px;
+        }
+        .logo-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 17px;
+            color: #fff;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+            flex-shrink: 0;
+        }
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .nav-item {
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 12px 14px;
+            border-radius: 13px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            transform: none;
+        }
+        .nav-item.active {
+            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+        }
+        .nav-badge {
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-weight: 800;
+        }
+        .nav-badge.alert {
+            background: var(--danger);
+        }
+
+        .main-content {
+            margin-left: 265px;
+            padding: 24px 28px;
+            max-width: 1440px;
+        }
+
+        /* ----- TOP HEADER ----- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 24px;
+            background: var(--bg-card);
+            padding: 16px 22px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        /* ----- CARDS & SECTIONS ----- */
+        .card-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+        }
+        h2, h3, h4 { margin-top: 0; font-weight: 800; letter-spacing: -0.02em; }
 
         /* ----- FORMULÁRIOS & BOTÕES ----- */
-        .form-row { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-row { display: flex; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
         .form-group { flex: 1; min-width: 190px; }
         label {
             display: block;
             margin-bottom: 6px;
             font-weight: 700;
-            font-size: 0.78em;
-            color: var(--muted);
+            font-size: 0.75em;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
         }
         input, select, textarea, button {
             width: 100%;
-            padding: 11px 13px;
+            padding: 11px 14px;
             border: 1.5px solid var(--border);
             border-radius: 12px;
             font-family: inherit;
             font-size: 14px;
             font-weight: 600;
-            color: var(--dark);
-            background: #fff;
+            color: var(--text-main);
+            background: var(--bg-card);
+            transition: all 0.15s ease;
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
         }
 
         button {
@@ -113,8 +270,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            transition: all 0.15s ease;
+            gap: 7px;
         }
         button:hover { background: var(--primary-dark); transform: translateY(-1px); }
         button:active { transform: scale(0.98); }
@@ -125,62 +281,96 @@
         .btn-danger:hover { background: var(--danger-dark); }
         .btn-warning { background: var(--warning); color: #fff; }
         .btn-purple { background: var(--purple); color: #fff; }
-        .btn-dark { background: var(--dark); color: #fff; }
-        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--dark); }
+        .btn-dark { background: #1e293b; color: #fff; }
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-main); }
         .btn-outline:hover { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); }
         .btn-sm { width: auto; padding: 7px 11px; font-size: 12px; border-radius: 9px; }
 
         /* ----- KPI CARDS ----- */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin: 18px 0 24px 0;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 22px;
         }
         .kpi-card {
-            background: var(--light);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-left: 5px solid var(--primary);
-            border-radius: 14px;
-            padding: 16px;
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
         }
-        .kpi-card.verde { border-left-color: var(--success); }
-        .kpi-card.roxo { border-left-color: var(--purple); }
-        .kpi-card.laranja { border-left-color: var(--warning); }
-        .kpi-card.vermelho { border-left-color: var(--danger); }
+        .kpi-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
         .kpi-card small {
             display: block;
             font-size: 0.74em;
             font-weight: 800;
             text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 6px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            letter-spacing: 0.04em;
         }
         .kpi-card .kpi-val {
-            font-size: 1.45em;
+            font-size: 1.65em;
             font-weight: 900;
             font-variant-numeric: tabular-nums;
-            color: var(--dark);
+            color: var(--text-main);
+        }
+        .kpi-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* ----- PROGRESS BARS (DISTRIBUIÇÃO DE PACOTES) ----- */
+        .plan-bar-row {
+            margin-bottom: 14px;
+        }
+        .plan-bar-track {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-subtle);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 6px;
+            border: 1px solid var(--border);
+        }
+        .plan-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.4s ease;
         }
 
         /* ----- TABELA E BADGES ----- */
         .table-responsive {
             overflow-x: auto;
-            margin-top: 14px;
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 15px;
+            background: var(--bg-card);
         }
         table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
-        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th, td { padding: 13px 12px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
         th {
-            background: var(--light);
-            color: var(--muted);
-            font-size: 0.74em;
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            font-size: 0.73em;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
         }
-        tr:hover td { background: #f8fafc; }
+        tr:hover td { background: var(--bg-subtle); }
 
         .badge {
             display: inline-flex;
@@ -188,7 +378,7 @@
             gap: 4px;
             padding: 4px 10px;
             border-radius: 999px;
-            font-size: 0.75em;
+            font-size: 0.74em;
             font-weight: 800;
             white-space: nowrap;
         }
@@ -200,32 +390,86 @@
         .badge-pro { background: #fef3c7; color: #b45309; }
         .badge-trial { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
 
+        /* ----- QUICK DURATION PILLS ----- */
+        .duration-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .pill-btn {
+            width: auto;
+            padding: 7px 13px;
+            font-size: 12px;
+            border-radius: 999px;
+            background: var(--bg-subtle);
+            color: var(--text-main);
+            border: 1.5px solid var(--border);
+        }
+        .pill-btn:hover, .pill-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
         /* ----- MODAIS ----- */
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 2000;
             inset: 0;
-            background: rgba(15, 23, 42, 0.72);
-            backdrop-filter: blur(4px);
+            background: rgba(9, 13, 22, 0.76);
+            backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
             padding: 16px;
             overflow-y: auto;
         }
         .modal-content {
-            background: #fff;
-            padding: 24px;
-            border-radius: 18px;
-            max-width: 520px;
+            background: var(--bg-card);
+            color: var(--text-main);
+            padding: 26px;
+            border-radius: 20px;
+            max-width: 540px;
             width: 100%;
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
             border: 1px solid var(--border);
+            animation: popIn 0.18s ease-out;
         }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 
-        @media (max-width: 720px) {
-            body { padding: 10px; }
-            .container { padding: 16px; }
+        /* ----- RESPONSIVO MOBILE ----- */
+        .mobile-nav {
+            display: none;
+        }
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 14px 14px 86px 14px; }
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #0f172a;
+                border-top: 1px solid rgba(255,255,255,0.1);
+                z-index: 1500;
+                padding: 8px 6px;
+                justify-content: space-around;
+            }
+            .mobile-nav button {
+                background: transparent;
+                color: #94a3b8;
+                flex-direction: column;
+                gap: 3px;
+                padding: 6px 4px;
+                font-size: 11px;
+                border-radius: 10px;
+            }
+            .mobile-nav button.active {
+                color: #fff;
+                background: rgba(37, 99, 235, 0.28);
+            }
             .form-row { flex-direction: column; }
             input, select, textarea { font-size: 16px; }
         }
@@ -235,139 +479,389 @@
 
 <div id="toastContainer"></div>
 
-<div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+<!-- TELA DE LOGIN MASTER -->
+<div id="loginMasterBox" class="login-wrapper">
+    <div class="login-card">
+        <div class="brand-pill">⚡ GS POINT PRO • MASTER ADMIN</div>
+        <h2 style="margin-bottom: 6px; font-size: 1.55em;">Gestão Central de Licenças</h2>
+        <p style="font-size: 0.9em; color: #64748b; margin-bottom: 22px;">Controle pacotes, renovações M-Pesa/e-Mola, limites de mesas e faturação recorrente.</p>
+        
+        <div class="form-group" style="margin-bottom: 14px;">
+            <label style="color:#475569;">E-mail Administrador</label>
+            <input type="email" id="masterEmail" placeholder="admin@gspoint.com" style="background:#f8fafc; color:#0f172a;" onkeyup="if(event.key==='Enter') fazerLoginMaster()">
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label style="color:#475569;">Palavra-passe</label>
+            <input type="password" id="masterSenha" placeholder="••••••••" style="background:#f8fafc; color:#0f172a;" onkeyup="if(event.key==='Enter') fazerLoginMaster()">
+        </div>
+        <button onclick="fazerLoginMaster()" style="padding: 13px; font-size: 15px;">Entrar no Painel Master ➔</button>
+    </div>
+</div>
+
+<!-- PAINEL MASTER EXECUTIVO -->
+<div id="painelMasterConteudo" class="app-shell">
+
+    <!-- BARRA LATERAL DESKTOP -->
+    <aside class="sidebar">
         <div>
-            <h2 style="margin-bottom: 4px;">🛠️ GS Master - Painel Central de Licenças</h2>
-            <p style="color: var(--muted); margin: 0; font-size: 0.92em;">Gestão sincronizada com o <b>GS Point Pro</b> (Pacotes Básico, Standard e Pro, renovações, limites e cobranças).</p>
-        </div>
-        <button id="btnLogoutMasterHeader" class="btn-dark btn-sm" style="display:none;" onclick="fazerLogoutMaster()">Terminar Sessão</button>
-    </div>
+            <div class="sidebar-brand">
+                <div class="logo-box">GS</div>
+                <div>
+                    <div style="font-weight: 800; font-size: 15.5px; letter-spacing: -0.02em;">GS Master Pro</div>
+                    <div style="font-size: 11.5px; color: #94a3b8;">Licenciamento & SaaS</div>
+                </div>
+            </div>
 
-    <!-- LOGIN MASTER -->
-    <div id="loginMasterBox" style="max-width: 420px; margin: 40px auto; background: var(--light); padding: 24px; border: 1px solid var(--border); border-radius: 16px;">
-        <h3 style="margin-bottom: 6px;">🔐 Acesso Administrador Master</h3>
-        <p style="font-size: 0.85em; color: var(--muted); margin-bottom: 16px;">Entre com a sua conta de gestor central para emitir ou gerir licenças.</p>
-        <div class="form-group" style="margin-bottom: 12px;">
-            <label>E-mail Admin</label>
-            <input type="email" id="masterEmail" placeholder="admin@gspoint.com" onkeyup="if(event.key==='Enter') fazerLoginMaster()">
-        </div>
-        <div class="form-group" style="margin-bottom: 16px;">
-            <label>Palavra-passe</label>
-            <input type="password" id="masterSenha" placeholder="******" onkeyup="if(event.key==='Enter') fazerLoginMaster()">
-        </div>
-        <button onclick="fazerLoginMaster()">Entrar no Painel Master ➔</button>
-    </div>
-
-    <!-- PAINEL DE CONTROLO -->
-    <div id="painelMasterConteudo" style="display: none;">
-
-        <!-- INDICADORES GERAIS (KPIS) -->
-        <div class="kpi-grid">
-            <div class="kpi-card verde">
-                <small>✅ Licenças Ativas</small>
-                <div class="kpi-val" id="kpiAtivas">0</div>
-            </div>
-            <div class="kpi-card roxo">
-                <small>💰 Receita Mensal (MRR)</small>
-                <div class="kpi-val" id="kpiReceitaMensal">0 MT</div>
-            </div>
-            <div class="kpi-card laranja">
-                <small>⏳ A Expirar (≤ 3 Dias)</small>
-                <div class="kpi-val" id="kpiExpirarBreve">0</div>
-            </div>
-            <div class="kpi-card vermelho">
-                <small>🔴 Expiradas / Suspensas</small>
-                <div class="kpi-val" id="kpiExpiradas">0</div>
-            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" id="nav-dashboard" onclick="mudarAbaMaster('dashboard')">
+                    <span>📊 Visão Geral & Métricas</span>
+                </button>
+                <button class="nav-item" id="nav-licencas" onclick="mudarAbaMaster('licencas')">
+                    <span>📋 Todas as Licenças</span>
+                    <span class="nav-badge" id="badgeTotalSidebar">0</span>
+                </button>
+                <button class="nav-item" id="nav-emitir" onclick="mudarAbaMaster('emitir')">
+                    <span>➕ Emitir Nova Licença</span>
+                </button>
+                <button class="nav-item" id="nav-alertas" onclick="mudarAbaMaster('alertas')">
+                    <span>⏳ Cobranças & Expiração</span>
+                    <span class="nav-badge alert" id="badgeAlertasSidebar">0</span>
+                </button>
+                <button class="nav-item" id="nav-financeiro" onclick="mudarAbaMaster('financeiro')">
+                    <span>💳 Histórico Financeiro</span>
+                </button>
+            </nav>
         </div>
 
-        <!-- EMISSÃO DE NOVA LICENÇA -->
-        <div style="background: var(--light); padding: 18px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px;">
-            <h3 style="margin-bottom: 12px;">➕ Emitir Nova Licença / Pacote</h3>
-            <div class="form-row">
-                <div class="form-group" style="flex: 1.3;">
-                    <label>Nome do Cliente / Estabelecimento</label>
-                    <input type="text" id="novoNomeCliente" placeholder="Ex: Restaurante Sabor da Cidade">
-                </div>
-                <div class="form-group">
-                    <label>WhatsApp / Telefone do Cliente</label>
-                    <input type="tel" id="novoTelCliente" placeholder="Ex: 84 123 4567">
-                </div>
-                <div class="form-group" style="flex: 1.4;">
-                    <label>Selecionar Pacote GS Point Pro</label>
-                    <select id="selectPacoteMaster" onchange="atualizarLimitesPacote()">
-                        <option value="basico">Modo Básico — 800 MT/mês (2 Mesas • 2 Users • 400 Prod.)</option>
-                        <option value="standard" selected>Modo Standard — 1.200 MT/mês (5 Mesas • 5 Users • 800 Prod.)</option>
-                        <option value="pro">Modo Pro — 1.700 MT/mês (10 Mesas • 10 Users • +5.000 Prod.)</option>
-                    </select>
-                </div>
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+            <div style="background: rgba(255,255,255,0.05); padding: 11px 12px; border-radius: 12px; margin-bottom: 10px; font-size: 11.5px; color: #cbd5e1;">
+                <div style="font-weight: 800; color: #fff; margin-bottom: 3px;">📲 Contas de Recebimento</div>
+                <div>M-Pesa: <b>84 903 0686</b></div>
+                <div>e-Mola: <b>87 406 3572</b></div>
             </div>
+            <button class="btn-danger btn-sm" style="width: 100%; padding: 10px;" onclick="fazerLogoutMaster()">🚪 Terminar Sessão</button>
+        </div>
+    </aside>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Mensalidade (MT)</label>
-                    <input type="number" id="inputValorMensal" value="1200" min="0" step="50">
-                </div>
-                <div class="form-group">
-                    <label>Limite de Mesas</label>
-                    <input type="number" id="inputLimMesas" value="5" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Limite de Utilizadores</label>
-                    <input type="number" id="inputLimUsers" value="5" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Limite de Produtos</label>
-                    <input type="number" id="inputLimProdutos" value="800" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Data de Validade</label>
-                    <input type="date" id="inputValidadeLicenca">
-                </div>
+    <!-- NAVEGAÇÃO INFERIOR MOBILE -->
+    <nav class="mobile-nav">
+        <button class="active" id="mnav-dashboard" onclick="mudarAbaMaster('dashboard')"><span>📊</span>Resumo</button>
+        <button id="mnav-licencas" onclick="mudarAbaMaster('licencas')"><span>📋</span>Licenças</button>
+        <button id="mnav-emitir" onclick="mudarAbaMaster('emitir')"><span>➕</span>Nova</button>
+        <button id="mnav-alertas" onclick="mudarAbaMaster('alertas')"><span>⏳</span>Alertas</button>
+        <button id="mnav-financeiro" onclick="mudarAbaMaster('financeiro')"><span>💳</span>Caixa</button>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- CABEÇALHO SUPERIOR -->
+        <div class="top-bar">
+            <div>
+                <h2 id="tituloPaginaAtual" style="margin-bottom: 2px; font-size: 1.3em;">📊 Visão Geral & Métricas</h2>
+                <div style="font-size: 12.5px; color: var(--text-muted);" id="subtituloDataAtual">Sincronizado em tempo real com GS Point Pro</div>
             </div>
-
-            <button class="btn-success" onclick="gerarNovaLicenca()">Gerar e Registar Licença 🚀</button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-outline btn-sm" onclick="alternarTemaMaster()" id="btnTemaMaster">🌙 Modo Escuro</button>
+                <button class="btn-outline btn-sm" onclick="exportarLicencasCSV()">📥 Exportar CSV</button>
+                <button class="btn-success btn-sm" onclick="mudarAbaMaster('emitir')">➕ Nova Licença</button>
+            </div>
         </div>
 
-        <!-- BARRA DE PESQUISA E FILTROS -->
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-            <h3 style="margin: 0;">📋 Licenças Emitidas (<span id="lblTotalFiltradas">0</span>)</h3>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; max-width: 680px; justify-content: flex-end;">
-                <input type="text" id="filtroBuscaMaster" placeholder="🔍 Procurar empresa, código ou telefone..." oninput="renderizarTabelaLicencas()" style="max-width: 270px; padding: 9px 12px;">
-                <select id="filtroEstadoMaster" onchange="renderizarTabelaLicencas()" style="max-width: 190px; padding: 9px 12px;">
-                    <option value="todos">Estado: Todos</option>
-                    <option value="ativos">🟢 Apenas Ativas</option>
-                    <option value="expirar">⏳ A Expirar (≤ 3 dias)</option>
-                    <option value="expiradas">🔴 Expiradas / Suspensas</option>
-                    <option value="trial">🧪 Contas de Teste (Trial)</option>
+        <!-- ========================================================= -->
+        <!-- ABA 1: DASHBOARD / VISÃO GERAL                            -->
+        <!-- ========================================================= -->
+        <section id="sec-dashboard">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: var(--success-soft); color: var(--success);">✅</div>
+                    <small>Licenças Ativas</small>
+                    <div class="kpi-val" id="kpiAtivas">0</div>
+                    <div class="kpi-sub" id="kpiSubTrial">0 em período Trial</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: var(--purple-soft); color: var(--purple);">💰</div>
+                    <small>Receita Mensal (MRR)</small>
+                    <div class="kpi-val" id="kpiReceitaMensal">0 MT</div>
+                    <div class="kpi-sub" id="kpiTicketMedio">Ticket médio: 0 MT</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: var(--warning-soft); color: var(--warning);">⏳</div>
+                    <small>A Expirar (≤ 3 Dias)</small>
+                    <div class="kpi-val" id="kpiExpirarBreve">0</div>
+                    <div class="kpi-sub">Prontas para cobrança</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: var(--danger-soft); color: var(--danger);">🔴</div>
+                    <small>Expiradas / Suspensas</small>
+                    <div class="kpi-val" id="kpiExpiradas">0</div>
+                    <div class="kpi-sub" id="kpiReceitaRisco">0 MT em atraso</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;">
+                <!-- DISTRIBUIÇÃO POR PACOTES -->
+                <div class="card-box" style="margin-bottom: 0;">
+                    <h3 style="margin-bottom: 16px; font-size: 1.05em;">👑 Distribuição por Pacotes Ativos</h3>
+                    
+                    <div class="plan-bar-row">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                            <span>Modo Básico (800 MT)</span>
+                            <span id="lblDistBasico">0 clientes (0 MT)</span>
+                        </div>
+                        <div class="plan-bar-track"><div class="plan-bar-fill" id="barDistBasico" style="width:0%; background:#0284c7;"></div></div>
+                    </div>
+
+                    <div class="plan-bar-row">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                            <span>Modo Standard (1.200 MT)</span>
+                            <span id="lblDistStandard">0 clientes (0 MT)</span>
+                        </div>
+                        <div class="plan-bar-track"><div class="plan-bar-fill" id="barDistStandard" style="width:0%; background:#7c3aed;"></div></div>
+                    </div>
+
+                    <div class="plan-bar-row" style="margin-bottom: 0;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700;">
+                            <span>Modo Pro (1.700 MT)</span>
+                            <span id="lblDistPro">0 clientes (0 MT)</span>
+                        </div>
+                        <div class="plan-bar-track"><div class="plan-bar-fill" id="barDistPro" style="width:0%; background:#d97706;"></div></div>
+                    </div>
+                </div>
+
+                <!-- RADAR DE COBRANÇA RÁPIDA -->
+                <div class="card-box" style="margin-bottom: 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <h3 style="margin:0; font-size:1.05em;">📲 Radar de Renovação Urgente</h3>
+                        <button class="btn-outline btn-sm" onclick="mudarAbaMaster('alertas')">Ver Todos</button>
+                    </div>
+                    <div id="listaRadarUrgente" style="display:flex; flex-direction:column; gap:10px;">
+                        <div style="color:var(--text-muted); font-size:13px;">A analisar datas de validade...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ABA 2: TODAS AS LICENÇAS                                  -->
+        <!-- ========================================================= -->
+        <section id="sec-licencas" style="display:none;">
+            <div class="card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                    <h3 style="margin: 0;">📋 Carteira de Clientes (<span id="lblTotalFiltradas">0</span>)</h3>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1; max-width: 720px; justify-content: flex-end;">
+                        <input type="text" id="filtroBuscaMaster" placeholder="🔍 Procurar empresa, código ou telefone..." oninput="renderizarTabelaLicencas()" style="max-width: 280px; padding: 9px 12px;">
+                        <select id="filtroEstadoMaster" onchange="renderizarTabelaLicencas()" style="max-width: 195px; padding: 9px 12px;">
+                            <option value="todos">Estado: Todos</option>
+                            <option value="ativos">🟢 Apenas Ativas</option>
+                            <option value="expirar">⏳ A Expirar (≤ 3 dias)</option>
+                            <option value="expiradas">🔴 Expiradas / Suspensas</option>
+                            <option value="trial">🧪 Contas de Teste (Trial)</option>
+                        </select>
+                        <select id="filtroPlanoMaster" onchange="renderizarTabelaLicencas()" style="max-width: 180px; padding: 9px 12px;">
+                            <option value="todos">Pacote: Todos</option>
+                            <option value="basico">Modo Básico (800 MT)</option>
+                            <option value="standard">Modo Standard (1.200 MT)</option>
+                            <option value="pro">Modo Pro (1.700 MT)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código / Estabelecimento</th>
+                                <th>Pacote & Valor</th>
+                                <th>Quotas (Mesas / Users / Prod.)</th>
+                                <th>Validade</th>
+                                <th>Estado</th>
+                                <th>Ações Rápidas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaLicencasMaster">
+                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:24px;">A carregar licenças...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ABA 3: EMITIR NOVA LICENÇA                                -->
+        <!-- ========================================================= -->
+        <section id="sec-emitir" style="display:none;">
+            <div class="card-box" style="max-width: 880px;">
+                <h3 style="margin-bottom: 6px;">➕ Emitir Nova Licença / Ativar Cliente</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 18px;">Cria automaticamente a licença, o utilizador <b>admin</b> (senha <b>123</b>) e sincroniza os limites no <b>GS Point Pro</b>.</p>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1.4;">
+                        <label>Nome do Cliente / Estabelecimento *</label>
+                        <input type="text" id="novoNomeCliente" placeholder="Ex: Restaurante Sabor da Cidade">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp / Telefone</label>
+                        <input type="tel" id="novoTelCliente" placeholder="Ex: 84 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Registo</label>
+                        <select id="novoTipoRegisto" onchange="aoMudarTipoRegisto()">
+                            <option value="pago">💳 Licença Paga (Faturação)</option>
+                            <option value="trial">🧪 Conta de Teste (Trial)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1.5;">
+                        <label>Selecionar Pacote GS Point Pro</label>
+                        <select id="selectPacoteMaster" onchange="atualizarLimitesPacote()">
+                            <option value="basico">Modo Básico — 800 MT/mês (2 Mesas • 2 Users • 400 Prod.)</option>
+                            <option value="standard" selected>Modo Standard — 1.200 MT/mês (5 Mesas • 5 Users • 800 Prod.)</option>
+                            <option value="pro">Modo Pro — 1.700 MT/mês (10 Mesas • 10 Users • +5.000 Prod.)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Pagamento</label>
+                        <select id="novoMetodoPagamento">
+                            <option value="M-Pesa">📱 M-Pesa (84 903 0686)</option>
+                            <option value="e-Mola">📲 e-Mola (87 406 3572)</option>
+                            <option value="Numerário">💵 Numerário / Cash</option>
+                            <option value="Transferência">🏦 Transferência Bancária</option>
+                            <option value="Isento (Trial)">🆓 Isento (Teste)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Duração Rápida da Licença</label>
+                <div class="duration-pills">
+                    <button type="button" class="pill-btn" onclick="definirDiasValidade(7, this)">🧪 7 Dias (Teste)</button>
+                    <button type="button" class="pill-btn active" onclick="definirDiasValidade(30, this)">📅 30 Dias (1 Mês)</button>
+                    <button type="button" class="pill-btn" onclick="definirDiasValidade(90, this)">📆 90 Dias (Trimestral)</button>
+                    <button type="button" class="pill-btn" onclick="definirDiasValidade(365, this)">🏆 365 Dias (Anual)</button>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Valor Cobrado (MT)</label>
+                        <input type="number" id="inputValorMensal" value="1200" min="0" step="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Limite de Mesas</label>
+                        <input type="number" id="inputLimMesas" value="5" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Limite de Utilizadores</label>
+                        <input type="number" id="inputLimUsers" value="5" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Limite de Produtos</label>
+                        <input type="number" id="inputLimProdutos" value="800" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Data de Validade *</label>
+                        <input type="date" id="inputValidadeLicenca">
+                    </div>
+                </div>
+
+                <button class="btn-success" style="padding: 14px; font-size: 15px; margin-top: 6px;" onclick="gerarNovaLicenca()">🚀 Gerar Licença e Registar Pagamento</button>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ABA 4: COBRANÇAS & EXPIRAÇÃO                              -->
+        <!-- ========================================================= -->
+        <section id="sec-alertas" style="display:none;">
+            <div class="card-box">
+                <h3 style="margin-bottom: 6px;">⏳ Licenças Expiradas ou Prestes a Expirar (≤ 5 Dias)</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">Envie lembretes de renovação via WhatsApp com um clique ou renove por +30 dias após confirmar o M-Pesa / e-Mola.</p>
+                <div id="containerListaAlertas" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 14px;"></div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ABA 5: HISTÓRICO FINANCEIRO & RENOVAÇÕES                  -->
+        <!-- ========================================================= -->
+        <section id="sec-financeiro" style="display:none;">
+            <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                <div class="kpi-card">
+                    <small>💵 Total Registado (Histórico)</small>
+                    <div class="kpi-val" id="kpiTotalHistorico">0 MT</div>
+                    <div class="kpi-sub" id="kpiQtdMovimentos">0 movimentos registados</div>
+                </div>
+                <div class="kpi-card">
+                    <small>📅 Recebido Este Mês</small>
+                    <div class="kpi-val" id="kpiRecebidoMesAtual">0 MT</div>
+                    <div class="kpi-sub">Emissões e renovações</div>
+                </div>
+            </div>
+
+            <div class="card-box">
+                <h3 style="margin-bottom: 14px;">💳 Registo de Pagamentos & Renovações</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data / Hora</th>
+                                <th>Empresa / Código</th>
+                                <th>Operação</th>
+                                <th>Pacote</th>
+                                <th>Método</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaHistoricoFinanceiro">
+                            <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">A carregar movimentos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- MODAL DE RENOVAÇÃO AVANÇADA -->
+<div id="modalRenovar" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <h3>🔄 Renovar Licença: <span id="renovarCodigoLbl" style="color:var(--primary)"></span></h3>
+        <p id="renovarClienteLbl" style="font-size: 13px; color: var(--text-muted); margin-top: -6px; margin-bottom: 16px;"></p>
+        <input type="hidden" id="renovarCodigoId">
+
+        <div class="form-row" style="margin-bottom: 12px;">
+            <div class="form-group">
+                <label>Período de Renovação</label>
+                <select id="renovarDiasSelect" onchange="atualizarPreviewRenovacao()">
+                    <option value="30" selected>+30 Dias (Mensal)</option>
+                    <option value="90">+90 Dias (Trimestral)</option>
+                    <option value="180">+180 Dias (Semestral)</option>
+                    <option value="365">+365 Dias (Anual)</option>
                 </select>
-                <select id="filtroPlanoMaster" onchange="renderizarTabelaLicencas()" style="max-width: 170px; padding: 9px 12px;">
-                    <option value="todos">Pacote: Todos</option>
-                    <option value="basico">Modo Básico (800 MT)</option>
-                    <option value="standard">Modo Standard (1.200 MT)</option>
-                    <option value="pro">Modo Pro (1.700 MT)</option>
+            </div>
+            <div class="form-group">
+                <label>Método Recebido</label>
+                <select id="renovarMetodoSelect">
+                    <option value="M-Pesa">📱 M-Pesa (84 903 0686)</option>
+                    <option value="e-Mola">📲 e-Mola (87 406 3572)</option>
+                    <option value="Numerário">💵 Numerário</option>
+                    <option value="Transferência">🏦 Transferência</option>
                 </select>
             </div>
         </div>
 
-        <!-- TABELA DE LICENÇAS -->
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Código / Estabelecimento</th>
-                        <th>Pacote & Valor</th>
-                        <th>Quotas (Mesas / Users / Prod.)</th>
-                        <th>Validade</th>
-                        <th>Estado</th>
-                        <th>Ações Rápidas</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaLicencasMaster">
-                    <tr><td colspan="6" style="text-align:center; color:var(--muted);">A carregar licenças...</td></tr>
-                </tbody>
-            </table>
+        <div class="form-group" style="margin-bottom: 14px;">
+            <label>Valor Pago (MT)</label>
+            <input type="number" id="renovarValorInput" min="0" step="50">
+        </div>
+
+        <div style="background: var(--bg-subtle); border: 1px solid var(--border); padding: 12px; border-radius: 12px; margin-bottom: 18px; font-size: 13px;">
+            Nova Data de Validade: <b id="renovarNovaDataPreview" style="color: var(--success); font-size: 14px;">--</b>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-success" onclick="confirmarRenovacaoAvancada()">✅ Confirmar & Ativar</button>
+            <button class="btn-dark" onclick="document.getElementById('modalRenovar').style.display='none'">Cancelar</button>
         </div>
     </div>
 </div>
@@ -405,23 +899,32 @@
         </div>
 
         <div class="form-row" style="margin-bottom: 10px;">
-            <div class="form-group" style="min-width: 110px;">
+            <div class="form-group" style="min-width: 100px;">
                 <label>Mesas</label>
                 <input type="number" id="editLimMesas" min="1">
             </div>
-            <div class="form-group" style="min-width: 110px;">
+            <div class="form-group" style="min-width: 100px;">
                 <label>Utilizadores</label>
                 <input type="number" id="editLimUsers" min="1">
             </div>
-            <div class="form-group" style="min-width: 110px;">
+            <div class="form-group" style="min-width: 100px;">
                 <label>Produtos</label>
                 <input type="number" id="editLimProdutos" min="1">
             </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 10px;">
-            <label>Data de Validade</label>
-            <input type="date" id="editValidade">
+        <div class="form-row" style="margin-bottom: 10px;">
+            <div class="form-group">
+                <label>Data de Validade</label>
+                <input type="date" id="editValidade">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Conta</label>
+                <select id="editTipoConta">
+                    <option value="pago">💳 Pago</option>
+                    <option value="trial">🧪 Trial (Teste)</option>
+                </select>
+            </div>
         </div>
 
         <div class="form-group" style="margin-bottom: 18px;">
@@ -437,8 +940,8 @@
 </div>
 
 <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO E AVISOS -->
-<div id="customModalOverlay" class="modal" style="z-index:10000; background:rgba(15,23,42,0.85);">
-    <div class="modal-content" style="max-width:420px; text-align:center; padding: 28px;">
+<div id="customModalOverlay" class="modal" style="z-index:10000; background:rgba(9,13,22,0.85);">
+    <div class="modal-content" style="max-width:440px; text-align:center; padding: 28px;">
         <h3 id="customModalTitle" style="margin-top:0; color: var(--primary);">Aviso do Sistema</h3>
         <div id="customModalText" style="margin-bottom:20px; font-weight:600; line-height: 1.5; text-align: left;"></div>
         <div style="display:flex; gap:10px; justify-content:center;">
@@ -451,7 +954,7 @@
 <!-- Scripts Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getFirestore, collection, setDoc, doc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, setDoc, addDoc, doc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
     const fbConfig = {
@@ -464,7 +967,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Definição oficial dos pacotes sincronizados com o GS Point Pro
     const PACOTES_OFICIAIS = {
         basico:   { id: 'basico',   nome: 'Modo Básico',   preco: 800,  mesas: 2,  users: 2,  produtos: 400,  badge: 'badge-basico' },
         standard: { id: 'standard', nome: 'Modo Standard', preco: 1200, mesas: 5,  users: 5,  produtos: 800,  badge: 'badge-standard' },
@@ -472,9 +974,46 @@
     };
 
     let listaLicencasCache = [];
+    let listaHistoricoCache = [];
     let unsubLicencas = null;
+    let unsubHistorico = null;
 
-    // Notificações Toast
+    // Tema Escuro persistente
+    if (localStorage.getItem('gs_master_dark') === '1') {
+        document.body.classList.add('dark-mode');
+        setTimeout(() => {
+            const btn = document.getElementById('btnTemaMaster');
+            if (btn) btn.innerText = '☀️ Modo Claro';
+        }, 50);
+    }
+
+    window.alternarTemaMaster = function() {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('gs_master_dark', isDark ? '1' : '0');
+        document.getElementById('btnTemaMaster').innerText = isDark ? '☀️ Modo Claro' : '🌙 Modo Escuro';
+    };
+
+    // Navegação entre abas
+    const TITULOS_ABAS = {
+        dashboard: '📊 Visão Geral & Métricas',
+        licencas: '📋 Gestão Central de Licenças',
+        emitir: '➕ Emitir Nova Licença / Pacote',
+        alertas: '⏳ Cobranças & Renovações Urgentes',
+        financeiro: '💳 Histórico Financeiro & Renovações'
+    };
+
+    window.mudarAbaMaster = function(aba) {
+        ['dashboard', 'licencas', 'emitir', 'alertas', 'financeiro'].forEach(id => {
+            document.getElementById(`sec-${id}`).style.display = (id === aba) ? 'block' : 'none';
+            const navBtn = document.getElementById(`nav-${id}`);
+            const mnavBtn = document.getElementById(`mnav-${id}`);
+            if (navBtn) navBtn.classList.toggle('active', id === aba);
+            if (mnavBtn) mnavBtn.classList.toggle('active', id === aba);
+        });
+        document.getElementById('tituloPaginaAtual').innerText = TITULOS_ABAS[aba] || 'GS Master Pro';
+    };
+
+    // Toast
     window.showToast = function(msg, tipo = 'info') {
         const container = document.getElementById('toastContainer');
         const el = document.createElement('div');
@@ -484,7 +1023,7 @@
         setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 250); }, 3200);
     };
 
-    // Modal de Alerta HTML
+    // Modais Customizados
     window.customAlertHtml = function(htmlContent, titulo = 'Aviso do Sistema') {
         return new Promise(resolve => {
             document.getElementById('customModalTitle').innerText = titulo;
@@ -500,7 +1039,6 @@
         });
     };
 
-    // Modal de Confirmação
     window.customConfirmHtml = function(htmlContent, titulo = 'Confirmar Ação', okText = 'Confirmar') {
         return new Promise(resolve => {
             document.getElementById('customModalTitle').innerText = titulo;
@@ -510,18 +1048,12 @@
             btnCancel.style.display = 'inline-flex';
             btnOk.innerText = okText;
             document.getElementById('customModalOverlay').style.display = 'flex';
-
-            btnOk.onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
-                resolve(true);
-            };
-            btnCancel.onclick = () => {
-                document.getElementById('customModalOverlay').style.display = 'none';
-                resolve(false);
-            };
+            btnOk.onclick = () => { document.getElementById('customModalOverlay').style.display = 'none'; resolve(true); };
+            btnCancel.onclick = () => { document.getElementById('customModalOverlay').style.display = 'none'; resolve(false); };
         });
     };
 
+    // Autenticação
     window.fazerLoginMaster = async function() {
         let email = document.getElementById('masterEmail').value.trim();
         let senha = document.getElementById('masterSenha').value;
@@ -536,6 +1068,7 @@
 
     window.fazerLogoutMaster = function() {
         if (unsubLicencas) { unsubLicencas(); unsubLicencas = null; }
+        if (unsubHistorico) { unsubHistorico(); unsubHistorico = null; }
         signOut(auth);
     };
 
@@ -543,23 +1076,46 @@
         if (user) {
             document.getElementById('loginMasterBox').style.display = 'none';
             document.getElementById('painelMasterConteudo').style.display = 'block';
-            document.getElementById('btnLogoutMasterHeader').style.display = 'inline-flex';
+            document.getElementById('subtituloDataAtual').innerText = `Conectado como ${user.email} • Sincronizado com GS Point Pro`;
             iniciarEscutaLicencasMaster();
-
-            let d = new Date();
-            d.setDate(d.getDate() + 30);
-            document.getElementById('inputValidadeLicenca').value = d.toISOString().split('T')[0];
+            iniciarEscutaHistoricoMaster();
+            definirDiasValidade(30);
         } else {
-            document.getElementById('loginMasterBox').style.display = 'block';
+            document.getElementById('loginMasterBox').style.display = 'flex';
             document.getElementById('painelMasterConteudo').style.display = 'none';
-            document.getElementById('btnLogoutMasterHeader').style.display = 'none';
         }
     });
+
+    // Controlo de Formulário de Emissão
+    window.definirDiasValidade = function(dias, btnEl = null) {
+        let d = new Date();
+        d.setDate(d.getDate() + dias);
+        document.getElementById('inputValidadeLicenca').value = d.toISOString().split('T')[0];
+        if (btnEl) {
+            document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+    };
+
+    window.aoMudarTipoRegisto = function() {
+        let tipo = document.getElementById('novoTipoRegisto').value;
+        if (tipo === 'trial') {
+            document.getElementById('inputValorMensal').value = 0;
+            document.getElementById('novoMetodoPagamento').value = 'Isento (Trial)';
+            definirDiasValidade(7);
+        } else {
+            atualizarLimitesPacote();
+            document.getElementById('novoMetodoPagamento').value = 'M-Pesa';
+            definirDiasValidade(30);
+        }
+    };
 
     window.atualizarLimitesPacote = function() {
         let pacKey = document.getElementById('selectPacoteMaster').value;
         let p = PACOTES_OFICIAIS[pacKey] || PACOTES_OFICIAIS.standard;
-        document.getElementById('inputValorMensal').value = p.preco;
+        if (document.getElementById('novoTipoRegisto').value !== 'trial') {
+            document.getElementById('inputValorMensal').value = p.preco;
+        }
         document.getElementById('inputLimMesas').value = p.mesas;
         document.getElementById('inputLimUsers').value = p.users;
         document.getElementById('inputLimProdutos').value = p.produtos;
@@ -574,13 +1130,26 @@
         document.getElementById('editLimProdutos').value = p.produtos;
     };
 
+    async function registarMovimentoFinanceiro(dados) {
+        try {
+            await addDoc(collection(db, "historico_licencas"), {
+                ...dados,
+                dataHora: new Date().toISOString()
+            });
+        } catch (e) {
+            console.warn("Aviso ao registar histórico financeiro:", e);
+        }
+    }
+
     window.gerarNovaLicenca = async function() {
         let nome = document.getElementById('novoNomeCliente').value.trim();
         let telefone = document.getElementById('novoTelCliente').value.trim();
+        let tipoRegisto = document.getElementById('novoTipoRegisto').value;
+        let metodoPagamento = document.getElementById('novoMetodoPagamento').value;
         let planoKey = document.getElementById('selectPacoteMaster').value;
         let planoObj = PACOTES_OFICIAIS[planoKey] || PACOTES_OFICIAIS.standard;
 
-        let mensalidade = parseFloat(document.getElementById('inputValorMensal').value) || planoObj.preco;
+        let mensalidade = parseFloat(document.getElementById('inputValorMensal').value) || 0;
         let mesas = parseInt(document.getElementById('inputLimMesas').value) || planoObj.mesas;
         let users = parseInt(document.getElementById('inputLimUsers').value) || planoObj.users;
         let produtos = parseInt(document.getElementById('inputLimProdutos').value) || planoObj.produtos;
@@ -594,19 +1163,18 @@
         let codigoLicenca = `LIC-${prefixo}-${randomStr}`;
 
         try {
-            // Grava no formato exato lido pelo GS Point Pro
             await setDoc(doc(db, "licencas", codigoLicenca), {
                 nomeCliente: nome,
                 telefoneCliente: telefone,
                 plano: planoObj.id,
                 tipoPacote: planoObj.id,
-                mensalidade: mensalidade,
+                mensalidade: tipoRegisto === 'trial' ? planoObj.preco : mensalidade,
                 limiteMesas: mesas,
                 limiteUsuarios: users,
                 limiteProdutos: produtos,
                 validade: validade,
                 status: "ativo",
-                tipo: "pago",
+                tipo: tipoRegisto,
                 criadoEm: new Date().toISOString()
             });
 
@@ -628,21 +1196,51 @@
                 taxaIva: 0
             });
 
+            if (mensalidade > 0) {
+                await registarMovimentoFinanceiro({
+                    codigoLicenca,
+                    nomeCliente: nome,
+                    operacao: "Nova Licença",
+                    planoNome: planoObj.nome,
+                    metodo: metodoPagamento,
+                    valor: mensalidade
+                });
+            }
+
             document.getElementById('novoNomeCliente').value = '';
             document.getElementById('novoTelCliente').value = '';
 
+            let textoCopiar = `✅ *ACESSO GS POINT PRO*\n🏢 Empresa: *${nome}*\n🔑 Código Licença: *${codigoLicenca}*\n👑 Pacote: *${planoObj.nome}*\n👤 Utilizador: *admin* | Senha: *123*\n📅 Válido até: *${validade}*`;
+
             let avisoHtml = `
                 <div style="font-size: 1.08em; font-weight: 800; margin-bottom: 12px; text-align: center; color: var(--success);">✅ LICENÇA EMITIDA COM SUCESSO!</div>
-                <div style="margin-bottom: 6px;">🏢 <b>CÓDIGO:</b> <span style="color:var(--primary);">${codigoLicenca}</span></div>
-                <div style="margin-bottom: 6px;">👑 <b>PACOTE:</b> ${planoObj.nome} (${mensalidade} MT/mês)</div>
-                <div style="margin-bottom: 6px;">👤 <b>UTILIZADOR:</b> admin</div>
-                <div style="margin-bottom: 10px;">🔑 <b>SENHA:</b> 123</div>
-                <div style="text-align: center; font-size: 0.9em; color: var(--muted); border-top: 1px solid var(--border); padding-top: 8px;">Válido até: <b>${validade}</b></div>
+                <div style="background:var(--bg-subtle); padding:12px; border-radius:12px; border:1px solid var(--border); margin-bottom:12px;">
+                    <div style="margin-bottom: 5px;">🏢 <b>CÓDIGO:</b> <span style="color:var(--primary);">${codigoLicenca}</span></div>
+                    <div style="margin-bottom: 5px;">👑 <b>PACOTE:</b> ${planoObj.nome} (${mensalidade} MT)</div>
+                    <div style="margin-bottom: 5px;">👤 <b>UTILIZADOR:</b> admin &nbsp;|&nbsp; 🔑 <b>SENHA:</b> 123</div>
+                    <div>📅 <b>VALIDADE:</b> ${validade}</div>
+                </div>
+                <button type="button" class="btn-outline btn-sm" style="width:100%;" onclick="copiarTextoDireto(\`${textoCopiar}\`)">📋 Copiar Mensagem de Boas-Vindas</button>
             `;
             await window.customAlertHtml(avisoHtml);
+            mudarAbaMaster('licencas');
         } catch (e) {
             window.showToast("Erro ao criar licença: " + e.message, "error");
         }
+    };
+
+    window.copiarTextoDireto = function(texto) {
+        navigator.clipboard?.writeText(texto).then(() => {
+            window.showToast("Mensagem copiada para a área de transferência!", "success");
+        }).catch(() => {
+            let aux = document.createElement('textarea');
+            aux.value = texto;
+            document.body.appendChild(aux);
+            aux.select();
+            document.execCommand('copy');
+            document.body.removeChild(aux);
+            window.showToast("Copiado!", "success");
+        });
     };
 
     function normalizarPlanoLicenca(l) {
@@ -664,15 +1262,29 @@
         unsubLicencas = onSnapshot(collection(db, "licencas"), (snap) => {
             listaLicencasCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             listaLicencasCache.sort((a, b) => (b.criadoEm || '').localeCompare(a.criadoEm || ''));
-            atualizarKPIsMaster();
+            atualizarKPIsEDashboard();
             renderizarTabelaLicencas();
+            renderizarAbaAlertas();
         }, (err) => {
             window.showToast("Erro ao sincronizar licenças: " + err.message, "error");
         });
     }
 
-    function atualizarKPIsMaster() {
-        let ativas = 0, mrr = 0, expirarBreve = 0, expiradas = 0;
+    function iniciarEscutaHistoricoMaster() {
+        if (unsubHistorico) unsubHistorico();
+        unsubHistorico = onSnapshot(collection(db, "historico_licencas"), (snap) => {
+            listaHistoricoCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            listaHistoricoCache.sort((a, b) => (b.dataHora || '').localeCompare(a.dataHora || ''));
+            renderizarHistoricoFinanceiro();
+        });
+    }
+
+    function atualizarKPIsEDashboard() {
+        let ativas = 0, trials = 0, mrr = 0, expirarBreve = 0, expiradas = 0, receitaRisco = 0;
+        let countBasico = 0, valBasico = 0;
+        let countStandard = 0, valStandard = 0;
+        let countPro = 0, valPro = 0;
+        let urgentes = [];
 
         listaLicencasCache.forEach(l => {
             let dias = calcularDiasRestantes(l.validade);
@@ -683,17 +1295,85 @@
 
             if (isExpirado) {
                 expiradas++;
+                if (l.tipo !== 'trial') receitaRisco += valor;
+                urgentes.push({ ...l, dias, planoObj, valor, motivo: isSuspenso ? 'Suspenso' : `Expirou há ${Math.abs(dias)}d` });
             } else {
                 ativas++;
-                if (l.tipo !== 'trial') mrr += valor;
-                if (dias <= 3) expirarBreve++;
+                if (l.tipo === 'trial') {
+                    trials++;
+                } else {
+                    mrr += valor;
+                    if (planoObj.id === 'basico') { countBasico++; valBasico += valor; }
+                    else if (planoObj.id === 'standard') { countStandard++; valStandard += valor; }
+                    else { countPro++; valPro += valor; }
+                }
+                if (dias <= 3) {
+                    expirarBreve++;
+                    urgentes.push({ ...l, dias, planoObj, valor, motivo: dias === 0 ? 'Vence HOJE' : `Vence em ${dias}d` });
+                }
             }
         });
 
+        let pagantes = Math.max(1, ativas - trials);
         document.getElementById('kpiAtivas').innerText = ativas;
+        document.getElementById('kpiSubTrial').innerText = `${trials} em período Trial`;
         document.getElementById('kpiReceitaMensal').innerText = mrr.toLocaleString('pt-PT') + " MT";
+        document.getElementById('kpiTicketMedio').innerText = `Ticket médio: ${Math.round(mrr / pagantes).toLocaleString('pt-PT')} MT`;
         document.getElementById('kpiExpirarBreve').innerText = expirarBreve;
         document.getElementById('kpiExpiradas').innerText = expiradas;
+        document.getElementById('kpiReceitaRisco').innerText = `${receitaRisco.toLocaleString('pt-PT')} MT em atraso`;
+
+        // Badges Sidebar
+        document.getElementById('badgeTotalSidebar').innerText = listaLicencasCache.length;
+        document.getElementById('badgeAlertasSidebar').innerText = expirarBreve + expiradas;
+
+        // Barras de Distribuição
+        let totalPagantes = countBasico + countStandard + countPro || 1;
+        document.getElementById('lblDistBasico').innerText = `${countBasico} clientes (${valBasico.toLocaleString('pt-PT')} MT)`;
+        document.getElementById('barDistBasico').style.width = `${Math.round((countBasico / totalPagantes) * 100)}%`;
+
+        document.getElementById('lblDistStandard').innerText = `${countStandard} clientes (${valStandard.toLocaleString('pt-PT')} MT)`;
+        document.getElementById('barDistStandard').style.width = `${Math.round((countStandard / totalPagantes) * 100)}%`;
+
+        document.getElementById('lblDistPro').innerText = `${countPro} clientes (${valPro.toLocaleString('pt-PT')} MT)`;
+        document.getElementById('barDistPro').style.width = `${Math.round((countPro / totalPagantes) * 100)}%`;
+
+        // Radar Urgente (Top 4)
+        const radarEl = document.getElementById('listaRadarUrgente');
+        urgentes.sort((a, b) => a.dias - b.dias);
+        if (urgentes.length === 0) {
+            radarEl.innerHTML = `<div style="padding:14px; background:var(--success-soft); color:var(--success); border-radius:12px; font-weight:700; font-size:13px;">🎉 Excelente! Nenhuma licença vencida ou a expirar nos próximos 3 dias.</div>`;
+        } else {
+            radarEl.innerHTML = urgentes.slice(0, 4).map(u => {
+                let waUrl = gerarLinkWhatsApp(u, u.planoObj, u.valor, true);
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:var(--bg-subtle); border:1px solid var(--border); border-radius:12px; gap:8px;">
+                        <div>
+                            <div style="font-weight:800; font-size:13px;">${u.nomeCliente || u.id}</div>
+                            <div style="font-size:11.5px; color:var(--danger); font-weight:700;">${u.motivo} • ${u.valor} MT</div>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <a href="${waUrl}" target="_blank" style="text-decoration:none;"><button type="button" class="btn-purple btn-sm">📲 Cobrar</button></a>
+                            <button type="button" class="btn-success btn-sm" onclick="abrirModalRenovar('${u.id}')">🔄</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    function gerarLinkWhatsApp(l, planoObj, mensalidade, forcarCobranca = false) {
+        let telLimpo = (l.telefoneCliente || '').replace(/\D/g, '');
+        let dias = calcularDiasRestantes(l.validade);
+        let precisaCobrar = forcarCobranca || (l.status === 'suspenso') || dias <= 3;
+
+        let msgWa = precisaCobrar
+            ? `Olá *${l.nomeCliente || ''}*! 👋\nA sua licença *${l.id}* (${planoObj.nome}) do *GS Point Pro* vence em *${l.validade}*.\n\n💳 *Valor de renovação:* ${mensalidade} MT\n📱 *M-Pesa:* 84 903 0686\n📲 *e-Mola:* 87 406 3572\n\nEnvie o comprovativo para reativação imediata!`
+            : `Olá *${l.nomeCliente || ''}*! Seguem os dados da sua licença *GS Point Pro*:\n• Código: *${l.id}*\n• Pacote: *${planoObj.nome}*\n• Validade: *${l.validade}*\n• Utilizador: *admin* | Senha: *123*`;
+
+        return telLimpo
+            ? `https://wa.me/${telLimpo.startsWith('258') ? telLimpo : '258' + telLimpo}?text=${encodeURIComponent(msgWa)}`
+            : `https://wa.me/?text=${encodeURIComponent(msgWa)}`;
     }
 
     window.renderizarTabelaLicencas = function() {
@@ -727,7 +1407,7 @@
         tbody.innerHTML = '';
 
         if (filtradas.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--muted); padding:24px;">Nenhuma licença encontrada com os filtros selecionados.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:24px;">Nenhuma licença encontrada com os filtros selecionados.</td></tr>';
             return;
         }
 
@@ -748,40 +1428,31 @@
             else if (dias <= 3) badgeEstado = `<span class="badge badge-expirar">⏳ EXPIRA EM ${dias}d</span>`;
 
             let trialTag = l.tipo === 'trial' ? `<span class="badge badge-trial" style="margin-left:4px;">TRIAL</span>` : '';
-
-            // Link WhatsApp inteligente (envia credenciais ou aviso de renovação)
-            let telLimpo = (l.telefoneCliente || '').replace(/\D/g, '');
-            let msgWa = isExpiradoData || isSuspenso || dias <= 3
-                ? `Olá ${l.nomeCliente || ''}! A sua licença *${l.id}* (${planoObj.nome}) do *GS Point Pro* vence em *${l.validade}*. Valor de renovação: *${mensalidade} MT* (M-Pesa: 84 903 0686 / e-Mola: 87 406 3572).`
-                : `Olá ${l.nomeCliente || ''}! Seguem os dados da sua licença *GS Point Pro*:\n• Código: *${l.id}*\n• Pacote: *${planoObj.nome}*\n• Validade: *${l.validade}*\n• Utilizador: admin | Senha: 123`;
-            let waHref = telLimpo
-                ? `https://wa.me/${telLimpo.startsWith('258') ? telLimpo : '258' + telLimpo}?text=${encodeURIComponent(msgWa)}`
-                : `https://wa.me/?text=${encodeURIComponent(msgWa)}`;
+            let waHref = gerarLinkWhatsApp(l, planoObj, mensalidade, false);
 
             tbody.innerHTML += `<tr>
                 <td>
                     <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                         <b>${l.id}</b>
-                        <button type="button" class="btn-outline btn-sm" style="padding:2px 7px; font-size:11px;" onclick="copiarCodigoLicenca('${l.id}')" title="Copiar Código">📋</button>
+                        <button type="button" class="btn-outline btn-sm" style="padding:2px 7px; font-size:11px;" onclick="copiarTextoDireto('${l.id}')" title="Copiar Código">📋</button>
                         ${trialTag}
                     </div>
-                    <div style="font-size:12.5px; color:var(--dark); font-weight:700; margin-top:2px;">${l.nomeCliente || 'Sem nome'}</div>
-                    ${l.telefoneCliente ? `<small style="color:var(--muted);">📱 ${l.telefoneCliente}</small>` : ''}
+                    <div style="font-size:13px; color:var(--text-main); font-weight:700; margin-top:2px;">${l.nomeCliente || 'Sem nome'}</div>
+                    ${l.telefoneCliente ? `<small style="color:var(--text-muted);">📱 ${l.telefoneCliente}</small>` : ''}
                 </td>
                 <td>
                     <span class="badge ${planoObj.badge}">${planoObj.nome.toUpperCase()}</span>
-                    <div style="font-weight:800; margin-top:4px; color:var(--dark);">${mensalidade} MT<small style="color:var(--muted);">/mês</small></div>
+                    <div style="font-weight:800; margin-top:4px;">${mensalidade} MT<small style="color:var(--text-muted);">/mês</small></div>
                 </td>
                 <td style="font-size:12.5px; font-weight:700;">
-                    🪑 ${mesasLim} mesas<br>
-                    👤 ${usersLim} utilizadores<br>
+                    🪑 ${mesasLim} mesas &nbsp;•&nbsp; 👤 ${usersLim} users<br>
                     📦 ${prodsTxt} produtos
                 </td>
                 <td><b>${l.validade || 'Indefinido'}</b></td>
                 <td>${badgeEstado}</td>
                 <td>
-                    <div style="display:flex; gap:5px; flex-wrap:wrap; max-width: 260px;">
-                        <button class="btn-success btn-sm" onclick="renovarLicenca30Dias('${l.id}')" title="Renovar por +30 dias e ativar">🔄 +30d</button>
+                    <div style="display:flex; gap:5px; flex-wrap:wrap; max-width: 270px;">
+                        <button class="btn-success btn-sm" onclick="abrirModalRenovar('${l.id}')" title="Renovar Licença">🔄 Renovar</button>
                         <a href="${waHref}" target="_blank" style="text-decoration:none;"><button type="button" class="btn-purple btn-sm">📲 WA</button></a>
                         <button class="btn-warning btn-sm" onclick="abrirModalEditar('${l.id}')">✏️ Editar</button>
                         <button class="btn-outline btn-sm" onclick="mudarStatusLicenca('${l.id}', '${isSuspenso ? 'ativo' : 'suspenso'}')">${isSuspenso ? 'Ativar' : 'Suspender'}</button>
@@ -792,47 +1463,142 @@
         });
     };
 
-    window.copiarCodigoLicenca = function(codigo) {
-        let aux = document.createElement('input');
-        aux.value = codigo;
-        document.body.appendChild(aux);
-        aux.select();
-        document.execCommand('copy');
-        document.body.removeChild(aux);
-        window.showToast(`Código ${codigo} copiado!`, "success");
-    };
+    function renderizarAbaAlertas() {
+        const container = document.getElementById('containerListaAlertas');
+        let criticas = listaLicencasCache.filter(l => {
+            let dias = calcularDiasRestantes(l.validade);
+            return l.status === 'suspenso' || dias <= 5;
+        }).sort((a, b) => calcularDiasRestantes(a.validade) - calcularDiasRestantes(b.validade));
 
-    window.renovarLicenca30Dias = async function(id) {
+        if (criticas.length === 0) {
+            container.innerHTML = `<div style="padding:18px; background:var(--success-soft); color:var(--success); border-radius:14px; font-weight:700;">✅ Todas as licenças estão em dia! Nenhuma expiração nos próximos 5 dias.</div>`;
+            return;
+        }
+
+        container.innerHTML = criticas.map(l => {
+            let planoObj = normalizarPlanoLicenca(l);
+            let dias = calcularDiasRestantes(l.validade);
+            let mensalidade = Number(l.mensalidade || planoObj.preco);
+            let waHref = gerarLinkWhatsApp(l, planoObj, mensalidade, true);
+            let statusTxt = l.status === 'suspenso' ? '🔴 SUSPENSO' : (dias < 0 ? `🔴 EXPIROU HÁ ${Math.abs(dias)} DIAS` : (dias === 0 ? '⚠️ VENCE HOJE' : `⏳ VENCE EM ${dias} DIAS`));
+
+            return `
+                <div style="border:1px solid var(--border); background:var(--bg-subtle); border-radius:16px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; gap:12px;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span class="badge ${planoObj.badge}">${planoObj.nome}</span>
+                            <span style="font-size:11.5px; font-weight:800; color:var(--danger);">${statusTxt}</span>
+                        </div>
+                        <div style="font-size:15px; font-weight:800;">${l.nomeCliente || l.id}</div>
+                        <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Código: <b>${l.id}</b> • Validade: <b>${l.validade}</b></div>
+                        <div style="font-size:14px; font-weight:800; color:var(--primary); margin-top:6px;">Valor: ${mensalidade} MT</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <a href="${waHref}" target="_blank" style="flex:1; text-decoration:none;"><button type="button" class="btn-purple btn-sm" style="width:100%;">📲 Cobrar WhatsApp</button></a>
+                        <button type="button" class="btn-success btn-sm" style="flex:1;" onclick="abrirModalRenovar('${l.id}')">🔄 Renovar</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderizarHistoricoFinanceiro() {
+        const tbody = document.getElementById('tabelaHistoricoFinanceiro');
+        let totalGeral = 0;
+        let totalMes = 0;
+        let mesAtualPrefix = new Date().toISOString().substring(0, 7);
+
+        listaHistoricoCache.forEach(h => {
+            let v = Number(h.valor || 0);
+            totalGeral += v;
+            if ((h.dataHora || '').startsWith(mesAtualPrefix)) totalMes += v;
+        });
+
+        document.getElementById('kpiTotalHistorico').innerText = totalGeral.toLocaleString('pt-PT') + ' MT';
+        document.getElementById('kpiQtdMovimentos').innerText = `${listaHistoricoCache.length} movimentos registados`;
+        document.getElementById('kpiRecebidoMesAtual').innerText = totalMes.toLocaleString('pt-PT') + ' MT';
+
+        if (listaHistoricoCache.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:22px;">Ainda não existem renovações ou emissões registadas no histórico.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = listaHistoricoCache.map(h => {
+            let dt = h.dataHora ? new Date(h.dataHora).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' }) : '--';
+            return `<tr>
+                <td style="font-size:12.5px;">${dt}</td>
+                <td><b>${h.nomeCliente || '--'}</b><br><small style="color:var(--text-muted);">${h.codigoLicenca || ''}</small></td>
+                <td><span class="badge badge-ativo">${h.operacao || 'Renovação'}</span></td>
+                <td>${h.planoNome || '--'}</td>
+                <td>${h.metodo || 'M-Pesa'}</td>
+                <td style="font-weight:800; color:var(--success);">+${Number(h.valor || 0).toLocaleString('pt-PT')} MT</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Modal Renovação Avançada
+    window.abrirModalRenovar = function(id) {
         let lic = listaLicencasCache.find(x => x.id === id);
         if (!lic) return;
         let planoObj = normalizarPlanoLicenca(lic);
-        let mensalidade = Number(lic.mensalidade || planoObj.preco);
 
-        // Se ainda não expirou, soma 30 dias a partir da validade atual; se já expirou, soma 30 dias a partir de hoje
+        document.getElementById('renovarCodigoId').value = id;
+        document.getElementById('renovarCodigoLbl').innerText = id;
+        document.getElementById('renovarClienteLbl').innerText = `${lic.nomeCliente || 'Cliente'} • Pacote atual: ${planoObj.nome}`;
+        document.getElementById('renovarDiasSelect').value = '30';
+        document.getElementById('renovarValorInput').value = Number(lic.mensalidade || planoObj.preco);
+        atualizarPreviewRenovacao();
+        document.getElementById('modalRenovar').style.display = 'flex';
+    };
+
+    window.atualizarPreviewRenovacao = function() {
+        let id = document.getElementById('renovarCodigoId').value;
+        let lic = listaLicencasCache.find(x => x.id === id);
+        if (!lic) return;
+        let planoObj = normalizarPlanoLicenca(lic);
+        let diasAdd = parseInt(document.getElementById('renovarDiasSelect').value) || 30;
+        let multiplicador = Math.max(1, Math.round(diasAdd / 30));
+
+        document.getElementById('renovarValorInput').value = Number(lic.mensalidade || planoObj.preco) * multiplicador;
+
         let hojeStr = new Date().toISOString().split('T')[0];
         let baseDate = (lic.validade && lic.validade > hojeStr) ? new Date(lic.validade + 'T00:00:00') : new Date(hojeStr + 'T00:00:00');
-        baseDate.setDate(baseDate.getDate() + 30);
-        let novaValidade = baseDate.toISOString().split('T')[0];
+        baseDate.setDate(baseDate.getDate() + diasAdd);
+        document.getElementById('renovarNovaDataPreview').innerText = baseDate.toISOString().split('T')[0];
+    };
 
-        let ok = await window.customConfirmHtml(
-            `Confirmar renovação de <b>+30 dias</b> para <b>${lic.nomeCliente || id}</b>?<br><br>` +
-            `• Pacote: <b>${planoObj.nome} (${mensalidade} MT)</b><br>` +
-            `• Nova Validade: <b style="color:var(--success);">${novaValidade}</b>`,
-            "Renovar Licença",
-            "✅ Confirmar Renovação"
-        );
-        if (!ok) return;
+    window.confirmarRenovacaoAvancada = async function() {
+        let id = document.getElementById('renovarCodigoId').value;
+        let lic = listaLicencasCache.find(x => x.id === id);
+        if (!lic) return;
+        let planoObj = normalizarPlanoLicenca(lic);
+        let diasAdd = parseInt(document.getElementById('renovarDiasSelect').value) || 30;
+        let metodo = document.getElementById('renovarMetodoSelect').value;
+        let valorPago = parseFloat(document.getElementById('renovarValorInput').value) || 0;
+        let novaValidade = document.getElementById('renovarNovaDataPreview').innerText;
 
         try {
             await setDoc(doc(db, "licencas", id), {
                 status: "ativo",
                 tipo: "pago",
                 plano: planoObj.id,
-                mensalidade: mensalidade,
                 validade: novaValidade,
                 ultimaRenovacao: new Date().toISOString()
             }, { merge: true });
-            window.showToast(`Licença ${id} renovada até ${novaValidade}!`, "success");
+
+            if (valorPago > 0) {
+                await registarMovimentoFinanceiro({
+                    codigoLicenca: id,
+                    nomeCliente: lic.nomeCliente || id,
+                    operacao: `Renovação (+${diasAdd}d)`,
+                    planoNome: planoObj.nome,
+                    metodo,
+                    valor: valorPago
+                });
+            }
+
+            document.getElementById('modalRenovar').style.display = 'none';
+            window.showToast(`✅ Licença ${id} renovada até ${novaValidade}!`, "success");
         } catch (e) {
             window.showToast("Erro ao renovar: " + e.message, "error");
         }
@@ -862,6 +1628,7 @@
         document.getElementById('editLimUsers').value = l.limiteUsuarios || planoObj.users;
         document.getElementById('editLimProdutos').value = l.limiteProdutos || planoObj.produtos;
         document.getElementById('editValidade').value = l.validade || '';
+        document.getElementById('editTipoConta').value = l.tipo || 'pago';
         document.getElementById('editMsgBloqueio').value = l.mensagemBloqueio || '';
         document.getElementById('modalEditar').style.display = 'flex';
     };
@@ -881,6 +1648,7 @@
         let users = parseInt(document.getElementById('editLimUsers').value) || planoObj.users;
         let produtos = parseInt(document.getElementById('editLimProdutos').value) || planoObj.produtos;
         let validade = document.getElementById('editValidade').value;
+        let tipoConta = document.getElementById('editTipoConta').value;
         let msgBloqueio = document.getElementById('editMsgBloqueio').value.trim();
 
         try {
@@ -894,6 +1662,7 @@
                 limiteUsuarios: users,
                 limiteProdutos: produtos,
                 validade: validade,
+                tipo: tipoConta,
                 mensagemBloqueio: msgBloqueio
             }, { merge: true });
 
@@ -924,6 +1693,35 @@
         } catch (e) {
             window.showToast("Erro ao eliminar empresa: " + e.message, "error");
         }
+    };
+
+    window.exportarLicencasCSV = function() {
+        if (!listaLicencasCache.length) return window.showToast("Sem licenças para exportar.", "warning");
+        let linhas = ["Codigo;Empresa;Telefone;Pacote;Mensalidade_MT;Mesas;Usuarios;Produtos;Validade;Estado;Tipo"];
+        listaLicencasCache.forEach(l => {
+            let p = normalizarPlanoLicenca(l);
+            linhas.push([
+                l.id,
+                `"${(l.nomeCliente || '').replace(/"/g, '""')}"`,
+                `"${l.telefoneCliente || ''}"`,
+                p.nome,
+                l.mensalidade || p.preco,
+                l.limiteMesas || p.mesas,
+                l.limiteUsuarios || p.users,
+                l.limiteProdutos || p.produtos,
+                l.validade || '',
+                l.status || 'ativo',
+                l.tipo || 'pago'
+            ].join(';'));
+        });
+        let blob = new Blob(["\uFEFF" + linhas.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `GS_Master_Licencas_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        window.showToast("📥 Ficheiro CSV exportado!", "success");
     };
 </script>
 
