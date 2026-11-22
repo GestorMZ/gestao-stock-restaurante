@@ -490,7 +490,7 @@
             min-width: 0;
         }
 
-     .zrest-right-panel {
+        .zrest-right-panel {
             width: 410px;
             background: var(--card-bg);
             border-radius: 16px;
@@ -498,9 +498,7 @@
             box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 30px);
-            position: sticky;
-            top: 10px;
+            min-height: 520px;
             flex-shrink: 0;
             overflow: hidden;
         }
@@ -740,15 +738,13 @@
         }
         .zrest-cart-header h4 { margin: 0; font-size: 0.98em; color: var(--primary); }
 
-       .zrest-cart-items {
-            flex: 1 1 auto;
-            min-height: 150px;
-            max-height: 220px;
+        .zrest-cart-items {
+            flex: 1;
+            min-height: 180px;
+            max-height: 310px;
             overflow-y: auto;
-            overflow-x: hidden;
             padding: 8px 14px;
             background: var(--card-bg);
-            scrollbar-width: thin;
         }
         .zrest-cart-item-row {
             display: flex;
@@ -956,10 +952,9 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
         }
-       body.view-mobile .zrest-cart-items {
-            max-height: 210px;
+        body.view-mobile .zrest-cart-items {
+            max-height: none;
             min-height: 120px;
-            overflow-y: auto;
         }
         body.view-mobile .grid-perfis-login {
             grid-template-columns: repeat(2, 1fr);
@@ -4551,224 +4546,6 @@ window.obterUrlsImagemProduto = function(nome, itemObj = {}) {
 
         let elTotal = document.getElementById('cartTotalTexto');
         if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
-
-        window.calcularTroco();
-        window.calcularTotaisDesdobrados();
-        window.atualizarFabCarrinhoMobile();
-    };let desc = parseFloat(document.getElementById('cartDesconto')?.value) || 0;
-        let total = Math.max(0, bruto - desc);
-
-        let aplicarIva = dadosEmpresa.aplicarIva === 'sim';
-        let taxa = Number(dadosEmpresa.taxaIva) || 0;
-        let elSubIva = document.getElementById('cartSubtotalIvaTexto');
-        if (elSubIva) {
-            if (aplicarIva && taxa > 0 && total > 0) {
-                let subLiq = total / (1 + (taxa / 100));
-                let valIva = total - subLiq;
-                elSubIva.innerText = `S/ IVA: ${subLiq.toFixed(2)} MT | IVA (${taxa}%): ${valIva.toFixed(2)} MT`;
-            } else {
-                elSubIva.innerText = '';
-            }
-        }
-
-        let elTotal = document.getElementById('cartTotalTexto');
-        if (elTotal) elTotal.innerText = total.toFixed(2) + " MT";
-
-        corpo.scrollTop = corpo.scrollHeight;
 
         window.calcularTroco();
         window.calcularTotaisDesdobrados();
