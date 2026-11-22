@@ -2903,37 +2903,53 @@
             }
         } catch (e) {}
     };
-
-    window.obterUrlsImagemProduto = function(nome, itemObj = {}) {
+window.obterUrlsImagemProduto = function(nome, itemObj = {}) {
         let urls = [];
-        let baseFolder = "produtos/";
+        let baseFolder = "./produtos/";
         let repoUrl = (dadosEmpresa.githubRepoProdutos || "").trim();
+
         if (repoUrl && repoUrl.includes("github.com")) {
             let match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)(?:\/tree\/([^\/]+)\/(.*))?/);
             if (match) {
-                let owner = match[1], repo = match[2].replace(/\.git$/, ''), branch = match[3] || 'main', path = (match[4] || 'produtos').replace(/^\/+|\/+$/g, '');
+                let owner = match[1];
+                let repo = match[2].replace(/\.git$/, '');
+                let branch = match[3] || 'main';
+                let path = (match[4] || 'produtos').replace(/^\/+|\/+$/g, '');
                 baseFolder = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}/`;
             }
         }
 
         if (itemObj && itemObj.foto) {
-            if (itemObj.foto.startsWith('http') || itemObj.foto.startsWith('data:')) urls.push(itemObj.foto);
-            else urls.push(baseFolder + itemObj.foto);
+            let fotoLimpa = String(itemObj.foto).trim().replace(/^\/+/, '');
+            if (fotoLimpa.startsWith('http') || fotoLimpa.startsWith('data:')) {
+                urls.push(fotoLimpa);
+            } else {
+                urls.push(baseFolder + fotoLimpa);
+                if (!fotoLimpa.startsWith('produtos/')) {
+                    urls.push(`./produtos/${fotoLimpa}`);
+                }
+            }
         }
 
-        let nomeBase = (nome || "").split("[")[0].trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        let nomeBase = (nome || "").split("[")[0].trim().toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         let slugCompacto = nomeBase.replace(/[^a-z0-9]/g, "");
         let slugHifen = nomeBase.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-        if (mapaImagensGithubCache[slugCompacto]) urls.push(mapaImagensGithubCache[slugCompacto]);
-        if (slugHifen) {
-            urls.push(`${baseFolder}${slugHifen}.png`);
-            urls.push(`${baseFolder}${slugHifen}.jpg`);
-            urls.push(`${baseFolder}${slugHifen}.webp`);
+        if (mapaImagensGithubCache[slugCompacto]) {
+            urls.push(mapaImagensGithubCache[slugCompacto]);
         }
-        if (slugCompacto && slugCompacto !== slugHifen) {
-            urls.push(`${baseFolder}${slugCompacto}.png`);
+
+        for (const slug of [slugHifen, slugCompacto]) {
+            if (!slug) continue;
+            for (const ext of ["png", "jpg", "jpeg", "webp"]) {
+                urls.push(`${baseFolder}${slug}.${ext}`);
+                if (baseFolder !== "./produtos/") {
+                    urls.push(`./produtos/${slug}.${ext}`);
+                }
+            }
         }
+
         return [...new Set(urls)];
     };
 
@@ -4627,9 +4643,29 @@
             if (p > 0) pagamentosDetalhe['POS'] = p;
         }
 
-        let entregue = parseFloat(document.getElementById('cartValorEntregue')?.value) || 0;
-        if (modoPag === 'Unico' && metodoFinal === 'Numerário' && entregue > 0 && entregue < total) {
-            return window.showToast("Valor entregue inferior ao total a pagar!", "error");
+        let inputEntregueEl = document.getElementById('cartValorEntregue');
+        let rawEntregue = inputEntregueEl ? String(inputEntregueEl.value).trim() : '';
+        let entregue = parseFloat(rawEntregue);
+
+        let exigeValorEntregue = !(modoPag === 'Unico' && (metodoFinal === 'Fiado' || metodoFinal === 'Cortesia'));
+
+        if (exigeValorEntregue && total > 0) {
+            if (rawEntregue === '' || isNaN(entregue) || entregue <= 0) {
+                window.tocarSom('alerta');
+                if (inputEntregueEl) {
+                    inputEntregueEl.focus();
+                    inputEntregueEl.select();
+                }
+                return window.showToast("⚠️ Informe o Valor Entregue antes de fechar a venda!", "error");
+            }
+            if (entregue < total) {
+                window.tocarSom('alerta');
+                if (inputEntregueEl) {
+                    inputEntregueEl.focus();
+                    inputEntregueEl.select();
+                }
+                return window.showToast(`⚠️ Valor entregue (${entregue.toFixed(2)} MT) é menor que o total (${total.toFixed(2)} MT)!`, "error");
+            }
         }
         let valorEntregueFinal = entregue > 0 ? entregue : total;
         let trocoFinal = valorEntregueFinal > total ? (valorEntregueFinal - total) : 0;
