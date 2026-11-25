@@ -7,7 +7,6 @@
 
     <!-- Meta Tags PWA / Modo App -->
     <meta name="theme-color" content="#2563eb">
-<link rel="manifest" href="./manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1333,10 +1332,7 @@
                 </div>
             </div>
             <div class="header-actions-group">
-<div class="header-actions-group">
-    <span id="statusRedeBadge" class="badge-rede-online">🟢 Online</span>
-    <span id="badgeFilaOffline" onclick="window.sincronizarFilaOfflineCompleta()" style="display:none; cursor:pointer; padding:6px 10px; border-radius:8px; font-size:11.5px; font-weight:800; background:#fef3c7; color:#92400e; border:1px solid #fcd34d;" title="Clique para sincronizar agora">⏳ 0 pendente(s)</span>
-    <button type="button" id="btnInstalarPWA" class="btn-success btn-sm" style="display:none;" onclick="window.instalarAppPWA()">📲 Instalar App</button>
+                <span id="statusRedeBadge" class="badge-rede-online">🟢 Online</span>
                 <button class="btn-dark btn-sm" onclick="window.alternarModoNoturno()">🌙 Dark</button>
                 <button class="btn-dark btn-sm" onclick="window.bloquearEcra()">🔒 Bloquear</button>
                 <button class="btn-purple btn-sm" onclick="window.abrirModalQRMenu()">📱 QR Menu</button>
@@ -3075,174 +3071,48 @@ window.obterUrlsImagemProduto = function(nome, itemObj = {}) {
         }, 3000);
     };
 
-   // ============================================================
-    // MOTOR PWA & OFFLINE TOTAL (SERVICE WORKER + INDEXEDDB + CACHE)
-    // ============================================================
-    let deferredPromptPWA = null;
-
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').catch(() => {});
-        });
-    }
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPromptPWA = e;
-        const btnInstalar = document.getElementById('btnInstalarPWA');
-        if (btnInstalar) btnInstalar.style.display = 'inline-flex';
-    });
-
-    window.instalarAppPWA = async function() {
-        if (!deferredPromptPWA) return;
-        deferredPromptPWA.prompt();
-        const { outcome } = await deferredPromptPWA.userChoice;
-        if (outcome === 'accepted') {
-            document.getElementById('btnInstalarPWA').style.display = 'none';
-            window.showToast("📲 GS Point Pro instalado com sucesso!", "success");
-        }
-        deferredPromptPWA = null;
-    };
-
-    // Snapshot local para permitir abrir perfis, stock e caixa mesmo sem internet
-    window.guardarSnapshotLocalEmpresa = function() {
-        if (!codigoEmpresa) return;
-        try {
-            const snapshot = {
-                usuarios,
-                stock,
-                clientes,
-                despesas,
-                caixaEstado,
-                dadosEmpresa,
-                produtosFavoritos,
-                planoLicencaId: planoLicencaAtual.id,
-                validadeLicencaAtual
-            };
-            localStorage.setItem(`gsOfflineSnap_${codigoEmpresa}`, JSON.stringify(snapshot));
-        } catch (e) {}
-    };
-
-    window.carregarSnapshotLocalEmpresa = function(codEmp) {
-        try {
-            const raw = localStorage.getItem(`gsOfflineSnap_${codEmp}`);
-            if (!raw) return false;
-            const snap = JSON.parse(raw);
-            usuarios = snap.usuarios || {};
-            stock = snap.stock || {};
-            clientes = snap.clientes || [];
-            despesas = snap.despesas || [];
-            caixaEstado = snap.caixaEstado || { aberto: false, fundo: 0 };
-            dadosEmpresa = Object.assign(dadosEmpresa, snap.dadosEmpresa || {});
-            produtosFavoritos = snap.produtosFavoritos || [];
-            const plano = PLANOS_LICENCA[snap.planoLicencaId] || PLANOS_LICENCA.basico;
-            window.aplicarLimitesPlanoLicenca(plano, snap.validadeLicencaAtual || "");
-            return Object.keys(usuarios).length > 0;
-        } catch (e) {
-            return false;
-        }
-    };
-
     let dbOffline;
-    const requestDB = indexedDB.open("GSPointOfflineDB_v2", 2);
+    const requestDB = indexedDB.open("GSPointOfflineDB", 1);
     requestDB.onupgradeneeded = (e) => {
         dbOffline = e.target.result;
-        if (!dbOffline.objectStoreNames.contains("fila_sincronizacao")) {
-            dbOffline.createObjectStore("fila_sincronizacao", { keyPath: "idFila" });
+        if (!dbOffline.objectStoreNames.contains("vendas_pendentes")) {
+            dbOffline.createObjectStore("vendas_pendentes", { keyPath: "idLocal" });
         }
     };
     requestDB.onsuccess = (e) => {
         dbOffline = e.target.result;
-        window.atualizarContadorFilaOffline();
-        window.sincronizarFilaOfflineCompleta();
-    };
-
-    window.atualizarContadorFilaOffline = function() {
-        if (!dbOffline) return;
-        const tx = dbOffline.transaction("fila_sincronizacao", "readonly");
-        const req = tx.objectStore("fila_sincronizacao").getAll();
-        req.onsuccess = () => {
-            const total = (req.result || []).length;
-            const badge = document.getElementById('badgeFilaOffline');
-            if (!badge) return;
-            if (total > 0) {
-                badge.style.display = 'inline-flex';
-                badge.innerText = `⏳ ${total} pendente(s)`;
-            } else {
-                badge.style.display = 'none';
-            }
-        };
-    };
-
-    window.enfileirarOperacaoOffline = function(tipoOperacao, payload) {
-        if (!dbOffline) return;
-        const registo = {
-            idFila: "op_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
-            empresa: codigoEmpresa,
-            tipo: tipoOperacao,
-            payload: payload,
-            criadoEm: Date.now()
-        };
-        const tx = dbOffline.transaction("fila_sincronizacao", "readwrite");
-        tx.objectStore("fila_sincronizacao").add(registo);
-        tx.oncomplete = () => {
-            window.atualizarContadorFilaOffline();
-            window.guardarSnapshotLocalEmpresa();
-        };
+        window.sincronizarVendasOffline();
     };
 
     window.salvarVendaOffline = function(venda) {
-        window.enfileirarOperacaoOffline("VENDA", {
-            vendaObj: venda,
-            stockAtualizado: stock,
-            clientesAtualizados: clientes
-        });
-        window.showToast("📴 Modo Offline: Venda guardada localmente e será enviada assim que houver rede!", "warning");
+        if (!dbOffline) return;
+        venda.idLocal = "off_" + Date.now();
+        const tx = dbOffline.transaction("vendas_pendentes", "readwrite");
+        tx.objectStore("vendas_pendentes").add(venda);
+        window.showToast("Sem internet! Venda guardada localmente para sincronizar depois.", "warning");
     };
 
-    window.sincronizarFilaOfflineCompleta = async function() {
+    window.sincronizarVendasOffline = function() {
         if (!navigator.onLine || !dbOffline || !codigoEmpresa) return;
-        const tx = dbOffline.transaction("fila_sincronizacao", "readonly");
-        const req = tx.objectStore("fila_sincronizacao").getAll();
-
+        const tx = dbOffline.transaction("vendas_pendentes", "readonly");
+        const req = tx.objectStore("vendas_pendentes").getAll();
         req.onsuccess = async () => {
-            const pendentes = (req.result || []).filter(item => item.empresa === codigoEmpresa);
-            if (pendentes.length === 0) return;
-
-            let sincronizados = 0;
-            for (let op of pendentes) {
-                try {
-                    if (op.tipo === "VENDA") {
-                        await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), op.payload.vendaObj);
-                        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), op.payload.stockAtualizado, { merge: true });
-                        if (op.payload.clientesAtualizados) {
-                            await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "clientes"), { lista: op.payload.clientesAtualizados });
-                        }
-                    } else if (op.tipo === "STOCK") {
-                        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "stock"), op.payload.stockAtualizado, { merge: true });
-                        if (op.payload.movimentacao) {
-                            await addDoc(collection(db, "empresas", codigoEmpresa, "movimentacoes"), op.payload.movimentacao);
-                        }
-                    } else if (op.tipo === "DESPESA") {
-                        await setDoc(doc(db, "empresas", codigoEmpresa, "dados", "despesas"), { lista: op.payload.listaDespesas });
-                    }
-
-                    const txDel = dbOffline.transaction("fila_sincronizacao", "readwrite");
-                    txDel.objectStore("fila_sincronizacao").delete(op.idFila);
-                    sincronizados++;
-                } catch (err) {
-                    break; // Para se a rede voltar a cair a meio
+            const vendas = req.result;
+            if (vendas.length > 0) {
+                for (let v of vendas) {
+                    try {
+                        let idLocal = v.idLocal;
+                        delete v.idLocal;
+                        await addDoc(collection(db, "empresas", codigoEmpresa, "vendas"), v);
+                        const txDel = dbOffline.transaction("vendas_pendentes", "readwrite");
+                        txDel.objectStore("vendas_pendentes").delete(idLocal);
+                    } catch(e) {}
                 }
-            }
-
-            window.atualizarContadorFilaOffline();
-            if (sincronizados > 0) {
-                window.showToast(`☁️ ${sincronizados} operação(ões) offline sincronizada(s) com a nuvem!`, "success");
+                window.showToast("Vendas offline sincronizadas com sucesso!", "success");
             }
         };
     };
 
-    window.sincronizarVendasOffline = window.sincronizarFilaOfflineCompleta;
     window.customAlert = function(msg) {
         return new Promise(resolve => {
             document.getElementById('customModalOverlay').style.display = 'flex';
@@ -3655,19 +3525,7 @@ window.obterUrlsImagemProduto = function(nome, itemObj = {}) {
 
         codigoEmpresa = codeInput;
         if (!window.iniciarProcessamento()) return;
-if (!navigator.onLine) {
-            if (window.carregarSnapshotLocalEmpresa(codeInput)) {
-                codigoEmpresa = codeInput;
-                localStorage.setItem('codigoEmpresaRestaurante', codigoEmpresa);
-                document.getElementById('boxContaBloqueada').style.display = 'none';
-                document.getElementById('seccaoCriarTrial').style.display = 'none';
-                document.getElementById('seccaoPerfisEForm').style.display = 'block';
-                renderizarPerfisLogin();
-                window.atualizarContadoresQuotaPlano();
-                window.showToast("📴 Modo Offline ativo: Dados carregados da memória local.", "warning");
-                return;
-            }
-        }
+
         try {
             let docLicenca = await getDoc(doc(db, "licencas", codigoEmpresa));
             let docEmpresaSnap = await getDoc(doc(db, "empresas", codigoEmpresa));
